@@ -1,0 +1,243 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2016, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#  
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+    OSA
+
+        Bug fixing and maintenance
+
+        BUG - Duplicate columns in results
+        
+        Initial fix in place (reject with error)
+        
+        Interesting discussion, here and in the IVOA
+
+        What should the best practice response be ?
+
+        Suggested best practice
+
+            a) If there is *no* alias rename to random
+            b) If there *is* an alias accept duplicates
+                
+    Firethorn - TAP
+
+        Fixed MAXREC limit bug
+        Passes 100% of Mark Taylor's taplint validation tests
+
+        Waiting to be deployed on cloud compute platform
+
+        Wrapped legacy AstroGrid XML based registry in a virtual machine
+            Tessted TAP service registration
+
+
+    Firethorn - ADQL
+
+        ADQL query service for OSA
+
+        Working with Grégory Mantelet (CDS / Heidelberg) and Theresa Dower (Space Telescope) on merging support for SQLServer.
+
+            Theresa and Gregory are providing support for NATURAL joins
+        
+            Theresa is providing functions to implement TAP registry.
+
+Gives us support for the latest registry standard.
+Allows us to retire the AstroGrid XML based registry.
+
+            Space Telescope are working on implementing geometry in SQLServer.
+
+                * We will adopt and adapt their code when it is ready 
+
+            Working with Gilles Landais (CDS) on support for Vizier quoted identifiers.
+
+                SELECT
+                    RAJ2000,
+                    DEJ2000
+                FROM
+                    "J/ApJ/716/1217/table2" AS table2
+                WHERE
+                    ....
+
+    Firethorn - distributed queries
+
+        Not worked on for many months
+        Basic tests are failing - effect of changes to other components 
+                
+        Building new set of tests to identify broken parts
+        Need to allocate time for getting this working again
+
+
+    Firethorn - Local VO services
+        
+        Looking at implementing (re using) ConeSearch in new platform
+        
+        Replacing all of the old AG services with new implementations
+        Deployment using Docker containers on cloud compute platform
+         
+
+    Pyrothorn - TAP/ADQL testing
+
+        Test infrastructure for TAP/ADQL services
+
+        * Setup script uses Python install tools to import dependencies
+        * Spin-off into separate project, enabling re-use outside of FireThorn
+
+
+    Genius - Autocomplete
+
+        * Autocomplete can now use TAP_SCHEMA for the metadata
+        * Compatible with ESAC service.
+        
+        * GoogleWebToolkit (GWT) wrapper for the Autocomplete component done
+        * Compatible with ESAC service.
+        
+    Genius - Crossmatch
+
+        * Requires Firethorn distributed query.
+      
+
+    IVOA - ADQL
+
+            Added BOOLEAN data type
+            Added hexadecimal literals
+
+            Deprecated coordinate system from the geometric functions
+
+                CIRCLE(‘’, ra, dec, radius)
+
+                CIRCLE(ra, dec, radius)
+
+            Added POINT based geometric functions
+
+                CIRCLE(pos, radius)
+
+            Best practice advice for cross match
+
+                DISTANCE(...) < x
+
+            Agreement to close version 2.1 and move to Proposed Recomendation
+
+    IVOA - JSON
+
+        Significant interest from several groups, not least LSST.
+        Working on IVOA note to combine input from ROE, LSST, CADC + others
+
+
+    IVOA - CapeTown
+
+            Good contact with delegates from LSST 
+
+            Brian Van Klaveren (SLAC/LSST) on TAP, ADQL and QServ
+
+            Working on LSST implementation of TAP in front of QServ.
+            http://wiki.ivoa.net/internal/IVOA/InterOpMay2016-DAL/LSST_DAX_IVOA_Interop_May-2016.pdf
+
+            Overall very positive about using VO standards where applicable.
+            https://community.lsst.org/t/ivoa-interop-meeting-notes-may-2016/829
+
+            John Swinbank on TimeDomain and VOEvent
+
+            Working on VOEvent standard
+            http://wiki.ivoa.net/internal/IVOA/InterOpMay2016-TDIG/2016-05_-_VTP_at_InterOp.pdf
+
+            LSST are planning an internal review of VOEvent
+            Transport Protocol is too verbose for LSST stream
+            VOEvent content is undecided
+
+    
+    Asterics - LIGO/VIRGO Gravity Wave projects
+
+        Strasbourg 31 May-1 June 2016
+        https://www.asterics2020.eu/dokuwiki/doku.php?id=open:wp4:wp4gwstrasbourg2016
+
+            VOEvent - different distinct use cases - Diamonds and Firehose
+
+            LSST - firehose
+
+            10 million events per night
+            6hrs = ~ 500/sec
+            2ms per event
+
+            LIGO/VIRGO - diamonds
+
+            Current specification is working for LIGO/VIRGO
+
+            Key use case for the VO is Electro Magnetic (EM) follow up
+
+            Generic follow up query :
+            Everything within [date-range] for [field-of-view] patch of sky.
+
+            Observation date is key for reconstructing the history.
+
+            Based on field of view of each telescope
+            Experiment to see if SIAP does what they need
+
+            Do we (WFAU) want our data to be used for EM follow up ?
+            If so, we probably need to implement ObsCore and SIAP.
+
+
+    Asterics - Data providers workshop
+    
+        This week in Heidelberg
+
+
+    Cloud compute
+
+        Basic KVM support - in progress
+
+            * Updating the KVM tools from shepseskaf to provide basic VMs on one of the trop machines.
+            * Initial set of Docker host VMs for AstroTROP
+
+        OpenStack
+        
+            * Still learning
+
+        Networking
+        
+            * IPv4
+
+                Limited resources (36 new addresses for ROE, 4 available for OpenStack)
+                Edge security on private LAN means we have to be careful
+                Using physical switch to create a separate LAN looks like the best option
+
+            * IPv6
+
+                We might get a /64 subnet, but we don't know when.
+                Autoconfig will be disabled and DHCP6 probably won't be available/configurable.
+                Using physical switch to create a separate LAN looks like the best option
+
+            IPv6 is important for us to be ready
+
+                Google is seeing IPv6 use growing steadily
+                http://www.google.com/intl/en/ipv6/statistics.html
+
+                Apple require IPv6 support for apps submitted to the App Store
+                https://developer.apple.com/news/?id=05042016a
+
+
+
+
+
+
+
+
+
+
+

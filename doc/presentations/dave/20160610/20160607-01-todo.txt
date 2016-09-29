@@ -1,0 +1,186 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2016, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#  
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+Expenses
+
+    CapeTown
+    Strasbourg
+    Heidelberg
+
+Lyonetia
+
+    XML format for test queries
+    JSON format for test queries
+    Example test queries from JUnit tests
+    Example test queries from historical logs
+
+Cosmopterix
+
+    SQLite
+    QServ
+    Spider
+    ....
+
+Ischnura
+
+    Merge branches
+    Fedora23 base
+    Docker host
+    Deploy on trop1
+
+AstroTROP
+
+    Deploy services on trop1
+
+FireThorn
+
+    Merge BlueQuery
+    Docker compose
+    Code tidy
+    GitHub/Confluence
+
+Heidelberg
+
+    Current projects at the WFAU archives, with an emphasis on
+    ADQL (IVOA Astronomical Data Query Language)
+    
+    An overview of our work at ROE on implementing an ADQL service on SQLServer,
+    how we ensure that our local users are supported and how that feeds in to
+    our work on the ADQL standard, including our work within the IVOA ensuring
+    that ADQL is implementable on a range of different database platforms.
+
+      
+WFAU quarterly
+
+    RedMine project pages ...
+    http://redmine.roe.ac.uk/projects/wva/wiki
+
+    Summary of recent trips
+
+        CapeTown
+            ADQL
+                Closing the lid on 2.1
+                    OFFSET - done
+                    DISTANCE - todo
+                    overrides - todo
+                    
+                Cosmo
+                Lyon
+
+            VO-JSON
+                Stelios working to combine input from participants
+                ROE, LSST, CADC + others
+
+            Brian Van Klaveren (SLAC/LSST) on TAP, ADQL and QServ
+            http://wiki.ivoa.net/internal/IVOA/InterOpMay2016-DAL/LSST_DAX_IVOA_Interop_May-2016.pdf
+            https://community.lsst.org/t/ivoa-interop-meeting-notes-may-2016/829
+
+            John Swinbank
+            http://wiki.ivoa.net/internal/IVOA/InterOpMay2016-TDIG/2016-05_-_VTP_at_InterOp.pdf
+
+        Strasbourg
+
+            VOEvent use cases
+                Different use cases - Diamonds and Firehose
+
+                LIGO/VIRGO - diamonds
+                    Current VOEvent implementation is fine for LIGO/VIRGO use case ?
+                    No changes needed
+
+                LSST - firehose
+                    LSST are planning an internal review of VOEvent for LSST
+                    Current event content - undecided.
+                    Current transport protocol is too chatty for scale of LSST stream
+                    
+                
+
+            GW EM follow up use case
+                SIAP with observation timestamp
+                Create some experiments to demo what is already possible
+
+
+
+        Heidelberg
+
+    Cloud compute
+        Slow progress
+        IPv4
+            Limited resources (36 new addresses for ROE, 4 for OpenStack)
+            Edge security on private LAN means we have to be careful
+            Using physical switch to create a separate LAN looks like the best option
+        IPv6
+            We might get a /64 subnet .. in 6mths time.
+            Autoconfig will be disabled and DHCP6 probably won't be available/configurable.
+            Using physical switch to create a separate LAN looks like the best option
+            
+    FireThorn
+        Fixed limit bug (April)
+        TODO - JUnit testing
+        TODO - DQP testing
+        TODO - DQP MAX() etc
+        TODO - Quoted identifiers
+
+    SQLServer translator for ADQL parser
+        Working with Gregory @ heidelberg and Theresa @ stsci
+        Getting closer to merging three versions into one
+        Theresa and Gregory provided support for NATURAL joins
+
+    Genius
+        Autocomplete can now use TAP_SCHEMA as well as VOSI for the metadata,
+        making it compatible with ESAC service.
+        
+        GoogleWebToolkit (GWT) wrapper for the auto complete code, ready for ESAC to import into their system
+
+    Local TAP
+        TAP service for Atlas is ready to be deployed on the cloud compute platform
+        Network issues on shepseskaf means we are waiting for new cloud compute before we deploy public version
+        Wrapped Astrogrid XML based registry in a virtual machine and tested registering our TAP service
+        TAP service passes 100% of Mark Taylor's taplint validation tests
+
+    Local VO services
+        Plans to include ConeSearch and Registry
+        Replacing all of the old AG services with new implementations
+        Deployment will use Docker containers on cloud compute platform
+         
+
+    Docker paper
+        Text and diagrams done, needs editing and pruning
+        Conclusion needs work
+        
+    Pyrothorn
+        Setup script uses Python install tools to import dependencies
+        Spin-off into separate project, enabling re-use outside of FireThorn
+
+
+    AstroTROP
+        Final meeting done :-)
+        Working services deployed on external cloud
+        TODO write up details of the software stack
+        TODO deploy on internal cloud compute
+        Learned a lot about GIS standards and software
+        Learned a lot about Docker along the way
+
+
+
+
+
