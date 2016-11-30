@@ -1,0 +1,180 @@
+
+
+
+
+
+ADQL - Crossmatch queries
+
+Based on the current level of adoption of the geometric functions within the IVOA,
+the recomended method for performing a cross match JOIN query
+between source catalogs is to use the DISTANCE operator
+to select sources within a specified radius of each other.
+
+WHERE
+    DISTANCE(
+        t1.ra,
+        t1.dec,
+        t2.ra,
+        t2.dec
+        ) < 0.1
+
+Where possible, service implementations should optimise their database
+indexing to support this query structure.
+
+Where possible, client application help files and tutorials should
+recomend this query structure.
+
+
+ADQL -types
+
+The VO data types are defined in the DALI \citet{std:DALI} and
+VOTable \citet{std:VOTABLE} specifications.
+
+The following table describes the data types that ADQL queries
+and their results may contain.
+
+For details of how these data types should be serialised,
+refer to the DALI and VOTable specifications.
+
+        adql:BLOB       adql:BLOB
+        adql:CLOB       adql:CLOB
+        adql:TIMESTAMP  timestamp
+        adql:POINT      point
+                        circle
+                        polygon
+
+        adql:REGION     region <-- deprecate/remove ?
+
+mod
+
+The modulo operator returns the remainder, R, of the division of two integer values, M / N
+
+    M % N = R
+
+where
+
+    R has the same sign as M
+    |R| is less than |N|
+    M = (K * N) + R for a given integer K
+
+The results of the modulo operator on non-integer values is undefined
+and may be rejected as invalid.
+
+------------------------
+
+New WD planned end Nov
+
+------------------------
+
+What about the BNF
+
+The current BNF has not been validated.
+The current BNF is not machine readable.
+
+------------------------
+
+As far as I know ..
+No one has generated their parser directly from the BNF.
+- Anyone who has done this, please let me know.
+
+As far as I know ..
+Most people have used the BNF as a human interpretable document,
+manually created their grammar files and then used those to
+generate their parser.
+
+------------------------
+
+I think we all agree
+
+The BNF SHOULD be validated.
+The BNF SHOUKD be machine readable.
+
+In theory it should be possible to create grammar files from the BNF and then used those to generate a parser.
+
+As far as I know, no one has done this yet.
+- Anyone who has done this, please let me know.
+
+------------------------
+
+Lyonetta project in GitHub
+
+* Collect queries that SHOULD be parsed as valid.
+* Collect queries that SHOULD NOT be parsed as valid.
+
+* Build a test framework to validate the BNF.
+
+    * Generate a gramar from the BNF.
+    * Generate a parser from the grammar.
+    * Parse the test queries and check for pass/fail.
+
+* Volunteers welcome, clone the project and go for it.
+* Add test data and test queries.
+* Help develop validation frameworks.
+
+------------------------
+
+What about the BNF
+
+The current BNF has not been validated.
+The current BNF is not machine readable.
+
+How big an issue is this ?
+
+------------------------
+
+What about the BNF
+
+Not an issue for 2.1, fix it in 2.2
+Continue with 2.1 WD, RFC and PR.
+Validate the BNF in 2.2
+'Rough concensus and running code'
+
+We need to finish 2.1 now.
+Requirng machine validated BNF is a new requirement.
+The un-validatwewd BNF is already published.
+    
+Important issue now.
+We should not publish with un-validated BNF.
+Delay 2.1 until we have validation in place. 
+'Two *validated* independant implementations'
+
+We should not knowingly publishing bad code 
+Machine validated BNF is the acceptance test.
+
+
+Validate the core, drop the bits that don't work.
+
+** This assumes the original core BNF is valid **
+
+IF the original core is good, then start with that and require BNF patches for anything added in 2.1.
+If we don't have a valid patch, defer the item until we do.
+
+Gets the main 2.1 changes out there.  
+
+Drop the BNF, publish the document without it
+
+** This only makes sense if the original core BNF is not valid **
+
+Crazy .. but.
+Works if most people started with an SQL based BNF and
+added changes based on the document text, not the BNF.
+
+Continue with 2.1 WD, RFC and PR, without the BNF.
+Create a machine validated BNF for 2.2
+
+Review the current state, decide later
+
+a) Just how bad is the current core BNF ?
+b) How complicated will the validation process be ?
+
+Pragmatic, but ...
+In reality, this means delay the choice until Jan.
+
+   
+
+
+
+
+
+
+
