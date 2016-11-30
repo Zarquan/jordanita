@@ -1,0 +1,262 @@
+
+
+VOEvent diamonds and firehose
+
+The fire hose
+
+    LSST's own slides refer to drinking from the firehsoe.
+
+    [image]
+
+    With a continous stream of this scale, replaying the last n minuites
+    is probably not an option.
+
+Acknowledging every individual event is probably not an option.
+
+Event sources will need to be 'robust' with slow or unresponsive clients.
+
+The diamonds
+
+    Every LIGO event is a precious diamond.
+
+    [image]
+
+    Each one has the potential for a major discovery.
+
+A replay facility. would be extremly useful.
+
+Missing that one event because your broker was offline for a few
+minuites is not an option.
+
+To guarantee delivery, every event needs acknowledging
+
+Event sources will need to be 'tolerant' of slow or unresponsive clients.
+
+Is this one protocol ?
+
+    Can a single protocol meet what seem to be
+    two sets of opposite requirements.  
+
+    LSST and LIGO represent the extremes.
+
+    What about the cases in between.
+
+LSST filter
+
+What about a broker that takes the LSST stream and
+filters out 80% of the events.
+
+The resulting stream has 20% of the events from LSST.
+Is this a fast or a slow stream.    
+
+LSST events themselves are likely to be unevenly distributed
+across the sky. With busy and quiet periods for the even stream.
+
+    [image]
+
+If the events this filter is interested in occur during 
+a busy period, then the filtered stream is likely to
+amplify the non-uniformity rather than smooth it.
+
+    [image]
+
+LIGO follow up
+
+What about a broker that recieves a LIGO event and
+generates a burst of 10,000 of events for follow up
+observations for the eaxch LIGO event.
+
+The result is a bursty stream, with long periods of
+silence followed by short periods of very intense
+activity.
+    
+    [image]
+
+Adding elasticity
+
+elasticity
+
+<i>noun</i>    
+
+1. the ability of an object or material to resume its normal shape after being stretched or compressed;
+
+synonyms: stretchiness, flexibility, pliancy, suppleness, rubberiness, plasticity, resilience, springiness;
+
+Sending blocks of events 
+
+Allow events to be sent and acknowledged
+in blocks.
+
+During busy periods, the block size grows, reducing
+the overhead of acknowledging every event.
+
+    ----[#][*]----[#][*]----[#][*]----[#][*]----
+
+    ---[##][*]----[##][*]--[##][*]--[###][*]----
+
+    --[######][*]-[######[*]###][*]-[######][*]--
+
+Resticting the replay facility
+
+Restict the replay facility during busy periods.
+
+Allowing the server to responed to replay requests
+with a 'busy' response during busy periods.
+
+If the event rate rises, the server may only offer
+a limited replay facility, only replaying a small
+number of very recent events.
+
+If the event rate drops, the server may provide a
+more extensive replay facility providing access to
+a larger number of historical events.
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Prev, SimpleTimeSeries
+    
+        Volunteers needed to promote this one.
+        
+
+    SuperNova data
+    
+    Keppler light curves
+
+    IVOA needs to be more flexible and accessible.
+    What is the offer ... spend extra time and resources to get an official stamp ?
+    
+
+
+VOEvent
+
+    GCN alerts
+
+        GCN: The Gamma-ray Coordinates Network
+        TAN: Transient Astronomy Network
+        http://gcn.gsfc.nasa.gov/
+
+
+        "GCN is now directly distributing GRB and Transient Notices in the VOEvent format
+        http://gcn.gsfc.nasa.gov/admin/voevent_server_announce.txt
+
+
+    
+    Py4Sky ..
+    
+
+        https://4pisky.org/2014/11/12/getting-started-with-voevents/
+
+    Range of use cases
+
+        Diamonds
+        LIGO gravity waves
+
+            Disconnect for half an hour, need to be able to replay last half hour ?
+
+
+
+        Firehose
+        LSST transients
+
+            LSST team use the term firehose to describe their alert stream.
+
+            Order of maginitude 10 million per night ?
+
+
+            http://voevent.readthedocs.io/en/latest/receiving.html
+
+
+
+
+
+
+
+
+
+
+    VOEvent Protocol RFC comments
+
+
+Applications
+ 
+    "Each author, each subscriber and each broker uses a unique IVOID for its identification.
+    Thus all of them must be fully registered in the VO registry."
+
+Agree, we should look at changing this to anyURI.
+
+
+    Consequences of a broker going temporary off-line... 
+    .... most of the subscribers will just miss the backlog messages.
+    
+Yes, this is an issue.
+The importance will depend on the value of a single event.
+- next version ?
+
+    .... limited in term of number of subscribers per
+    brokers due to the TCP connection keep alive constraint
+ 
+Yes, this is an issue, and we should address this in the next version of the document
+- next version ?
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

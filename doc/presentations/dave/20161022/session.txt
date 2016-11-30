@@ -1,0 +1,12 @@
+
+---+ Time Domain Interest Group session at the [[IVOA.InterOpOct2016][Oct 2016 Interop Meeting ]]
+
+| *TDIG Oceania - Saturday 09:00-10:30 ||||
+| *Speaker*      | *Title*                       | *Duration* | *Materials* |
+| Jiří Nádvorník | Time Domain Cubes             | 15'        | [pdf] |
+|                | Time Domain discussion        | 30'        | [pdf] |
+| Dave Morris    | VOEvent diamonds and firehose | 10'        | [pdf] |
+|                | VOEvent discussion            | 30'        | [pdf] |
+
+
+
