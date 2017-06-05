@@ -1,0 +1,190 @@
+
+
+
+What is IPv6 ?
+
+Internet Protocol version 6.
+
+Internet Protocol (IP) is the primary protocol for routing datagrams (packets) across network boundaries.
+
+----------
+
+Internet connections involve multiple different players.
+
+university departments, service providers, telecoms compaines, local and national exchanges, international cables and connections
+
+    computer  network   compter
+          network   network
+               network
+
+For most of us, for most of the time, we represent all this complexity as like this
+
+    coumputer <--> cloud <--> coumputer
+
+----------
+
+The routing packets between computers is based on numerical addresses.
+
+The header of each packet contains the address of the sender and receipient.
+
+For our purposes, these act like sending SMS text messages between phones using telephone numbers.
+
+We are all familiar with the 192.168.1.2 format of these numbers.
+
+
+Which is the main part of the problem.
+
+We have run out of numbers.
+
+----------
+
+Designed in 1981, Internet Protocol version 4 (IPv4) uses 32bit numbers to route traffic.
+
+Familiar four numbers separated by dots represent the four bytes of a 32 bit number.
+
+    192.168.1.2
+
+    [192] [168] [1] [2]
+
+----------
+
+32bit number gives us a theoretical space of 4294967296 (2^32) addresses.
+
+Not all of the 4.3 billion addresses can be used for end users.
+
+Some blocks are allocated for special functions and private networks.
+
+Rapid growth in the 1990's used up the available addresses faster than anticipated.
+
+As of now, all of the available blocks have been allocated.
+
+----------
+
+
+WFAU only has four public IP addresses for all our VO services
+
+Which is why we need HTTP proxy servers for public endpoints.
+
+----------
+
+Sucessor protocol (IP version 6) was invented in 1998.
+
+IPv6 uses 128-bit numbers, giving a theoretical space of 3.4×10^38 address.
+
+The intention is not to use all of this huge space.
+
+Expectation is use will be sparse, with whole blocks allocated to end user equipmanet with only a few addresses used in each block.
+
+----------
+
+Example, a department may be allocated a full /64 or /48 address.
+
+That means 48 of the 128 bits are used to identify the department, leaving 80 bits for routing within the premises.
+
+Internally the local network might use 8 bits to identify individual buildings, 8 bits to identify floors in a tower block, 8 bits to identify rooms on a floor, 8bits to identify racks in a room, 8bots to identify machines in a rack ..
+
+8 bits for buildings
+    8 bits for floors in a tower
+        8 bits for rooms on a floor
+            8 bits for racks in a room
+                8 bits for machines in a rack
+
+                    16 bits for virtual machines in a physical machine
+
+                        16 bits for container in a virtual machine
+
+
+           = 72 bits
+
+Splitting up the addresses like this makes sense because it makes routing much easier.
+
+----------
+
+even if you only have two buildings, two floors, four rooms, two racks with four machinces in each
+
+    my home,
+        house and garage,
+            upstairs and downstairs
+                office, two bedrooms and bathroom
+                    two machines in office
+                    one rack with
+                        four machines in garage
+----------
+
+    Sounds crazy .... but
+
+    ESP8266 $5 wifi enabled micro controller that runs Python
+    https://cdn.sparkfun.com//assets/parts/1/1/1/2/9/13678-01.jpg
+
+to do this ... every light bulb needs to have a unique address
+
+----------
+
+
+So what is not to like ?
+
+    Huge address space
+
+    Simplified routing based on blocks
+
+    Whole blocks of addresses per person
+
+What have we been doing for the last 19 years ?
+
+
+----------
+
+
+If none of the other institutes have IPv6,
+
+when I upgrade my network to IPv6,
+
+no one will use it.
+
+As log as some institutes only have IPv4,
+
+I still need to publish everything via IPv4.
+
+
+----------
+
+Until .. one day
+
+----------
+
+Most of the major institutes have IPv6,
+
+new services are published on IPv6
+
+limited access to legacy services via IPv4,
+
+
+----------
+
+Big infrastructure projects
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
