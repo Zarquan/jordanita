@@ -24,9 +24,9 @@
 
 Timeline :
 
-    2014 - 2015 Initial experiments
-    2015 - 2016 Shell scripts for building and running the services.
-    2017 - 2018 Compose for building and running the services.
+    2014-2015 Initial experiments with Docker
+    2015-2016 Shell scripts for building and running the services.
+    2017-2018 Compose for building and running the services.
 
 Custom virtual machine image to host docker services.
 Automated build using RedHat kickstarter.
@@ -49,23 +49,23 @@ Shell script function that looks up a secret :
 
 Implemented using a combination of ssh and sed :
 
-    secret()
-        {
-        local key=${1:?}
-        ssh -o 'VisualHostKey=no' "${secrethost:?}" "
-            sed -n '
-                s/^[[:space:]]*${key}=\\(.*\\)/\\1/p
-                ' \"${secretfile:?}\"
-            " 
-        }
+secret()
+    {
+    local key=${1:?}
+    ssh -o 'VisualHostKey=no' "${secrethost:?}" "
+        sed -n '
+            s/^[[:space:]]*${key}=\\(.*\\)/\\1/p
+            ' \"${secretfile:?}\"
+        " 
+    }
 
 Remote account contains key value pairs :
 
     cat ~/secretfile
 
-        toad=Brown Toad
-        frog=Green Frog
-        fish=Blue Sea
+toad=Brown Toad
+frog=Green Frog
+fish=Blue Sea
 
         ssh.tunnel.user=########
         ssh.tunnel.host=########
@@ -80,16 +80,16 @@ Remote account contains key value pairs :
 
 Basic Firethorn services
 
-    Firethorn   gillian
-    Ogsadai     jarmila
-    Postgresql  bethany
+    Firethorn  (tomcat)   gillian
+    Ogsadai    (tomcat)   jarmila
+    Postgresql (postgres) bethany
     
 Remote deploy adds two extra ssh tunnel services
 
     sql-tunnel  elayne
     sql-tunnel  patricia
 
-Using unusual names for the services avoids duplication and hard coded values.
+Using human names for the services avoids duplication and hard coded values.
 Worst case hostname postgres, database name postgres, user name postgres password ...
 
 5 --------
@@ -112,64 +112,56 @@ Write configuration and passwords to a local file on the virtual machine.
 
 6 --------
 
-2015 - 2016
-Shell scripts for building and running the services :
+2015-2016 Shell scripts for building and running the services :
 
-    # Start our PostgreSQL database container.
-    docker run \
-        --detach \
-        --name "${metaname}" \
-        --env "POSTGRES_USER=${metauser}" \
-        --env "POSTGRES_PASSWORD=${metapass}" \
-        postgres
+# Start our PostgreSQL database container.
+docker run \
+    --detach \
+    --name "${metaname}" \
+    --env "POSTGRES_USER=${metauser}" \
+    --env "POSTGRES_PASSWORD=${metapass}" \
+    postgres
 
-    # Start our Firethorn container.
-    docker run \
-        --detach \
-        --publish 8080:8080 \
-        --name "${firename}" \
-        --link "${ogsaname}" \
-        --link "${metaname}" \
-        --link "${dataname}" \
-        --link "${username}" \
-        --volume "${properties}:/etc/firethorn.properties" \
-        --volume /etc/localtime:/etc/localtime:ro \
-        "firethorn/firethorn:${version}"
+# Start our Firethorn container.
+docker run \
+    --detach \
+    --publish 8080:8080 \
+    --name "${firename}" \
+    --link "${ogsaname}" \
+    --link "${metaname}" \
+    --link "${dataname}" \
+    --link "${username}" \
+    --volume "${properties}:/etc/firethorn.properties" \
+    --volume /etc/localtime:/etc/localtime:ro \
+    "firethorn/firethorn:${version}"
 
 7 --------
 
-2017 - 2018
-Compose for building and running the services :
+2017-2018 Compose for building and running the services :
 
-Single configuration file for a set of services :
+Single compose.yml configuration file for a set of services :
 
-    docker-compose.yml
+docker-compose.yml
 
-        services:
+bethany:
+    image:
+       "firethorn/postgres:${buildtag}"
+    ....
 
-            bethany:
-                image:
-                   "firethorn/postgres:${buildtag}"
-                ....
-
-            jarmila:
-                image:
-                   "firethorn/ogsadai:${buildtag}"
-                ....
-                
-            gillian:
-                image:
-                   "firethorn/firethorn:${buildtag}"
-                ....
-                environment:
-                    firethorn.meta.user: "${metauser}"
-                    firethorn.meta.pass: "${metapass}"
-                    ....
-                depends_on:
-                    bethany:
-                        condition: service_started            
-                    jarmila:
-                        condition: service_healthy            
+jarmila:
+    image:
+       "firethorn/ogsadai:${buildtag}"
+    ....
+    
+gillian:
+    image:
+       "firethorn/firethorn:${buildtag}"
+    ....
+    depends_on:
+        bethany:
+            condition: service_started            
+        jarmila:
+            condition: service_healthy            
 
 7 --------
 
