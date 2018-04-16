@@ -160,13 +160,7 @@ Single configuration file for a set of services :
             gillian:
                 image:
                    "firethorn/firethorn:${buildtag}"
-                read_only:
-                    true
-                volumes:
-                    - /etc/localtime:/etc/localtime:ro
-                networks:
-                    - miriam
-                    - rosana
+                ....
                 environment:
                     firethorn.meta.user: "${metauser}"
                     firethorn.meta.pass: "${metapass}"
@@ -182,9 +176,9 @@ Single configuration file for a set of services :
 Single command to launch the set of services :
 
     docker-compose \
-        up --detach
+        up
     
-Because gillian depends on bethany and jarmila, compose
+Because gillian depends on both bethany and jarmila, compose
 will make sure they are running before it starts gillian.
 
 Single command to take down a set of services :
@@ -196,18 +190,22 @@ Single command to take down a set of services :
 
     Example - deploy a set of services to test the Python client.
 
-
-
-
-
 9 --------
 
     Example - Maria's code to deploy Kafka and Zookeeper.
 
+    mkdir mtpatter
+    pushd mtpatter
+
+        git clone git@github.com:mtpatter/alert_stream.git
+            
+        docker-compose \
+            --file "alert_stream/docker-compose.yml" \
+            up
+
 10 --------
 
-    Example - Our code to deploy Kafka and Zookeeper(s) alongside Firethorn.
-
+    
 
 
 
