@@ -33,7 +33,7 @@ Automated build using RedHat kickstarter.
 Minimal Fedora install, specific version of docker and docker-compose and admin tools.
 Compatible with our own launch scripts and the university OpenStack system.
 
-    ~20sec to create and launch a new VM
+    ~30sec to create and launch a new VM
 
 2 --------
 
@@ -92,7 +92,9 @@ Remote deploy adds two extra ssh tunnel services
 Using unusual names for the services avoids duplication and hard coded values.
 Worst case hostname postgres, database name postgres, user name postgres password ...
 
-Write the hostnames and passwords to a local file on the virtual machine.
+5 --------
+
+Write configuration and passwords to a local file on the virtual machine.
 
     cat > "${HOME:?}/chain.properties" << EOF
 
@@ -108,7 +110,7 @@ Write the hostnames and passwords to a local file on the virtual machine.
     metapass=$(pwgen 20 1)
     metadriver=org.postgresql.Driver
 
-5 --------
+6 --------
 
 2015 - 2016
 Shell scripts for building and running the services :
@@ -134,7 +136,7 @@ Shell scripts for building and running the services :
         --volume /etc/localtime:/etc/localtime:ro \
         "firethorn/firethorn:${version}"
 
-6 --------
+7 --------
 
 2017 - 2018
 Compose for building and running the services :
@@ -148,13 +150,7 @@ Single configuration file for a set of services :
             bethany:
                 image:
                    "firethorn/postgres:${buildtag}"
-                read_only:
-                    true
-                networks:
-                    - miriam
-                environment:
-                    POSTGRES_USER: "${metauser}"
-                    POSTGRES_PASSWORD: "${metapass}"
+                ....
 
             jarmila:
                 image:
@@ -183,7 +179,7 @@ Single configuration file for a set of services :
 
 7 --------
 
-Single command to launch a set of services :
+Single command to launch the set of services :
 
     docker-compose \
         up --detach
@@ -200,7 +196,9 @@ Single command to take down a set of services :
 
     Example - deploy a set of services to test the Python client.
 
-    Need to merge the race-bug branch ...
+
+
+
 
 9 --------
 
