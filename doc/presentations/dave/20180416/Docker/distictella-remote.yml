@@ -1,0 +1,217 @@
+version: '2.1'
+# https://en.wikipedia.org/wiki/Aphomia_distictella
+
+networks:
+
+    # External network
+    rosana:
+
+    # Internal network
+    miriam:
+
+services:
+
+    bethany:
+        image:
+           "firethorn/postgres:${buildtag:-latest}"
+        read_only:
+            true
+        tmpfs:
+            - '/run'
+            - '/tmp'
+        networks:
+            - miriam
+        environment:
+            POSTGRES_USER: "${metauser}"
+            POSTGRES_PASSWORD: "${metapass}"
+
+    patricia:
+        image:
+           "firethorn/sql-proxy:${buildtag:-latest}"
+        read_only:
+            false
+        tmpfs:
+            - /run
+            - /tmp
+        stdin_open:
+            true
+        volumes:
+            - ${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock
+        networks:
+            - miriam
+        environment:
+            targethost: "${userhost}"
+            tunneluser: "${tunneluser}"
+            tunnelhost: "${tunnelhost}"
+
+    elayne:
+        image:
+           "firethorn/sql-proxy:${buildtag:-latest}"
+        read_only:
+            false
+        tmpfs:
+            - /run
+            - /tmp
+        stdin_open:
+            true
+        volumes:
+            - ${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock
+        networks:
+            - miriam
+        environment:
+            targethost: "${datahost}"
+            tunneluser: "${tunneluser}"
+            tunnelhost: "${tunnelhost}"
+
+    jarmila:
+        image:
+           "firethorn/ogsadai:${buildtag:-latest}"
+        read_only:
+            false
+        tmpfs:
+            - /run
+            - /tmp
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+        networks:
+            - miriam
+        depends_on:
+            elayne:
+                condition: service_started            
+            patricia:
+                condition: service_started            
+        healthcheck:
+            test: [
+                "CMD-SHELL",
+                "curl --silent --head --fail http://localhost:8080/ogsadai/services || exit 1"
+                ]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    gillian:
+        image:
+           "firethorn/firethorn:${buildtag:-latest}"
+        read_only:
+            true
+        tmpfs:
+            - /run
+            - /tmp
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+        networks:
+            - miriam
+            - rosana
+        environment:
+            firethorn.ogsadai.endpoint: "http://jarmila:8080/ogsadai/services"
+
+            firethorn.meta.url: "jdbc:postgresql://bethany/postgres"
+            firethorn.meta.user: "${metauser}"
+            firethorn.meta.pass: "${metapass}"
+            firethorn.meta.driver: "org.postgresql.Driver"
+
+            firethorn.user.type: "mssql"
+            firethorn.user.host: "patricia"
+            firethorn.user.data: "${userdata}"
+            firethorn.user.user: "${useruser}"
+            firethorn.user.pass: "${userpass}"
+
+            firethorn.admin.community: "${admingroup}"
+            firethorn.guest.community: "${guestgroup}"
+
+            firethorn.admin.user.name: "${adminuser}"
+            firethorn.admin.user.pass: "${adminpass}"
+
+        depends_on:
+            bethany:
+                condition: service_started            
+            elayne:
+                condition: service_started            
+            patricia:
+                condition: service_started            
+            jarmila:
+                condition: service_healthy            
+
+    tester:
+        image:
+           "firethorn/tester:${buildtag}"
+        read_only:
+            false
+        stdin_open:
+            true
+        tty:
+            true
+        tmpfs:
+            - /run
+            - /tmp
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - ./bin/testup.sh:/testup.sh
+            - ./bin/testdo.sh:/testdo.sh
+        networks:
+            - miriam
+
+        environment:
+
+            endpointurl: "http://gillian:8080/firethorn"
+
+            datatype: "mssql"
+            datahost: "elayne"
+            datadata: "${datadata}"
+            datauser: "${datauser}"
+            datapass: "${datapass}"
+
+            admingroup: "${admingroup}"
+            guestgroup: "${guestgroup}"
+
+            adminuser: "${adminuser}"
+            adminpass: "${adminpass}"
+
+        depends_on:
+            gillian:
+                condition: service_healthy            
+        command:
+            [bash]
+
+    distictella:
+        image:
+           "firethorn/firethorn-py:${buildtag}"
+        build:
+            context:    "${ftpysrc}"
+            dockerfile: "Fedorafile"
+        read_only:
+            false
+        stdin_open:
+            true
+        tty:
+            true
+        tmpfs:
+            - /run
+            - /tmp
+        networks:
+            - miriam
+
+        environment:
+
+            endpoint: "http://gillian:8080/firethorn"
+
+            datatype: "mssql"
+            datahost: "elayne"
+            datadata: "${datadata}"
+            datauser: "${datauser}"
+            datapass: "${datapass}"
+
+            admingroup: "${admingroup}"
+            guestgroup: "${guestgroup}"
+
+            adminuser: "${adminuser}"
+            adminpass: "${adminpass}"
+
+        depends_on:
+            gillian:
+                condition: service_healthy            
+        command:
+            [python3]
+
+
+

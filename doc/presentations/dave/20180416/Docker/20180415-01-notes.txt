@@ -1,0 +1,215 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2017, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+1 --------
+
+Timeline :
+
+    2014 - 2015 Initial experiments
+    2015 - 2016 Shell scripts for building and running the services.
+    2017 - 2018 Compose for building and running the services.
+
+Custom virtual machine image to host docker services.
+Automated build using RedHat kickstarter.
+Minimal Fedora install, specific version of docker and docker-compose and admin tools.
+Compatible with our own launch scripts and the university OpenStack system.
+
+    ~20sec to create and launch a new VM
+
+2 --------
+
+BTRFS file system ..
+
+3 --------
+
+Secrets and passwords configured using a custom secret service.
+
+Shell script function that looks up a secret :
+
+    secret <key>
+
+Implemented using a combination of ssh and sed :
+
+    secret()
+        {
+        local key=${1:?}
+        ssh -o 'VisualHostKey=no' "${secrethost:?}" "
+            sed -n '
+                s/^[[:space:]]*${key}=\\(.*\\)/\\1/p
+                ' \"${secretfile:?}\"
+            " 
+        }
+
+Remote account contains key value pairs :
+
+    cat ~/secretfile
+
+        toad=Brown Toad
+        frog=Green Frog
+        fish=Blue Sea
+
+        ssh.tunnel.user=########
+        ssh.tunnel.host=########
+
+        docker.io.user=########
+        docker.io.pass=########
+
+        openstack.user=########
+        openstack.pass=########
+
+4 --------
+
+Basic Firethorn services
+
+    Firethorn   gillian
+    Ogsadai     jarmila
+    Postgresql  bethany
+    
+Remote deploy adds two extra ssh tunnel services
+
+    sql-tunnel  elayne
+    sql-tunnel  patricia
+
+Using unusual names for the services avoids duplication and hard coded values.
+Worst case hostname postgres, database name postgres, user name postgres password ...
+
+Write the hostnames and passwords to a local file on the virtual machine.
+
+    cat > "${HOME:?}/chain.properties" << EOF
+
+    metaname=bethany
+    username=patricia
+    dataname=elayne
+    ogsaname=jarmila
+    firename=gillian
+
+    metatype=pgsql
+    metadata=postgres
+    metauser=$(pwgen 20 1)
+    metapass=$(pwgen 20 1)
+    metadriver=org.postgresql.Driver
+
+5 --------
+
+2015 - 2016
+Shell scripts for building and running the services :
+
+    # Start our PostgreSQL database container.
+    docker run \
+        --detach \
+        --name "${metaname}" \
+        --env "POSTGRES_USER=${metauser}" \
+        --env "POSTGRES_PASSWORD=${metapass}" \
+        postgres
+
+    # Start our Firethorn container.
+    docker run \
+        --detach \
+        --publish 8080:8080 \
+        --name "${firename}" \
+        --link "${ogsaname}" \
+        --link "${metaname}" \
+        --link "${dataname}" \
+        --link "${username}" \
+        --volume "${properties}:/etc/firethorn.properties" \
+        --volume /etc/localtime:/etc/localtime:ro \
+        "firethorn/firethorn:${version}"
+
+6 --------
+
+2017 - 2018
+Compose for building and running the services :
+
+Single configuration file for a set of services :
+
+    docker-compose.yml
+
+        services:
+
+            bethany:
+                image:
+                   "firethorn/postgres:${buildtag}"
+                read_only:
+                    true
+                networks:
+                    - miriam
+                environment:
+                    POSTGRES_USER: "${metauser}"
+                    POSTGRES_PASSWORD: "${metapass}"
+
+            jarmila:
+                image:
+                   "firethorn/ogsadai:${buildtag}"
+                ....
+                
+            gillian:
+                image:
+                   "firethorn/firethorn:${buildtag}"
+                read_only:
+                    true
+                volumes:
+                    - /etc/localtime:/etc/localtime:ro
+                networks:
+                    - miriam
+                    - rosana
+                environment:
+                    firethorn.meta.user: "${metauser}"
+                    firethorn.meta.pass: "${metapass}"
+                    ....
+                depends_on:
+                    bethany:
+                        condition: service_started            
+                    jarmila:
+                        condition: service_healthy            
+
+7 --------
+
+Single command to launch a set of services :
+
+    docker-compose \
+        up --detach
+    
+Because gillian depends on bethany and jarmila, compose
+will make sure they are running before it starts gillian.
+
+Single command to take down a set of services :
+
+    docker-compose \
+        down
+
+8 --------
+
+    Example - deploy a set of services to test the Python client.
+
+    Need to merge the race-bug branch ...
+
+9 --------
+
+    Example - Maria's code to deploy Kafka and Zookeeper.
+
+10 --------
+
+    Example - Our code to deploy Kafka and Zookeeper(s) alongside Firethorn.
+
+
+
+
