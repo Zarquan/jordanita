@@ -1,0 +1,264 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#  
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+    ADQL
+
+        current issues
+
+            lyonetia GitHub project as issue tracker
+            Should we have a standard issue tracker for all of our standards ?
+
+        Implementation plans
+
+            DACHS
+            TapLib
+            Others ?
+
+        Platform support ?
+
+            Current tests are arbitary list
+            
+            Does anyone use Oracle ?
+
+            More formal list of required platforms
+
+                primary
+                secondary
+
+        Next generation
+        
+            PEG grammar
+
+            lyonetia
+            
+                Collecting test data
+
+                    Process our existing history of user queries
+                    pseudo-code representation of queries to categorise them
+            
+                Review Walter's contribution
+            
+                    Adopt as-is ?
+                    Grow our own, adopting piece at a time ?
+                    Tests in a separate project ?
+
+        IVOA data types
+        
+            Examples
+            
+            Global data type review
+                Point changes to standards
+
+
+    Inner-space
+    
+        Examples in next session of Jupyter notebooks.
+        CADC, Gaia, LSST all providing Jupyter notebooks.
+        So why use <this platform> rather than <that platform>
+
+        Proximity to data ?
+
+            What does 'close' mean ?
+            e.g. Gaia data at ESAC, CDS, GAVO or Edinburgh ...
+            What additional services are avilable at each location ?
+            What data limits are avilable at each location ?
+            What identity is required for each location ?
+
+            In human text to start with ? 
+
+        Physical resources ?
+
+            Is there a standard way of describing what <guest> would get ?
+            Is there a standard way of describing what <user> would get ?
+
+            In human text to start with ? 
+
+    time-domain
+
+        time-series
+
+            Comparison of the examples
+            Details of the differences
+
+
+            Jiri's version had working code
+                DACHS   ?
+                VOSplat ?
+
+            Are the alternatives planning implementations ?
+                DACHS   ?
+
+
+            What are Gaia doing ?
+
+
+
+        voevent
+
+            Current plan
+
+                LSST using Kafka
+                
+                IVOA continues with VOEvent
+
+                3rd party brokers provide translation
+
+                LSST providing stream to a limited set of 3rd party brokers
+
+                    [diag]
+
+                Which means we need to maintain and evolve VOEvent
+
+                    Short term changes
+
+                        type field - FRB example
+                        solar system coordinate system
+                            would this be relevant for solar system transients ?
+                        
+                    Long term changes
+
+                        embed votable in voevent
+                            enables votable based data
+                            enables time-seies data
+                            removes duplication 
+
+
+            Avro/Kafka
+
+                Probably unlikley to be endorsed as-is as the new format.
+                
+                DMTN-028: Benchmarking a distribution system for LSST alerts
+                https://dmtn-028.lsst.io/
+
+                    Number of partitions
+                    Number of producers
+                    Number of consumers
+                    All have an effect on the throughput of the system
+                    
+
+                Exposes internal structure to external systems
+                
+                    Security buffer, proxy service ?
+                    Public IP addresses
+
+
+    Docker and compose
+
+        VM development platform
+            createvm
+
+        Migration to OpenStack
+            cloud-init user config ..
+
+        Standard docker
+
+            shell scripts
+
+            BTRFS file system
+                Using it in all our virtual machines
+                Docker COW implementaed using native subvolumes and snapshots
+
+            bind  volumes
+            named volumes
+
+            network
+
+
+        Roll your own
+            Start with pre-built containers
+            Gradually work up the tree to create your own
+            Accountability and reproducability
+                You know what is in your containers
+                Heartbleed, Spectre and Meltdown ... 
+
+
+        Docker compose
+        
+            Single file to define a set of services and resources
+            Single commands 'up' and 'down' to create and destroy the whole set.
+
+            Examples of our own use.
+                firethorn, ogsadai, postgresql
+                
+            Examples using Kafka 
+
+                Maria's examples - single command
+                My own yaml
+                Confluence containers                
+                My containers, extending Confluence
+                LSST standard containers ?
+
+                Back to Firethorn - example of new type, extends firethorn/fedora
+                90% of the image is already downloaded
+
+        Kubernetes ?
+
+            When it is/isn't appropriate.
+
+            Self-assembling micro services.
+            Working towards that with firethorn.
+            Replicated worked nodes - qserv and Kafka - yes
+            Single instance with special requirements - no
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Life Beyond PTF
+                https://arxiv.org/pdf/1802.10218.pdf
+                
+                LSSTFall2017CrowdedFieldsTesting
+                https://dmtn-077.lsst.io/DMTN-077.pdf                    
+
+                DMTN-018: Re-visiting L1 Database Design
+                https://dmtn-018.lsst.io/
+
+                Guidance for Community Broker Development (Aug 2017)
+                https://project.lsst.org/groups/sac/sites/lsst.org.groups.sac/files/willman_bellm_brokers.pdf
+                Collaboration with VO 
+
+                Latest working examples (May 2017)
+                https://github.com/lsst-dm/filtering-blueprints/tree/master/examples
+
+                FastAvro C lib
+                https://github.com/tebeka/fastavro
+
+                Cluster and container management with Kubernetes
+                https://dmtn-033.lsst.io/
+
