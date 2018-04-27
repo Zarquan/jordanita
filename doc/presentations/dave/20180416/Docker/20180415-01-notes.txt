@@ -182,6 +182,12 @@ Single command to take down a set of services :
 
     Example - deploy a set of services to test the Python client.
 
+    mkdir firethorn
+    pushd firethorn
+    
+    
+
+
 9 --------
 
     Example - Maria's code to deploy Kafka and Zookeeper.
@@ -195,7 +201,6 @@ Single command to take down a set of services :
             --file "alert_stream/docker-compose.yml" \
             up
 
-10 --------
 
     
 
