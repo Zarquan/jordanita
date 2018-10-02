@@ -1,0 +1,55 @@
+
+Time series data model :
+
+Recent meeting in Strasbourg made good progress on developing the IVOA time series.
+
+Two proposed data models converged into a single model for simple time series.
+http://wiki.ivoa.net/internal/IVOA/IvoaVOEvent/TS_overview.png
+
+Details of the model should be published later this month, in time for discussion at the next IVOA meeting in November.
+
+
+Notes from the Strasbourg meeting :
+http://wiki.ivoa.net/internal/IVOA/IvoaVOEvent/Strasbourg-17-20July2018.pdf
+
+
+
+Time series data discovery :
+
+Three routes for data discovery
+* Position based search results for sources may include links to associated time series
+* Extend ObsCore search criteria to include time domain criteria, TimeCore 
+* Combination position and time domain search criteria
+
+Road map for extending the exisitng DAL protocols to support these discovery modes published by the DAL working group.
+"TimeSeries Discovery and Access DAL procedure"
+"Bonnarel and Molinaro"
+
+
+Time series data serialization :
+
+Three proposals for data serialization, all based on nD cube packaged in a VOTable
+
+* utypes
+* VODML
+* VODML-Lite
+
+The data TABLE section of the VOTable is identical in all three cases.
+The discusssion relates to how to include data model references in the VOTable header to describe the time series
+in such way that a client can interpret the data correctly.
+
+We are developing examples using a set of test data sets, which include Gaia DR2 light-curves, to demonstrate the different serialization formats. 
+
+Work will be published in an IVOA note (deadline end of October) in time for discussions at the next interop (mid November)
+
+Time series data serialization :
+
+If all three serialization formats work for all of the science use cases, what should we use as selection criteria ?
+
+What are your priorities ?
+
+
+
+
+
+
