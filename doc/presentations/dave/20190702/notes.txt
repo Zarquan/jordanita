@@ -1,0 +1,45 @@
+
+
+Vocabularies
+http://www.ivoa.net/documents/latest/Vocabularies.html
+
+Unified Content Descriptors
+http://www.ivoa.net/documents/latest/UCD.html
+
+The UCD1+ controlled vocabulary
+http://ivoa.net/documents/UCD1+/20180527/index.html
+
+Units in the VO
+http://ivoa.net/documents/VOUnits/20140523/index.html
+
+IVOA Identifiers
+http://www.ivoa.net/documents/IVOAIdentifiers/20160523/index.html
+
+Table Access Protocol
+http://www.ivoa.net/documents/TAP/20100327/
+
+IVOA Astronomical Data Query Language
+http://www.ivoa.net/documents/latest/ADQL.html
+
+Registry Interfaces
+http://www.ivoa.net/documents/RegistryInterface/20180723/
+
+IVOA Registry Relational Schema
+http://ivoa.net/documents/RegTAP/20141208/index.html
+
+Describing Simple Data Access Services
+http://ivoa.net/documents/SimpleDALRegExt/20170530/index.html
+
+Resource Metadata for the Virtual Observatory
+http://ivoa.net/documents/RM/20070302/index.html
+
+VODataService describing collections and services
+http://ivoa.net/documents/VODataService/20101202/index.html
+
+VOResource: an XML Encoding Schema for Resource Metadata
+http://ivoa.net/documents/VOResource/20180625/index.html
+
+TAPRegExt: a VOResource Schema Extension for Describing TAP Services
+http://ivoa.net/documents/TAPRegExt/20120827/index.html
+
+
