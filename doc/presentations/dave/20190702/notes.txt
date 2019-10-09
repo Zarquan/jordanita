@@ -21,6 +21,9 @@ http://www.ivoa.net/documents/TAP/20100327/
 IVOA Astronomical Data Query Language
 http://www.ivoa.net/documents/latest/ADQL.html
 
+VOTable Format Definition
+http://www.ivoa.net/documents/VOTable/
+
 Registry Interfaces
 http://www.ivoa.net/documents/RegistryInterface/20180723/
 

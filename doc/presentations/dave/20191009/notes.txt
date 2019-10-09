@@ -1,0 +1,78 @@
+disclaimers in intro (from Marco)
+---------------------------------
+- I'm DAL biased
+  + and science platforms are a wider topic
+- I'm resource curation biased
+  + though they form the basis to work upon: data driven science
+
+possible disclaimers from both
+------------------------------
+- I am / we are not _the IVOA_
+  + I/we have been asked to give a VO/interoperability view
+  + I/we will try to put here questions, not solutions
+- mention ESCAPE/EOSC attachment about interperability (WP4) and cloud (WP5)
+
+[Talk ~outline w/ comments]
+
+VO technologies within a science platform
+-----------------------------------------
+- what's good for: 
+  + not reinvent the wheel
+  + provide data/service resources in an interoperable way
+  + basic metadata richness needed to enable science portal operations
+  + long term sustainability of the effort to build a (single/project dedicated) Science Platform
+- drawbacks: 
+  + implementation efforts
+  + contributing to a global open standard community
+
+VO technologies to enable interoperations among science platforms
+-----------------------------------------------------------------
+- what's the goal
+  + enable direct re-use of data/service/code/workflow resources among standalone SciPlats
+  + continue working on the ecosystem idea sitting behind the IVOA vision
+- where are the hurdles: 
+  + interoperable _data_ resources
+  + interoperable _code_ resources
+  + moving them around in a realistic and reasonable way
+- what's there and what should be there:
+  + data discovery and access open VO standards (upgrade them as needed)
+  + interoperable AAI solutions (talk to GWS, there's work to be done there)
+  + network transfer metadata characterization to enable multi SciPlats interoperations
+  + code/workflow/container/... discovery and data-plug meta-description (registry matters)
+  + IVOA has metadata standards for describing data, we don't have anything for describing code
+  + There probably already are some standards for this, so we should find/evaluate and adopt them rather than invent new ones
+
+Addendum
+--------
+FAIR return of science platforms
+  + they can be poweerful
+  + but have to be designed to be so (see all of the above)
+
+Quick assessment of FAIR in the IVOA, where are we now ?
+
+Findable
+- good for data
+- poor for code
+- we need new metadata to describe code and execution environments
+
+Accessible
+- good for data (publishing archive data)
+- poor for code
+- executable code will need more work on A&A
+- poor for data (publishing user results)
+- do we need public user space to make results accessible ?
+
+Interoperable
+- good for data
+- good for code ?
+- it works as long as we use standard data formats for software inputs
+and outputs
+
+Re-usable
+- good for code
+- best practice for code re-use is fairly well documented (GitHub etc.)
+- poor for data
+- do we need public user space to make results re-usable ?
+
+
+
