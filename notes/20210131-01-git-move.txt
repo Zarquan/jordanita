@@ -1,0 +1,251 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+    Target:
+
+        Move the presentations and logos into a separate repository.
+
+    Results:
+
+        Work in progress ..
+
+
+
+# -----------------------------------------------------
+# Enable the Convert extension
+#[user@desktop]
+
+    gedit ${HOME}/.hgrc
+
+    +   [extensions]
+    +   hgext.convert=
+
+
+# -----------------------------------------------------
+# Run the convert to select just the directories we want.
+#[user@desktop]
+
+    source "${HOME}/firethorn.env"
+    pushd  "${FIRETHORN_HOME:?}"
+
+        pushd attic/20210126
+
+            cat > includes << EOF
+include doc/logos
+include doc/presentations/dave
+EOF
+
+            mkdir presents
+            mkdir presents/zrq
+
+            hg convert \
+                --filemap includes \
+                    working \
+                    presents/zrq/filtered
+
+        popd
+    popd
+
+
+# -----------------------------------------------------
+# Clone fast-export to convert to git.
+#[user@desktop]
+
+    git clone https://github.com/frej/fast-export.git /tmp/fast-export
+
+
+# -----------------------------------------------------
+# Modify the source code for fast-export.
+#[user@desktop]
+
+    pushd /tmp/fast-export
+
+        gedit hg2git.py
+
+        git diff hg2git.py
+
+    popd
+
+
+    >   diff --git a/hg2git.py b/hg2git.py
+    >   index e94270b..bc15fee 100755
+    >   --- a/hg2git.py
+    >   +++ b/hg2git.py
+    >   @@ -60,7 +60,17 @@ def fixup_user(user,authors):
+    >        name=templatefilters.person(user)
+    >        mail=b'<%s>' % templatefilters.email(user)
+    >        if b'@' not in mail:
+    >   -      mail = b'<devnull@localhost>'
+    >   +      if name==b'Dave':
+    >   +        mail=b'<zrq-github@metagrid.co.uk>'
+    >   +        name=b'Dave Morris'
+    >   +      if name==b'Zarquan':
+    >   +        mail=b'<zrq-github@metagrid.co.uk>'
+    >   +        name=b'Zarquan'
+    >   +      elif name==b'Stelios':
+    >   +        mail=b'<steliosvoutsinas@yahoo.com>'
+    >   +        name=b'stvoutsin'
+    >   +      else:
+    >   +        mail=b'<devnull@localhost>'
+    >      else:
+    >        # if we have 'Name <mail>' syntax, everything is fine :)
+    >        name,mail=m.group(1),m.group(2)
+
+
+
+# -----------------------------------------------------
+# Run the hg-git export with our modified converter.
+#[user@desktop]
+
+    source "${HOME}/firethorn.env"
+    pushd  "${FIRETHORN_HOME:?}"
+
+        pushd attic/20210126
+
+            cat > authors << EOF
+"Stelios <stv@roe.ac.uk>"="stvoutsin <steliosvoutsinas@yahoo.com>"
+"Stelios Voutsinas <stv@roe.ac.uk>"="stvoutsin <steliosvoutsinas@yahoo.com>"
+"Dave Morris <dave.morris@bristol.ac.uk>"="Dave Morris <zrq-github@metagrid.co.uk>"
+"Dave Morris <dmr@roe.ac.uk>"="Dave Morris <zrq-github@metagrid.co.uk>"
+"Zarquan <zarquan@metagrid.co.uk>"="Dave Morris <zrq-github@metagrid.co.uk>"
+EOF
+
+            pushd presents/zrq
+
+                rm -rf converted
+                mkdir converted
+                pushd converted
+
+                    git init
+
+                    /tmp/fast-export/hg-fast-export.sh \
+                        -r ../filtered \
+                        --ignore-unnamed-heads \
+                        -A ../../../authors
+
+
+    >   Loaded 5 authors
+    >   master: Exporting full revision 1/125 with 24/0/0 added/changed/removed files
+    >   master: Exporting simple delta revision 2/125 with 2/0/0 added/changed/removed files
+    >   master: Exporting simple delta revision 3/125 with 4/0/0 added/changed/removed files
+    >   ....
+    >   ....
+    >   Exporting tag [version-2.1.34] at [hg r112] [git :113]
+    >   Exporting tag [version-2.1.35] at [hg r112] [git :113]
+    >   Issued 286 commands
+    >   /usr/libexec/git-core/git-fast-import statistics:
+    >   ---------------------------------------------------------------------
+    >   Alloc'd objects:       5000
+    >   Total objects:         1506 (       470 duplicates                  )
+    >         blobs  :          583 (       429 duplicates        101 deltas of        580 attempts)
+    >         trees  :          798 (        41 duplicates        292 deltas of        576 attempts)
+    >         commits:          125 (         0 duplicates          0 deltas of          0 attempts)
+    >         tags   :            0 (         0 duplicates          0 deltas of          0 attempts)
+    >   Total branches:         167 (         6 loads     )
+    >         marks:           1024 (       125 unique    )
+    >         atoms:            723
+    >   Memory total:          2446 KiB
+    >          pools:          2133 KiB
+    >        objects:           312 KiB
+    >   ---------------------------------------------------------------------
+    >   pack_report: getpagesize()            =       4096
+    >   pack_report: core.packedGitWindowSize = 1073741824
+    >   pack_report: core.packedGitLimit      = 35184372088832
+    >   pack_report: pack_used_ctr            =        299
+    >   pack_report: pack_mmap_calls          =         40
+    >   pack_report: pack_open_windows        =          1 /          1
+    >   pack_report: pack_mapped              =  111565613 /  111565613
+    >   ---------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Checkout HEAD to get a working copy.
+#[user@desktop]
+
+                    git checkout HEAD
+
+                    git status
+
+    >   On branch master
+    >   nothing to commit, working tree clean
+
+
+# -----------------------------------------------------
+# Rename the 'master' branch.
+#[user@desktop]
+
+                    git branch -m 'master' 'main'
+
+                    git status
+
+    >   On branch main
+    >   nothing to commit, working tree clean
+
+
+# -----------------------------------------------------
+# Move thinsg around.
+#[user@desktop]
+
+            git mv doc/logos \
+                   logos
+
+            git mv doc/presentations/dave/ \
+                   presentations
+
+            git add .
+            git commit -m "Refactored directories"
+
+            git status
+
+    >   On branch main
+    >   nothing to commit, working tree clean
+
+
+# -----------------------------------------------------
+# Add our GitHub repository as our origin.
+#[user@desktop]
+
+            git remote add origin 'git@github.com:Zarquan/jordanita.git'
+
+            git remote -v
+
+
+# -----------------------------------------------------
+# Push everything into GitHub.
+#[user@desktop]
+
+                git push --mirror origin
+
+    >   ....
+    >   ....
+
+    #
+    # All done.
+    # Over to GitHub to resolve hanging branches etc.
+    #
+
