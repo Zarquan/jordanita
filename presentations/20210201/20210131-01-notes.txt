@@ -1,0 +1,674 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+
+    Timeline
+
+        May/Jun 2019
+            Functional requirements
+
+        Jun/Jul 2019
+            Examining GDAF deployment from UB
+            zrq/20190712-01-gdaf-documents.txt
+
+        Jul/Aug 2019
+            Cloudera experiments
+            stv/20190730-Cloudera-Zepellin.txt
+            stv/20190802-Cloudera-Spark-Yarn.txt
+
+        Aug 2019
+            Initial Openstack and Ansible experiments
+            zrq/20190806-01-openstack-start.txt
+            zrq/20190806-02-ansible-start.txt
+
+        Sep 2019
+
+        Oct 2019
+            Ansible and Openstack issues
+            zrq/20191003-01-ansible-install.txt
+            ....
+            zrq/20191022-01-openstack-links.txt
+
+            Dropping Cloudera
+            Adopting Kubernetes
+            zrq/20191024-02-abstraction-levels.txt
+
+        Nov 2019
+            Openstack Magnum, application credentials, K8s hello world
+            zrq/20191115-02-magnum-cluster.txt
+            ....
+            zrq/20191120-03-magnum-cluster.txt
+            zrq/20191121-02-credentials-factory.txt
+
+        Dec 2019
+
+            Beginning kubernetes
+            zrq/20191202-02-kubernetes.txt
+
+            Timing issues
+            Resource limits
+            zrq/20191209-03-summary.txt
+
+        Jan 2020
+
+            Kubernetes storage
+            zrq/20200103-02-k8s-storage.txt
+
+            Migrate to podman
+            zrq/20200114-03-podman-volume.txt
+
+            S3 access to Openstack ObjectStore (Swift)
+            Issues with Hadoop AWS libraries
+            zrq/20200114-04-object-store.txt
+            ....
+            zrq/20200116-03-object-notes.txt
+
+            Ansible delete-create
+            zrq/20200121-03-delete-cluster.txt
+            zrq/20200121-04-ansible-deploy.txt
+            ....
+            zrq/20200123-02-ansible-deploy.txt
+            ....
+            zrq/20200123-04-ansible-combined.txt
+
+
+            Ansible Hadoop and Spark
+            zrq/20200124-01-install-hadoop.txt
+            ....
+            zrq/20200131-01-install-spark.txt
+
+
+        Feb 2020
+
+            Openstack delete Ansible create
+            zrq/20200214-01-openstack-clear.txt
+            zrq/20200216-02-ansible-combined.txt
+
+        Mar 2020
+
+            ----
+
+        Apr 2020
+
+            Hadoop HDFS and Spark deployment
+
+            zrq/20200406-01-hadoop-test.txt
+            zrq/20200407-01-hadoop-test.txt
+            ....
+            zrq/20200411-01-hadoop-tests.txt
+            zrq/20200412-01-mapreduce-test.txt
+            zrq/20200412-02-spark-deploy.txt
+            ....
+            zrq/20200415-01-spark-deploy.txt
+            zrq/20200415-02-convert-data.txt
+
+            Openstack S3 ObjectStore
+            zrq/20200420-01-gdr2-convert.txt
+            zrq/20200420-03-object-store.txt
+
+            Openstack Manila shares
+            zrq/20200421-01-manila-share.txt
+            zrq/20200425-02-manila-notes.txt
+
+        May 2020
+            Project plans
+            zrq/20200515-01-project-plan.txt
+            zrq/20200525-01-project-plan.txt
+
+        Jun 2020
+            Project plans
+            zrq/20200602-01-project-plan.txt
+            zrq/20200605-01-project-plan.txt
+
+            Kubernetes and Magnum
+            zrq/20200610-01-kubernetes-spark.txt
+            zrq/20200610-02-magnum-cluster.txt
+
+            Terraform
+            zrq/20200610-03-terraform-cluster.txt
+            zrq/20200629-03-terraform-cluster.txt
+
+            Manila CephFS PVC (StackHPC examples)
+            zrq/20200629-04-cephfs-router.txt
+            zrq/20200630-02-cephfs-volume.txt
+
+
+        Jul 2020
+
+            K8s Zeppelin
+            zrq/20200702-01-zeppelin-k8s.txt
+            ....
+            ....
+            zrq/20200718-02-aglais-zeppelin.txt
+
+            K8s Zeppelin, Spark, pySpark
+            zrq/20200722-03-spark-k8s.txt
+            ....
+            zrq/20200727-03-pyspark-python.txt
+
+        Aug 2020
+
+            Spark S3
+            zrq/20200806-02-spark-S3.txt
+            ....
+            zrq/20200814-03-s3-resources.txt
+                limited to < 1/4 of the dataset
+
+            Learning Helm
+            zrq/20200807-06-nginx-ingress.txt
+
+            Manila Ceph (manila-provisioner)
+            zrq/20200820-04-cephfs-data.txt
+            ....
+            zrq/20200823-01-cephfs-claim.txt
+
+        Sep 2020
+
+            Manila CSI bug
+            zrq/20200831-01-manila-csi.txt
+            ....
+            zrq/20200905-04-modified-csi-dynamic.txt
+
+                Fix in Manila CSI
+                https://github.com/kubernetes/cloud-provider-openstack/pull/1185
+
+            Custom Zeppelin build
+            zrq/20200910-01-zeppelin-code.txt
+            ....
+            zrq/20200915-01-zeppelin-build.txt
+
+            Drupal in K8s
+            zrq/20200917-02-drupal-notes.txt
+            ....
+            zrq/20200928-01-drupal-notes.txt
+
+        Oct 2020
+
+            Manila CSI shares (ReadOnlyMany fails)
+            zrq/20201001-01-manila-static.txt
+            ....
+            zrq/20201005-01-gaia-test.txt
+
+            Openstack issues
+            zrq/20201005-01-gaia-test.txt
+            ....
+            zrq/20201009-02-cluster-create.txt
+
+            Manila share with Ansible, replace Terrafom
+            zrq/20201012-02-ceph-mount.txt
+            ....
+            ....
+            zrq/20201020-01-ceph-router.txt
+
+            Manila-CSI share with Helm
+            zrq/20201027-01-helm-main.txt
+            ....
+            zrq/20201030-02-helm-data.txt
+
+
+        Nov 2020
+
+            Zeppelin Helm
+            zrq/20201103-01-zeppelin-helm.txt
+            ....
+
+            Ansible create-all
+            zrq/20201116-01-ansible-test.txt
+            ....
+            zrq/20201119-02-hadoop-yarn-test.txt
+
+            Helm create-all
+            zrq/20201119-03-kubnernetes-test.txt
+
+
+        Dec 2020
+
+            Drupal Helm
+            zrq/20201204-03-drupal-deploy.txt
+            ....
+            zrq/20201208-03-drupal-deploy.txt
+
+            Drupal OAuth
+            zrq/20201209-02-drupal-update.txt
+            ....
+            zrq/20201216-02-drupal-oauth.txt
+
+            Zeppelin build Docker images
+            zrq/20201218-01-zeppelin-images.txt
+            ....
+            zrq/20201226-03-zeppelin-images.txt
+
+
+            Failing deploy - Openstack network issues
+            zrq/20201229-01-clean-deploy.txt
+            ....
+            zrq/20201231-01-digital-ocean.txt
+
+        Jan 2021
+
+            Dev-ops ssh-keys
+            zrq/20210119-01-ansible-keypair.txt
+            zrq/20210119-03-openstack-keypair.txt
+
+            Dev-ops create-all/delete-all
+            zrq/20210119-04-clean-deploy.txt
+            ....
+            zrq/20210127-01-kubernetes-deploy.txt
+
+            OAuthProxy
+            zrq/20210127-02-google-oauth-proxy.txt
+            zrq/20210127-03-iris-oauth-proxy.txt
+
+
+
+
+
+    Deployment technologies
+
+1       GDAF system
+            Zeppelin+Spark deployed on physical hardware.
+            Based in part on Cloudera deployment
+            Initial goal - replicate GDAF in the cloud
+
+2       Choice of Spark job schedulers
+
+2          Hadoop/Yarn
+
+                GDAF system
+                Cloudera deployment - lots of documentation
+                Standard deployment - lots of blogs and howtos
+
+                Spark cluster deployed on a static set of machines
+                Zeppelin notebooks all interact with the same Spark cluster
+                Static cluster topology based on VMs
+
+                Known unknowns
+
+                    Conventional deployment is single user
+                    Limited documentation about multi-user deployments
+
+3           Kubernetes
+
+                Spark cluster on demand
+                Zeppelin notebooks launch their own Spark cluster
+
+                Per notebook isolation
+                Dynamic cluster topology configured on demand
+
+                Unknown unknowns
+
+                    Experimental for 2020
+                    Not recomended for production
+                    Zeppelin pre-release
+                    Bleeding edge
+                        no documentation
+                        no blogs or howtos
+
+
+4       Developing both systems in parallel
+
+4           Hadoop/Yarn
+
+                Up and running early
+                Spark and Zeppelin on Openstack - Nov 2019
+                DR2 parquet transform - Dec 2019
+                Working system to develop science use cases March 2020
+                Automated with Ansible
+                    Openstack/Spark/Hadoop/Yarn/Zeppelin/Manila
+                    create-all
+
+                Development platform for Spark/Zeppelin notebooks
+                    Python libraries
+                    User workspace
+                    AXS extensions
+                    Parquet partitions
+
+5           Kubernetes
+
+                Following lead from next generation of Zeppelin
+                Learning Openstack, Kubernetes, Magnum, Manila, Helm, Terraform
+
+                Automated with Helm
+                    Spark/Zeppelin/Manila-CSI
+
+                Development platform for Spark/Zeppelin on Kubernetes
+                    Kubernetes scheduling, namespaces, ingress
+                    Docker images for Spark and Zeppelin
+                    OAuth in Zeppelin
+                        OAuthProxy
+                            Drupal --
+                            Google
+                            IRIS IAM
+                            ESCAPE IAM
+
+6       Deployment tools
+
+6           Openstack ++
+                Command line client
+                REST interface
+                JSON response
+                jq JSON parser
+
+                CephFS router, linking cluster to Ceph network
+                originally Terraform, migrated to vanilla Openstack
+
+7           Ansible ++
+                Openstack resources for Hadoop/Yarn system
+                    internal ssh, dns
+                    Cinder volumes, btrfs filesystem
+                    Manila shares, CephFS fuse mount
+                    Spark cluster - masters and workers
+                    Zeppelin server
+
+8           Magnum ++
+                Simple and easy cluster management
+                    Simple = few controls
+                    Integrated with Openstack node autoscaler
+                    Integrated with Openstack network loadbalancer
+
+                Homgeneous nodes --
+                Managed system
+                    When it works, everything is simple
+                    When it fails, you are out of the loop
+                    Managed = few controls
+
+9           Helm ++
+                Helm charts for all our Kubernetes components
+                    Manila-CSI
+                    Nginx ingress
+                    Ceph-CSI
+                    Openstack Manila
+                    Dashboard
+                    Zeppelin
+                    Drupal
+
+9a              Writeable charts directory --
+                    Not an issue if everything is downloaded
+                    Causes a problem if charts are executed from local source control
+                    Not just the charts directory.
+                    Helm renames charts to charttmp during execution
+                    volume mount doesn't work
+                    symlink doesn't work
+                    anyone knows a fix ?
+
+10          Terraform --
+                Poster child for cloud deployment
+                In reality >50% is platform specific
+                Create router - needs uuid for network, subnet etc.
+                Create servers - needs uuid for flavor, size, network etc.
+10a             Relies on local files to track the deployed state
+                    A deploys system, state is on A's laptop
+                    B adds component, starts from empty and deploys a duplicate
+                    ---
+                    A deploys system, state is on A's laptop
+                    A shares state with B, state is on both A and B's laptops
+                    B adds a component, new state on B's laptop, old state on A's laptop
+                    A updates components - skips component added by B
+                    A deletes the system - leaves component added by B
+                    ---
+                Tempting to share state via source control
+                    Fixes the shared state
+                        - as long as everyone commits their changes
+                        - as long as no concurrent changes
+10b              Secrets are stored clear text in local state files.
+                    - no warning
+                    - share the state shares the secrets, for the whole system
+                    - A manages databases, B manages TLS ingress
+                    - shares A's database passowrds with B
+                    - shares B's TLS root certificates with A
+                Anyone has a positive experience ?
+
+
+11      Create and delete scripts
+
+11          delete-all
+
+                Openstack only
+                Systematically nukes everything from orbit
+                Magnum delete can fail or leave parts behind
+                Ansible delete can fail if ssh access doesn't work
+                Ceph router needs to be deleted separately
+
+12          create-all
+
+                hadoop-yarn
+                    90% automated
+                    80% Ansible
+                    10% Openstack - Ceph router, Ceph info
+
+                kubernetes
+                    95% automated
+                    80% Helm
+                    15% Openstack - Magnum cluster, Ceph router, Ceph info
+
+13          Three clouds
+                gaia-dev  - Kubernetes
+                gaia-test - Hadoop/Yarn
+                gaia-prod - Live Hadoop/Yarn used by Nigel
+
+        Summary
+
+            Openstack ++
+                good documentation
+                simple interface
+            Ansible ++
+well documented
+well supported on StackOverflow
+lots of plugins
+            Helm ++
+                De facto standard for Kubernetes deployments
+                Good control over component versions and dependencies
+            Terraform --
+                Relies on local state
+                Clear text secrets
+
+
+
+    Storage technologies
+
+1       Hadoop HDFS on Openstack Cinder
+
+1           Standard deployment documented in Spark/Hadoop dosumentation.
+
+                GDAF system
+                Cloudera deployment - lots of documentation
+                Standard deployment - lots of blogs and howtos
+                    Working on Openstack cloud in 2019
+                    Automated with Ansible in 2020
+
+                Ideal for cluster of comodity hardware
+                Assumes direct access to local discs
+
+2           Cloud deployment issues
+
+Hadoop FS partitions the data into shards spreading the shards across available machines
+
+In a cloud based system, the discs are not local.
+Cinder storage is often provided by SAN network volumes, not local discs.
+Shards are no longer local
+
+Platform specific, but a common pattern for Openstack is to use Ceph to provide Cinder volumes
+Ceph will partition the data into shards and spread the shards across available machines
+
+Two layers of partitioning and shards negates the advantages
+The two systems can end up working againts each other
+
+Two layers of replication
+Separate layers don't know about each other
+Data is partitioned, sharded and replicated twice
+
+3               HDFS in the cloud may make sense IF the cloud supports direct attached storage (DAS)
+                Some cloud platforms are beginning to offer this
+                Kubernetes CSI has options to specify DAS, but implementation is platform specific
+
+
+4       Amazon S3 with Openstack Swift
+
+4           Amazon S3 de facto standard for BigData storage
+            Very simple web service API
+                buckets and objects
+                    not Java or Python objects
+                        class with properties and methods
+                    opaque BLOB objects
+                        binary large object
+                        get/put only
+                        no seek
+                    flat structure
+                        no directories
+
+5           Everyone provides S3 storage
+                Amazon
+                Azure
+                Google
+                Openstack
+                Linode
+
+            Everyone can access S3 storage
+                command line,
+                Python,
+                Java,
+                C++,
+                Go
+                ....
+
+
+6           Apart from Openstack !?
+
+                Openstack object store is Swift
+
+                Swift API is Openstack specific
+                almost but not quite S3
+                almost no support for Java client
+                almost no documentation
+
+                Swift supports a version of S3
+                    Standard Amazon style
+                        bucket name in URL hostname
+                    Swift S3 form
+                        bucket name is in URL path
+                        valid, but less common
+                        les well documented
+                    S3 command line tools work well
+                        uploaded a complete copy of DR2
+
+7           Apart from Hadoop !?
+
+                Issues with Hadoop AWS Java library
+                    latest Hadoop may have old version of AWS jars
+                    Java client hangs with large datsets
+                        works for < 1/4 of DR2
+                        more than 1/4 DR2 and client hangs
+
+                Probably specific to Hadoop-AWS and Openstack Swift
+                Need to test Hadoop-AWS with alternative S3 service
+                Plan to test with commercial clound providers
+                In progress to test with STFC/IRIS echo service
+
+
+8       CephFS with Openstack Manila
+
+8           Storage for Cambridge Openstack is implemented using Ceph.
+            Needs an Openstack router to connect our network to the Ceph network
+
+            Access via CephFS service is available to end users
+            Openstack Manila provides a REST API to manage (create, update and delete) Ceph shares.
+            Data access is distributed across mutiple Ceph nodes.
+            Single layer of partitioning and sharding.
+
+9           Started working with Manila in Kubernetes in Agugust,
+just at the point where Openstack/Kubernetes were
+transitoning from platform specific provisioners
+to interoperable CSI plugins.
+
+            Migrated to CSI plugins in September
+            Identified and fixed an issue with the Manila CSI plugin
+            At least one more to diagnose and report
+
+10          Automated router using the Openstack client
+            Automated CSI volumes and claims using Helm
+            Automated CephFS Fuse volumes using Ansible
+
+11          Static shares for catalog data
+                Gaia
+                WISE
+                PanSTARRS
+                2MASS
+
+            Dynamic shares for temp data
+                Created on demand
+                lifetime of the Pod
+                managed by Kubernetes
+
+            Static shares isolate data from code.
+            Single set of shares provides catalog data to multiple deployments.
+            Hadoop/Yarn and Kubernetes deployments share the same data.
+            Create update and delete deployments without disturbing the data.
+
+12          ++ Extremley useful
+            -- Limited documentation
+            -- Transition from platform specific provisioners to CSI means documentation is out of date.
+            ++ Managed storage cluster
+                backups and replication are SEP
+            -- Managed storage cluster
+                limited access to diagnose issues
+
+
+        Summary
+
+            Hadoop HDFS on Openstack Cinder
+                Standard deploy for Hadoop in cloud
+                Well documented
+                Poor performance
+
+            Amazon S3
+
+                De facto standard for BigData
+                Issues with Openstack Swift and Hadoop-AWS
+                Limited data size
+
+
+            CephFS with Manila
+
+                Good performance
+                Isolates data and code
+                Managed storage with backups and replication
+                Best option so far
+
+
+
+
+
+
+
+
+
+
+
+
+
