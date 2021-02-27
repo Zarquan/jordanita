@@ -9,7 +9,7 @@ GitHub project named after the Scarce Forester moth, _[Jordanita globulariae](ht
     <img src="https://ukmoths.org.uk/site/assets/files/12214/0165j_globulariaefs.450x0.jpg"/>
 </a>
 
-his work is licensed under a
+This work is licensed under a
 [Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
 
 [![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
