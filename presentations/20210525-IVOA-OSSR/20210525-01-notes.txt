@@ -1,0 +1,96 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+    What is ESCAPE
+
+    Establish a single collaborative cluster of next generation European Strategy Forum on Research Infrastructures (ESFRI)
+    facilities in the area of astronomy and accelerator based particle physics in order to implement a functional link
+    between the concerned ESFRI projects and European Open Science Cloud (EOSC).
+    https://projectescape.eu/
+
+    What is ESFRI ?
+    European Strategy Forum on Research Infrastructures (ESFRI)
+    https://www.esfri.eu/forum
+
+    * Establish a European roadmap for Research Infrastructures for the next 10-20 years, stimulate the implementation of these facilities, and update the roadmap as needed
+    * Support a coherent and strategy-led approach to policy making on Research Infrastructures in Europe
+    * Facilitate multilateral initiatives leading to a better use and development of Research Infrastructures, with the ESFRI acting as an incubator for new initiatives
+    * Ensure the follow-up of implementation of already on-going ESFRI projects after a comprehensive assessment, as well as the prioritisation of the infrastructure projects listed in the ESFRI roadmap to implement the European Research Area (ERA) - Priority area 2
+    https://ec.europa.eu/info/research-and-innovation/strategy/european-research-infrastructures/esfri_en
+
+    What is EOSC
+
+    The European Open Science Cloud (EOSC) is an environment for hosting and processing research data to support EU science.
+    https://ec.europa.eu/info/research-and-innovation/strategy/goals-research-and-innovation-policy/open-science/european-open-science-cloud-eosc_en
+
+    ---- ---- ---- ---- ---- ---- ---- ----
+
+    What is OSSR ?
+
+
+The ESCAPE Open-source Scientific Software and Service Repository (OSSR) is a sustainable open-access repository to share scientific software and services to the science community and enable open science.
+    https://projectescape.eu/services/open-source-scientific-software-and-service-repository
+
+    It will house astro-particle-physics-related scientific software and services for data processing and analysis, as well as test data sets, user-support documentation, tutorials, presentations and training activities.
+
+    * To support a community-based approach for continuous development, deployment, exposure and preservation of domain-specific open-source scientific software/tools/services in the global context of the EOSC, catalogue of services
+    * To enable open science interoperability, software re-use and development for the data analysis of the ESCAPE ESFRI projects.
+
+
+    What is CEVO ?
+
+    Work Package 4 of ESCAPE, “Connecting ESFRI projects to EOSC through VO framework” (CEVO)
+
+    * Assess and implement the connection of the ESFRI and other astronomy Research Infrastructures to the EOSC through the Virtual Observatory framework.
+    * Refine and further pursue implementation of FAIR principles for astronomy data via the use and development of common standards for interoperability including the extension of the VO to new communities.
+    * Establish data stewardship practices for adding value to the scientific content of ESFRI data archives.
+
+
+
+
+    https://wiki.ivoa.net/twiki/bin/view/IVOA/PublishingInTheVO#ToolsLibraries
+
+    DaCHS
+    http://docs.g-vo.org/DaCHS/
+
+    Daiquiri
+    https://django-daiquiri.github.io/docs/
+
+    Saada
+    http://saada.unistra.fr/saada/
+
+    OpenCADC
+    https://github.com/opencadc
+
+    CASDA
+    https://research.csiro.au/casda/
+
+
+
+
