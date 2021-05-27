@@ -1,0 +1,25 @@
+21:51:45 From Mark Taylor To Everyone : Really neat comet demo.
+21:52:01 From Anne Catherine Raugh To Everyone : Would love to have a link to that demo!
+21:52:17 From Gregory Dubois-Felsmann To Everyone : Yes, I would like to share that video with some people who could not come today.
+21:52:56 From Tess Jaffe To Everyone : Newbie question:  how does this relate to ObsLocTAP?
+21:54:07 From Sébastien Derriere To Everyone : Video uploaded here : https://youtu.be/IhWBSvM8Khk
+21:54:15 From Baptiste Cecconi To Everyone : would be nice to have the video link on the session page, together with the presentation pdf
+21:55:50 From Ada Nebot To Everyone : I will put the link in the slides and then upload the pdf
+21:58:21 From Sébastien Derriere To Everyone : I've put a direct video link on the wiki... and the sessions are recorded if people want to watch the complete presentations !
+22:01:01 From Christophe To Everyone : there is an IVOA web pages with VO apps for astronomer: https://www.ivoa.net/astronomers/applications.html
+22:04:18 From Jutta Schnabel To Everyone : OSSR has already registered experiment-specific software like gammapy (from CTA), so pyvo is definitely in the scope.
+22:04:34 From JJ Kavelaars (NRC Canada) To Everyone : Is the OSSR focused on Reproducibility as a primary goal?
+22:05:46 From Harro Verkouter To Everyone : No, discovery and "guaranteeing" that it is runnable
+22:06:03 From Mark Allen To Everyone : OSSR is a part of ESCAPE so it goes beyond Astro and includes Particle Physics.
+22:06:10 From Jutta Schnabel To Everyone : It registers repositories and containers through Zenodo, so specific versioning is "integrated" - but not the primary goal
+22:06:15 From Harro Verkouter To Everyone : (the deployable property that Dave mentioned)
+22:08:18 From Gregory Dubois-Felsmann To Everyone : Does OSSR attempt to deal with registering container images that are in public repositories?
+22:08:51 From Markus To Everyone : Well, actually I think we didn´t have convincing discovery cases...
+22:09:03 From Mark Kettenis To Everyone : Both OSSR and ASCL support codemeta as a metadata format
+22:09:05 From Gregory Dubois-Felsmann To Everyone : I like the idea of having a registry that is directly tied to IVOA standard-IDs - enabling asking the question “Tell me about all applications that understand SIAv2.”
+22:10:11 From Harro Verkouter To Everyone : The OSSR metadata will extend the codemeta and may include details on requirements (CPU arch? GPU capable? RAM requirements etc)
+22:14:23 From Peter J. Teuben To Everyone : https://www.ivoa.net/astronomers/applications.html
+22:14:32 From Peter J. Teuben To Everyone : is that the page Pierre referred to?
+22:14:38 From Stelios Voutsinas To Everyone : Apart from curating software, as Dave mentioned the plan is that we will also be able to publish workflows (e.g. Notebook & dataset), and I think that creating and publishing workflows that interact with IVOA services and utilize VO tools would help advertise them to the ESCAPE community
+22:15:19 From Mireille Louys To Everyone : @Stelios   +1
+

@@ -54,7 +54,7 @@
     What is OSSR ?
 
 
-The ESCAPE Open-source Scientific Software and Service Repository (OSSR) is a sustainable open-access repository to share scientific software and services to the science community and enable open science.
+    The ESCAPE Open-source Scientific Software and Service Repository (OSSR) is a sustainable open-access repository to share scientific software and services to the science community and enable open science.
     https://projectescape.eu/services/open-source-scientific-software-and-service-repository
 
     It will house astro-particle-physics-related scientific software and services for data processing and analysis, as well as test data sets, user-support documentation, tutorials, presentations and training activities.
@@ -91,6 +91,21 @@ The ESCAPE Open-source Scientific Software and Service Repository (OSSR) is a su
     CASDA
     https://research.csiro.au/casda/
 
+
+
+
+    VO Applications for Astronomers
+    https://www.ivoa.net/astronomers/applications.html
+
+    Astrophysics Source Code Library (ASCL)
+    https://ascl.net/
+
+    Widen the call - not just to developers but to users too.
+    If you use package xxx and would like it registered, contact us.
+
+    22:09:05 From Gregory Dubois-Felsmann To Everyone : I like the idea of having a registry that is directly tied to IVOA standard-IDs - enabling asking the question “Tell me about all applications that understand SIAv2.”
+
+    Register twice, once in the OSSR and again in the ASCL ?
 
 
 
