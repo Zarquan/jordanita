@@ -1,0 +1,198 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+
+    Sveral groups are developing or planning to develop science platforms
+    Based on a common set of technologies
+
+        Jupyter Hub
+            CANFAR
+            SKA
+            Rubin
+            ESCAPE
+            Edinburgh
+
+        Binder
+            ESCAPE
+            SKA
+
+        Docker
+            ESCAPE
+            CANFAR
+
+        Kubernetes
+            Rubin
+
+        Zeppelin
+            Gaia
+
+        Spark
+            Gaia
+
+    We could try registering the raw service endpoints for each of these.
+    However, as far as I know, no one has, or is intending to do this.
+
+    Historically IVOA has avoided recomending or endorsing 3rd party technologies.
+
+    Most if not all of these teshnologies have some form of REST or web service interface.
+    Often the host site does not want to publish the whole interface.
+    Complexity of describing the whole interface in an interoperable way.
+
+        JupyterHub
+        Binder
+        Docker
+        Kubernetes
+        Zeppelin
+        Spark
+        ....
+
+    IVOA is nearly 20 years old.
+    When we started, XML and SOAP were the poster technologies.
+    No one uses them any more.
+
+        Jupyter     - iPython 2001, Jupyer 2015, JupyterLab 2018, JupyterHub
+        Binder
+        Docker
+        Kubernetes
+        Zeppelin    - no wikipedia page
+        Spark       - 2012
+
+    We need a cone-search equivalent for science platforms.
+    Something we can register now, that will provide the gateway to interoperability in the future.
+    What is the minimum interface that will act as a gateway.
+
+        Task type - eg. JupyterNotebook, BinderNotebook, Docker container, Kubernetes Pod ..
+        anything else ?
+
+        The anything else will be type specific.
+        There may be scope to add common parameters in the future,
+        but we need active participation to make that happen
+
+    Can we use UWS ?
+
+        Yes, but it will mean an extra step for existing 3rd party services.
+        We could create a UWS wrapper for each of the 3rd party serveices.
+        Obvious one is post a notebook and get stdout in the response.
+        We could make an interactive service by posting the notebook and getting a link to the live notebook in the response.
+
+        UWS has support for tentative queries using the quote mechanism
+        POST a new job, and check the quote in the response to see if the task is accepted.
+
+        So far, as far as I know, no one has tried this yet.
+
+    Can we just register the 3rd party interfaces ?
+
+        See above.
+
+    The gateway service.
+
+        Task type
+        Task specific params
+
+        Response is YES|NO|MAYBE plus task specific details.
+
+        No state.
+        This keeps the implementation as simple as possible.
+
+            if (task.type == mytype)
+                return YES + url
+            else
+                return NO
+
+        Response is _almost_ a 300 redirect.
+        If we used a 300 redirect, then response content would be different depending on the YES|NO result.
+        which would make developing the client more complex
+
+        POST or GET with type=xxx
+        Response can be XML or JSON (depends on accepts header).
+        HTML MAY be an option in the future
+        If YES, then response contains an endpoint to go to next.
+        If NO, then response contains a reason.
+        If MAYBE, response MAY contain additional info.
+
+        Really simple implementation ~10 lines of Java|Python|PHP
+        We will develop an initial set of off the shelf implementations that people can deploy without code changes.
+
+        Drop the XML, make 1.0 JSON only.
+
+    Registration
+
+        Registering a JupyterHub service would be complex.
+        How do you describe what subset you support ?
+
+        Registering the simple gateway is designed to be easy.
+        endpoint + tasktype
+
+    The types
+
+        Vanilla deployments of 3rd party interfaces.
+        The endpoint will be a deployment of the 3rd party interface.
+        It MAY be just the 3rd party interface, leaving it up to the client to take it further.
+        It MAY be a one-time task specific URL that loads the interface with the target notebook or configuration already loaded.
+
+            vanilla-jupyerthub
+            vanilla-zeppelin
+            vanilla-binder
+            vanilla-kubernetes
+
+        UWS wrapped vanilla deployments of 3rd party interfaces.
+        The endpoint will be a UWS service in front of the 3rd party interface.
+        It MAY be just the UWS interface, leaving it up to the client to take it further.
+        It MAY be a one-time task specific URL that creates a UWS job with the target notebook or configuration already loaded.
+
+            vanilla-uws-jupyerthub
+            vanilla-uws-zeppelin
+            vanilla-uws-binder
+            vanilla-uws-docker
+            vanilla-uws-kubernetes
+
+        Project specific deployments
+        Project specific customisations of the vanilla interfaces.
+        Includes things like access to project specific data storage or data collections.
+
+            escape-jupyerthub
+            escape-binder
+            escape-docker
+
+            canfar-jupyerthub
+            canfar-binder
+            canfar-docker
+
+            gaia-zeppelin
+            gaia-spark
+            gaia-kubernetes
+
+            rubin-binder
+            rubin-kubernetes
+
+        Initially, projects just deploy our own project specific deployments
+        but this gives us a place to discuss and develop the more interoperable service definitions.
+
+
+
