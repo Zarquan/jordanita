@@ -1,0 +1,175 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+    Automated deployment
+        Ansible on Openstack
+            Deployed system in use by our astronomers.
+            Learning a lot about how to deploy and configure Spark, and how it maps to a virtualized environment. 
+
+            Traditional deployment is on fixed hardware allocation.
+                Worker configuration is determined by the available hardware.
+
+            Virtual deployment is on flexible hardware allocation.
+                Worker configuration is determined by type of workload.
+
+        Helm on Kubernetes
+
+
+
+    Example #1
+        Mean proper motion
+
+        Work is done in the SQL query
+            SELECT avg(pmra), avg(pmdec), GROUP BY healpix-id (in the Gaia source-id)
+    
+        Hard part has already been done by partitioning the data based on Gaia source-id.
+        Following suggestion from Enrique
+        
+        Partition the data into n 'partitions' based on Gaia source-id, (healpix-id),
+        data is distributed spatially, placing neighbours close to each other.
+
+        Data split into n 'buckets' selected to match the size of the worker nodes.
+        (size of dataset) / (n buckets) ~=  memory of a worker node
+
+        Most of the work involved in GROUP BY healpix-id is already done
+        reducing the amount of shuffle between nodes to calculate the average
+        
+        First plot (ra) takes 1min to execute the query and applying the GROUP BY and AVG().
+        Second plot (dec) takes 1 sec because it is re-using the cached query reesults.
+
+        Sequential data access distributed by healpix-id is fast.
+
+    Example #2
+
+        Using a supervised ML Random Forrest classifier to classify
+        astrometric solutions as good or bad, identifying the bad solutions
+        caused by crowded fields.
+        
+        Distributed compute accessing the data at the same time with essentially
+        random access pattern puts a high load on the file system.
+        
+        IO bandwidth limits have a significant effect on the performance
+        of the ML training example
+         
+        First run is evaluating the selection query for the first time,
+        close to sequential access, ~ 10min for the full process,
+        4min for training and 24sec for classification.
+        
+        Subsequent runs use partially cached data to optimise the process,
+        but it ends up working againts us.
+        Resulting access pattern is essentially random access,
+        which has a significant impact on performance.
+        ~ 44min for the full process,
+        26min for training and 8min for classification.
+
+        (*) update with numbers using Stelios's config
+        
+
+    Lessons learned
+
+        In reality, cloud platform imposes its own limitations
+        based on the underlying hardware.
+        
+        Traditional cloud approach - "you don't need to know about the underlying hardware"
+        works IF it all works and scales to match demand.                          
+            
+        Spark pushes the boundaries, in particular IO bandwidth.
+        Distributed compute, many workers, accessing the data at the same time
+        puts a high load on network shared filesystems.
+
+        Sequential access via select queries - done 
+        
+        Random access in ML training - not solved yet
+
+        Cloud platform works against performance analysis by hiding
+        and restricting access to the underlying hardware.
+        
+        The first assumption is 'we have made a mistake'.
+        Need to collect evidence to determine that the real cause is the underlying hardware.
+        Pushing upstream to get reliable metrics on hardware performance.
+        Design features of Openstack are working against us.
+
+    Progress
+
+        Jan 2020
+            20200129-gaia-cloud-01.pdf
+
+            Immediate goal:
+            - OpenStack deployment capable of handling DR3
+            Long term goal:
+            - Portable deployment to multiple clouds
+
+        Feb 2021            
+        20210201-storage.pdf            
+        20210201-technologies.pdf
+
+            CephFS with Manila
+            - Good performance
+            - Isolates data and code
+            - Storage with backups and replication
+            - Best option so far
+        
+            Hadoop-yarn create-all
+            - 90% automated
+            - 80% Ansible
+            - 10% Openstack - Ceph router, Ceph info
+            - 30min to create everything            
+
+            Kubernetes create-all
+            - 90% automated
+            - 80% Helm
+            - 10% Openstack - Magnum cluster, Ceph router
+            - 10min to create everything        
+            
+        Jul 2021
+
+            Hadoop-yarn create-all
+            - 99% automated
+            - small infraops steps remaining (e.g. dns records and user accounts)
+
+            Good performance for sequential access.
+            Variable performance for random access.
+
+            Adapting the system as we devbelop more use cases.
+            
+            Collecting Prometheus metrics to help identify and solve
+            problems with performance bottlenecks.  
+            
+            Optimising deployment configuration to match the
+            science cases.
+            
+            Call for beta testers interested in using the system.
+            Outline of the science case you would want to explore.
+            Outline of the technologies you would want to apply.
+                e.g. ML supervised or unsupervised algorithm
+                
+        Contact a member of the development team             
+        Nigel Hambly <nch@roe.ac.uk>
+        Dave Morris  <dmr@roe.ac.uk>
+        Stelios Voutsinas <stv@roe.ac.uk>
+             
