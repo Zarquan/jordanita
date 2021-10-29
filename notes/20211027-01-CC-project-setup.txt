@@ -1,0 +1,123 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+# -----------------------------------------------------
+# Checkout our fork of the VOSpace standard.
+#[user@laptop]
+
+    mkdir '/var/local/projects/IVOA/VOSpace'
+    pushd '/var/local/projects/IVOA/VOSpace'
+
+        git clone git@github.com:Zarquan/VOSpace.git github-zrq
+
+
+# -----------------------------------------------------
+# Checkout the 'code-of-conduct' branch.
+#[user@laptop]
+
+        git branch -r
+
+    >   origin/HEAD -> origin/master
+    >   origin/issue-5-code-of-conduct
+    >   origin/issue-8-clarify-pagination
+    >   origin/master
+    >   origin/trailing-whitespace
+
+
+        git checkout --track origin/issue-5-code-of-conduct
+
+    >   Branch 'issue-5-code-of-conduct' set up to track remote branch 'issue-5-code-of-conduct' from 'origin'.
+    >   Switched to a new branch 'issue-5-code-of-conduct'
+
+
+# -----------------------------------------------------
+# Create a new GitHub project.
+#[user@laptop]
+
+    https://github.com/Zarquan/IVOA-CodeOfConduct
+
+
+# -----------------------------------------------------
+# Checkout the new GitHub project.
+#[user@laptop]
+
+    mkdir '/var/local/projects/IVOA/IVOA-CodeOfConduct'
+    pushd '/var/local/projects/IVOA/IVOA-CodeOfConduct'
+
+        git clone git@github.com:Zarquan/IVOA-CodeOfConduct.git  github-zrq
+
+
+# -----------------------------------------------------
+# Copy the documents from the VOSpace project.
+#[user@laptop]
+
+    pushd '/var/local/projects/IVOA'
+
+        ls -1 'VOSpace/github-zrq'
+
+    >   ....
+    >   CODE_OF_CONDUCT.md
+    >   CONTRIBUTING.md
+    >   LICENSE
+    >   ....
+
+
+        ls -1 'IVOA-CodeOfConduct/github-zrq'
+
+    >   README.md
+
+
+        cp 'VOSpace/github-zrq/CODE_OF_CONDUCT.md' \
+           'IVOA-CodeOfConduct/github-zrq'
+
+        cp 'VOSpace/github-zrq/CONTRIBUTING.md' \
+           'IVOA-CodeOfConduct/github-zrq'
+
+        cp 'VOSpace/github-zrq/LICENSE' \
+           'IVOA-CodeOfConduct/github-zrq'
+
+
+        pushd 'IVOA-CodeOfConduct/github-zrq'
+
+            git status
+
+    >   On branch main
+    >   Your branch is up to date with 'origin/main'.
+    >
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	CODE_OF_CONDUCT.md
+    >   	CONTRIBUTING.md
+    >   	LICENSE
+
+
+            git add .
+            git commit -m "Added initial versions"
+            git push
+
+        popd
+    popd
+
+
+
+

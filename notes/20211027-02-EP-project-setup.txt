@@ -1,0 +1,68 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#
+#     This information is distributed in the hope that it will be useful,
+#     (at your option) any later version.
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+
+# -----------------------------------------------------
+# Create a new GitHub project.
+#[user@laptop]
+
+    https://github.com/Zarquan/IVOA-ExecutionPlanner-note
+
+
+# -----------------------------------------------------
+# Checkout the empty GitHub project.
+#[user@laptop]
+
+    mkdir '/var/local/projects/IVOA/IVOA-ExecPlanner'
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlanner'
+
+        git clone git@github.com:Zarquan/IVOA-ExecutionPlanner-note.git
+
+
+# -----------------------------------------------------
+# Add the main latex documents.
+#[user@laptop]
+
+
+# -----------------------------------------------------
+# Add our extra project files.
+#[user@laptop]
+
+    licence
+    conduct
+    contrib
+
+
+# -----------------------------------------------------
+# Add the ivoatex module.
+#[user@laptop]
+
+        git submodule add https://github.com/ivoa-std/ivoatex
+        git commit -m "Add ivoatex submodule"
+
+
+
+
