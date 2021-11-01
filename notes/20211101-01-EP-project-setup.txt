@@ -1,0 +1,63 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+# -----------------------------------------------------
+# Checkout the new GitHub project, including sub-modules
+# https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+#[user@laptop]
+
+    mkdir '/var/local/projects/IVOA/IVOA-ExecPlannerNote'
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote'
+
+        git clone \
+            --recurse-submodules \
+            git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git github-zrq
+
+    popd
+
+
+# -----------------------------------------------------
+# Build the document using the ivoatex-docker container.
+# https://github.com/ivoa/ivoatex-docker
+#[user@laptop]
+
+    DOC_PATH=/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --volume "${DOC_PATH:?}:/document:rw,Z" \
+        docker.io/ivoa/ivoatex:latest
+
+
+        make clean
+        make biblio
+        make forcetex
+
