@@ -1,0 +1,115 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+        FAIR data
+        Findable
+        Accessible
+        Interoperable
+        Re-usable
+
+
+    http://voeventdb.4pisky.org/apiv1/
+
+    http://voeventdb.4pisky.org/apiv1/count
+
+        3,160,358 events
+
+    http://voeventdb.4pisky.org/apiv1/map/authored_month_count
+
+        2014-04 14196
+        2014-05 50905
+        2014-06 46256
+        ....
+        ....
+        2020-03 43525
+        2020-04 40514
+        2020-05  5783 ....
+
+    http://voeventdb.4pisky.org/apiv1/map/stream_count
+
+        "au.edu.swin/utmost": 1959,
+        "com.dc3/dc3.broker": 22570,
+        "gaia.cam.uk/alerts": 10830,
+        "gwnet/LVC": 23901,
+        "gwnet/gcn_sender": 2366,
+        "nasa.gsfc.gcn/AGILE": 14869,
+        "nasa.gsfc.gcn/AMON": 7001,
+        "nasa.gsfc.gcn/CALET": 408,
+        "nasa.gsfc.gcn/CAlet": 1,
+        "nasa.gsfc.gcn/COINCIDENCE": 3,
+        "nasa.gsfc.gcn/COUNTERPART": 328,
+        "nasa.gsfc.gcn/Fermi": 96126,
+        "nasa.gsfc.gcn/GRO": 15814,
+        "nasa.gsfc.gcn/HETE": 14358,
+        "nasa.gsfc.gcn/INTEGRAL": 69009,
+        "nasa.gsfc.gcn/IPN": 1013,
+        "nasa.gsfc.gcn/KONUS": 976,
+        "nasa.gsfc.gcn/MAXI": 15212,
+        "nasa.gsfc.gcn/MOA": 2852,
+        "nasa.gsfc.gcn/SNEWS": 217,
+        "nasa.gsfc.gcn/SUZAKU": 17,
+        "nasa.gsfc.gcn/SWIFT": 2768544,
+        "nasa.gsfc.gcn/UNRECOGNIZED_TYPE": 2,
+        "nvo.caltech/voeventnet/catot": 66,
+        "nvo.caltech/voeventnet/mlsot": 147,
+        "svomcgft.naoc/VOEVENTTEST": 2679,
+        "utmost/cflynn": 2650,
+        "voevent.4pisky.org/ALARRM-OBSTEST": 7204,
+        "voevent.4pisky.org/ALARRM-REQUEST": 223,
+        "voevent.4pisky.org/ASASSN": 4787,
+        "voevent.4pisky.org/GAIA": 1166,
+        "voevent.4pisky.org/TEST": 10,
+        "voevent.4pisky.org/TEST-RESPONSE": 30,
+        "voevent.4pisky.org/TEST-TRIGGER": 32,
+        "voevent.4pisky.org/voevent-broadcast": 24132,
+        "voevent.4pisky.org/voevent-receive": 38082,
+        "voevent.phys.soton.ac.uk/AMI-REQUEST": 84,
+        "voeventdb.4pisky.org/subscribe-only": 10690
+
+
+    http://voeventdb.4pisky.org/apiv1/count?authored_since=2020-05
+
+        5787
+
+    http://voeventdb.4pisky.org/apiv1/list/ivorn?authored_since=2020-05
+
+        "ivo://nasa.gsfc.gcn/SWIFT#Actual_Point_Dir_2020-05-01T00:01:17.21_201402748-939",
+        "ivo://gwnet/LVC#MS200430x-2-Preliminary",
+        "ivo://nasa.gsfc.gcn/Fermi#GBM_Test_Pos_2020-05-01T00:06:39.00_099999_1-956",
+        "ivo://gwnet/LVC#MS200430x-3-Initial",
+        ....
+        ....
+        "ivo://nasa.gsfc.gcn/SWIFT#BAT_Known_Pos_-1855514060-825",
+        "ivo://nasa.gsfc.gcn/SWIFT#BAT_SubSubThresh_Pos_-1855513775-826",
+        "ivo://nasa.gsfc.gcn/SWIFT#BAT_Known_Pos_-1855513775-830",
+        "ivo://nasa.gsfc.gcn/SWIFT#BAT_SubSubThresh_Pos_-1855512820-831"
+
+
+
+
+

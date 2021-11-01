@@ -1,0 +1,127 @@
+*
+Annotations of light curves using VOTable
+Tuesday May 05 2020 15:00 UTC
+https://wiki.ivoa.net/twiki/bin/view/IVOA/InterOpMay2020LightCurveAnnotation
+
+This text is intended as a starting point for the discussion.
+We can edit the text together during the session and then transfer the final version back to the IVOA wiki afterwards.
+
+# of participants:  66
+
+*Notes
+
+*Introduction
+
+Ada Nebot - (slides: https://wiki.ivoa.net/internal/IVOA/InterOpMay2020TDIG/TimeSeries_LigtCurve_Annotation.pdf)
+github site with document and VOTable examples:  https://github.com/AdaNebot/TimeSeries
+Wiki page with some initial questions: https://wiki.ivoa.net/twiki/bin/view/IVOA/InterOpMay2020LightCurveAnnotation
+
+
+JJ question about filter calibration - In the description the filter column was described as FILTER_TAKEN but given that we are calibrating to a PHOT_SYSTEM the FILTER would be the FILTER in that system, MAG would be in that system not in the instrumental filter.
+
+From the point of view of light curves like x-rays (probablistic), time bins are not as specific as optical.  How could these be handled?
+A:  Not as concerned with the time bins, more with def. of zero point and photometric systems.  Current specs are prob. biased to IR/Optical.  Could be mods for x-ray, but might be a stretch.
+
+What about radio?  Other messenger systems?
+The model that is associated with each time point could vary with the types of data.
+
+Rob Seaman - These discussions are very familiar from the early days of VOEvent c. 2005. E.g., see SimpleTimeSeries, VOEvent book, early Hotwired proceedings. To make progress this group must engage STRONGLY with specific use cases. The radio initiative may be a good chance for this. Some from TDIG might productively attend (virtually or otherwise) the next Hotwired, likely in 2021.
+	
+Markus:  Advocating for using name over utype for GROUP.  Worried that without an "official" DM mapping, using utype might overload an attribute needed in the future.
+Requests for reps from other messengers to add notes on that here.
+
+Could there be an additional element or attribute to given an ivo identifier to declare what the GROUP is for.  Markus' take: *If* we want something like that, let's have a group TIMESERIESDEF that has fieldrefs to the dependent and independent variables.  Something like that is already part of Jiri's note (http://ivoa.net/documents/Notes/CubeDM/).  But I'd say let's see that clients actually want that.
+
+ TomD: I think we should use this concrete example to help define the more general DM cases of the future, so would favor trying to use the utype attribute to see if it can work for this and future cases, rather than have a series of increasingly ad hoc annotations.
+ Given what we already see with VOTables in general, it will be easy to make mistakes creating these annotations.  It seems like it will be important to have a robust validator with enough test cases (good and bad) to make clear the intent.  I would love to see this is astropy and PyVO.  
+  - Beyond Tables and Units, are there sensible astropy objects these would map into?
+
+
+Cube data?
+AN:  This is mostly for tabular data.  This note is aimed at a small case, so let's not try to solve every problem. +1 from several on keeping it focused to solving one use case and getting it working.
+
+*Post meeting chat:
+TD:  An interesting possibility is that by solving a simple problem, we may learn how to simplify the data models.
+
+Are there Astropy objects that we could map into as proof of concept that we understand the sematics?
+
+Maybe.  Here is an example a (not Astropy) Python project using filters: https://pypi.org/project/svo-filters/
+
+
+
+
+
+
+
+*Written Questions
+
+PeterT:   PHOTCAL = photons?   what about radio?  Or more general, other messenger
+
+PHTOCAL GROUP annotation: Now that I think of it, we should really just have name="PHOTCAL" and no utype.  that's because we may later want groups with "real" utypes with "real" DM annotation, and then our ad-hoc group will not clash and can co-exist with any more formal annotation.
+- or should the utype drive the contents of the GROUP, so that name is not needed?
+	Ada: I think I'd favor the utype as long as applications can do something with it. It is much more specific. 
+No, because we may want to have GROUPs with utypes mean something when we have a proper DM mapping.
+
+Is the utype "PhotDM:PhotCal" correct given that some of the PARAMs supplied are not in the PhotDM:PhotCal type?  
+- Should the identifier be a PhotDM.PhotCal.Identifier?  
+ - Does the effectiveWavelength belong here?
+	Ada: I need to revise the utypes again
+Mark T: Let's try to avoid redundancy.  E.g., not both name and utype for GROUP.  Another example, if it's got a TIMESYS and PHTOCAL, then do we need the PARAMs indicating this is a light curve.
+	
+FB:  photcal alone and timesys alone is not enough.
+MT: Topcat would just allow plotting of time vs mag, for exmaple, so doesn't care so much.  Others apps may want to know that the data provider *intended* this as a light curve.
+	FB:catalog of stars may have columns for epoch of observation and photometry. They will need TIMESYS and Photcal but are not a TImeSeries
+	MT: Good point.  However, in the end the timeseries/lightcurve marker is more like an indication than a requirement - what looks like a light curve to the provider may just look like a set of photometry points to the consumer or vice versa.  But I agree that there is utility in adding that indication.
+	FB: OK. I understand your point. But interoperability requires some "intention".
+	I would still advise to remove the MUST from section 3.2 (table MUST include timeseries/lightcurve PARAMs); this would also mean that people can use PHOTCAL in tables that are not timeseries at all.  At present the document only presents use of the PHOTCAL GROUP in terms of timeseries, but it could be valuable as well when trying to document per-table metadata (TABLE-level PARAM elements).
+	Ada: I agree on avoiding redundancy as much as possible. Removing the MUST too, I always think that a timeseries can be built by collecting data from catalogues too. That can be valuable information. It is not a timeseries in the sense that there might only be one data point, but 1+1+1...=timeseries. 
+	The usage of this GROUP goes beyond the timeseries annotation as highlited by MT.  
+MCN: For SPLAT, it's good to know from the beginning if it's intended as a light curve
+	Would it not be enough to have PHOTCAL and TIMESYS?
+MD:  Advocating for simplicity, thus not using utype as it may collide with future real standard.
+	Ada: At this point it is not clear to me that we have to drop the utypes. In particular the ones proposed here can be used to make links to other DMs. 
+How to build utype?
+Is it from the DMs, or ad hoc for this specific purpose?
+
+
+Tess Jaffe:  This is also familiar in the high energy community, which defined a FITS standard for light curves and other time series data in the 90's that is still in use.  The metadata are the same.  See:  https://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/rates/ogip_93_003/ogip_93_003.html   As you say, it depends on the regime what metadata are needed, but this old standard might have some useful things.  
+	I should check that one document. Thanks! 
+Xiuqin Wu: this is not a light curve issue. But I just found out that vo-dml should be consulted for Utypes. When I searched UTYPES in the documnts list at ivoa.net, I got to this http://www.ivoa.net/documents/Notes/UTypesUsage/index.html.  Any chance we can have some notes stating it is "obsolete" or replaced by "XXX"? 
+
+FB :let me restate my concern  about waiting a better solution before using utypes.
+1) the spec only makes use of 6 utypes (seven with the one on the Photcal GROUP which is redondant)
+4 of them come from the PhotDM spec which was recommended in 2013. and the two others from ObscOre which is from 2011. Here they are used as "roles" of the FIELDS/PARAMS in the document and have a perfect definition in the spec they are coming from. Why not using them for tagging ? This is not a full DM annotation of course. But eventually the full annotation when it comes will (for all flavors that i have seen) a bunch of tagging elements IN FRONT OF the VOTABle document. Adding this will not conflict with the older technology emebedded  in current VOTABLE standard document.    
+	Ada: I agree that I don't see any harm in using the utypes that are proposed in this note. They will allow (as I see this) to connect parts of this proposal with e.g. fully characterised filter information for the use cases where for instance we need to compare model prediction with observations. I think that is where the power of this annotation would come in handy.   
+
+
+Ada: I think there was a question about callibrated photometry. This should be mentioned somewhere in the text. Now, is differential photometry ok too? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What do you want to do ?
+New mailCopy
+
