@@ -1,0 +1,159 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+---- ExecutionPlanner ----
+
+#1
+    The problem
+    
+        Lots of different tasks
+        Lots of different services
+        Lots of different communities
+
+#2
+    Centralised solutions become complex
+    
+        Lots of different tasks
+        Lots of different services
+        Lots of different communities
+
+#3
+    One simplified entry point for all of them
+    
+        Very simple request/response
+
+            tasktype=xxx
+
+            [YES|NO]
+
+#4
+    Add an interface in front of all the services
+    
+        Implementation delegated to the communities
+        JupyterNotebook community  
+        DockerContainer community  
+        KubernetesCluster community  
+
+#5
+    IVOA note exploring the scope
+    
+        tasktype [YES|NO]
+    
+        tasktype + config
+            e.g.
+                jupyer-notebook
+                + notebook.ipynb
+                
+                docker-compose
+                + compose.yml
+
+#6
+        tasktype + config + resources
+            e.g.
+                docker-compose
+                + compose.yml
+                + resources.yml
+
+        resource negotiation
+        
+            min cores
+            max cores
+
+            min memory
+            max memory
+
+            min storage
+            max storage
+
+            min duration
+            max duration
+
+---- UWS docker ----
+
+#1 
+    Common interface to launch Docker containers
+    Very simple implementation.
+    
+    job + image
+
+
+#2 
+    Common interface to launch Docker compose
+    Very simple implementation.
+    
+    job + compose
+  
+
+---- example ----
+
+    ExecPlanner service
+        openstack VM            
+
+    tasktype
+        silly-example
+    response
+        NO           
+        
+    tasktype
+        docker-container
+    response
+        YES           
+        endpoint
+        
+---- example ----
+
+    UWS-docker service
+        openstack VM            
+
+    UWS job
+        image-ref
+    response
+        job        
+
+    UWS job
+        RUN        
+    response
+        mapping
+        
+    endpoint
+        http://..:3000/
+
+
+---- example ----
+
+    IVOA desktop
+        intro tutorial
+
+    example #1
+
+
+
+
+
+        
