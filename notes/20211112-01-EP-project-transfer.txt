@@ -1,0 +1,409 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+    Target:
+
+        Create our own fork after transferring ownership of a GitHub repository.
+
+        This suggests it won't work.
+        https://stackoverflow.com/questions/46434127/github-transfer-ownership-and-fork
+
+    Result:
+
+
+
+
+
+# -----------------------------------------------------
+# HTTP redirect created by the transfer.
+#[user@desktop]
+
+    curl --head https://github.com/Zarquan/IVOA-ExecutionPlannerNote
+
+    >   HTTP/2 301
+    >   server: GitHub.com
+    >   date: Fri, 12 Nov 2021 01:52:34 GMT
+    >   content-type: text/html; charset=utf-8
+    >   vary: X-PJAX, X-PJAX-Container, Accept-Encoding, Accept, X-Requested-With
+    >   permissions-policy: interest-cohort=()
+    >   location: https://github.com/ivoa/IVOA-ExecutionPlannerNote
+    >   cache-control: no-cache
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Command line still seems to work.
+#[user@desktop]
+
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        git pull
+
+    popd
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Main ivoa repository shows Sara's fork was transferred.
+
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/network/members
+
+        Forks:
+
+            https://github.com/bertocco/IVOA-ExecutionPlannerNote
+
+
+    https://github.com/bertocco/IVOA-ExecutionPlannerNote
+
+        Forked from:
+
+            https://github.com/ivoa/IVOA-ExecutionPlannerNote
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create a new fork of the ivoa repository.
+
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote
+
+        Forked from:
+
+            https://github.com/ivoa/IVOA-ExecutionPlannerNote
+
+
+# -----------------------------------------------------
+# HTTP redirect is no longer active.
+#[user@desktop]
+
+    curl --head https://github.com/Zarquan/IVOA-ExecutionPlannerNote
+
+    >   HTTP/2 200
+    >   server: GitHub.com
+    >   date: Fri, 12 Nov 2021 02:01:40 GMT
+    >   content-type: text/html; charset=utf-8
+    >   vary: X-PJAX, X-PJAX-Container, Accept-Encoding, Accept, X-Requested-With
+    >   permissions-policy: interest-cohort=()
+    >   etag: W/"44521cee46407a9b491b0223ae971720"
+    >   cache-control: max-age=0, private, must-revalidate
+    >   ....
+    >   ....
+
+
+
+# -----------------------------------------------------
+# Update the local clone.
+#[user@desktop]
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        git checkout main
+
+    >   Switched to branch 'main'
+    >   Your branch is behind 'origin/main' by 5 commits, and can be fast-forwarded.
+    >     (use "git pull" to update your local branch)
+
+
+        git pull
+
+    >   Updating 73bc74c..3035e39
+    >   Fast-forward
+    >    .github/workflows/build.yml   | 14 +++++++-------
+    >    .github/workflows/preview.yml | 18 +++++++++---------
+    >    IVOA-EP-note.tex              | 26 +++++++++++++-------------
+    >    README.md                     |  2 ++
+    >    4 files changed, 31 insertions(+), 29 deletions(-)
+
+
+    popd
+
+
+# -----------------------------------------------------
+# Update the project README.
+# (*) yes I should have created a branch.
+# I had that in my notes but missed a step and ended up comitting to main.
+#[user@desktop]
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        git checkout main
+
+    >   Switched to branch 'main'
+    >   Your branch is up to date with 'origin/main'.
+
+
+        gedit README.md &
+
+            ....
+            ....
+
+
+        git status
+    >   On branch main
+    >   Your branch is up to date with 'origin/main'.
+    >   
+    >   Changes not staged for commit:
+    >       ....
+    >   	modified:   README.md
+
+        git add .
+        git commit -m "Updated README"
+
+    >   [main 6a18e61] Updated README
+    >    1 file changed, 8 insertions(+), 1 deletion(-)
+
+
+        git push --set-upstream 'origin' "$(git branch --show-current)"
+
+    >   Enumerating objects: 5, done.
+    >   Counting objects: 100% (5/5), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (3/3), done.
+    >   Writing objects: 100% (3/3), 606 bytes | 606.00 KiB/s, done.
+    >   Total 3 (delta 1), reused 0 (delta 0)
+    >   remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+    >   remote: This repository moved. Please use the new location:
+    >   remote:   git@github.com:ivoa/IVOA-ExecutionPlannerNote.git
+    >   To github.com:Zarquan/IVOA-ExecutionPlanner-note.git
+    >      3035e39..6a18e61  main -> main
+    >   Branch 'main' set up to track remote branch 'main' from 'origin'.
+
+
+    popd
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Looks like the changes were comitted to the transferred ivoa repo, not our clone.
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/commit/6a18e61af5b3bc490049324280a246c2eee40723
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create a new local copy.
+#[user@desktop]
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote'
+
+        mv github-zrq original-zrq
+
+        git clone git@github.com:ivoa/IVOA-ExecutionPlannerNote.git ivoa-repo
+
+    >   Cloning into 'ivoa-repo'...
+    >   remote: Enumerating objects: 110, done.
+    >   remote: Counting objects: 100% (110/110), done.
+    >   remote: Compressing objects: 100% (64/64), done.
+    >   remote: Total 110 (delta 42), reused 85 (delta 32), pack-reused 0
+    >   Receiving objects: 100% (110/110), 48.48 KiB | 584.00 KiB/s, done.
+    >   Resolving deltas: 100% (42/42), done.
+
+
+        git clone git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git zrq-fork
+
+    >   Cloning into 'zrq-fork'...
+    >   remote: Enumerating objects: 107, done.
+    >   remote: Counting objects: 100% (107/107), done.
+    >   remote: Compressing objects: 100% (62/62), done.
+    >   remote: Total 107 (delta 40), reused 83 (delta 31), pack-reused 0
+    >   Receiving objects: 100% (107/107), 48.08 KiB | 559.00 KiB/s, done.
+    >   Resolving deltas: 100% (40/40), done.
+
+
+        pushd ivoa-repo
+
+            git remote -v
+
+        popd
+
+    >   origin	git@github.com:ivoa/IVOA-ExecutionPlannerNote.git (fetch)
+    >   origin	git@github.com:ivoa/IVOA-ExecutionPlannerNote.git (push)
+
+
+        pushd zrq-fork
+
+            git remote -v
+
+        popd
+
+    >   origin	git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git (fetch)
+    >   origin	git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git (push)
+
+
+    popd
+
+
+# -----------------------------------------------------
+# Add the upstream repo and update our local clone.
+#[user@desktop]
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote'
+        pushd zrq-fork
+
+            git remote add upstream https://github.com/ivoa/IVOA-ExecutionPlannerNote.git
+            git remote -v
+
+    >   origin	git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git (fetch)
+    >   origin	git@github.com:Zarquan/IVOA-ExecutionPlannerNote.git (push)
+    >   upstream	https://github.com/ivoa/IVOA-ExecutionPlannerNote.git (fetch)
+    >   upstream	https://github.com/ivoa/IVOA-ExecutionPlannerNote.git (push)
+
+
+            git fetch upstream
+
+    >   remote: Enumerating objects: 6, done.
+    >   remote: Counting objects: 100% (6/6), done.
+    >   remote: Compressing objects: 100% (3/3), done.
+    >   remote: Total 4 (delta 1), reused 4 (delta 1), pack-reused 0
+    >   Unpacking objects: 100% (4/4), 782 bytes | 782.00 KiB/s, done.
+    >   From https://github.com/ivoa/IVOA-ExecutionPlannerNote
+    >    * [new branch]      20211111-zrq-test-branch-01 -> upstream/20211111-zrq-test-branch-01
+    >    * [new branch]      20211111-zrq-test-branch-02 -> upstream/20211111-zrq-test-branch-02
+    >    * [new branch]      main                        -> upstream/main
+
+
+        git merge upstream/main
+
+    >   Updating 3035e39..6a18e61
+    >   Fast-forward
+    >    README.md | 9 ++++++++-
+    >    1 file changed, 8 insertions(+), 1 deletion(-)
+
+
+        git status
+
+    >   On branch main
+    >   Your branch is ahead of 'origin/main' by 1 commit.
+    >     (use "git push" to publish your local commits)
+
+
+        git push
+
+    >   Total 0 (delta 0), reused 0 (delta 0)
+    >   To github.com:Zarquan/IVOA-ExecutionPlannerNote.git
+    >      3035e39..6a18e61  main -> main
+
+
+        popd
+    popd
+
+
+# -----------------------------------------------------
+# Our personal fork is now up to date with the transferred repo.
+#[user@desktop]
+
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote
+
+        This branch is up to date with ivoa:main.
+
+
+# -----------------------------------------------------
+# Update the project README.
+#[user@desktop]
+
+    branchname=test-branch-05
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote'
+        pushd 'zrq-fork'
+
+        branchprev=$(git branch --show-current)
+        branchnext=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        git checkout main
+        git checkout -b "${branchnext:?}"
+
+        gedit README.md &
+
+        git status
+
+    >   On branch 20211112-zrq-test-branch-05
+    >   Changes not staged for commit:
+    >       ....
+    >   	modified:   README.md
+
+
+        git add .
+        git commit -m "Updated README"
+
+    >   [20211112-zrq-test-branch-05 0e2f8b2] Updated README
+    >    1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+        git push --set-upstream 'origin' "$(git branch --show-current)"
+
+    >   Enumerating objects: 5, done.
+    >   Counting objects: 100% (5/5), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (3/3), done.
+    >   Writing objects: 100% (3/3), 323 bytes | 323.00 KiB/s, done.
+    >   Total 3 (delta 2), reused 0 (delta 0)
+    >   remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+    >   remote:
+    >   remote: Create a pull request for '20211112-zrq-test-branch-05' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/IVOA-ExecutionPlannerNote/pull/new/20211112-zrq-test-branch-05
+    >   remote:
+    >   To github.com:Zarquan/IVOA-ExecutionPlannerNote.git
+    >    * [new branch]      20211112-zrq-test-branch-05 -> 20211112-zrq-test-branch-05
+    >   Branch '20211112-zrq-test-branch-05' set up to track remote branch '20211112-zrq-test-branch-05' from 'origin'.
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+
+    # Check the new branch is correct
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/tree/20211112-zrq-test-branch-05
+
+        This branch is 1 commit ahead of ivoa:main.
+
+    # Create a pull request from the new branch
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/pull/new/20211112-zrq-test-branch-05
+
+    # New branch created
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/pull/7
+
+    # Build check triggered
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/actions/runs/1451460908
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/suites/4332446788/artifacts/113494014
+
+
+    # Branch merged
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/pull/7
+
+    I _think_ the preview worked.
+
+    It appears here:
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/tags
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/releases/tag/auto-pdf-preview
+
+    I doesn't appear here:
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote/releases
+
+
+
+

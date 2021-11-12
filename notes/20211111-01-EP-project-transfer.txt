@@ -1,0 +1,242 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+    Target:
+
+        Transfer ownership of a GitHub repository.
+
+    Result:
+
+        Successful transfer.
+        Question about creating our own fork afterwards.
+
+
+# -----------------------------------------------------
+# Create a couple of test issues
+
+    Test issue (not assigned) #3
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/issues/3
+
+    Test issue (assigned) #4
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/issues/4
+
+
+# -----------------------------------------------------
+# Create a test branch and edit the text.
+#[user@desktop]
+
+    branchname=test-branch-01
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        branchprev=$(git branch --show-current)
+        branchnext=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        git checkout main
+        git checkout -b "${branchnext:?}"
+
+        gedit .github/workflows/build.yml
+        gedit .github/workflows/preview.yml
+        gedit IVOA-EP-note.tex &
+
+        git add .
+        git commit -m "Removed trailing spaces"
+
+        gedit IVOA-EP-note.tex &
+
+            -   \title{IVOA Execution Planner - design outline}
+            +   \title{IVOA Execution Planner - exploratory note}
+
+        git add .
+        git commit -m "Updated title"
+
+        git push --set-upstream 'origin' "$(git branch --show-current)"
+
+    popd
+
+    >   ....
+    >   ....
+    >   To github.com:Zarquan/IVOA-ExecutionPlanner-note.git
+    >    * [new branch]      20211111-zrq-test-branch-01 -> 20211111-zrq-test-branch-01
+    >   Branch '20211111-zrq-test-branch-01' set up to track remote branch '20211111-zrq-test-branch-01' from 'origin'.
+
+
+# -----------------------------------------------------
+# Create a pull request.
+#[user@desktop]
+
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/pull/5
+
+        "All checks have passed"
+
+    The pull request check results are a zip file containing the PDF
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/suites/4321668043/artifacts/113068579
+
+# -----------------------------------------------------
+# Merge the pull request.
+#[user@desktop]
+
+    Merge my own pull request
+
+        "Pull request successfully merged and closed"
+
+    Merging the pull request triggers the preview action.
+
+    Pre-release draft created :-)
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/releases
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/releases/download/auto-pdf-preview/IVOA-EP-note-draft.pdf
+
+
+# -----------------------------------------------------
+# Update the project README.
+#[user@desktop]
+
+    branchname=test-branch-02
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        branchprev=$(git branch --show-current)
+        branchnext=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        git checkout main
+        git checkout -b "${branchnext:?}"
+
+        gedit README.md &
+
+        git add .
+        git commit -m "Updated preview badge"
+
+        git push --set-upstream 'origin' "$(git branch --show-current)"
+
+    popd
+
+    >   ....
+    >   ....
+    >   To github.com:Zarquan/IVOA-ExecutionPlanner-note.git
+    >    * [new branch]      20211111-zrq-test-branch-02 -> 20211111-zrq-test-branch-02
+    >   Branch '20211111-zrq-test-branch-02' set up to track remote branch '20211111-zrq-test-branch-02' from 'origin'.
+
+# -----------------------------------------------------
+# Create a pull request.
+#[user@desktop]
+
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/pull/6
+
+        "All checks have passed"
+
+    The pull request check results are a zip file containing the PDF
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/suites/4321744436/artifacts/113071745
+
+# -----------------------------------------------------
+# Merge the pull request.
+#[user@desktop]
+
+    Merge my own pull request
+
+        "Pull request successfully merged and closed"
+
+    Merging the pull request triggers the preview action.
+
+    Pre-release draft created :-)
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/releases
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote/releases/download/auto-pdf-preview/IVOA-EP-note-draft.pdf
+
+    Preview badge works :-)
+
+# -----------------------------------------------------
+
+    So we have a working GitHub repository, with build and preview actions in place.
+    Next step is to transfer it to the IVOA organisation.
+
+    https://docs.github.com/en/repositories/creating-and-managing-repositories/transferring-a-repository
+
+        new owner : ivoa
+        confirm name : Zarquan/IVOA-ExecutionPlannerNote
+
+
+        Please select any teams you wish to have access to ivoa/IVOA-ExecutionPlannerNote.
+            <none>
+
+        Moving repository to ivoa/IVOA-ExecutionPlannerNote. This may take a few minutes.
+            ....
+
+    Arrived
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote
+
+
+    Issues are intact
+
+        Test issue (not assigned) #3
+        https://github.com/Zarquan/IVOA-ExecutionPlannerNote/issues/3
+
+        Test issue (assigned) #4
+        https://github.com/Zarquan/IVOA-ExecutionPlannerNote/issues/4
+
+    Merge history is intact
+    Action history is intact
+    Preview documents are intact
+
+
+# -----------------------------------------------------
+
+    No longer listed in my profile
+    https://github.com/Zarquan?tab=repositories
+
+    Trying the old URL
+    https://github.com/Zarquan/IVOA-ExecutionPlannerNote
+
+    Redirects to the new location
+    https://github.com/ivoa/IVOA-ExecutionPlannerNote
+
+
+# -----------------------------------------------------
+# Command line still seems to work.
+#[user@desktop]
+
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        git pull
+
+    popd
+
+    >   remote: Enumerating objects: 7, done.
+    >   remote: Counting objects: 100% (7/7), done.
+    >   remote: Compressing objects: 100% (4/4), done.
+    >   remote: Total 4 (delta 1), reused 1 (delta 0), pack-reused 0
+    >   Unpacking objects: 100% (4/4), 1.48 KiB | 1.48 MiB/s, done.
+    >   From github.com:Zarquan/IVOA-ExecutionPlanner-note
+    >      73bc74c..3035e39  main             -> origin/main
+    >    * [new tag]         auto-pdf-preview -> auto-pdf-preview
+    >   Already up to date.
+
+
+    #
+    # I wonder what happens if we create our own fork ?
+    # This suggests it won't work.
+    # https://stackoverflow.com/questions/46434127/github-transfer-ownership-and-fork
+    #
+
+
