@@ -32,6 +32,8 @@
 
     Result:
 
+        Successful transfer.
+        Learned we need to tell people to delete/create the local clone because it maintains a link to the original repository.
 
 
 
@@ -165,7 +167,7 @@
         git status
     >   On branch main
     >   Your branch is up to date with 'origin/main'.
-    >   
+    >
     >   Changes not staged for commit:
     >       ....
     >   	modified:   README.md
