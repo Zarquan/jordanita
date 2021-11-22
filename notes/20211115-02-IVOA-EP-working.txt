@@ -1,0 +1,207 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+# -----------------------------------------------------
+# Build the document using the ivoatex-docker container.
+# https://github.com/ivoa/ivoatex-docker
+#[user@laptop]
+
+    DOC_PATH=/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --volume "${DOC_PATH:?}:/document:rw,Z" \
+        docker.io/ivoa/ivoatex:latest
+
+        make clean
+        make biblio
+        make forcetex
+
+
+# -----------------------------------------------------
+# Build fails because we are missing the git submodule.
+#[user@ivoatex]
+
+    make
+
+--START--
+Makefile:25: ivoatex/Makefile: No such file or directory
+make: *** No rule to make target 'ivoatex/Makefile'.  Stop.
+--END--
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Add the submodule make to our Makefile.
+# https://github.com/ivoa-std/ivoatex/blob/c6e7c057101207e615701a22ea40c95a130bdaa1/Makefile.template#L36
+#[user@laptop]
+
+    gedit Makefile
+
+        +   ivoatex/Makefile:
+	    +       @echo "*** ivoatex submodule not found.  Initialising submodules."
+	    +       @echo
+	    +       git submodule update --init
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build fails because we are missing git.
+#[user@ivoatex]
+
+    make
+
+--START--
+*** ivoatex submodule not found.  Initialising submodules.
+
+git submodule update --init
+make: git: No such file or directory
+....
+....
+--END--
+
+
+
+
+# -----------------------------------------------------
+# Install git ...
+#[user@ivoatex]
+
+    apt-get update
+
+    apt-get install git
+
+--START--
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  git-man less libcbor0.6 libcurl3-gnutls liberror-perl libfido2-1 libnghttp2-14 libpsl5 librtmp1 libssh-4 openssh-client publicsuffix xauth
+Suggested packages:
+  gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-el git-email git-gui gitk gitweb git-cvs git-mediawiki git-svn keychain libpam-ssh monkeysphere ssh-askpass
+The following NEW packages will be installed:
+  git git-man less libcbor0.6 libcurl3-gnutls liberror-perl libfido2-1 libnghttp2-14 libpsl5 librtmp1 libssh-4 openssh-client publicsuffix xauth
+0 upgraded, 14 newly installed, 0 to remove and 5 not upgraded.
+Need to get 5368 kB of archives.
+After this operation, 25.4 MB of additional disk space will be used.
+Do you want to continue? [Y/n]
+....
+....
+E: Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3-gnutls_7.74.0-1.2ubuntu2_amd64.deb  404  Not Found [IP: 91.189.88.142 80]
+E: Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/g/git/git-man_2.31.1-1ubuntu1_all.deb  404  Not Found [IP: 91.189.88.142 80]
+E: Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/g/git/git_2.31.1-1ubuntu1_amd64.deb  404  Not Found [IP: 91.189.88.142 80]
+E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+--END--
+
+
+    #
+    # Caused by errors in the update command
+    #
+
+    apt-get update
+
+--START--
+Get:1 http://archive.ubuntu.com/ubuntu impish-updates InRelease [110 kB]
+Get:2 http://archive.ubuntu.com/ubuntu impish-backports InRelease [101 kB]
+Get:3 http://security.ubuntu.com/ubuntu impish-security InRelease [103 kB]
+Err:1 http://archive.ubuntu.com/ubuntu impish-updates InRelease
+  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+Get:4 http://archive.ubuntu.com/ubuntu impish InRelease [270 kB]
+Err:2 http://archive.ubuntu.com/ubuntu impish-backports InRelease
+  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+Err:4 http://archive.ubuntu.com/ubuntu impish InRelease
+  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+Err:3 http://security.ubuntu.com/ubuntu impish-security InRelease
+  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+Fetched 584 kB in 2s (275 kB/s)
+Reading package lists... Done
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://archive.ubuntu.com/ubuntu impish-updates InRelease: gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://archive.ubuntu.com/ubuntu impish-backports InRelease: gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://archive.ubuntu.com/ubuntu impish InRelease: gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://security.ubuntu.com/ubuntu impish-security InRelease: gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/impish/InRelease  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/impish-updates/InRelease  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/impish-backports/InRelease  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: Failed to fetch http://security.ubuntu.com/ubuntu/dists/impish-security/InRelease  gpgv, gpgv2 or gpgv1 required for verification, but neither seems installed
+W: Some index files failed to download. They have been ignored, or old ones used instead.
+--END--
+
+    #
+    # Known issue with Docker, Ubuntu and glibc ?
+    # https://stackoverflow.com/questions/66319610/gpg-error-in-ubuntu-21-04-after-second-apt-get-update-during-docker-build
+    # https://bugs.launchpad.net/ubuntu/+source/libseccomp/+bug/1916485
+    #
+
+    #
+    # We need an updated version of Docker on our laptop.
+    # We need an updated veriosn of Ubuntu in our continer.
+    # We need a high bandwidth network connection.
+    #
+
+
+
+# -----------------------------------------------------
+# Add the submodle locally.
+#[user@laptop]
+
+    pushd '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq'
+
+        git submodule update --init
+
+    popd
+
+--START--
+Submodule 'ivoatex' (https://github.com/ivoa-std/ivoatex) registered for path 'ivoatex'
+Cloning into '/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq/ivoatex'...
+Submodule path 'ivoatex': checked out '32ef905325659abe9a355c4029718bdea1b6e62b'
+--END--
+
+
+# -----------------------------------------------------
+# Build the document using the ivoatex-docker container.
+# https://github.com/ivoa/ivoatex-docker
+#[user@laptop]
+
+    DOC_PATH=/var/local/projects/IVOA/IVOA-ExecPlannerNote/github-zrq
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --volume "${DOC_PATH:?}:/document:rw,Z" \
+        docker.io/ivoa/ivoatex:latest
+
+        make clean
+        make biblio
+        make forcetex
+
+
+    #
+    # Works :-)
+    #
+
+

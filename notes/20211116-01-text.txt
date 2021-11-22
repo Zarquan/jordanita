@@ -1,0 +1,131 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2021, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+
+
+Before we consider the specifics of executing computing tasks,
+it may be useful to look at what we are trying to address
+from a more abstract perspective.
+
+Consider the world of online shopping.
+There are many different types of shops, selling many different types of goods.
+
+From a small, local physical shop or restaurant who take accept online orders for local delivery,
+to the large multi-national online warehouse stores like Amazon.
+
+All of them provide a website, but few if any provide a machine readable webservice interface.
+
+
+If we wanted to develop a common webservice interface that would work for all of them,
+we might start with asking "Can I buy <product-type> from your shop?".
+
+To develop this into a standard we could try to define a vocabulary for product types that could be sold in shops,
+but the danger is this would rapidly expand into an attempt to define a hirerachical taxonomy of pretty much everything in the world.
+
+Alternativley, we could concantrate on the grammar of the request and response messages
+that make up the webservice interface, and leave it up to the
+individual communities to define the product types
+they are interested in.
+
+As an example, we could consider a local shop that sells fruit and vegetables, and a shop that sells books.
+
+We can ask each of them if they sell the type of item we are interested in.
+
+    "Can I buy apples from your shop?"
+
+
+--------------------------------------------
+
+Before we consider the specifics of executing computing tasks,
+it may be useful to look at what we are trying to address
+from a more abstract perspective.
+
+Consider the world of shopping.
+There are many different types of shops, selling many different types of goods.
+
+From small local shops in our town to the large multi-national online warehouse stores like Amazon.
+
+If we wanted to develop a common interface that would work for all of them,
+we might start by building a search engine that we could query to find shops
+that sell the things we want.
+
+We could try to build a human readable natural language search,
+that could distinguish between
+a vegetable shop that sells potatoes and apples,
+a book shop that sells receipe books,
+and a computer shop that sells laptops.
+
+Or, we could try to define a machine readable taxonomy
+of things that could be sold in shops that would be able to
+distinguish between differnt types of things.
+
+    vegetable.potatoe
+    fruit.apple
+    book.receipe.soup.potatoe
+    computer.laptop.apple
+
+I think in the long run we will probably these kind of search interfaces,
+but the danger is that both of these approaches are fairly large tasks
+in themselves, and even if we did succed, we still can't buy things from shops.
+
+An alternative approach would be to concentrate on the mechanics of 'buying things
+from shops', and leave the vocabularies to the individual communities.
+
+In our local town we have ~30 different shops, so rather than spending time
+defining a searchable vocabulary, we could just go and ask each of them if they sell
+the things we want to buy.
+
+    "Can I buy <product-type> from your shop?".
+
+In order to do this, I would need to know the name of the thing I want to buy.
+Putting aside the problem of a visitor from a foregign country to later,
+it is probably safe to assume that if I want to buy something, I probably know the name of it.
+
+Or at least, my name for it.
+
+    "Can I buy 'potatoes' from your shop?".
+
+The hairdressesrs, wine shop, cafe and book shop would not understand what I was
+talking about, but the vegetable shop and local supermarket would understand
+because types of vegetables are their speciality.
+
+Lets say we find
+
+one vegatable shop and two supermarkets who sell potatoes
+
+The shops themselves would be struxtured differently
+In the vegaratbel shop,
+I would select the individual potatoes from the ones on display,
+the shop keeper would weigh them and then charge me the
+price based on the total weight.
+
+In the supermarket, the potatoes would be offered already packaged in bags
+of fixed weight, 1kg, 5kg etc.
+I would select a bag of potatoes, and the shop keeper would
+scan a bar code on the bag and chagre me a fixed price for that size of bag.
+
+
+
