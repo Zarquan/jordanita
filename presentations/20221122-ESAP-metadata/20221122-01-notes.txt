@@ -1,0 +1,212 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2022, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+    Target:
+
+        ESAP training workshop
+        https://indico.in2p3.fr/event/27747
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    20 min talk
+
+    Points from yesterday's talks
+
+        Gareth has metadata for Dirac jobs
+        Include this as a type of job.
+
+        ExecPlanner can accept ESAP-Dirac jobs and passes them to Gareth's code for execution.
+        ExecPlanner supports a generic metadata for a container job, which can be re-written to match Gareth's code for execution.
+
+        TaskDescriptionLanguage agnostic
+
+            IVOA ExecPlanner TDL
+            ESAP Dirac batch
+            CERN Reana
+
+        JHub metadata
+        Which StorageElement(s) is this JupyterHub is closest to ?
+
+            Map JupyterHub   <-> Rucio StorageElement
+            Map ContainerHub <-> Rucio StorageElement
+
+        Given a Rucio DID, we can get the list of Rucio StorageElements
+        Build a mapping between this data, Rucio StorageElements, and JupyterHub instances.
+
+        Task metadata (instance) gives Rucio references for inputs and outputs
+        Orchestration sets up the volumes
+
+            Task reads from inputs
+            Task writes to outputs
+
+        What about matching data types for input/output data
+
+            Match executables to data using an IVOA vocabulary <-- makes it IVOA specific :-(
+            Possible using utypes and model ?
+
+
+        Passing parameters to Binder
+        Location of the data to download/install
+
+            Post build steps - still needs NEV values to fill in the parameters,
+
+
+    Implementing lists of metadata in the Django back-end.
+
+        List of metadata for each task.
+            Individual notebooks and containers.
+            Harvested or curated ..
+
+        List of metadata for platforms.
+            Harvested or curated ..
+
+    User searches task metadata based on science keywords.
+
+    React sends query to the task metadata query endpoint.
+    DJango replies with list of metadata templates for the tasks
+        including separate instance for individual notebooks
+
+    React displays list of matching tasks with a detailed escription for each.
+    * better curation means better results
+
+    User selects a tasks and React displays a form for editing the task.
+    Similar to the form already in place for DiracBatch.
+
+        Includes URL references to input and output data.
+        Special URL to indicate that the data is in the DataLake
+
+            rucio://rucio.escape.eu/data/<did>
+
+    Implement canIdoThis interface in the DJango back-end.
+    Receives the POSTed task description and passes it on to a set of plugins.
+    If none of the plugins match the task type, just return 'NO', and 'unknown type'.
+
+    Matching plugin handles the POSTed task instance.
+    Plugin creates an offer from the task instance, adding details based on the platform metadata.
+
+        Includes max and min values for resources and time.
+
+----------------------------------------------------------------------------
+
+
+    Split into two layers
+
+        Client - React JavaScript app calling web-service APIs on the server side.
+
+        Server - DJango service provides web-service APIs.
+
+
+    The problem - one entry in OSSR may contain multiple executable things.
+    Example is the eOSSR library.
+
+    The core product is a Python library that can be used in other projects.
+    e.g. used by ESAP to query the Zenodo service
+
+        Installation is via pip install.
+        Used by importing the module into your own code.
+
+    To provide an example to experiment with, the eOSSR Git repository also includes a Docker container.
+
+        Basic Python Docker container with eOSSR library installed.
+        No user interface, simple command line to launch Python and write code.
+
+    In addition, the eOSSR Git repository includes some Jupyer notebooks to demosntrate how to use the library.
+
+        Basic JupyterNotebooks demonstrating how to use the eOSSR library to to query the Zenodo service.
+
+    Two executable things, the Docker container and the Jupyer notebooks
+
+    We need to have separate metadata to describe each of them.
+    Different types of executable things.
+    Need different execution platforms and have different requitrements.
+
+
+----------------------------------------------------------------------------
+
+    Execution planner is designed to handle 'things that can be executed' in an abstract way.
+
+    Split into two layers
+
+        Client - React JavaScript app calling web-service APIs on the server side.
+
+        Server - DJango service provides web-service APIs.
+
+    Start with the eOSSR library as an example.
+
+    The core product is a Python library that can be used in other projects.
+    e.g. used by ESAP to query the Zenodo service
+
+        Installation is via pip install.
+        Used by importing the module into your own code.
+
+    The project git repository also includes a Docker container.
+
+        Basic Python Docker container with eOSSR library installed.
+        No user interface, simple command line to launch Python and write code.
+
+    The project git repository also includes Jupyer notebooks to demosntrate how to use the library.
+
+        Demonstrating how to use the eOSSR library to to query the Zenodo service.
+
+    Two executable things, the Docker container and the Jupyer notebooks
+
+    We need to have separate metadata to describe each of them.
+    Different types of executable things.
+    Need different execution platforms and have different requitrements.
+
+    The user would start by searching for 'Zenodo'.
+
+    DJango service provides a search interface to query based on description.
+
+    React client
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
