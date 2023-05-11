@@ -1,0 +1,114 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2023, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+1
+    GaiaDMP
+    Data mining platform for Gaia DR3 and DR4 data.
+    Spark analysis on Gaia data
+    Machine learning and data mining
+2
+    Current deployment using Ansible
+    xx cores, xx memory, xx shared disc shared
+3
+    In development, deployment using K8s
+    xx cores, xx memory, xx shared disc per user
+
+4
+    We would like to allow external access
+        - Zeppelin notebook + compute requirements
+        - PySpark code + compute requirements
+        - ExecPlanner
+6
+    We would like to allow access to our data
+        - Metadata for individual Parquet files - Rubin
+        - Metadata for a table - collection of Parquet files - VOTable header
+        - Metadata for a catalog - collection of tables - TAP_SCHEMA
+
+7
+            - Public S3 archive
+            - S3 URL limitations
+8
+            - Does VOSpace give us a space for organising these ?
+
+                catalogname
+                    tablename -> S3 bucket
+                        filename -> S3 object
+                        filename -> S3 object
+                        filename -> S3 object
+                        filename -> S3 object
+9
+        We could import a different data set
+            - how would we find it ?
+10
+        We could deploy our analysis service on another platform
+            - K8s Helm chart + hardware requirements
+            - ExecPlanner
+            - how would we find it ?
+11
+    IVOA wishlist
+    Describing datasets - "Gaia DR3"
+    Describing software - "Spark analysis"
+    Data location - "Cambridge Arcus HPC system, JANET network"
+    Software capability with data proximity
+        "Spark analysis" with "fast access" to "Gaia DR4"
+
+
+
+
+
+
+5
+    Internally,
+        Spark analysis with fast access to Gaia DR4
+        IO wait becomes significant part of execution time
+        Moving to direct attached NVMe SSD
+        Realistic for 5 Tbytes of DR3
+        Less realistic for 500 Tbytes of DR4
+
+
+getsecret devops.stfc.echo.endpoint
+getsecret devops.stfc.echo.template
+getsecret devops.stfc.echo.access_key
+getsecret devops.stfc.echo.secret_key
+
+the service hostname
+s3.echo.stfc.ac.uk
+the URL format
+s3.echo.stfc.ac.uk/%(bucket)
+the access key
+C9KN........3GPY
+the access secret
+o70v........xMaQ
+a flag to use HTTPS
+public_url_use_https=true
+
+
+
+
+
+
