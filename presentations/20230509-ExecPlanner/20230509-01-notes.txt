@@ -1,0 +1,129 @@
+
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2023, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+
+
+# -----------------------------------------------------
+
+    The problem
+    Different types of jobs
+    Different types of services
+    Different capabilites
+
+
+    Reduce it down to a simple question
+    CanIDoThis {task}
+
+    Where <task> is one of a well known task description languages
+
+    Following the experience from TAP and ADQL
+
+    Separate the task description language from the webservice
+
+    CanIDoThis
+        lang=IVOA-TDL-1.0
+        task={....}
+
+    If the service doesn't understand the description language, answer is no.
+
+    We could try to do lots of complicated stuff to predict which services accept which languages.
+    but it is easier to just ask
+
+
+    Part of the task description includes the hardware resources needed.
+
+        mincores: 4
+        minram: 80
+
+    Everything has a max and min value in the description.
+    Client fills in the minimum they need to get the task done.
+
+    Part of the task description includes date/time ranges.
+
+minduration: 2hr
+
+daterange: {
+    minstartdate: 11 May 2023
+    maxenddate: 12 May 2023
+    }
+
+timerange: {
+    minstarttime: 9:00
+    maxendtime:  17:00
+    }
+
+    Service responds with one or more offers.
+
+    Each offer includes the minimum resources from the request, plus the maximum that available in the offer.
+
+        mincores: 4
+        maxcores: 8
+
+        minram: 80
+        maxram: 128
+
+    Each offer replaces the time ranges from the request with a specific time for the offer.
+
+minduration: 2hr
+maxduration: 4hr
+
+startdate: 11 May 2023
+starttime: 10:00
+
+    A service may return several offers at the same time.
+    It is up to the client to select the best one for their user.
+
+        11 May 10:00 => 2 hours, 4 cores, 80G memory
+
+        11 May 16:00 => 1 hours, 8 cores, 128G memory
+
+    If you extend the date and time ranges you might be offered larger allocation.
+
+        13 May 02:00 => 12 hours, 48 cores, 512G memory
+
+
+    The ExecRunner service can be a simple extension of UWS.
+    Simply POST the task description from the offer as the UWS job.
+
+    The ExecPlanner may include additional propeties and tokens in the offer
+    which are only relevant to that ExecRunner.
+
+    The UWS response contains details of the running task.
+
+    If the task has a user interface, eg a JupyterHub, the UWS response contains an endpoint URL to access it.
+
+    Adding an asynchronous step means there is a UWS job that represents the running task.
+    So the client can monitor the status and cancel the job, releasing the resources
+    even if the JupyterHub becomes unresponsive.
+
+Some projects may choose to have a single ExecPlanner and a single ExecRunner service.
+All requests go through the same ExecPlanner and ExecRunner service.
+
+A project may choose to have a single ExecPlanner and multiple ExecRunner services.
+All requests go through the same ExecPlanner, which load balances the tasks between the ExecRunner.
+
+A project may choose to have a multiple ExecPlanner and multiple ExecRunner services.
+The client sends requests to all of the ExecPlanner services and selects the best offer from the responses.
+
+    The API is the same.
+
+
+
