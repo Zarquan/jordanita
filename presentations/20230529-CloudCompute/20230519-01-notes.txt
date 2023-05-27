@@ -1,0 +1,771 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2023, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+# AIMetrics: [{"name": "ChatGPT","contribution": {"value": 0,"units": "%"}}]
+#
+
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Timetable
+    https://indico.icc.ub.edu/event/132/timetable/#20230529.detailed
+
+    Open Clouds for Research Environments (OCRE)
+    https://www.ocre-project.eu/
+
+    https://www.ocre-project.eu/services/cloud-suppliers
+
+    Clam shell packaging
+    https://www.google.com/search?q=clam+shell+packaging&tbm=isch
+
+    Beige computer
+    https://www.google.com/search?q=beige+computer&tbm=isch
+
+    https://en.wikipedia.org/wiki/Beige_box
+    https://en.wikipedia.org/wiki/White_box_(computer_hardware)
+
+
+# -----------------------------------------------------
+
+Email Keith/Mark
+
+Hiya,
+
+I'm doing some background research for a talk on cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+How much cloud-compute does Euclid use, and what kind of applications is it used for ?
+
+In your mind, is there a difference between regular batch jobs run on IRIS computers and on-demand compute for one-off specific tasks ?
+Are they both cloud-compute, or does the term have a specific meaning in this context ?
+
+Cheers,
+-- Dave
+
+# -----------------------------------------------------
+
+Email
+Cambridge Paul Browne
+Sommerville ..
+Elanor ..
+
+Hiya,
+
+I'm doing some background research for a talk on cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+How much of your resources are are used for HCP platforms and how much are used for cloud-compute, and is the level of resources for cloud-compute growing ?
+
+What proportion of your cloud-compute resources are used by large projects like Gaia and Euclid using big blocks of resources
+compared to individual researchers setting up their own on-demand compute for one-off specific tasks ?
+
+In your experience, how many end-users use cloud-compute platforms directly ?
+By that I mean researchers logging on to a cloud-compute platform themselves and setting their own machines to host their work rather
+than using something like a JupyterHub service that has been deployed on a cloud-compute platform.
+
+Cheers,
+-- Dave
+
+# -----------------------------------------------------
+
+Email
+LSST ..
+SKA Severin
+ESO ..
+ESA ..
+ESAC ..
+CDS Mark
+Gaia DPAC (ask Nigel for who to ask)
+
+Hiya,
+
+I'm doing some background research for a talk on cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+LSST specific
+Do you know what was behind the decision by Rubin team to host part of the RSP on Google cloud ?
+Do you think it is going to become more common for science projects to use commercial platforms in the future ?
+
+How many of the projects you are involved in use cloud-compute services ?
+And do you know what mix of in-house services, academic platforms like EOSC, and commercial platforms like Amazon, Azure and Google do they use ?
+
+Cheers,
+-- Dave
+
+
+# -----------------------------------------------------
+
+Science platform providers
+
+Hiya,
+
+I'm doing some background research for a talk on cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+I think all of the system represented in the science-platforms sessions at the IVOA interop are deployed on some kind of cloud-compute platform.
+In each of these cases the main usethe user is using cloud-compute indirectly. They are using a service that happens to be deployed on a cloud-compute, but as end users, they don't interact with the underlying cloud-compute platform.
+
+In your experience, how many of your colleagues use cloud-compute platforms directly ?
+By that I mean actually logging on to a cloud-compute platform and setting their own machines to host their work.
+
+I'd be interested to hear what your experience is.
+
+Cheers,
+-- Dave
+
+# -----------------------------------------------------
+
+ORCID
+https://support.orcid.org/hc/en-us/articles/360006897574-ORCID-security
+We use ... Rackspace and AWS to host our data and servers.
+
+Overleaf
+https://www.overleaf.com/legal
+... Google Cloud Platform, which provides our main storage space ..
+
+# -----------------------------------------------------
+
+
+
+
+
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Hi Amanda,
+
+You might not remember my email address, but we sometimes share the same office.
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+Many of us have emails in GMail our Office365 and we all use GoogleDocs or Sharepoint at some point, or services such as ORCID, or Overleaf. In each of these examples, the user is using cloud-compute indirectly. They are using a service that happens to be deployed on a cloud-compute, but as end users, they don't interact with the underlying cloud-compute platform.
+
+Many researchers use notebook services like JupyterHub or RStudio that enable users to run their code on a remote platform. This represents a half way case where the main user interaction is with the science platform rather than the underlying cloud-compute platform itself., and some researchers interact directly with the cloud-compute platform,  setting up their own machines to host their work.
+
+In your experience, how many of your colleagues use cloud-compute platforms directly or indirectly ?
+
+Do you use cloud-compute platforms yourself ? I'd be interested to hear what your experience is.
+
+Thanks,
+-- Dave
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Ada Nebot <ada.nebot@astro.unistra.fr>
+Hi Ada,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+I think all of the system represented at the science-platforms sessions at the IVOA interop are deployed on cloud-compute platforms. In these systems the main user interaction is with the science platform rather than the underlying cloud-compute platform itself. On the other hand there are some researchers interact directly with the cloud-compute platform, setting up their own machines to host their work.
+
+How many of your colleagues use cloud-compute platforms directly or indirectly ?
+
+Do you use any cloud-compute platforms yourself ? If so I'd be interested to hear what your experience is.
+
+Thanks,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Omar Laurino <olaurino@cfa.harvard.edu>
+Hi Omar,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+I think all of the system represented at the science-platforms sessions at the IVOA interop are deployed on some kind of cloud-compute platform. However, the main user interaction is with the science platform rather than the underlying cloud-compute platform itself. On the other hand there are some researchers interact directly with the cloud-compute platform, setting up their own machines to host their work.
+
+Do you know how many of your colleagues use cloud-compute platforms either directly or indirectly ?
+
+What range of cloud-compute platforms are available for you to use, in-house, external academic and external commercial, and which ones do you prefer and why ?
+
+I'd be interested to hear what your experience is.
+
+Thanks,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Kai Polsterer <Kai.Polsterer@h-its.org>
+Hi Kai,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+I think all of the system represented at the science-platforms sessions at the IVOA interop are deployed on some kind of cloud-compute platformwhere the main user interaction is with the science platform rather than the underlying cloud-compute platform itself. On the other hand there are some researchers interact directly with the cloud-compute platform, setting up their own machines to host their work.
+
+Do you know how many of your colleagues use cloud-compute platforms either directly or indirectly ?
+
+What range of cloud-compute platforms are available for you to use, in-house, external academic and external commercial, and which ones do you prefer and why ?
+
+I'd be interested to hear what your experience is.
+
+Thanks,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Brian Major <brian.major@nrc-cnrc.gc.ca>
+
+Hi Brian,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+I think all of the system represented at the science-platforms sessions at the IVOA interop are deployed on some kind of cloud-compute platform, but the main user interaction is with the science platform rather than the underlying cloud-compute service.
+
+As I understand it your platform offers several different levels of access. Some researchers can use the science platform to deploy their own Docker containers, and some will interact directly with the cloud-compute platform, setting up their own machines to host their work.
+
+How many of your users interact with the cloud-compute platform either directly or indirectly and what level of expertise do they need to be able to use it this way ?
+
+I'd be interested to hear what your experience is.
+
+Thanks,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Dennis Crake <dennis.crake@ed.ac.uk>
+Hi Dennis,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+The Gaia Data Mining platform we have been working on is deployed on a cloud-compute platform at Cambridge. However as an end-user your interaction are with the notebook service which insulates you from the details of the underlying cloud-compute platform.
+
+I'm interested in looking at this junction between low-level cloud-compute platforms and the higher level platforms like the Zeppelin notebooks we are using for the Gaia DMp.
+
+Have you or your colleagues ever worked directly with a cloud-compute platform to deploy your own Docker containers or configure your own virtual machines ?
+
+Will the higher level platforms like the Gaia DMp become the main way that researchers interact with the compute platforms, or will there be some cases where lower level direct access to the cloud-compute is better ?
+
+I'd be interested to hear what your thoughts are.
+
+Thanks,
+-- Dave
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+Amy Krause <a.krause@epcc.ed.ac.uk>
+Hi Amy,
+
+I'm doing some background research for a talk on how people use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+The Gaia Data Mining platform we are working on is deployed on a cloud-compute platform, but the end-users never interact directly with it. All the end-user interaction is with the notebook service, which insulates them from the details of the underlying cloud-compute platform.
+
+I'm interested in looking at this junction between low-level cloud-compute platforms and the higher level platforms like the Zeppelin and Jupyter notebooks.
+
+In your experience, how common is it for ressearchers to work directly with a cloud-compute platform, deploying their own Docker containers or configure their own virtual machines ?
+
+As research software engineers our job is to provide that higher layer of abstraction and insulation from the underlying details. I'm curious whether the higher level platforms like the Gaia DMp become the main way that researchers interact with compute platforms, or will there be some cases where lower level direct access to the cloud-compute is better ?
+
+I'd be interested to hear what your thoughts are.
+
+Thanks,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+Paul Browne <pfb29@cam.ac.uk>
+
+Hi Paul,
+
+I'm doing some background research for a talk on how researchers use cloud-compute and I'd be grateful if you could answer some questions from your perspective.
+
+The Gaia Data Mining platform we are working on is deployed on your cloud-compute platform, but the end-users never interact directly with it. All the end-user interaction is with the notebook service, which insulates them from the details of the underlying cloud-compute platform.
+
+I'm interested in looking at this junction between cloud-compute platforms and the higher level science platforms like the Zeppelin and Jupyter notebooks we use in the Gaia DMp.
+
+In your experience, how common is it for researchers to work directly with the Openstack cloud-compute platform, deploying their own Docker containers or configuring their own virtual machines ?
+
+I'm curious whether you think that science platforms like the Gaia DMp will become the main way that researchers interact with compute platforms, or will many of them prefer to have direct access to the cloud-compute platform themselves ?
+
+I'd be interested to hear what your thoughts are.
+
+Cheers,
+-- Dave
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+
+
+is.helpline@ed.ac.uk
+https://www.wiki.ed.ac.uk/display/ResearchServices/Consultancy
+
+
+Sara
+Marco
+Giuliano Taffoni <giuliano.taffoni@inaf.it>
+
+Jutta schnabel
+Mark Kettenis
+Klaas Kliffen
+Steve Groom
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+
+    Researchers want to concentrate on the science.
+
+        Cloud compute represents a cost.
+        Less costs than taking care of the physical machines,
+        but still a cost
+
+        A cost in terms of learning how to configure the machines and keep them running.
+
+    Some history - how we got here
+
+        Mainframe - huge big box, timeshare with other users
+        Single big outlay for the institute
+
+
+    Desktop PC revolution
+
+        IBM desktop personal computer
+        1990 IBM PC - one per person
+        2000 beige box - generic comodity
+        2000 SuperMicro 19' server -  generic 19' server
+
+        SuperMicro 1U 19' server
+        https://www.supermicro.com/sites/default/files/product_lines/single_processor_group_type_5.png
+        https://www.supermicro.com/sites/default/files/2023-05/SYS-111C-NR-Xeon.JPG
+
+        Intel Xeon multiple core cpu.
+        Dual processor motherboard.
+
+
+    Virtualization
+
+        Run many virtual PC (beige box) on one rack server
+        Based on the assumption that load is intermittent
+        When one application is under load another is idle
+
+        Kind of like mainframe timeshare .... but different.
+
+        For me this represented an escape from the rules.
+        I could have any OS, I could be root, and I got a public IP address.
+        All three were limited to special cases in most institutes.
+
+        Story - demo of Docker, ran a VM on cloud,
+        audience were suprised that I got a public IP address.
+        All academic departments are short of public IP addresses.
+
+
+    Containerization
+
+        Shipping container image is a mis-nomer
+
+        Yes, in terms of the standard API, containers made things easy to install.
+        Standard Docker image - multiple containers packed onto a single ship
+        Yes, it makes the rest of the infrastructure simpler.
+        It was seen as disruptive in the same way that real freight containers were disruptive.
+
+        .. but the scale is wrong
+        Containers are small lightweight packages
+        A plastic clam shell is perhaps a better visual analogy
+        New image to help us imagine - a plastic clam shell with fruit in it
+
+        OLD
+        https://en.wikipedia.org/wiki/Container_ship#/media/File:MAERSK_MC_KINNEY_M%C3%96LLER_&_MARSEILLE_MAERSK_(48694054418).jpg
+        https://en.wikipedia.org/wiki/Containerization#/media/File:Line3174_-_Shipping_Containers_at_the_terminal_at_Port_Elizabeth,_New_Jersey_-_NOAA.jpg
+        https://en.wikipedia.org/wiki/Containerization#/media/File:Shanghai_Express_Port_of_Rotterdam_17-Apr-2006.jpg
+        https://cdn.shopify.com/s/files/1/0120/4849/8752/articles/iStock-1284852950_2000x.jpg?v=1618859184
+        https://moverfocus.com/wp-content/uploads/2019/08/Shipping-Containers.jpg
+        https://mccontainers.com/wp-content/uploads/2018/04/45-view-r-l.jpg
+
+        NEW
+        https://www.goodstartpackaging.com/12-oz-compostable-pla-vented-berry-containers-XXV00302/
+        https://cdn11.bigcommerce.com/s-l5dryyv/images/stencil/1280x1280/products/10255/10475/XXV00302-stacked-FBs__88331.1651759861.jpg
+
+        https://s.alicdn.com/@sc04/kf/H813a585fb02e41db9a9d3ed79d89cc74j.jpg_960x960.jpg
+        https://s.alicdn.com/@sc04/kf/Hfa50e651e04a4a9a864faaa5b325f6747.jpg_960x960.jpg
+        https://s.alicdn.com/@sc04/kf/Hb2913606c1a5484aa80c54c98f7adf5ei.jpg_960x960.jpg
+
+        https://www.yihaoplastic.com/supermarket-fruit-vegetable-packing-clear-plastic-food-disposable-container-product/
+        https://cdn.globalso.com/yihaoplastic/2fa8e27b12.jpg
+        https://cdn.globalso.com/yihaoplastic/bb9ad69415.jpg
+
+        Portable Modular Data Center (PMDC)
+        https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/msnbc/Components/Photos/061017/061017_project_blackbox_6a.jpg
+        https://www.datacenterknowledge.com/sites/datacenterknowledge.com/files/styles/article_featured_standard/public/wp-content/uploads/2009/03/hp-pod.jpg?itok=sCjVw7_9
+
+
+    Because of history
+
+        Docker was seen as a security risk
+        System admins didn't want to install Docker
+
+        ... but there was a loop hole
+        System admins were less strict about what you could run in a virtual machine
+        create a VM and install Docker was OK
+
+        bad actors getting root on the VM was less dangerous than getting root on the physical machine
+        VM can be deleted and re-created, physical machine is harder to wipe
+
+        Normal user could administer a virtual machine as root
+        Virtual beige box running on comodity 19# rack server
+        No restrictions on what you could put in the box
+        So running Docker as root was fine
+        Package research software in lightweight plastic clam shells
+        Run containers in the virtual machine
+
+        Layers of virtualizarion - because history
+
+        SuperMicro 19' rack running Linux - Unix like OS
+        Includes all the mainframe Unix support for multiple users running isolated processes
+
+        Running software that emulates/simulates beige boxes
+        Down to the level of detail of simulated network cards, video cards and hard discs ?
+        - because users are familiar with beige boxes
+        we can measure our software requirements in terms of beige boxes
+
+
+        IBM LinuxOne mainframe
+        https://venturebeat.com/data-infrastructure/ibm-upgrades-linux-mainframe-boosting-availability-and-ai-performance/
+
+            "The LinuxOne ... is all about Linux and to a large extent the Kubernetes cloud-native platform for container orchestration"
+
+
+
+    Low cost reliability
+
+        Hard discs - hig reliable discs were very expensive
+        Low cost solution
+        RAID - Redundant Array of Inexpensive Discs
+        RAID bocomes obiquitoius
+        Hardware RAID using controller cards
+        Software RAID using the OS
+
+    Distributed computting
+
+        Google MapReduce paper
+        Google file system
+
+        Amazon S3 simple storage service?
+
+    Putting them together
+
+        Yahoo Hadoop/Yarn
+        Yahoo HDFS
+
+        Comodity hardware
+
+            A stack of low cost reliable boxes
+            Beige box with discs running software RAID
+            Poor man's super computer
+
+            Redundant Array of Inexpensive Computers
+            - never really took off
+
+            Common name 'a cluster'
+
+            Always though of this as a pile of beige boxes
+            in the corner of a server room with bird's nest of wires
+            holding it all together
+
+        More recently
+
+            Cassandra - distributed database
+            Kafka - distributed data stream
+
+    Containers
+
+        We use the Docker container analogy for packaging them and emphasising the game changing aspect.
+        but the clam shell is closer to the truth
+
+    Problem
+        Beige boxes are cheap to buy but expensive to run
+    Solution
+        Virtual beige boxes running on a larger rack server.
+        19' SuperMicro rack server running Linux
+            A set of virtual beige boxes to create a 'cluster'
+
+            Running Docker as root on each of the beige boxes
+            Using Docker-compose to link them together
+
+            Starting to see 'virtual network' or 'software defined network' as a thing.
+
+    Step back in history
+        VPN using SSL technology
+        common to provide remote access to business network
+        laptops
+        every business traveller uses VPN for work
+
+    Container software network
+        Ties together multple machines (beige boxes)
+
+        Puts an agent on each machine
+        Network traffic routed between the agents
+        Tunneled across external public network wrapping packets in packets, or using tags and labels.
+        Makes it look like they are on the same network
+
+    Back to our solution
+
+        Warehouse full of racks.
+        Lots of 19' SuperMicro rack servers running Linux
+        New definition of comodity hardware
+
+        Virtual beige boxes running on the 19' SuperMicro.
+        CPU core count and memory rise to accomodate this
+            28 core
+            56 core
+            ...
+            dual processor mother board
+            ...
+
+        19' SuperMicro rack server running Linux
+
+        Sets of virtual beige boxes tied together to create a 'cluster'
+
+        Running Docker as root on each of the beige boxes
+        Using Docker-compose to link them together
+
+        'virtual network' or 'software defined network' make them appera to be on the same local network
+
+        Packaging software in lightweight plastic shells
+
+        New kid on the block - Kubernetes
+        Orchestration layer
+        Created by Google to manage the completixy of running multi-container applications.
+        Declarative style.
+        Define what you want, let the system figure out how.
+        Sounds very clever, in reality it is just software agents polling the state of things.
+
+        Helm charts - another layer of declarative description.
+
+
+    In the mean time ..
+
+        Heat becomes the main problem.
+        Heat exchangers and pumps become the critical technology that the user never sees.
+
+
+    Researchers want to concentrate on the science.
+    Researchers JUST want to concentrate on the science.
+
+        Make it simpler
+
+        SEP
+        A warehouse full of 19' SuperMicro rack machines.
+        System administrators keep these running.
+        Regardless of what task they are running.
+        Comodity hardware - just add another one by plugging it it.
+
+        SEP
+        Heat becomes someone else's (major) problem
+
+        SEP
+        Security - root on these machines is tightly controlled.
+
+        Portion up the room full of computers onto beige boxes.
+        because thats a unit that people are familar with
+
+        Pack software into plastic clam shell containers
+
+        SEP
+        Software providers can package their own things
+            Python container
+            Apache container
+            Postgresql container
+
+        Researchers can package their own code in the same way
+
+        Kubernetes and Helm charts combine plastic shell containers to create a system.
+
+        SEP
+        Magic stuff to make multiple beige boxes appear to be one 'space'
+        Label everything with a namespace, system keeps namespaces separate
+
+    Cloud computing
+
+        Gradual process of moving to comodity components
+        Making things easier to administer
+        Cost benefits of scale
+        Lots of cheap (ish) stuff
+
+        Adding layers of software to make 'units' that people can handle
+        Images needed to think about stuff.
+        Images needed to imagine.
+
+        At the lowest level it is a large Unix like OS time sharing between users.
+
+    Cloud computing
+
+        SEP
+        Large rooms full of comodity hardware
+        19' SuperMicro servers
+
+        Software to portion this up into beige boxes that people can manage
+        Software to combine multiple beige boxes into a single space
+
+        The shape of the space is no longer determined by the shape of the hardware.
+        - the cloud
+
+    Researchers want to concentrate on the science.
+    Researchers JUST want to concentrate on the science.
+
+        The next level.
+
+        Software as a Service
+        Services run by service providers
+
+            GMail
+            GoogleDocs
+
+            Office365
+            Overleaf
+            ORCID
+
+        Science platforms
+
+            RStudio
+            Jupyter notebooks
+            Zeppelin notebooks
+
+        The next level again.
+        Make these protable.
+
+            RSE wrap research software into deployable 'units'
+            Need an analogy for this ... Lego bricks ?
+
+            Market place for 'apps'.
+            One click deployment of a research application.
+
+            EOSC market place
+
+
+            DigitalOcean apps
+            https://cloud.digitalocean.com/apps?i=43578d
+
+            Serverless computing
+            https://github.com/digitalocean/sample-python
+
+
+            Not there yet.
+            This will be the next level.
+
+    Computing history
+
+        Packaging things in units that people can manage.
+        Describing thngs in languages that people can understand.
+
+
+    Funding evolves
+
+        Grants have a standard section for computing hardware.
+        2010's
+
+        University Openstack available, but own hardware was more normal.
+
+        EU - EOSC
+        UK - STFC IRIS
+        ...
+
+        Norm is/will be to use cloud compute.
+        Will need to justify custom hardware special case.
+
+
+    DevOps
+        cattle not pets
+
+
+
+
+    Levels of utility
+
+        Utility computing
+        https://en.wikipedia.org/wiki/Utility_computing
+
+        Pay for what you use on demand rather than a capital investment
+
+        Infrastructure_as_a_service
+        https://en.wikipedia.org/wiki/Infrastructure_as_a_service
+
+            Service provider runs the machines, physical network,
+            storage (inc. backup), power and cooling.
+
+            Hypervisor provides virtual machines for the user.
+            e.g. Openstack
+
+            SuperMicro => BeigeBox
+
+        Platform_as_a_service
+        https://en.wikipedia.org/wiki/Platform_as_a_service
+
+            Middle
+
+        Software_as_a_service
+        https://en.wikipedia.org/wiki/Software_as_a_service
+
+            Software hosted as a service, managed by system admins.
+            Users login via a thin client (web browser).
+
+            Science platforms (IVOA)
+            Rubin RSP
+            GaiaDMp
+            CADC
+            ...
+            BigData is colocated within the service.
+
+            JupyterHub
+            Zeppelin
+
+            GoogleDocs
+            GoogleMail
+            Overleaf
+            ORCID
+
+        Serverless_computing
+        https://en.wikipedia.org/wiki/Serverless_computing
+
+            I haven't seen anyone heading in this direction for science research.
+            Reseach combines comute and data.
+            Serverless co-located with data becomes SaaS.
+
+
+    Create a Kubernetes cluster (select the size and number of nodes (BeigeBoxes))
+    https://cloud.digitalocean.com/kubernetes/clusters/new
+
+
+
+
