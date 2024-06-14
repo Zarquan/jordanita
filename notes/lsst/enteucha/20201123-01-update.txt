@@ -1,0 +1,1670 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+    Target:
+
+        Update the build scripts and run the tests.
+
+    Source:
+
+        Starting from previous notes:
+        doc/notes/zrq/20200804-01-restesting.txt
+
+# -----------------------------------------------------
+
+    ....
+    ....
+
+# -----------------------------------------------------
+# Build our Enteucha source code.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        mvn clean compile test-compile
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 6.546 s
+    >   [INFO] Finished at: 2020-11-23T15:02:57Z
+    >   [INFO] Final Memory: 23M/1558M
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal on project enteucha:
+    >       Could not resolve dependencies for project uk.ac.roe.wfau.enteucha:enteucha:war:1.0:
+    >           The following artifacts could not be resolved:
+    >               uk.ac.roe.wfau:firethorn-spring:pom:2.1.25,
+    >               uk.ac.roe.wfau:firethorn-logging:pom:2.1.25,
+    >               uk.ac.roe.wfau:firethorn-jdbc:pom:2.1.25:
+    >                   Failure to find uk.ac.roe.wfau:firethorn-spring:pom:2.1.25 in http://data.metagrid.co.uk/wfau/maven/firethorn was cached in the local repository,
+    >                   resolution will not be reattempted until the update interval of firethorn-cache has elapsed or updates are forced -> [Help 1]
+
+    #
+    # Looks like the Enteucha cdoe base referred to an old version of the Firethorn packages.
+    # I did some housekeeping on the Firethorn project and deleted the old packages.
+    #
+    # Fix is to update the dependencies in Enteucha.
+    #
+
+
+# -----------------------------------------------------
+# Update the Firethorn dependencies in Enteucha.
+# https://stackoverflow.com/questions/7959499/force-re-download-of-release-dependency-using-maven
+# https://stackoverflow.com/a/8624906
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi pom.xml
+
+        -   <firethorn.version>2.1.25</firethorn.version>
+        +   <firethorn.version>2.1.36</firethorn.version>
+
+        mvn dependency:purge-local-repository
+
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 8.797 s
+    >   [INFO] Finished at: 2020-11-23T15:24:12Z
+    >   [INFO] Final Memory: 28M/1566M
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal org.apache.maven.plugins:maven-dependency-plugin:3.1.1:purge-local-repository (default-cli) on project enteucha:
+    >       Failed to refresh project dependencies for: uk.ac.roe.wfau.enteucha:enteucha:war:1.0: required artifacts missing:
+    >   [ERROR]   edu.jhu.htm:htmid:jar:3.0.1
+
+
+# -----------------------------------------------------
+# Build the JHU library.
+#[user@builder]
+
+    pushd /var/local/build/jhu-htmid
+        mvn clean install -D 'skipTests=true'
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 2.821 s
+    >   [INFO] Finished at: 2020-11-23T15:26:00Z
+    >   [INFO] Final Memory: 33M/1580M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Build our Enteucha source code.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        mvn -U clean compile test-compile
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 1.220 s
+    >   [INFO] Finished at: 2020-11-23T15:27:27Z
+    >   [INFO] Final Memory: 21M/1557M
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal on project enteucha:
+    >       Could not resolve dependencies for project uk.ac.roe.wfau.enteucha:enteucha:war:1.0:
+    >           The following artifacts could not be resolved:
+    >               uk.ac.roe.wfau:firethorn-spring:pom:2.1.36,
+    >               uk.ac.roe.wfau:firethorn-logging:pom:2.1.36,
+    >               uk.ac.roe.wfau:firethorn-jdbc:pom:2.1.36:
+    >                   Failure to find uk.ac.roe.wfau:firethorn-spring:pom:2.1.36 in http://data.metagrid.co.uk/wfau/maven/firethorn was cached in the local repository,
+    >                   resolution will not be reattempted until the update interval of firethorn-cache has elapsed or updates are forced
+
+
+
+# -----------------------------------------------------
+# Fix the Firethorn repository URLs in Enteucha.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi pom.xml
+
+            ....
+            ....
+
+        git diff
+
+    popd
+
+    >   diff --git a/pom.xml b/pom.xml
+    >   index bb9aa9d..492862c 100644
+    >   --- a/pom.xml
+    >   +++ b/pom.xml
+    >   @@ -73,7 +73,7 @@
+    >   
+    >        <properties>
+    >   
+    >   -        <firethorn.version>2.1.25</firethorn.version>
+    >   +        <firethorn.version>2.1.36</firethorn.version>
+    >   
+    >            <!--+
+    >                | Generate checksums.
+    >   @@ -111,7 +111,7 @@
+    >            <repository>
+    >                <id>firethorn-cache</id>
+    >                <name>Repository for Firethorn components</name>
+    >   -            <url>http://data.metagrid.co.uk/wfau/maven/firethorn</url>
+    >   +            <url>http://data.metagrid.co.uk/wfau/maven/firethorn/firethorn</url>
+    >                <layout>default</layout>
+    >            </repository>
+    >   
+    >   @@ -121,7 +121,7 @@
+    >            <repository>
+    >                <id>external-cache</id>
+    >                <name>Cache for 3rd party components</name>
+    >   -            <url>http://data.metagrid.co.uk/wfau/maven/external</url>
+    >   +            <url>http://data.metagrid.co.uk/wfau/maven/firethorn/external</url>
+    >                <layout>default</layout>
+    >            </repository>
+    >   
+    >   @@ -133,7 +133,7 @@
+    >            <repository>
+    >                <id>external-archive</id>
+    >                <name>Archive for 3rd party components</name>
+    >   -            <url>http://data.metagrid.co.uk/wfau/maven/archive</url>
+    >   +            <url>http://data.metagrid.co.uk/wfau/maven/firethorn/archive</url>
+    >                <layout>default</layout>
+    >            </repository>
+
+
+# -----------------------------------------------------
+# Try the build again ...
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        mvn clean compile test-compile
+
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 2.386 s
+    >   [INFO] Finished at: 2020-11-23T15:35:26Z
+    >   [INFO] Final Memory: 37M/1577M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+
+
+# -----------------------------------------------------
+# Collect our classpath.
+# https://stackoverflow.com/questions/16655010/in-maven-how-output-the-classpath-being-used
+# https://stackoverflow.com/a/27451672
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        mvn \
+            dependency:build-classpath \
+            -D 'mdep.outputFile=/tmp/classpath.txt'
+
+    popd
+
+
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 0.937 s
+    >   [INFO] Finished at: 2020-08-04T10:47:17Z
+    >   [INFO] Final Memory: 33M/1963M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Build our classpath.
+#[user@builder]
+
+    classpath=$(cat /tmp/classpath.txt)
+    classpath=/var/local/build/enteucha/target/classes:${classpath}
+    classpath=/var/local/build/enteucha/target/test-classes:${classpath}
+
+    echo "Classpath [${classpath:?}]"
+
+    >   Classpath [/var/local/build/enteucha/target/test-classes:/var/local/build/enteucha/target/classes:/var/local/cache/maven/....]
+
+
+# -----------------------------------------------------
+# Update logging config.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        pushd target/test-classes
+
+            vi logback.xml
+
+                <!--+
+                    | Enteucha logging.
+                    +-->
+                <logger name="uk.ac.roe.wfau.enteucha">
+            -       <level value="DEBUG"/>
+            +       <level value="INFO"/>
+                </logger>
+
+
+        popd
+    popd
+
+
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=10
+
+            ~   enteucha.select.min=10
+            ~   enteucha.insert.max=10
+
+                enteucha.radius.min=4
+                enteucha.radius.max=4
+
+            ~   enteucha.range.min=6
+            ~   enteucha.range.max=6
+
+                enteucha.zone.min=6
+                enteucha.zone.max=6
+
+                enteucha.target.ra=0
+                enteucha.target.dec=0
+
+    popd
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@desktop]
+
+    pushd /var/local/build/enteucha
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+    >   ....
+    >   ....
+    >   15:37:46.599 INFO  Radius [4][2^(-4) = 0.0625]
+    >   15:37:46.646 INFO  Class [HsqlHtmidMatcherImpl] Total rows [4,198,401] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   15:37:46.647 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][46ms], average [4.637ms][4,636.792us] FAIL
+    >   15:37:46.647 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>46</timesum><timeavg>4.637</timeavg></data-row>
+
+
+    >   ....
+    >   ....
+    >   15:38:44.810 INFO  Radius [4][2^(-4) = 0.0625]
+    >   15:38:44.940 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   15:38:44.941 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][129ms], average [12.978ms][12,978.399us] FAIL
+    >   15:38:44.942 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>129</timesum><timeavg>12.978</timeavg></data-row>
+    >   ....
+    >   ....
+    >   15:39:11.208 INFO  Radius [4][2^(-4) = 0.0625]
+    >   15:39:11.278 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   15:39:11.279 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][70ms], average [7.014ms][7,014.300us] FAIL
+    >   15:39:11.279 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>70</timesum><timeavg>7.014</timeavg></data-row>
+    >   ....
+    >   ....
+    >   15:39:35.379 INFO  Radius [4][2^(-4) = 0.0625]
+    >   15:39:35.440 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   15:39:35.441 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][61ms], average [6.110ms][6,110.175us] FAIL
+    >   15:39:35.441 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>61</timesum><timeavg>6.110</timeavg></data-row>
+
+
+    >   ....
+    >   ....
+    >   15:42:50.017 INFO  Radius [4][2^(-4) = 0.0625]
+    >   15:42:50.029 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [2049]  avg size [2049] min [2049] max [2049]
+    >   15:42:50.030 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][9ms], average [0.983ms][983.098us] PASS
+    >   15:42:50.030 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>9</timesum><timeavg>0.983</timeavg></data-row>
+
+
+
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=10
+
+            +   enteucha.select.min=12
+            +   enteucha.insert.max=12
+
+            -   enteucha.radius.min=3
+            +   enteucha.radius.max=5
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+                enteucha.zone.min=6
+                enteucha.zone.max=6
+
+                enteucha.target.ra=0
+                enteucha.target.dec=0
+
+    popd
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@desktop]
+
+    pushd /var/local/build/enteucha
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+    >   ....
+    >   ....
+    >   16:09:45.908 INFO  Radius [3][2^(-3) = 0.125]
+    >   16:09:45.996 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:09:45.997 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][87ms], average [8.759ms][8,759.153us] FAIL
+    >   16:09:45.997 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>87</timesum><timeavg>8.759</timeavg></data-row>
+    >   16:09:45.997 INFO  ---- ----
+    >   16:09:45.997 INFO  Radius [4][2^(-4) = 0.0625]
+    >   16:09:46.009 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:09:46.010 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][11ms], average [1.169ms][1,169.110us] FAIL
+    >   16:09:46.010 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>11</timesum><timeavg>1.169</timeavg></data-row>
+    >   16:09:46.010 INFO  ---- ----
+    >   16:09:46.010 INFO  Radius [5][2^(-5) = 0.03125]
+    >   16:09:46.016 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:09:46.017 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][5ms], average [0.600ms][599.513us] PASS
+    >   16:09:46.017 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.600</timeavg></data-row>
+
+    >   ....
+    >   ....
+    >   16:19:14.934 INFO  Radius [3][2^(-3) = 0.125]
+    >   16:19:16.888 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:19:16.889 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,953ms], average [195.398ms][195,397.542us] FAIL
+    >   16:19:16.890 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1953</timesum><timeavg>195.398</timeavg></data-row>
+    >   16:19:16.890 INFO  ---- ----
+    >   16:19:16.890 INFO  Radius [4][2^(-4) = 0.0625]
+    >   16:19:17.855 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:19:17.855 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][964ms], average [96.426ms][96,425.763us] FAIL
+    >   16:19:17.855 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>964</timesum><timeavg>96.426</timeavg></data-row>
+    >   16:19:17.856 INFO  ---- ----
+    >   16:19:17.856 INFO  Radius [5][2^(-5) = 0.03125]
+    >   16:19:18.375 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:19:18.375 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][518ms], average [51.860ms][51,860.274us] FAIL
+    >   16:19:18.375 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>518</timesum><timeavg>51.860</timeavg></data-row>
+    >   ....
+    >   ....
+    >   16:28:00.822 INFO  Radius [3][2^(-3) = 0.125]
+    >   16:28:02.547 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:28:02.547 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,724ms], average [172.429ms][172,428.682us] FAIL
+    >   16:28:02.548 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1724</timesum><timeavg>172.429</timeavg></data-row>
+    >   16:28:02.548 INFO  ---- ----
+    >   16:28:02.548 INFO  Radius [4][2^(-4) = 0.0625]
+    >   16:28:03.482 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:28:03.482 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][933ms], average [93.352ms][93,352.073us] FAIL
+    >   16:28:03.482 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>933</timesum><timeavg>93.352</timeavg></data-row>
+    >   16:28:03.483 INFO  ---- ----
+    >   16:28:03.483 INFO  Radius [5][2^(-5) = 0.03125]
+    >   16:28:03.974 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:28:03.974 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][490ms], average [49.065ms][49,064.560us] FAIL
+    >   16:28:03.974 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>490</timesum><timeavg>49.065</timeavg></data-row>
+    >   ....
+    >   ....
+    >   16:38:15.991 INFO  Radius [3][2^(-3) = 0.125]
+    >   16:38:17.907 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:38:17.907 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,915ms], average [191.581ms][191,580.751us] FAIL
+    >   16:38:17.907 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1915</timesum><timeavg>191.581</timeavg></data-row>
+    >   16:38:17.907 INFO  ---- ----
+    >   16:38:17.907 INFO  Radius [4][2^(-4) = 0.0625]
+    >   16:38:18.843 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:38:18.843 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][935ms], average [93.512ms][93,512.139us] FAIL
+    >   16:38:18.843 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>935</timesum><timeavg>93.512</timeavg></data-row>
+    >   16:38:18.844 INFO  ---- ----
+    >   16:38:18.844 INFO  Radius [5][2^(-5) = 0.03125]
+    >   16:38:19.333 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   16:38:19.334 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][489ms], average [48.956ms][48,955.718us] FAIL
+    >   16:38:19.334 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>489</timesum><timeavg>48.956</timeavg></data-row>
+
+    >   18:28:21.495 INFO  Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@4493d195: startup date [Mon Nov 23 18:28:21 UTC 2020]; root of context hierarchy
+    >   18:28:21.533 INFO  Loading XML bean definitions from class path resource [component-config.xml]
+    >   18:28:22.006 INFO  ---- Finalize
+    >   18:28:22.108 INFO  ---- Running gc
+    >   18:28:22.393 INFO  Target [0.0][0.0]
+    >   18:28:22.397 INFO  <outerloop target='0.0,0.0'>
+    >   18:28:22.398 INFO  ---- ----
+    >   18:28:22.403 INFO  Insert [0][3][9]
+    >   18:28:22.406 INFO  Insert [1][5][25]
+    >   18:28:22.410 INFO  Insert [2][9][81]
+    >   18:28:22.416 INFO  Insert [3][17][289]
+    >   18:28:22.428 INFO  Insert [4][33][1,089]
+    >   18:28:22.443 INFO  Insert [5][65][4,225]
+    >   18:28:22.467 INFO  Insert [6][129][16,641]
+    >   18:28:22.549 INFO  Insert [7][257][66,049]
+    >   18:28:23.195 INFO  Insert [8][513][263,169]
+    >   18:28:26.779 INFO  Insert [9][1,025][1,050,625]
+    >   18:28:52.384 INFO  Insert [10][2,049][4,198,401]
+    >   18:31:30.698 INFO  Insert [11][4,097][16,785,409]
+    >   18:49:13.330 INFO  Insert [12][8,193][67,125,249]
+    >   ...
+    >   ...
+
+    The CQZoneMatcherTestCase locks up during the insert.
+
+        java \
+            -Xmx300g \
+            -Xms300g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+
+    >   ....
+    >   ....
+    >   22:37:41.189 INFO  Radius [3][2^(-3) = 0.125]
+    >   22:37:41.248 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   22:37:41.249 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][52ms], average [5.283ms][5,282.734us] FAIL
+    >   22:37:41.249 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>52</timesum><timeavg>5.283</timeavg></data-row>
+    >   22:37:41.250 INFO  ---- ----
+    >   22:37:41.250 INFO  Radius [4][2^(-4) = 0.0625]
+    >   22:37:41.265 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   22:37:41.269 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][11ms], average [1.135ms][1,135.098us] FAIL
+    >   22:37:41.269 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>11</timesum><timeavg>1.135</timeavg></data-row>
+    >   22:37:41.270 INFO  ---- ----
+    >   22:37:41.270 INFO  Radius [5][2^(-5) = 0.03125]
+    >   22:37:41.283 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   22:37:41.283 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][8ms], average [0.895ms][895.089us] PASS
+    >   22:37:41.283 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>8</timesum><timeavg>0.895</timeavg></data-row>
+
+    #
+    # Need to allow the other comfigurations the same space.
+    #
+
+    xmxmem=300g
+    xmsmem=300g
+
+    pushd /var/local/build/enteucha
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+    CQZoneMatcherTestCase locks up if mem < 300g. Even though the host only has 240g free.
+
+    CQZoneMatcherTestCase is very sensitive to zone density ratio for data input.
+    As the overall density increases, the number of points per zone increases and the cost of inserting and indexing a data point increases.
+    Result is inserting a level 12 [67,125,249] million row datasets can take ~1hr.
+
+    Fix may be to have a 2D mapping, stripes within the zones ?
+
+    Here is where HTMID has an advantage, because it is hierarchical, stepping down to smaller and smaller cells have less and less data in them.
+    So the lowest level cells still have relatively small number of points in them.
+    Can we map the cell density to show this ?
+    A graph of number of cells against number of points in a cell, compared to the same for the zones.
+
+    Working at the huge range of scales we may end up with almost all the data spread across a small number of zones.
+    Worst case, all 67 million data points in one overcrowded zone.
+
+
+
+
+    >   ....
+    >   ....
+    >   02:09:56.525 INFO  ---- ----
+    >   02:09:56.525 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:09:56.623 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:09:56.624 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][98ms], average [9.814ms][9,813.810us] FAIL
+    >   02:09:56.624 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>98</timesum><timeavg>9.814</timeavg></data-row>
+    >   02:09:56.625 INFO  ---- ----
+    >   02:09:56.625 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:09:56.638 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:09:56.639 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][12ms], average [1.299ms][1,299.132us] FAIL
+    >   02:09:56.639 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>12</timesum><timeavg>1.299</timeavg></data-row>
+    >   02:09:56.639 INFO  ---- ----
+    >   02:09:56.639 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:09:56.646 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:09:56.646 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][6ms], average [0.603ms][602.805us] PASS
+    >   02:09:56.646 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>6</timesum><timeavg>0.603</timeavg></data-row>
+    >   bash-4.4$
+
+    >   ....
+    >   ....
+    >   02:20:14.660 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:20:16.669 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:20:16.670 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [2s][2,009ms], average [200.903ms][200,903.276us] FAIL
+    >   02:20:16.670 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>2009</timesum><timeavg>200.903</timeavg></data-row>
+    >   02:20:16.671 INFO  ---- ----
+    >   02:20:16.671 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:20:17.663 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:20:17.664 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][991ms], average [99.196ms][99,196.057us] FAIL
+    >   02:20:17.664 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>991</timesum><timeavg>99.196</timeavg></data-row>
+    >   02:20:17.664 INFO  ---- ----
+    >   02:20:17.664 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:20:18.205 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:20:18.206 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][540ms], average [54.081ms][54,080.965us] FAIL
+    >   02:20:18.206 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>540</timesum><timeavg>54.081</timeavg></data-row>
+    >   ....
+    >   ....
+    >   02:29:20.839 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:29:22.695 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:29:22.696 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,855ms], average [185.553ms][185,552.521us] FAIL
+    >   02:29:22.696 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1855</timesum><timeavg>185.553</timeavg></data-row>
+    >   02:29:22.697 INFO  ---- ----
+    >   02:29:22.697 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:29:23.630 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:29:23.631 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][932ms], average [93.290ms][93,289.789us] FAIL
+    >   02:29:23.631 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>932</timesum><timeavg>93.290</timeavg></data-row>
+    >   02:29:23.631 INFO  ---- ----
+    >   02:29:23.631 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:29:24.135 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:29:24.135 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][503ms], average [50.313ms][50,312.702us] FAIL
+    >   02:29:24.135 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>503</timesum><timeavg>50.313</timeavg></data-row>
+    >   ....
+    >   ....
+    >   02:39:34.858 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:39:36.751 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:36.752 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,893ms], average [189.341ms][189,340.763us] FAIL
+    >   02:39:36.752 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1893</timesum><timeavg>189.341</timeavg></data-row>
+    >   02:39:36.752 INFO  ---- ----
+    >   02:39:36.752 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:39:37.693 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:37.693 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][940ms], average [94.027ms][94,026.837us] FAIL
+    >   02:39:37.694 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>940</timesum><timeavg>94.027</timeavg></data-row>
+    >   02:39:37.694 INFO  ---- ----
+    >   02:39:37.694 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:39:38.203 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:38.203 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][508ms], average [50.877ms][50,876.769us] FAIL
+    >   02:39:38.203 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>508</timesum><timeavg>50.877</timeavg></data-row>
+
+    >   ....
+    >   ....
+    >   05:54:04.616 INFO  Radius [3][2^(-3) = 0.125]
+    >   05:54:04.667 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   05:54:04.668 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][45ms], average [4.539ms][4,538.995us] FAIL
+    >   05:54:04.668 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>45</timesum><timeavg>4.539</timeavg></data-row>
+    >   05:54:04.668 INFO  ---- ----
+    >   05:54:04.668 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:54:04.682 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   05:54:04.686 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][9ms], average [0.983ms][982.995us] PASS
+    >   05:54:04.687 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>9</timesum><timeavg>0.983</timeavg></data-row>
+    >   05:54:04.687 INFO  ---- ----
+    >   05:54:04.687 INFO  Radius [5][2^(-5) = 0.03125]
+    >   05:54:04.699 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   05:54:04.699 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][7ms], average [0.790ms][789.800us] PASS
+    >   05:54:04.699 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>7</timesum><timeavg>0.790</timeavg></data-row>
+
+
+# -----------------------------------------------------
+# Update the test settings, increasing the radius range.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=100
+
+                enteucha.select.min=12
+                enteucha.insert.max=12
+
+            -   enteucha.radius.min=2
+            +   enteucha.radius.max=6
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+                enteucha.zone.min=6
+                enteucha.zone.max=6
+
+                enteucha.target.ra=0
+                enteucha.target.dec=0
+
+    popd
+
+    reset
+
+    xmxmem=300g
+    xmsmem=300g
+
+    pushd /var/local/build/enteucha
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+
+    >   ....
+    >   ....
+    >   13:04:08.827 INFO  Radius [2][2^(-2) = 0.25]
+    >   13:04:08.992 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:04:08.993 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.25] found [793] in [10] loops, total [0s][164ms], average [16.487ms][16,487.074us] FAIL
+    >   13:04:08.994 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>793</found><repeat>10</repeat><timesum>164</timesum><timeavg>16.487</timeavg></data-row>
+    >   13:04:08.994 INFO  ---- ----
+    >   13:04:08.994 INFO  Radius [3][2^(-3) = 0.125]
+    >   13:04:09.018 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:04:09.019 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][23ms], average [2.376ms][2,375.722us] FAIL
+    >   13:04:09.019 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>23</timesum><timeavg>2.376</timeavg></data-row>
+    >   13:04:09.019 INFO  ---- ----
+    >   13:04:09.020 INFO  Radius [4][2^(-4) = 0.0625]
+    >   13:04:09.030 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:04:09.030 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][9ms], average [0.944ms][943.967us] PASS
+    >   13:04:09.030 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>9</timesum><timeavg>0.944</timeavg></data-row>
+    >   13:04:09.030 INFO  ---- ----
+    >   13:04:09.031 INFO  Radius [5][2^(-5) = 0.03125]
+    >   13:04:09.036 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:04:09.037 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][5ms], average [0.513ms][513.260us] PASS
+    >   13:04:09.037 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.513</timeavg></data-row>
+    >   13:04:09.037 INFO  ---- ----
+    >   13:04:09.037 INFO  Radius [6][2^(-6) = 0.015625]
+    >   13:04:09.042 INFO  Class [HsqlHtmidMatcherImpl] Total rows [67,125,249] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:04:09.042 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][4ms], average [0.423ms][423.279us] PASS
+    >   13:04:09.043 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.423</timeavg></data-row>
+
+
+    >   ....
+    >   ....
+    >   13:14:23.676 INFO  Radius [2][2^(-2) = 0.25]
+    >   13:14:27.216 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:14:27.217 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.25] found [793] in [10] loops, total [3s][3,538ms], average [353.884ms][353,883.965us] FAIL
+    >   13:14:27.218 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>793</found><repeat>10</repeat><timesum>3538</timesum><timeavg>353.884</timeavg></data-row>
+    >   13:14:27.218 INFO  ---- ----
+    >   13:14:27.218 INFO  Radius [3][2^(-3) = 0.125]
+    >   13:14:28.941 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:14:28.942 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,723ms], average [172.319ms][172,318.582us] FAIL
+    >   13:14:28.943 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1723</timesum><timeavg>172.319</timeavg></data-row>
+    >   13:14:28.943 INFO  ---- ----
+    >   13:14:28.943 INFO  Radius [4][2^(-4) = 0.0625]
+    >   13:14:29.818 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:14:29.818 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][874ms], average [87.462ms][87,462.116us] FAIL
+    >   13:14:29.819 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>874</timesum><timeavg>87.462</timeavg></data-row>
+    >   13:14:29.819 INFO  ---- ----
+    >   13:14:29.819 INFO  Radius [5][2^(-5) = 0.03125]
+    >   13:14:30.285 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:14:30.285 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][465ms], average [46.559ms][46,558.687us] FAIL
+    >   13:14:30.286 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>465</timesum><timeavg>46.559</timeavg></data-row>
+    >   13:14:30.286 INFO  ---- ----
+    >   13:14:30.286 INFO  Radius [6][2^(-6) = 0.015625]
+    >   13:14:30.536 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:14:30.537 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][250ms], average [25.015ms][25,014.928us] FAIL
+    >   13:14:30.537 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>250</timesum><timeavg>25.015</timeavg></data-row>
+    >   ....
+    >   ....
+    >   13:23:22.549 INFO  Radius [2][2^(-2) = 0.25]
+    >   13:23:25.884 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:23:25.885 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.25] found [793] in [10] loops, total [3s][3,334ms], average [333.491ms][333,491.177us] FAIL
+    >   13:23:25.885 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>793</found><repeat>10</repeat><timesum>3334</timesum><timeavg>333.491</timeavg></data-row>
+    >   13:23:25.885 INFO  ---- ----
+    >   13:23:25.885 INFO  Radius [3][2^(-3) = 0.125]
+    >   13:23:27.563 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:23:27.564 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,677ms], average [167.768ms][167,768.419us] FAIL
+    >   13:23:27.564 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1677</timesum><timeavg>167.768</timeavg></data-row>
+    >   13:23:27.564 INFO  ---- ----
+    >   13:23:27.564 INFO  Radius [4][2^(-4) = 0.0625]
+    >   13:23:28.425 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:23:28.425 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][860ms], average [86.002ms][86,001.508us] FAIL
+    >   13:23:28.425 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>860</timesum><timeavg>86.002</timeavg></data-row>
+    >   13:23:28.426 INFO  ---- ----
+    >   13:23:28.426 INFO  Radius [5][2^(-5) = 0.03125]
+    >   13:23:28.875 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:23:28.875 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][448ms], average [44.866ms][44,865.873us] FAIL
+    >   13:23:28.875 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>448</timesum><timeavg>44.866</timeavg></data-row>
+    >   13:23:28.876 INFO  ---- ----
+    >   13:23:28.876 INFO  Radius [6][2^(-6) = 0.015625]
+    >   13:23:29.117 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:23:29.118 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][241ms], average [24.138ms][24,138.483us] FAIL
+    >   13:23:29.118 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>241</timesum><timeavg>24.138</timeavg></data-row>
+    >   ....
+    >   ....
+    >   13:34:00.155 INFO  Radius [2][2^(-2) = 0.25]
+    >   13:34:03.282 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:34:03.283 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.25] found [793] in [10] loops, total [3s][3,126ms], average [312.633ms][312,633.030us] FAIL
+    >   13:34:03.284 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>793</found><repeat>10</repeat><timesum>3126</timesum><timeavg>312.633</timeavg></data-row>
+    >   13:34:03.284 INFO  ---- ----
+    >   13:34:03.284 INFO  Radius [3][2^(-3) = 0.125]
+    >   13:34:04.887 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:34:04.888 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [1s][1,603ms], average [160.315ms][160,314.940us] FAIL
+    >   13:34:04.888 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>1603</timesum><timeavg>160.315</timeavg></data-row>
+    >   13:34:04.888 INFO  ---- ----
+    >   13:34:04.888 INFO  Radius [4][2^(-4) = 0.0625]
+    >   13:34:05.725 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:34:05.729 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][835ms], average [83.572ms][83,572.443us] FAIL
+    >   13:34:05.729 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>835</timesum><timeavg>83.572</timeavg></data-row>
+    >   13:34:05.729 INFO  ---- ----
+    >   13:34:05.729 INFO  Radius [5][2^(-5) = 0.03125]
+    >   13:34:06.157 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:34:06.159 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][427ms], average [42.727ms][42,726.599us] FAIL
+    >   13:34:06.159 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>427</timesum><timeavg>42.727</timeavg></data-row>
+    >   13:34:06.160 INFO  ---- ----
+    >   13:34:06.160 INFO  Radius [6][2^(-6) = 0.015625]
+    >   13:34:06.408 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [67,125,249] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   13:34:06.409 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][247ms], average [24.705ms][24,705.209us] FAIL
+    >   13:34:06.409 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>247</timesum><timeavg>24.705</timeavg></data-row>
+
+
+    >   ....
+    >   ....
+    >   15:30:45.367 INFO  Insert [10][2,049][4,198,401]
+    >   15:33:58.750 INFO  Insert [11][4,097][16,785,409]
+    >   15:53:34.405 INFO  Insert [12][8,193][67,125,249]
+    >   ....
+    >   ....
+    >   16:39:53 - Ctrl^C -
+
+    CQZoneMatcherTestCase hangs again
+    Tue Nov 24 16:39:53 UTC 2020
+
+    xmxmem=350g
+    xmsmem=350g
+
+    java \
+        -Xmx${xmxmem:?} \
+        -Xms${xmsmem:?} \
+        -classpath "${classpath:?}" \
+        uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    Increasing the range of search radii should not cause the import to hang !?
+
+
+    >   ....
+    >   ....
+    >   19:57:23.456 INFO  Radius [2][2^(-2) = 0.25]
+    >   19:57:23.529 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   19:57:23.530 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.25] found [793] in [10] loops, total [0s][66ms], average [6.647ms][6,647.049us] FAIL
+    >   19:57:23.530 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>793</found><repeat>10</repeat><timesum>66</timesum><timeavg>6.647</timeavg></data-row>
+    >   19:57:23.530 INFO  ---- ----
+    >   19:57:23.530 INFO  Radius [3][2^(-3) = 0.125]
+    >   19:57:23.547 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   19:57:23.551 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.125] found [193] in [10] loops, total [0s][12ms], average [1.227ms][1,227.146us] FAIL
+    >   19:57:23.551 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>193</found><repeat>10</repeat><timesum>12</timesum><timeavg>1.227</timeavg></data-row>
+    >   19:57:23.551 INFO  ---- ----
+    >   19:57:23.551 INFO  Radius [4][2^(-4) = 0.0625]
+    >   19:57:23.564 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   19:57:23.564 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.0625] found [47] in [10] loops, total [0s][8ms], average [0.832ms][832.458us] PASS
+    >   19:57:23.565 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>47</found><repeat>10</repeat><timesum>8</timesum><timeavg>0.832</timeavg></data-row>
+    >   19:57:23.565 INFO  ---- ----
+    >   19:57:23.565 INFO  Radius [5][2^(-5) = 0.03125]
+    >   19:57:23.576 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   19:57:23.580 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.03125] found [11] in [10] loops, total [0s][7ms], average [0.707ms][707.399us] PASS
+    >   19:57:23.581 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>11</found><repeat>10</repeat><timesum>7</timesum><timeavg>0.707</timeavg></data-row>
+    >   19:57:23.581 INFO  ---- ----
+    >   19:57:23.581 INFO  Radius [6][2^(-6) = 0.015625]
+    >   19:57:23.590 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [8193]  avg size [8193] min [8193] max [8193]
+    >   19:57:23.591 INFO  Searched [67,125,249] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][5ms], average [0.578ms][577.653us] PASS
+    >   19:57:23.592 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>67125249</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.578</timeavg></data-row>
+
+    When it gets there, CQZoneMatcherTestCase is fast.
+    BUT, it took a long time indexing and inserting.
+
+    >   ....
+    >   16:41:52.249 INFO  Insert [9][1,025][1,050,625]
+    >   16:42:18.388 INFO  Insert [10][2,049][4,198,401]
+    >   16:45:32.182 INFO  Insert [11][4,097][16,785,409]
+    >   17:04:29.699 INFO  Insert [12][8,193][67,125,249]
+    >   19:57:23.454 INFO  Total  [12][(2^(12+1))+1 = 8193] => [8193^2 = 67125249]
+    >   ....
+
+    >   ....
+    >   17:04:29.699 INFO  Insert [12][8,193][67,125,249]
+    >   19:57:23.454 INFO  Total  [12][(2^(12+1))+1 = 8193] => [8193^2 = 67125249]
+    >   ....
+
+    Zone height [0.015625] count [8193] avg size [8193] min [8193] max [8193]
+
+    Inserting 67,125,249 into 8193 zones = 8193 per zone ?
+
+    So far .. zone size and zone count are the same !?
+
+
+
+# -----------------------------------------------------
+# Update the test settings, decreasing the total and increasing the number of zones.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=100
+
+            -   enteucha.select.min=11
+            -   enteucha.insert.max=11
+
+                enteucha.radius.min=2
+                enteucha.radius.max=6
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+            -   enteucha.zone.min=5
+            +   enteucha.zone.max=7
+
+                enteucha.target.ra=0
+                enteucha.target.dec=0
+
+        reset
+
+        xmxmem=300g
+        xmsmem=300g
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+
+
+
+
+    >   02:34:24.601 INFO  >>>>
+    >   02:34:24.602 INFO  ---- ----
+    >   02:34:24.602 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:34:24.706 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:34:24.707 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [193] in [10] loops, total [0s][103ms], average [10.362ms][10,361.876us] FAIL
+    >   02:34:24.707 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>103</timesum><timeavg>10.362</timeavg></data-row>
+    >   02:34:24.708 INFO  ---- ----
+    >   02:34:24.708 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:34:24.727 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:34:24.728 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [45] in [10] loops, total [0s][18ms], average [1.882ms][1,882.321us] FAIL
+    >   02:34:24.728 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>18</timesum><timeavg>1.882</timeavg></data-row>
+    >   02:34:24.729 INFO  ---- ----
+    >   02:34:24.729 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:34:24.738 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:34:24.738 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][8ms], average [0.856ms][855.564us] PASS
+    >   02:34:24.739 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>8</timesum><timeavg>0.856</timeavg></data-row>
+    >   02:34:24.739 INFO  ---- ----
+    >   02:34:24.739 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:34:24.745 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:34:24.745 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][5ms], average [0.546ms][546.324us] PASS
+    >   02:34:24.746 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.546</timeavg></data-row>
+    >   02:34:24.746 INFO  ---- ----
+    >   02:34:24.746 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:34:24.751 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:34:24.752 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][4ms], average [0.492ms][492.124us] PASS
+    >   02:34:24.752 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.492</timeavg></data-row>
+    >   02:34:24.753 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:36:05.471 INFO  >>>>
+    >   02:36:05.471 INFO  ---- ----
+    >   02:36:05.471 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:36:05.511 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:36:05.512 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [193] in [10] loops, total [0s][39ms], average [3.964ms][3,963.892us] FAIL
+    >   02:36:05.512 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>39</timesum><timeavg>3.964</timeavg></data-row>
+    >   02:36:05.512 INFO  ---- ----
+    >   02:36:05.512 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:36:05.526 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:36:05.526 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [45] in [10] loops, total [0s][13ms], average [1.325ms][1,324.630us] FAIL
+    >   02:36:05.527 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>13</timesum><timeavg>1.325</timeavg></data-row>
+    >   02:36:05.527 INFO  ---- ----
+    >   02:36:05.527 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:36:05.533 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:36:05.534 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][5ms], average [0.568ms][567.961us] PASS
+    >   02:36:05.534 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.568</timeavg></data-row>
+    >   02:36:05.534 INFO  ---- ----
+    >   02:36:05.534 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:36:05.538 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:36:05.539 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][4ms], average [0.401ms][400.758us] PASS
+    >   02:36:05.539 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.401</timeavg></data-row>
+    >   02:36:05.539 INFO  ---- ----
+    >   02:36:05.540 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:36:05.543 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:36:05.544 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][3ms], average [0.320ms][319.780us] PASS
+    >   02:36:05.544 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.320</timeavg></data-row>
+    >   02:36:05.544 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:37:11.268 INFO  >>>>
+    >   02:37:11.268 INFO  ---- ----
+    >   02:37:11.268 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:37:11.301 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:37:11.302 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [193] in [10] loops, total [0s][32ms], average [3.292ms][3,291.701us] FAIL
+    >   02:37:11.302 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>32</timesum><timeavg>3.292</timeavg></data-row>
+    >   02:37:11.302 INFO  ---- ----
+    >   02:37:11.302 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:37:11.313 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:37:11.313 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [45] in [10] loops, total [0s][10ms], average [1.058ms][1,058.236us] FAIL
+    >   02:37:11.314 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>10</timesum><timeavg>1.058</timeavg></data-row>
+    >   02:37:11.314 INFO  ---- ----
+    >   02:37:11.314 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:37:11.319 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:37:11.320 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][4ms], average [0.498ms][498.282us] PASS
+    >   02:37:11.320 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.498</timeavg></data-row>
+    >   02:37:11.320 INFO  ---- ----
+    >   02:37:11.320 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:37:11.323 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:37:11.324 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][2ms], average [0.298ms][298.116us] PASS
+    >   02:37:11.324 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.298</timeavg></data-row>
+    >   02:37:11.324 INFO  ---- ----
+    >   02:37:11.324 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:37:11.327 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:37:11.327 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][2ms], average [0.265ms][264.744us] PASS
+    >   02:37:11.327 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.265</timeavg></data-row>
+    >   02:37:11.328 INFO  <<<<
+
+
+
+    >   02:39:28.595 INFO  >>>>
+    >   02:39:28.595 INFO  ---- ----
+    >   02:39:28.595 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:39:29.971 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:29.972 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [193] in [10] loops, total [1s][1,375ms], average [137.542ms][137,541.630us] FAIL
+    >   02:39:29.973 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>1375</timesum><timeavg>137.542</timeavg></data-row>
+    >   02:39:29.973 INFO  ---- ----
+    >   02:39:29.973 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:39:30.648 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:30.649 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [45] in [10] loops, total [0s][673ms], average [67.374ms][67,374.089us] FAIL
+    >   02:39:30.649 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>673</timesum><timeavg>67.374</timeavg></data-row>
+    >   02:39:30.649 INFO  ---- ----
+    >   02:39:30.649 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:39:31.007 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:31.008 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][357ms], average [35.723ms][35,723.309us] FAIL
+    >   02:39:31.008 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>357</timesum><timeavg>35.723</timeavg></data-row>
+    >   02:39:31.008 INFO  ---- ----
+    >   02:39:31.009 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:39:31.194 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:31.195 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][185ms], average [18.517ms][18,517.309us] FAIL
+    >   02:39:31.195 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>185</timesum><timeavg>18.517</timeavg></data-row>
+    >   02:39:31.196 INFO  ---- ----
+    >   02:39:31.196 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:39:31.316 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:39:31.317 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][120ms], average [12.046ms][12,046.210us] FAIL
+    >   02:39:31.318 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>120</timesum><timeavg>12.046</timeavg></data-row>
+    >   02:39:31.318 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:41:47.107 INFO  >>>>
+    >   02:41:47.107 INFO  ---- ----
+    >   02:41:47.107 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:41:48.340 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:41:48.341 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [193] in [10] loops, total [1s][1,231ms], average [123.193ms][123,193.242us] FAIL
+    >   02:41:48.341 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>1231</timesum><timeavg>123.193</timeavg></data-row>
+    >   02:41:48.341 INFO  ---- ----
+    >   02:41:48.341 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:41:49.008 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:41:49.008 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [45] in [10] loops, total [0s][666ms], average [66.629ms][66,628.594us] FAIL
+    >   02:41:49.009 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>666</timesum><timeavg>66.629</timeavg></data-row>
+    >   02:41:49.009 INFO  ---- ----
+    >   02:41:49.010 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:41:49.350 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:41:49.351 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][340ms], average [34.034ms][34,034.275us] FAIL
+    >   02:41:49.351 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>340</timesum><timeavg>34.034</timeavg></data-row>
+    >   02:41:49.352 INFO  ---- ----
+    >   02:41:49.352 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:41:49.540 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:41:49.540 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][187ms], average [18.785ms][18,784.590us] FAIL
+    >   02:41:49.541 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>187</timesum><timeavg>18.785</timeavg></data-row>
+    >   02:41:49.542 INFO  ---- ----
+    >   02:41:49.542 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:41:49.616 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:41:49.616 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][72ms], average [7.274ms][7,273.563us] FAIL
+    >   02:41:49.616 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>72</timesum><timeavg>7.274</timeavg></data-row>
+    >   02:41:49.616 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:43:34.991 INFO  >>>>
+    >   02:43:34.991 INFO  ---- ----
+    >   02:43:34.991 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:43:35.943 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:43:35.943 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [193] in [10] loops, total [0s][950ms], average [95.093ms][95,092.740us] FAIL
+    >   02:43:35.943 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>950</timesum><timeavg>95.093</timeavg></data-row>
+    >   02:43:35.943 INFO  ---- ----
+    >   02:43:35.943 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:43:36.406 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:43:36.406 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [45] in [10] loops, total [0s][462ms], average [46.217ms][46,217.265us] FAIL
+    >   02:43:36.406 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>462</timesum><timeavg>46.217</timeavg></data-row>
+    >   02:43:36.406 INFO  ---- ----
+    >   02:43:36.406 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:43:36.633 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:43:36.634 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][226ms], average [22.632ms][22,631.584us] FAIL
+    >   02:43:36.634 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>226</timesum><timeavg>22.632</timeavg></data-row>
+    >   02:43:36.634 INFO  ---- ----
+    >   02:43:36.634 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:43:36.747 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:43:36.747 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][112ms], average [11.218ms][11,217.804us] FAIL
+    >   02:43:36.747 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>112</timesum><timeavg>11.218</timeavg></data-row>
+    >   02:43:36.747 INFO  ---- ----
+    >   02:43:36.747 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:43:36.781 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:43:36.782 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][33ms], average [3.389ms][3,389.103us] FAIL
+    >   02:43:36.782 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>33</timesum><timeavg>3.389</timeavg></data-row>
+    >   02:43:36.782 INFO  <<<<
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+    >   02:45:23.776 INFO  >>>>
+    >   02:45:23.776 INFO  ---- ----
+    >   02:45:23.776 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:45:24.690 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:45:24.691 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [193] in [10] loops, total [0s][913ms], average [91.368ms][91,368.371us] FAIL
+    >   02:45:24.691 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>913</timesum><timeavg>91.368</timeavg></data-row>
+    >   02:45:24.691 INFO  ---- ----
+    >   02:45:24.691 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:45:25.151 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:45:25.151 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [45] in [10] loops, total [0s][459ms], average [45.956ms][45,956.033us] FAIL
+    >   02:45:25.151 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>459</timesum><timeavg>45.956</timeavg></data-row>
+    >   02:45:25.152 INFO  ---- ----
+    >   02:45:25.152 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:45:25.365 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:45:25.366 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][213ms], average [21.351ms][21,351.260us] FAIL
+    >   02:45:25.366 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>213</timesum><timeavg>21.351</timeavg></data-row>
+    >   02:45:25.366 INFO  ---- ----
+    >   02:45:25.366 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:45:25.471 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:45:25.472 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][105ms], average [10.527ms][10,526.697us] FAIL
+    >   02:45:25.472 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>105</timesum><timeavg>10.527</timeavg></data-row>
+    >   02:45:25.472 INFO  ---- ----
+    >   02:45:25.472 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:45:25.536 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:45:25.537 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][63ms], average [6.398ms][6,398.115us] FAIL
+    >   02:45:25.537 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>63</timesum><timeavg>6.398</timeavg></data-row>
+    >   02:45:25.537 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:46:38.940 INFO  >>>>
+    >   02:46:38.940 INFO  ---- ----
+    >   02:46:38.940 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:46:39.881 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:46:39.882 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [193] in [10] loops, total [0s][940ms], average [94.071ms][94,071.061us] FAIL
+    >   02:46:39.882 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>940</timesum><timeavg>94.071</timeavg></data-row>
+    >   02:46:39.882 INFO  ---- ----
+    >   02:46:39.882 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:46:40.346 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:46:40.346 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [45] in [10] loops, total [0s][463ms], average [46.399ms][46,398.679us] FAIL
+    >   02:46:40.346 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>463</timesum><timeavg>46.399</timeavg></data-row>
+    >   02:46:40.347 INFO  ---- ----
+    >   02:46:40.347 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:46:40.572 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:46:40.573 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][225ms], average [22.557ms][22,557.462us] FAIL
+    >   02:46:40.573 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>225</timesum><timeavg>22.557</timeavg></data-row>
+    >   02:46:40.573 INFO  ---- ----
+    >   02:46:40.573 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:46:40.685 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:46:40.685 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][111ms], average [11.151ms][11,151.045us] FAIL
+    >   02:46:40.685 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>111</timesum><timeavg>11.151</timeavg></data-row>
+    >   02:46:40.685 INFO  ---- ----
+    >   02:46:40.685 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:46:40.719 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:46:40.720 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][33ms], average [3.378ms][3,378.457us] FAIL
+    >   02:46:40.720 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>33</timesum><timeavg>3.378</timeavg></data-row>
+    >   02:46:40.720 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:47:56.001 INFO  >>>>
+    >   02:47:56.001 INFO  ---- ----
+    >   02:47:56.001 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:47:56.934 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:47:56.935 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [193] in [10] loops, total [0s][932ms], average [93.277ms][93,277.249us] FAIL
+    >   02:47:56.935 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>932</timesum><timeavg>93.277</timeavg></data-row>
+    >   02:47:56.935 INFO  ---- ----
+    >   02:47:56.935 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:47:57.391 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:47:57.391 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [45] in [10] loops, total [0s][455ms], average [45.580ms][45,579.622us] FAIL
+    >   02:47:57.392 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>455</timesum><timeavg>45.580</timeavg></data-row>
+    >   02:47:57.392 INFO  ---- ----
+    >   02:47:57.392 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:47:57.617 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:47:57.617 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][224ms], average [22.485ms][22,484.650us] FAIL
+    >   02:47:57.617 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>224</timesum><timeavg>22.485</timeavg></data-row>
+    >   02:47:57.617 INFO  ---- ----
+    >   02:47:57.617 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:47:57.728 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:47:57.729 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][111ms], average [11.105ms][11,104.999us] FAIL
+    >   02:47:57.729 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>111</timesum><timeavg>11.105</timeavg></data-row>
+    >   02:47:57.729 INFO  ---- ----
+    >   02:47:57.729 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:47:57.761 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMBINED] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:47:57.761 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][32ms], average [3.209ms][3,209.031us] FAIL
+    >   02:47:57.761 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>32</timesum><timeavg>3.209</timeavg></data-row>
+    >   02:47:57.762 INFO  <<<<
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+    >   02:49:50.843 INFO  >>>>
+    >   02:49:50.843 INFO  ---- ----
+    >   02:49:50.843 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:49:51.781 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:49:51.781 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [193] in [10] loops, total [0s][937ms], average [93.748ms][93,747.913us] FAIL
+    >   02:49:51.782 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>937</timesum><timeavg>93.748</timeavg></data-row>
+    >   02:49:51.782 INFO  ---- ----
+    >   02:49:51.782 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:49:52.270 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:49:52.270 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [45] in [10] loops, total [0s][488ms], average [48.812ms][48,811.931us] FAIL
+    >   02:49:52.271 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>488</timesum><timeavg>48.812</timeavg></data-row>
+    >   02:49:52.271 INFO  ---- ----
+    >   02:49:52.271 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:49:52.520 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:49:52.520 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][249ms], average [24.921ms][24,921.153us] FAIL
+    >   02:49:52.521 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>249</timesum><timeavg>24.921</timeavg></data-row>
+    >   02:49:52.521 INFO  ---- ----
+    >   02:49:52.521 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:49:52.632 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:49:52.633 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][111ms], average [11.153ms][11,152.752us] FAIL
+    >   02:49:52.633 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>111</timesum><timeavg>11.153</timeavg></data-row>
+    >   02:49:52.633 INFO  ---- ----
+    >   02:49:52.633 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:49:52.697 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.03125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:49:52.697 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][63ms], average [6.362ms][6,362.479us] FAIL
+    >   02:49:52.697 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>63</timesum><timeavg>6.362</timeavg></data-row>
+    >   02:49:52.697 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:51:14.398 INFO  >>>>
+    >   02:51:14.398 INFO  ---- ----
+    >   02:51:14.398 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:51:15.330 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:51:15.330 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [193] in [10] loops, total [0s][932ms], average [93.201ms][93,200.861us] FAIL
+    >   02:51:15.330 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>932</timesum><timeavg>93.201</timeavg></data-row>
+    >   02:51:15.330 INFO  ---- ----
+    >   02:51:15.330 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:51:15.803 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:51:15.803 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [45] in [10] loops, total [0s][472ms], average [47.268ms][47,267.664us] FAIL
+    >   02:51:15.804 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>472</timesum><timeavg>47.268</timeavg></data-row>
+    >   02:51:15.804 INFO  ---- ----
+    >   02:51:15.804 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:51:16.059 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:51:16.059 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][254ms], average [25.472ms][25,472.323us] FAIL
+    >   02:51:16.060 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>254</timesum><timeavg>25.472</timeavg></data-row>
+    >   02:51:16.060 INFO  ---- ----
+    >   02:51:16.060 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:51:16.175 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:51:16.175 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][113ms], average [11.384ms][11,384.119us] FAIL
+    >   02:51:16.176 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>113</timesum><timeavg>11.384</timeavg></data-row>
+    >   02:51:16.176 INFO  ---- ----
+    >   02:51:16.176 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:51:16.210 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:51:16.211 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][33ms], average [3.337ms][3,337.132us] FAIL
+    >   02:51:16.211 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>33</timesum><timeavg>3.337</timeavg></data-row>
+    >   02:51:16.211 INFO  <<<<
+    >   ....
+    >   ....
+    >   02:52:42.639 INFO  >>>>
+    >   02:52:42.639 INFO  ---- ----
+    >   02:52:42.639 INFO  Radius [2][2^(-2) = 0.25]
+    >   02:52:43.482 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:52:43.483 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [193] in [10] loops, total [0s][843ms], average [84.311ms][84,311.100us] FAIL
+    >   02:52:43.483 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>843</timesum><timeavg>84.311</timeavg></data-row>
+    >   02:52:43.483 INFO  ---- ----
+    >   02:52:43.483 INFO  Radius [3][2^(-3) = 0.125]
+    >   02:52:43.902 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:52:43.902 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [45] in [10] loops, total [0s][419ms], average [41.905ms][41,905.006us] FAIL
+    >   02:52:43.902 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>419</timesum><timeavg>41.905</timeavg></data-row>
+    >   02:52:43.902 INFO  ---- ----
+    >   02:52:43.902 INFO  Radius [4][2^(-4) = 0.0625]
+    >   02:52:44.128 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:52:44.129 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][225ms], average [22.562ms][22,561.521us] FAIL
+    >   02:52:44.130 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>225</timesum><timeavg>22.562</timeavg></data-row>
+    >   02:52:44.130 INFO  ---- ----
+    >   02:52:44.130 INFO  Radius [5][2^(-5) = 0.03125]
+    >   02:52:44.252 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:52:44.253 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][120ms], average [12.085ms][12,084.885us] FAIL
+    >   02:52:44.253 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>120</timesum><timeavg>12.085</timeavg></data-row>
+    >   02:52:44.254 INFO  ---- ----
+    >   02:52:44.254 INFO  Radius [6][2^(-6) = 0.015625]
+    >   02:52:44.291 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [16,785,409] Zone height [0.0078125] URL [jdbc:hsqldb:mem:zonematch]
+    >   02:52:44.292 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][36ms], average [3.604ms][3,603.609us] FAIL
+    >   02:52:44.292 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>36</timesum><timeavg>3.604</timeavg></data-row>
+    >   02:52:44.293 INFO  <<<<
+
+
+
+    >   03:14:32.773 INFO  >>>>
+    >   03:14:32.773 INFO  ---- ----
+    >   03:14:32.773 INFO  Radius [2][2^(-2) = 0.25]
+    >   03:14:32.827 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:14:32.828 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [193] in [10] loops, total [0s][49ms], average [4.946ms][4,945.636us] FAIL
+    >   03:14:32.828 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>49</timesum><timeavg>4.946</timeavg></data-row>
+    >   03:14:32.828 INFO  ---- ----
+    >   03:14:32.828 INFO  Radius [3][2^(-3) = 0.125]
+    >   03:14:32.838 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:14:32.839 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [45] in [10] loops, total [0s][8ms], average [0.822ms][822.220us] PASS
+    >   03:14:32.839 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>8</timesum><timeavg>0.822</timeavg></data-row>
+    >   03:14:32.839 INFO  ---- ----
+    >   03:14:32.839 INFO  Radius [4][2^(-4) = 0.0625]
+    >   03:14:32.846 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:14:32.847 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][5ms], average [0.570ms][570.256us] PASS
+    >   03:14:32.847 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.570</timeavg></data-row>
+    >   03:14:32.847 INFO  ---- ----
+    >   03:14:32.847 INFO  Radius [5][2^(-5) = 0.03125]
+    >   03:14:32.854 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:14:32.854 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][4ms], average [0.496ms][495.785us] PASS
+    >   03:14:32.854 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.496</timeavg></data-row>
+    >   03:14:32.854 INFO  ---- ----
+    >   03:14:32.854 INFO  Radius [6][2^(-6) = 0.015625]
+    >   03:14:32.860 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:14:32.860 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][4ms], average [0.439ms][438.948us] PASS
+    >   03:14:32.860 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.439</timeavg></data-row>
+    >   03:14:32.861 INFO  <<<<
+    >   ....
+    >   ....
+    >   03:34:56.247 INFO  >>>>
+    >   03:34:56.248 INFO  ---- ----
+    >   03:34:56.248 INFO  Radius [2][2^(-2) = 0.25]
+    >   03:34:56.272 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:34:56.274 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [193] in [10] loops, total [0s][21ms], average [2.136ms][2,135.713us] FAIL
+    >   03:34:56.275 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>21</timesum><timeavg>2.136</timeavg></data-row>
+    >   03:34:56.276 INFO  ---- ----
+    >   03:34:56.276 INFO  Radius [3][2^(-3) = 0.125]
+    >   03:34:56.287 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:34:56.288 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [45] in [10] loops, total [0s][7ms], average [0.767ms][766.897us] PASS
+    >   03:34:56.288 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>7</timesum><timeavg>0.767</timeavg></data-row>
+    >   03:34:56.289 INFO  ---- ----
+    >   03:34:56.289 INFO  Radius [4][2^(-4) = 0.0625]
+    >   03:34:56.295 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:34:56.296 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][4ms], average [0.431ms][431.378us] PASS
+    >   03:34:56.296 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.431</timeavg></data-row>
+    >   03:34:56.296 INFO  ---- ----
+    >   03:34:56.296 INFO  Radius [5][2^(-5) = 0.03125]
+    >   03:34:56.301 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:34:56.302 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][3ms], average [0.338ms][337.518us] PASS
+    >   03:34:56.302 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.338</timeavg></data-row>
+    >   03:34:56.302 INFO  ---- ----
+    >   03:34:56.302 INFO  Radius [6][2^(-6) = 0.015625]
+    >   03:34:56.306 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:34:56.307 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][2ms], average [0.258ms][258.081us] PASS
+    >   03:34:56.307 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.258</timeavg></data-row>
+    >   03:34:56.307 INFO  <<<<
+    >   ....
+    >   ....
+    >   03:55:14.269 INFO  >>>>
+    >   03:55:14.269 INFO  ---- ----
+    >   03:55:14.269 INFO  Radius [2][2^(-2) = 0.25]
+    >   03:55:14.278 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:55:14.278 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [193] in [10] loops, total [0s][6ms], average [0.696ms][695.525us] PASS
+    >   03:55:14.279 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>193</found><repeat>10</repeat><timesum>6</timesum><timeavg>0.696</timeavg></data-row>
+    >   03:55:14.279 INFO  ---- ----
+    >   03:55:14.279 INFO  Radius [3][2^(-3) = 0.125]
+    >   03:55:14.285 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:55:14.285 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [45] in [10] loops, total [0s][4ms], average [0.409ms][409.388us] PASS
+    >   03:55:14.285 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>45</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.409</timeavg></data-row>
+    >   03:55:14.285 INFO  ---- ----
+    >   03:55:14.285 INFO  Radius [4][2^(-4) = 0.0625]
+    >   03:55:14.291 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:55:14.292 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][3ms], average [0.326ms][325.624us] PASS
+    >   03:55:14.292 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.326</timeavg></data-row>
+    >   03:55:14.292 INFO  ---- ----
+    >   03:55:14.292 INFO  Radius [5][2^(-5) = 0.03125]
+    >   03:55:14.298 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:55:14.298 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][4ms], average [0.401ms][400.538us] PASS
+    >   03:55:14.298 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.401</timeavg></data-row>
+    >   03:55:14.299 INFO  ---- ----
+    >   03:55:14.299 INFO  Radius [6][2^(-6) = 0.015625]
+    >   03:55:14.303 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   03:55:14.303 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][3ms], average [0.336ms][335.638us] PASS
+    >   03:55:14.304 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.336</timeavg></data-row>
+    >   03:55:14.304 INFO  <<<<
+
+
+
+# -----------------------------------------------------
+# Update the test settings, move the target off center.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=10
+
+                enteucha.select.min=11
+                enteucha.insert.max=11
+
+                enteucha.radius.min=2
+                enteucha.radius.max=6
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+                enteucha.zone.min=5
+                enteucha.zone.max=7
+
+            +   enteucha.target.ra=4
+            +   enteucha.target.dec=5
+
+        reset
+
+        xmxmem=300g
+        xmsmem=300g
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+
+    >   04:50:17.496 INFO  >>>>
+    >   04:50:17.497 INFO  ---- ----
+    >   04:50:17.497 INFO  Radius [2][2^(-2) = 0.25]
+    >   04:50:17.554 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   04:50:17.555 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [196] in [10] loops, total [0s][52ms], average [5.258ms][5,257.593us] FAIL
+    >   04:50:17.556 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>196</found><repeat>10</repeat><timesum>52</timesum><timeavg>5.258</timeavg></data-row>
+    >   04:50:17.556 INFO  ---- ----
+    >   04:50:17.556 INFO  Radius [3][2^(-3) = 0.125]
+    >   04:50:17.566 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   04:50:17.567 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [49] in [10] loops, total [0s][7ms], average [0.749ms][748.826us] PASS
+    >   04:50:17.571 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>49</found><repeat>10</repeat><timesum>7</timesum><timeavg>0.749</timeavg></data-row>
+    >   04:50:17.571 INFO  ---- ----
+    >   04:50:17.572 INFO  Radius [4][2^(-4) = 0.0625]
+    >   04:50:17.578 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   04:50:17.578 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][4ms], average [0.435ms][435.367us] PASS
+    >   04:50:17.579 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.435</timeavg></data-row>
+    >   04:50:17.579 INFO  ---- ----
+    >   04:50:17.579 INFO  Radius [5][2^(-5) = 0.03125]
+    >   04:50:17.585 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   04:50:17.585 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][3ms], average [0.383ms][382.695us] PASS
+    >   04:50:17.586 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.383</timeavg></data-row>
+    >   04:50:17.586 INFO  ---- ----
+    >   04:50:17.586 INFO  Radius [6][2^(-6) = 0.015625]
+    >   04:50:17.591 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   04:50:17.591 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][3ms], average [0.313ms][313.055us] PASS
+    >   04:50:17.592 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.313</timeavg></data-row>
+    >   04:50:17.592 INFO  <<<<
+
+
+# -----------------------------------------------------
+# Update the test settings, extend the radius.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=10
+
+                enteucha.select.min=11
+                enteucha.insert.max=11
+
+            -   enteucha.radius.min=1
+            +   enteucha.radius.max=7
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+                enteucha.zone.min=5
+                enteucha.zone.max=7
+
+                enteucha.target.ra=4
+                enteucha.target.dec=5
+
+        reset
+
+        xmxmem=300g
+        xmsmem=300g
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+
+
+
+    >   05:24:20.214 INFO  >>>>
+    >   05:24:20.214 INFO  ---- ----
+    >   05:24:20.214 INFO  Radius [1][2^(-1) = 0.5]
+    >   05:24:20.281 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.282 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.5] found [801] in [10] loops, total [0s][63ms], average [6.368ms][6,367.577us] FAIL
+    >   05:24:20.283 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.5</radius><found>801</found><repeat>10</repeat><timesum>63</timesum><timeavg>6.368</timeavg></data-row>
+    >   05:24:20.283 INFO  ---- ----
+    >   05:24:20.283 INFO  Radius [2][2^(-2) = 0.25]
+    >   05:24:20.295 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.296 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [196] in [10] loops, total [0s][10ms], average [1.001ms][1,000.867us] FAIL
+    >   05:24:20.300 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>196</found><repeat>10</repeat><timesum>10</timesum><timeavg>1.001</timeavg></data-row>
+    >   05:24:20.300 INFO  ---- ----
+    >   05:24:20.300 INFO  Radius [3][2^(-3) = 0.125]
+    >   05:24:20.308 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.308 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [49] in [10] loops, total [0s][5ms], average [0.573ms][572.753us] PASS
+    >   05:24:20.308 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>49</found><repeat>10</repeat><timesum>5</timesum><timeavg>0.573</timeavg></data-row>
+    >   05:24:20.309 INFO  ---- ----
+    >   05:24:20.309 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:24:20.315 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.315 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [10] loops, total [0s][4ms], average [0.401ms][400.708us] PASS
+    >   05:24:20.315 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.401</timeavg></data-row>
+    >   05:24:20.316 INFO  ---- ----
+    >   05:24:20.316 INFO  Radius [5][2^(-5) = 0.03125]
+    >   05:24:20.321 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.321 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [3] in [10] loops, total [0s][3ms], average [0.363ms][363.352us] PASS
+    >   05:24:20.321 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.363</timeavg></data-row>
+    >   05:24:20.322 INFO  ---- ----
+    >   05:24:20.322 INFO  Radius [6][2^(-6) = 0.015625]
+    >   05:24:20.327 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.328 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [10] loops, total [0s][4ms], average [0.403ms][403.421us] PASS
+    >   05:24:20.328 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.403</timeavg></data-row>
+    >   05:24:20.328 INFO  ---- ----
+    >   05:24:20.328 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   05:24:20.333 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.03125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:24:20.333 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0078125] found [1] in [10] loops, total [0s][3ms], average [0.331ms][331.126us] PASS
+    >   05:24:20.334 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0078125</radius><found>1</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.331</timeavg></data-row>
+    >   05:24:20.334 INFO  <<<<
+    >   ....
+    >   ....
+    >   05:45:48.726 INFO  >>>>
+    >   05:45:48.726 INFO  ---- ----
+    >   05:45:48.726 INFO  Radius [1][2^(-1) = 0.5]
+    >   05:45:48.745 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.745 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.5] found [801] in [10] loops, total [0s][17ms], average [1.714ms][1,713.961us] FAIL
+    >   05:45:48.746 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.5</radius><found>801</found><repeat>10</repeat><timesum>17</timesum><timeavg>1.714</timeavg></data-row>
+    >   05:45:48.746 INFO  ---- ----
+    >   05:45:48.746 INFO  Radius [2][2^(-2) = 0.25]
+    >   05:45:48.754 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.755 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [196] in [10] loops, total [0s][6ms], average [0.680ms][680.178us] PASS
+    >   05:45:48.755 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>196</found><repeat>10</repeat><timesum>6</timesum><timeavg>0.680</timeavg></data-row>
+    >   05:45:48.755 INFO  ---- ----
+    >   05:45:48.755 INFO  Radius [3][2^(-3) = 0.125]
+    >   05:45:48.761 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.761 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [49] in [10] loops, total [0s][4ms], average [0.417ms][416.787us] PASS
+    >   05:45:48.761 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>49</found><repeat>10</repeat><timesum>4</timesum><timeavg>0.417</timeavg></data-row>
+    >   05:45:48.761 INFO  ---- ----
+    >   05:45:48.761 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:45:48.766 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.766 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [10] loops, total [0s][3ms], average [0.321ms][320.975us] PASS
+    >   05:45:48.766 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.321</timeavg></data-row>
+    >   05:45:48.767 INFO  ---- ----
+    >   05:45:48.767 INFO  Radius [5][2^(-5) = 0.03125]
+    >   05:45:48.771 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.771 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [3] in [10] loops, total [0s][2ms], average [0.297ms][297.274us] PASS
+    >   05:45:48.771 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.297</timeavg></data-row>
+    >   05:45:48.772 INFO  ---- ----
+    >   05:45:48.772 INFO  Radius [6][2^(-6) = 0.015625]
+    >   05:45:48.776 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.776 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [10] loops, total [0s][2ms], average [0.275ms][275.036us] PASS
+    >   05:45:48.776 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.275</timeavg></data-row>
+    >   05:45:48.776 INFO  ---- ----
+    >   05:45:48.776 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   05:45:48.780 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [4097]  avg size [4097] min [4097] max [4097]
+    >   05:45:48.781 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0078125] found [1] in [10] loops, total [0s][2ms], average [0.277ms][277.072us] PASS
+    >   05:45:48.781 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0078125</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.277</timeavg></data-row>
+    >   05:45:48.781 INFO  <<<<
+    >   ....
+    >   ....
+    >   06:07:30.635 INFO  >>>>
+    >   06:07:30.635 INFO  ---- ----
+    >   06:07:30.635 INFO  Radius [1][2^(-1) = 0.5]
+    >   06:07:30.651 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.652 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.5] found [801] in [10] loops, total [0s][14ms], average [1.422ms][1,421.802us] FAIL
+    >   06:07:30.652 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.5</radius><found>801</found><repeat>10</repeat><timesum>14</timesum><timeavg>1.422</timeavg></data-row>
+    >   06:07:30.652 INFO  ---- ----
+    >   06:07:30.652 INFO  Radius [2][2^(-2) = 0.25]
+    >   06:07:30.660 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.660 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [196] in [10] loops, total [0s][6ms], average [0.621ms][620.649us] PASS
+    >   06:07:30.660 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>196</found><repeat>10</repeat><timesum>6</timesum><timeavg>0.621</timeavg></data-row>
+    >   06:07:30.660 INFO  ---- ----
+    >   06:07:30.661 INFO  Radius [3][2^(-3) = 0.125]
+    >   06:07:30.666 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.666 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [49] in [10] loops, total [0s][3ms], average [0.398ms][397.648us] PASS
+    >   06:07:30.666 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>49</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.398</timeavg></data-row>
+    >   06:07:30.667 INFO  ---- ----
+    >   06:07:30.667 INFO  Radius [4][2^(-4) = 0.0625]
+    >   06:07:30.671 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.671 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [11] in [10] loops, total [0s][3ms], average [0.322ms][322.113us] PASS
+    >   06:07:30.671 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>11</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.322</timeavg></data-row>
+    >   06:07:30.672 INFO  ---- ----
+    >   06:07:30.672 INFO  Radius [5][2^(-5) = 0.03125]
+    >   06:07:30.676 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.676 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [10] loops, total [0s][3ms], average [0.301ms][301.386us] PASS
+    >   06:07:30.676 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>10</repeat><timesum>3</timesum><timeavg>0.301</timeavg></data-row>
+    >   06:07:30.676 INFO  ---- ----
+    >   06:07:30.677 INFO  Radius [6][2^(-6) = 0.015625]
+    >   06:07:30.680 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.681 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [10] loops, total [0s][2ms], average [0.271ms][271.372us] PASS
+    >   06:07:30.681 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.271</timeavg></data-row>
+    >   06:07:30.681 INFO  ---- ----
+    >   06:07:30.681 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   06:07:30.685 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.0078125] count [4097]  avg size [4097] min [4097] max [4097]
+    >   06:07:30.685 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0078125] found [1] in [10] loops, total [0s][2ms], average [0.266ms][266.430us] PASS
+    >   06:07:30.686 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0078125</radius><found>1</found><repeat>10</repeat><timesum>2</timesum><timeavg>0.266</timeavg></data-row>
+    >   06:07:30.686 INFO  <<<<
+
+
+    Zone population is very skewed because the data is aligned on a square grid.
+    Every zone has 4097 points because there are 4097 columns in each row of the grid.
+    There are only 4097 zones because there are 4097 rows in the grid.
+
+    There may be many more potential zones, but we only create the zones for rows that have any points.
+    If a row has one point, it has all 4097 points in that row.
+
+    Fix - add a random offset to spread the points across the intermediate rows.
+
+
+
+
+

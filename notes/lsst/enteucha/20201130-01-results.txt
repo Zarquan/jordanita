@@ -1,0 +1,75 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+    Initial observation - issues with random peaks obscuring the results.
+    Peaks were order of magnitude larger than the trends we were trying to identify
+    Google-foo narrowed this down to the way that Maven launches JUnit tests in a separate Java VM.
+    Difficult to control the time and place where the Java VM runs the grabage collector.
+
+    Fix was to add a main method and invoke the tests directly, as stand alone Java programs.
+    Allows better control over the Java VM memory resources.
+
+
+    Initial observation - the AXS sped up is missing.
+    Fastest implementation is HsqldbHtmid which we did not expect.
+
+    Still some discrepancies
+
+    Why are some of the HsqldbHtmid lines slower.
+    Looks like it depends on zone size, which it should not.
+    Noticed it was the first run that was slower
+
+    Increasing the number of zones coverend and the slow run changes from the xxx to the yyy zone
+    Always the first run
+    Suggests that there is an start up cost to either Hsqldb or Htmid.
+    Checked for static members in Htmid code base, explicitly releasing and creating a new Htmid tree each pass.
+
+    Possibly indication of a smaller start up cost to the first pass of HsqldbZones
+
+    Eliminating, or understanding, the discrepancies we still can't explain why our results don't show the expected gains
+    from using the AXS zones algorithm.
+
+    In fact, the reverse trend than expected - zone size == radius is the slowest not the fastest results.
+    Htmid is much more robust over larger spans of data range and search radious.
+
+    Our zones implementation seems to work fatser with fewer larger zones.
+    Which means that using conventional search inside a large zone is faster than using integer index to select from a large set of zones.
+    Not what the original paper predicted.
+
+    However, case proved that it is possible uisng both the Htmid and zones technologies to get position search
+    and cross match down to less that 1ms.
+
+
+
+
+
+
+
+
+
+

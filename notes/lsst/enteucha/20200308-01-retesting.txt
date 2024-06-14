@@ -1,0 +1,536 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+# -----------------------------------------------------
+# Login to one of the trop machines and run a virtual machine.
+#[user@desktop]
+
+    ssh trop04
+
+        createvm
+
+    >   ....
+    >   INFO : Node name [Larilaweth]
+    >   INFO : Base name [fedora-28-docker-base-20180708.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-28-docker-base-20180708.qcow]
+    >   INFO : Disc name [Larilaweth.qcow]
+    >   INFO : Disc size [16GiB]
+    >   ....
+
+# -----------------------------------------------------
+# Login to the new virtual machine.
+#[user@desktop]
+        
+    ssh Larilaweth
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Install the development tools we need.
+# Instructions copied from firethorn/builder Dockerfile.
+# Ideally, we should just run the builder container ... but that has UID issues ?
+#[user@virtual]
+
+    # Install Java
+    sudo dnf -y install \
+        java-openjdk-headless
+
+    #
+    # Install Maven
+    sudo dnf -y install \
+        maven
+
+    # Create our cache directory.
+    sudo mkdir /var/local/cache
+    sudo chgrp 'users' /var/local/cache
+    sudo chmod 'g+rwx' /var/local/cache
+
+    # Create our build directory.
+    sudo mkdir -p /var/local/build
+    sudo chgrp 'users' /var/local/build
+    sudo chmod 'g+rwx' /var/local/build
+
+    # Set the Maven cache location.
+    sudo sed -i '
+        /^[[:space:]]*<!-- localRepository/,/^[[:space:]]*-->/{
+            /^[[:space:]]*-->/{
+                a\
+  <localRepository>/var/local/cache/maven</localRepository>
+                }
+            }
+        ' /etc/maven/settings.xml
+
+
+# -----------------------------------------------------
+# Check our Docker service.
+#[user@virtual]
+
+    docker version
+
+    >   Client:
+    >    Version:      18.03.1-ce
+    >    API version:  1.37
+    >    Go version:   go1.9.5
+    >    Git commit:   9ee9f40
+    >    Built:        Wed Jun 20 21:38:58 2018
+    >    OS/Arch:      linux/amd64
+    >    Experimental: false
+    >    Orchestrator: swarm
+    >   
+    >   Server:
+    >    Engine:
+    >     Version:      18.03.1-ce
+    >     API version:  1.37 (minimum version 1.12)
+    >     Go version:   go1.9.5
+    >     Git commit:   9ee9f40
+    >     Built:        Wed Jun 20 21:42:40 2018
+    >     OS/Arch:      linux/amd64
+    >     Experimental: false
+
+
+    docker info
+
+    >   Containers: 0
+    >    Running: 0
+    >    Paused: 0
+    >    Stopped: 0
+    >   Images: 0
+    >   Server Version: 18.03.1-ce
+    >   Storage Driver: btrfs
+    >    Build Version: Btrfs v4.15.1
+    >    Library Version: 102
+    >   Logging Driver: json-file
+    >   Cgroup Driver: cgroupfs
+    >   Plugins:
+    >    Volume: local
+    >    Network: bridge host macvlan null overlay
+    >    Log: awslogs fluentd gcplogs gelf journald json-file logentries splunk syslog
+    >   Swarm: inactive
+    >   Runtimes: runc
+    >   Default Runtime: runc
+    >   Init Binary: docker-init
+    >   containerd version: 773c489c9c1b21a6d78b5c538cd395416ec50f88
+    >   runc version: 4fc53a81fb7c994640722ac585fa9ca548971871
+    >   init version: 949e6fa
+    >   Security Options:
+    >    seccomp
+    >     Profile: default
+    >   Kernel Version: 4.17.3-200.fc28.x86_64
+    >   Operating System: Fedora 28 (Twenty Eight)
+    >   OSType: linux
+    >   Architecture: x86_64
+    >   CPUs: 4
+    >   Total Memory: 3.851GiB
+    >   Name: Larilaweth
+    >   ID: LRL7:JCBS:X5L4:H2EV:FGVN:MKBH:FNDH:35BA:5MAW:AWOF:V62D:LB2K
+    >   Docker Root Dir: /var/lib/docker
+    >   Debug Mode (client): false
+    >   Debug Mode (server): false
+    >   Registry: https://index.docker.io/v1/
+    >   Labels:
+    >   Experimental: false
+    >   Insecure Registries:
+    >    127.0.0.0/8
+    >   Live Restore Enabled: false
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Transfer (push) a copy of the JHU source code.
+#[user@desktop]
+
+    source "${HOME}/phymatopus.settings"
+    pushd "${PHYMATOPUS_CODE:?}"
+
+        scp -r "../external/htmid/jhu-htmid" \
+            Larilaweth:/var/local/build/jhu-htmid
+
+        popd
+    popd
+
+
+    >   TestHTMfunc.java                                100% 7921   282.1KB/s   00:00    
+    >   TestHTMindexImp.java                            100% 5411   185.6KB/s   00:00    
+    >   TestHTMrange.java                               100% 1840    73.3KB/s   00:00    
+    >   TestVector3d.java                               100%  825    32.7KB/s   00:00    
+    >   ....
+    >   ....
+    >   TEST-edu.jhu.skiplist.TestSkipList.xml          100% 6174   240.2KB/s   00:00    
+    >   pom.properties                                  100%   82     3.4KB/s   00:00    
+    >   htmid-3.0.1.jar                                 100%   83KB 107.3KB/s   00:00    
+    >   duplicate-finder-result.xml                     100% 5627   183.1KB/s   00:00    
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build the JHU library.
+#[user@virtual]
+
+    pushd /var/local/build/jhu-htmid
+
+        mvn clean install
+
+    popd
+
+
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 21.776 s
+    >   [INFO] Finished at: 2020-03-08T12:45:34Z
+    >   [INFO] Final Memory: 25M/270M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Create our settings file.
+#[user@virtual]
+
+    cat > "${HOME}/enteucha.settings" << 'EOF'
+ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_CODE='/var/local/build/enteucha'
+EOF
+
+
+# -----------------------------------------------------
+# Checkout our source code.
+#[user@virtual]
+
+    source "${HOME}/enteucha.settings"
+
+    echo "Checking [${ENTEUCHA_CODE}]"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        echo "Creating [${ENTEUCHA_CODE}]"
+        mkdir "$(dirname ${ENTEUCHA_CODE:?})"
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+        popd
+    else
+        echo "Updating [${ENTEUCHA_CODE}]"
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+    >   ....
+    >   Cloning into 'enteucha'...
+    >   ....
+    >   remote: Enumerating objects: 965, done.
+    >   remote: Total 965 (delta 0), reused 0 (delta 0), pack-reused 965
+    >   Receiving objects: 100% (965/965), 562.62 KiB | 1.05 MiB/s, done.
+    >   Resolving deltas: 100% (285/285), done.
+
+
+# -----------------------------------------------------
+# Build our project.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+        mvn clean install
+    popd
+
+    >   ....
+    >   [WARNING] Corrupted STDOUT by directly writing to native stream in forked JVM 1. See FAQ web page and the dump file /var/local/build/enteucha/target/surefire-reports/2020-03-08T12-52-29_903-jvmRun1.dumpstream
+    >   ....
+    >   [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project enteucha: There are test failures.
+    >   [ERROR] 
+    >   [ERROR] Please refer to /var/local/build/enteucha/target/surefire-reports for the individual test results.
+    >   [ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
+    >   ....
+
+    #
+    # Looks like this issue.
+    # https://stackoverflow.com/questions/55272870/surefire-maven-plugin-corrupted-stdout-by-directly-writing-to-native-stream-in
+    #
+
+# -----------------------------------------------------
+# Try this suggestion first ...
+# https://stackoverflow.com/a/59344215
+#   "What solved it for me is upgrading maven surefire plugin to 2.22.2" 
+#[user@virtual]
+
+
+    sudo dnf -y install xmlstarlet
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        # Need to use the default namespace in the select.
+        # https://stackoverflow.com/a/44186555
+        # https://stackoverflow.com/questions/44186213/how-to-declare-xpath-namespaces-in-xmlstarlet
+
+        xmlstarlet \
+            select \
+                --indent \
+                --template \
+                --copy-of "//_:plugin[_:artifactId='maven-surefire-plugin']" \
+            pom.xml
+
+
+    >   <plugin xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    >       <groupId>org.apache.maven.plugins</groupId>
+    >       <artifactId>maven-surefire-plugin</artifactId>
+    >       <version>2.22.0</version>
+    >       <configuration>
+    >           <argLine>-Xmx10g -Xms10g</argLine>
+    >       </configuration>
+    >   </plugin>
+
+
+    xmlstarlet \
+        select \
+            --indent \
+            --template \
+            --copy-of "//_:plugin[_:artifactId='maven-surefire-plugin']/_:version" \
+        pom.xml
+
+    >   <version xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2.22.0</version>
+
+
+        xmlstarlet \
+            select \
+                --template \
+                --value-of "//_:plugin[_:artifactId='maven-surefire-plugin']/_:version" \
+            pom.xml
+
+    >   2.22.0
+
+
+        xmlstarlet \
+            edit \
+            --pf \
+            --update \
+                "//_:plugin[_:artifactId='maven-surefire-plugin']/_:version" \
+                --value 2.22.2 \
+            pom.xml \
+        | tee pom.new
+
+
+
+        xmlstarlet \
+            select \
+                --template \
+                --value-of "//_:plugin[_:artifactId='maven-surefire-plugin']/_:version" \
+            pom.xml
+
+    >   2.22.2
+
+
+        diff pom.xml pom.new 
+
+    >   ....
+    >   366c362
+    >   <                 <version>2.22.0</version>
+    >   ---
+    >   >                 <version>2.22.2</version>
+    >   448,450d443
+    >   ....
+
+
+        rm pom.xml
+        mv pom.new pom.xml
+    
+    popd
+
+
+# -----------------------------------------------------
+# Build our project.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        mvn clean install
+
+    popd
+
+    >   ....
+    >   [WARNING] Corrupted STDOUT by directly writing to native stream in forked JVM 1. See FAQ web page and the dump file /var/local/build/enteucha/target/surefire-reports/2020-03-08T14-33-45_401-jvmRun1.dumpstream
+    >   ....
+
+
+    #
+    # Is it easier to run the build in Docker container and deal with the root UID issues ?
+    # 
+
+
+# -----------------------------------------------------
+# Run an instance of firethorn builder container.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+
+    docker run \
+        --rm \
+        --tty \
+        --interactive \
+        --user "$(id -u)" \
+        --volume "/var/local/cache:/var/local/cache" \
+        --volume "${ENTEUCHA_CODE:?}:/var/local/build" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock" \
+        --volume "/var/run/docker.sock:/var/run/docker.sock" \
+        --volume "${secretsh}:/bin/secret" \
+        "firethorn/builder:latest" \
+        'bash'
+
+        pushd /var/local/build
+            mvn clean install
+        popd
+
+    >   ....
+    >   [WARNING] Corrupted STDOUT by directly writing to native stream in forked JVM 1. See FAQ web page and the dump file /var/local/build/target/surefire-reports/2020-03-08T14-51-20_710-jvmRun1.dumpstream
+    >   ....
+
+
+    java -version
+
+    >   openjdk version "1.8.0_212"
+    >   OpenJDK Runtime Environment (build 1.8.0_212-b04)
+    >   OpenJDK 64-Bit Server VM (build 25.212-b04, mixed mode)
+        
+    #
+    # Another clue from StackOverflow
+    # https://stackoverflow.com/questions/55272870/surefire-maven-plugin-corrupted-stdout-by-directly-writing-to-native-stream-in#comment103490654_55272870
+    # 
+
+    # "I have run into this issue and noticed that I had a hs_err_pid23210.log file in my working directory, generated by the crash."
+    # "It clearly stated at the beginnig what was the problem:"
+    #     "# There is insufficient memory for the Java Runtime Environment to continue."
+    #     "# Native memory allocation (mmap) failed to map 158334976 bytes for committing reserved memory."
+    
+
+# -----------------------------------------------------
+# Build our project.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        mvn clean install
+
+    >   ....
+    >   [WARNING] Corrupted STDOUT by directly writing to native stream in forked JVM 1. See FAQ web page and the dump file /var/local/build/target/surefire-reports/2020-03-08T14-51-20_710-jvmRun1.dumpstream
+    >   ....
+
+
+        ls *.log
+
+    >   hs_err_pid31143.log
+
+
+    head hs_err_pid31143.log
+
+    >   #
+    >   # There is insufficient memory for the Java Runtime Environment to continue.
+    >   # Native memory allocation (mmap) failed to map 7158628352 bytes for committing reserved memory.
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Remove the memory limits from our build.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        xmlstarlet \
+            select \
+                --indent \
+                --template \
+                --copy-of "//_:plugin[_:artifactId='maven-surefire-plugin']" \
+            pom.xml
+
+    >   <plugin xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    >       <groupId>org.apache.maven.plugins</groupId>
+    >       <artifactId>maven-surefire-plugin</artifactId>
+    >       <version>2.22.2</version>
+    >       <configuration>
+    >           <argLine>-Xmx10g -Xms10g</argLine>
+    >       </configuration>
+    >   </plugin>
+
+
+        xmlstarlet \
+            select \
+                --indent \
+                --template \
+                --copy-of "//_:plugin[_:artifactId='maven-surefire-plugin']/_:configuration/_:argLine" \
+            pom.xml
+
+    >   <argLine xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">-Xmx10g -Xms10g</argLine>
+
+
+        xmlstarlet \
+            edit \
+            --pf \
+            --delete \
+                "//_:plugin[_:artifactId='maven-surefire-plugin']/_:configuration/_:argLine" \
+            pom.xml \
+        > pom.new
+
+
+        diff pom.xml pom.new
+        
+    >   364c364
+    >   <                     <argLine>-Xmx10g -Xms10g</argLine>
+    >   ---
+    >   >                     
+        
+        rm pom.xml
+        mv pom.new pom.xml
+    
+    popd
+
+
+# -----------------------------------------------------
+# Build our project.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        mvn clean install
+
+    popd
+    
+        #
+        # WORKS !!!
+        # %^**)(&* misleading ERROR messages :-(
+        #            
+
+
+        #
+        # HTM index vs Zone index, both in HSQLDB.
+        # Load from VOTable.
+        # Load from TAP query.
+        #
+
+
+        

@@ -1,0 +1,109 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+    |<--- width --->+<--- width --->|
+    | | | count | | + | | count | | |
+
+
+    range is the spread either side of the target + and - 
+    count is the number of points to fit into that range
+    
+    if count < range, spreading <count> points over <range>  with gap > 1
+    if count > range, squeezes <count> points within <range> with gap < 1
+
+    as count becomes larger and range becomes smaller, the gap between points is reduced 
+
+
+    + - - - - - - - - - - 1
+    -
+    -
+    -
+    -
+    -
+    -           +
+    -
+    -
+    -
+    -
+
+    + - - - - - - - - - - ((2^1)+1)^2 = 3x3 = 9
+    -
+    -   +       +       +
+    - 
+    -
+    - 
+    -   +       -       +
+    -
+    -
+    -
+    -   +       +       +
+
+
+    + - - - - - - - - - - ((2^2)+1)^2 = 5x5 = 25
+    -
+    -   -   +   -   +   -
+    -
+    -   +   +   +   +   +
+    -
+    -   -   +   -   +   -
+    -
+    -   +   +   +   +   +
+    -
+    -   -   +   -   +   -
+
+
+    + - - - - - - - - - - ((2^3)+1)^2 = 9x9 = 81
+    -
+    -   - + - + - + - + -
+    -   + + + + + + + + +
+    -   - + - + - + - + -
+    -   + + + + + + + + +
+    -   - + - + - + - + -
+    -   + + + + + + + + +
+    -   - + - + - + - + -
+    -   + + + + + + + + +
+    -   - + - + - + - + -
+
+
+    ((2^4)+1)^2  =        289
+    ((2^5)+1)^2  =      1,089
+    ((2^6)+1)^2  =      4,225
+    ((2^7)+1)^2  =     16,641
+    ((2^8)+1)^2  =     66,049
+    ((2^9)+1)^2  =    263,169
+    ((2^10)+1)^2 =  1,050,625
+    ((2^11)+1)^2 =  4,198,401
+    ((2^12)+1)^2 = 16,785,409
+    ((2^13)+1)^2 = 67,125,249
+    
+    
+    
+    
+    ((2^n)+1)^2
+    
+    

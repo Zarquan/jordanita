@@ -1,0 +1,160 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+
+
+Discussion on the dm-alert-prod discussion channel
+
+
+    Alert rate
+
+        10k alerts/visit - minimum
+        40k alerts/visit - peak
+       100k alerts/visit - stretch
+
+
+
+    The LSST System Science Requirements Document
+    https://docushare.lsstcorp.org/docushare/dsweb/Get/LPM-17/LPM17_LSSTSRD_20180130.pdf#46
+
+        Quantity    DesignSpec  MinimumSpec StretchGoal
+        transN      10^4        10^3        10^5
+
+        The minimum number of candidate transients per field of view that the system can report in realtime.
+
+
+
+    LSST Science and Project Sizing Inputs
+    https://docushare.lsst.org/docushare/dsweb/ServicesLib/LSE-81/View
+
+        Peak number of alerts per visit                                             40000       Between SRD minimum of 10K and stretch of 100K
+        Average number of alerts per visit due to variables and old transients      10000
+        Average number of alerts per visit due to new transients                      100
+        Average number of alerts per visit due to false positives                   5,050       50% of real alerts
+        Number of moving objects                                                  6000000       Table 5.1 in the Science Book
+        Fraction of all DiaSources from moving objects                                16%
+
+
+
+    Automated Operation of the LSST Data Management System
+    https://docushare.lsst.org/docushare/dsweb/Get/Rendition-33209/index.htm
+
+
+
+    Alert Production End to End Flow
+    https://confluence.lsstcorp.org/display/DM/Alert+Production+End+to+End+Flow
+
+
+
+    Camera/Telescope Interface and Data Transfer
+    https://confluence.lsstcorp.org/pages/viewpage.action?pageId=6227360
+
+
+
+Discussion on the dm-alert-prod discussion channel
+
+    Eric Bellm [12:13 AM]
+    @ktl I am trying to understand better the outbound bandwidth budgeted for community brokers. I don’t see anything specific in the network sizing model--can you point me to where I might look?
+
+    Kian-Tat Lim [12:15 AM]
+    AFAIK, there is no specific modeling of that.  We assumed "bandwidth out to the Internet" would be either inexhaustible or funded by the other end.
+    (for the purposes of the sizing model)
+
+    Eric Bellm [12:18 AM]
+    I guess I’m confused, then.  My understanding was that the number of full streams out was limited by bandwidth (either hardware or budget/$).  But you’re saying that’s not formally quantified?
+
+    Kian-Tat Lim [12:18 AM]
+    Yes, to my knowledge.  4 streams was a guess, and while I think some effort was made to back that up later, I don't think it has been formally documented.
+    (For that matter, I don't think the number of community brokers is in LSE-61 or LSE-30)
+
+    Eric Bellm [12:24 AM]
+    Okay, that’s useful.  The context is that I’m trying to get out LDM-612, which describes selection of community brokers, and it looks a lot different if there are 4 slots or 10 (or 100…)
+
+    Tim Jenness [12:25 AM]
+    and what if some brokers are running at NCSA and some aren’t
+
+    Eric Bellm [12:25 AM]
+    I’d be happy just to understand the case of “all brokers are external to NCSA”
+
+    Tim Jenness [12:26 AM]
+    what is the full rate of the alert system? (Mbps or some unit) (edited)
+
+    Eric Bellm [12:26 AM]
+    I don’t think we know precisely to better than a factor of a few.  DPDD claims 100Mpbs
+
+    Kian-Tat Lim [12:27 AM]
+    We have max number of alerts per visit and size of an alert, but I'm not sure the full size has been re-estimated after all the changes to the contents.
+
+    Eric Bellm [12:28 AM]
+    Right, and the format matters somewhat too.
+
+    Kian-Tat Lim [12:28 AM]
+    Peak alerts/visit = 40K
+
+    Maria Patterson [12:30 AM]
+    ~300 Mbps from my stuff roughly
+
+    Kian-Tat Lim [12:31 AM]
+    We had thought that the alert packet would be dominated by the postage stamps (originally 20KB, now maybe 60KB but compressible to ~40KB).
+    But a year of DiaSources could be substantial.
+    And of course it comes out in bursts; the average can be determined but the maximum depends on how quickly you want to get the batch out.
+
+    Eric Bellm [6:12 PM]
+    @mgelman2 @mbutler From the NCSA side, do you have a sense of the limits on the outbound bandwidth (peak or sustained) we can devote to full
+    streams to community brokers?  How would we make that determination?  This determines (with the alert stream volume) how many brokers we can
+    select, and therefore feeds back into what the appropriate selection mechanism is.
+
+    Michelle Butler [6:12 PM]
+    joined #dm-alert-prod by invitation from Eric Bellm.
+
+    Kian-Tat Lim [6:14 PM]
+    I believe such a calculation was done relatively recently, but I'll let them speak for themselves.
+
+    Dave Morris [6:06 AM]
+    @ktl The Peak alerts/visit = 40K figure - is that in a document somewhere ?
+    I'm part of the team developing a downstream community broker at Edinburgh, and we need to scope our system to be able to handle the peak
+    alerts/visit rate from your system.
+
+    Tim Jenness [6:09 AM]
+    I’m not entirely sure. LPM-17 says 10,000 with a stretch goal of 100,000. transN is real alerts, not bogus ones.
+
+    Eric Bellm [6:23 AM]
+    In crowded regions I’d expect you could get >10k alerts from natural astrophysical variation, but the pipelines are not required to pass them
+    but as the stretch goal indicates, it would be useful to do so if we could.
+    I’m not sure I agree with @timj’s statement that transN does not include bogus.  We won’t put out any alerts we _know_ are bogus.
+    What `transPurityMin` and `transCompletenessMin` allow us to do it make statements about the _aggregate_ contents of the alert stream (edited)
+
+    Tim Jenness [6:31 AM]
+    ok. I was sure that @ajc told me that 10k are the expected real alerts but maybe I misunderstood what he meant by “real”.
+
+    Kian-Tat Lim [6:36 AM]
+    Peak number is in LSE-81
+    G71
+    That's just for sizing; it doesn't say the pipelines can produce that many.
+
+    Dave Morris [6:40 AM]
+    That's useful to know.
+    In a crowded region it won't be just one visit that is >10k, the peak could last for several visits in sequence all producing > 10k.
+    If the peak lasts a long time and we are processing slower than they are being produced we could end up with a backlog. So ideally we
+    should aim to be able to cope with the peak rate, or at least as close as we can within funding limits.
+

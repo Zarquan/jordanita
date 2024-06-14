@@ -1,0 +1,282 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+    # trop03 - Zookeeper + Kafa
+    # trop04 - Zookeeper
+
+    # work01 - empty VMs
+    # work02 - empty VMs
+    # work03 - StackHPC OpenStack
+    # work04 - StackHPC OpenStack
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on trop03.
+#[user@desktop]
+
+    ssh trop03
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    86    Fosauri                        running
+    >    87    Marpus                         running
+    >    90    Edwalafia                      running
+    >    91    Angece                         running
+    >    92    Onoza                          running
+    >    93    Stedigo                        running
+
+
+    for vmname in $(
+        virsh -c "${libvirtcon:?}" list --all --name
+        )
+        do
+            echo "---- ----"
+            echo "Node [${vmname:?}]"
+            ssh "${vmname:?}" \
+                '
+                hostname
+                date
+                docker ps
+                '
+        done
+
+    >   ---- ----
+    >   Node [Fosauri]
+    >   Fosauri
+    >   Tue 28 Apr 04:55:20 BST 2020
+    >   CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+    >   ce2df2bcc6b6        confluentinc/cp-zookeeper:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:2181->2181/tcp, 0.0.0.0:2888->2888/tcp, 0.0.0.0:3888->3888/tcp   stevedore_courtney_1
+    >   ---- ----
+    >   Node [Marpus]
+    >   Marpus
+    >   Tue 28 Apr 04:55:20 BST 2020
+    >   CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+    >   993f21bb7e0c        confluentinc/cp-zookeeper:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:2181->2181/tcp, 0.0.0.0:2888->2888/tcp, 0.0.0.0:3888->3888/tcp   stevedore_courtney_1
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   Edwalafia
+    >   Tue 28 Apr 04:55:21 BST 2020
+    >   CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS                              NAMES
+    >   c995cd78e371        confluentinc/cp-kafka:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:9092-9093->9092-9093/tcp   stevedore_emily_1
+    >   ---- ----
+    >   Node [Angece]
+    >   Angece
+    >   Tue 28 Apr 04:55:22 BST 2020
+    >   CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS                              NAMES
+    >   f694c1594d22        confluentinc/cp-kafka:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:9092-9093->9092-9093/tcp   stevedore_emily_1
+    >   ---- ----
+    >   Node [Onoza]
+    >   Onoza
+    >   Tue 28 Apr 04:55:23 BST 2020
+    >   CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS                              NAMES
+    >   465ad169bc36        confluentinc/cp-kafka:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:9092-9093->9092-9093/tcp   stevedore_emily_1
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Stedigo
+    >   Tue 28 Apr 04:55:23 BST 2020
+    >   CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS                              NAMES
+    >   cfa64245b8e1        confluentinc/cp-kafka:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:9092-9093->9092-9093/tcp   stevedore_emily_1
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on trop04.
+#[user@desktop]
+
+
+    ssh trop04
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    18    Sendalin                       running
+
+
+    for vmname in $(
+        virsh -c "${libvirtcon:?}" list --all --name
+        )
+        do
+            echo "---- ----"
+            echo "Node [${vmname:?}]"
+            ssh "${vmname:?}" \
+                '
+                hostname
+                date
+                docker ps
+                '
+        done
+
+    >   ---- ----
+    >   Node [Sendalin]
+    >   Sendalin
+    >   Tue 28 Apr 04:59:55 BST 2020
+    >   CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+    >   858c1ab9b30d        confluentinc/cp-zookeeper:4.1.1   "/etc/confluent/dock…"   5 weeks ago         Up 5 weeks          0.0.0.0:2181->2181/tcp, 0.0.0.0:2888->2888/tcp, 0.0.0.0:3888->3888/tcp   stevedore_courtney_1
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on work01.
+#[user@desktop]
+
+    ssh work01
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    60    Onaukon                        running
+    >    61    Kedaessa                       running
+    >    62    Arardobwyn                     running
+
+
+    for vmname in $(
+        virsh -c "${libvirtcon:?}" list --all --name
+        )
+        do
+            echo "---- ----"
+            echo "Node [${vmname:?}]"
+            ssh "${vmname:?}" \
+                '
+                hostname
+                date
+                docker ps -a
+                '
+        done
+
+    >   ---- ----
+    >   Node [Onaukon]
+    >   Onaukon
+    >   Tue 28 Apr 04:53:58 BST 2020
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Kedaessa]
+    >   Kedaessa
+    >   Tue 28 Apr 04:53:59 BST 2020
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Arardobwyn]
+    >   Arardobwyn
+    >   Tue 28 Apr 04:54:00 BST 2020
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on work02.
+#[user@desktop]
+
+    ssh work02
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    10    Drilawyr                       running
+    >    11    Ybigorid                       running
+
+
+    for vmname in $(
+        virsh -c "${libvirtcon:?}" list --all --name
+        )
+        do
+            echo "---- ----"
+            echo "Node [${vmname:?}]"
+            ssh "${vmname:?}" \
+                '
+                hostname
+                date
+                docker ps -a
+                '
+        done
+
+    >   ---- ----
+    >   Node [Drilawyr]
+    >   Drilawyr
+    >   Tue 28 Apr 05:03:20 BST 2020
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Ybigorid]
+    >   Ybigorid
+    >   Tue 28 Apr 05:03:21 BST 2020
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on work03.
+#[user@desktop]
+
+    ssh work03
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    19    teng                           running
+    >    24    alistair                       running
+    >    25    amy                            running
+    >    26    donald                         running
+    >    27    callum                         running
+    >    28    dave                           running
+    >    29    mark                           running
+    >    30    stack                          running
+    >    -     local-reg                      shut off
+    >    -     mark-base                      shut off
+    >    -     mark-mon                       shut off
+    >    -     overcloud                      shut off
+
+
+# -----------------------------------------------------
+# Check which machines are doing what on work04.
+#[user@desktop]
+
+    ssh work04
+
+        source "${HOME}/libvirt.env"
+
+        virsh -c "${libvirtcon:?}" list --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    1     ken                            running
+    >    3     gareth                         running
+    >    6     iakovos                        running
+    >    7     johnny                         running
+    >    8     malcolm                        running
+    >    9     neelofer                       running
+    >    -     craig                          shut off
+

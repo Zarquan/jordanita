@@ -1,0 +1,308 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+# -----------------------------------------------------
+# Trop VM settings.
+#[user@trop03]
+    
+    createvm
+
+        INFO : Node name [Umiawyth]
+        INFO : Base name [fedora-28-docker-base-20180708.qcow]
+        INFO : Base path [/var/lib/libvirt/images/base/fedora-28-docker-base-20180708.qcow]
+        INFO : Disc name [Umiawyth.qcow]
+        INFO : Disc size [16GiB]
+
+    vmname=Umiawyth
+
+# -----------------------------------------------------
+# Modify the VM memory allocation from 16G to 64G.
+#[user@trop03]
+
+    source "${HOME}/libvirt.settings" 
+
+    virsh \
+        -c "${connection:?}" \
+        setmaxmem \
+            "${vmname:?}" '64GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setmem \
+            "${vmname:?}" '64GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --maximum \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        shutdown \
+            "${vmname:?}"
+
+    sleep 20
+    
+    virsh \
+        -c "${connection:?}" \
+        start \
+            "${vmname:?}"
+
+# -----------------------------------------------------
+# Login to the VM and check the resources.
+#[user@trop03]
+
+    ssh "${vmname:?}"
+
+        cat /proc/cpuinfo | grep processor
+
+            processor	: 0
+            processor	: 1
+            processor	: 2
+            processor	: 3
+            processor	: 4
+            processor	: 5
+            processor	: 6
+            processor	: 7
+
+        free -h
+
+                          total        used        free      shared  buff/cache   available
+            Mem:            28G        299M         28G        536K        340M         27G
+            Swap:          1.0G          0B        1.0G
+
+# -----------------------------------------------------
+# Run a Java container.
+#[user@virtual]
+
+        docker run \
+            --rm  \
+            --tty \
+            --interactive \
+            firethorn/builder:2.1.25 \
+            bash 
+
+#
+# Ideally, yes, but in reality, not yet
+# --user "$(id -u):$(id -g)" \
+# Create user builder, id 1001 inside the container.
+# Create home directory /home/builder
+
+
+# -----------------------------------------------------
+# Builder settings
+#[user@builder]
+
+cat > "${HOME}/enteucha.settings" << 'EOF'
+BUILD_HOME=/var/local/build/
+ENTEUCHA_BASE="${BUILD_HOME:?}/enteucha"
+ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
+#NTEUCHA_REPO='git@github.com:lsst-uk/enteucha.git'
+#NTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_REPO='https://github.com/Zarquan/enteucha.git'
+EOF
+
+# -----------------------------------------------------
+# Checkout a copy of our source code.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+
+        if [ ! -e "$(dirname ${ENTEUCHA_CODE:?})" ]
+        then
+            mkdir -p "$(dirname ${ENTEUCHA_CODE:?})"
+        fi
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+
+        popd
+    else
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+# -----------------------------------------------------
+# Build our code and run our tests.
+#[user@builder]
+
+    git config user.email "dave@example.com"
+    git config user.name  "Dave Morris"
+
+
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+        mvn clean test
+    popd
+
+        #
+        # Problems with surefire plugin launching the JUnit tests.
+
+        [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.20.1:test (default-test) on project enteucha: There are test failures.
+        [ERROR] 
+        [ERROR] Please refer to /var/local/build/enteucha/github.zrq/target/surefire-reports for the individual test results.
+        [ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
+        [ERROR] The forked VM terminated without properly saying goodbye. VM crash or System.exit called?
+        [ERROR] Command was /bin/sh -c cd /var/local/build/enteucha/github.zrq && /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.172-12.b11.fc28.x86_64/jre/bin/java -jar /var/local/build/enteucha/github.zrq/target/surefire/surefirebooter6791680676953048838.jar /var/local/build/enteucha/github.zrq/target/surefire 2018-07-25T13-00-06_580-jvmRun1 surefire4961131659763998711tmp surefire_08381085294286858561tmp
+        [ERROR] Error occurred in starting fork, check output in log
+        [ERROR] Process Exit Code: 1
+        [ERROR] org.apache.maven.surefire.booter.SurefireBooterForkException: The forked VM terminated without properly saying goodbye. VM crash or System.exit called?
+        [ERROR] Command was /bin/sh -c cd /var/local/build/enteucha/github.zrq && /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.172-12.b11.fc28.x86_64/jre/bin/java -jar /var/local/build/enteucha/github.zrq/target/surefire/surefirebooter6791680676953048838.jar /var/local/build/enteucha/github.zrq/target/surefire 2018-07-25T13-00-06_580-jvmRun1 surefire4961131659763998711tmp surefire_08381085294286858561tmp
+        [ERROR] Error occurred in starting fork, check output in log
+        [ERROR] Process Exit Code: 1
+
+        #
+        # GoogleFoo ...
+        # https://stackoverflow.com/questions/46346241/how-to-troubleshut-surefire-vm-crash-without-meaningful-dump
+        # https://stackoverflow.com/questions/27994636/maven-surefire-test-failed-after-upgrade-to-jdk-8
+        # https://stackoverflow.com/questions/42298883/maven-build-failure-when-running-tests-due-to-jvm-crash
+
+        #
+        # Updating dependencies and plugins solved the problem.
+
+        # Display Dependency Updates
+        mvn versions:display-dependency-updates
+
+        # Display Plugin Updates
+        mvn versions:display-plugin-updates
+
+# -----------------------------------------------------
+# Build our code and run our tests.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+        mvn clean test
+    popd
+
+
+    #
+    # Tweak the size of the dataset
+
+            spacing = 0.0125  =>    103,041 rows
+            spacing = 0.005   =>    641,601 rows
+            spacing = 0.0025  =>  2,563,201 rows
+            spacing = 0.00125 => 10,246,401 rows (terminal locks up during insert ?)
+            spacing = 0.0005  => 
+
+
+    #
+    # Works, but not fast enough.
+
+
+        2018-07-25 23:42:52,727 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:43:07,004 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [13s][13930ms][13930498?s][13930498424ns], average [0ms][5?s][5434ns] 
+        2018-07-25 23:43:07,686 INFO  [main] [AbstractTestCase] Matcher [Class [HsqlMatcherImpl] Indexing [SEPARATE] Total rows [2,563,201] URL [jdbc:hsqldb:mem:zonematch]] 
+        2018-07-25 23:43:07,687 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][670ms][670415?s][670415199ns], average [83ms][83801?s][83801899ns] FAIL 
+        2018-07-25 23:43:07,687 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:43:16,152 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [7s][7844ms][7844543?s][7844543681ns], average [0ms][3?s][3060ns] 
+        2018-07-25 23:43:16,561 INFO  [main] [AbstractTestCase] Matcher [Class [HsqlMatcherImpl] Indexing [COMBINED] Total rows [2,563,201] URL [jdbc:hsqldb:mem:zonematch]] 
+        2018-07-25 23:43:16,561 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][406ms][406194?s][406194668ns], average [50ms][50774?s][50774333ns] FAIL 
+        2018-07-25 23:43:16,561 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:43:23,567 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [6s][6646ms][6646869?s][6646869557ns], average [0ms][2?s][2593ns] 
+        2018-07-25 23:43:23,880 INFO  [main] [AbstractTestCase] Matcher [Class [HsqlMatcherImpl] Indexing [COMPLEX] Total rows [2,563,201] URL [jdbc:hsqldb:mem:zonematch]] 
+        2018-07-25 23:43:23,880 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][311ms][311331?s][311331192ns], average [38ms][38916?s][38916399ns] FAIL 
+        2018-07-25 23:43:23,884 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:43:39,171 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [15s][15266ms][15266986?s][15266986032ns], average [0ms][5?s][5956ns] 
+        2018-07-25 23:43:39,200 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [18.0] Zone count [2] Zone total [2563201] Avg zone size [1281600] Max zone size [1282401] Min zone size [1280800]] 
+        2018-07-25 23:43:39,200 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][26ms][26425?s][26425095ns], average [3ms][3303?s][3303136ns] FAIL 
+        2018-07-25 23:43:39,200 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:43:50,002 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [10s][10800ms][10800749?s][10800749326ns], average [0ms][4?s][4213ns] 
+        2018-07-25 23:43:50,021 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [1.8] Zone count [4] Zone total [2563201] Avg zone size [640800] Max zone size [1152720] Min zone size [128080]] 
+        2018-07-25 23:43:50,022 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][14ms][14867?s][14867866ns], average [1ms][1858?s][1858483ns] FAIL 
+        2018-07-25 23:43:50,022 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:44:02,514 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [12s][12490ms][12490766?s][12490766186ns], average [0ms][4?s][4873ns] 
+        2018-07-25 23:44:02,525 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [0.18] Zone count [24] Zone total [2563201] Avg zone size [106800] Max zone size [116873] Min zone size [12808]] 
+        2018-07-25 23:44:02,525 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][8ms][8256?s][8256529ns], average [1ms][1032?s][1032066ns] FAIL 
+        2018-07-25 23:44:02,526 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:44:21,900 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [19s][19373ms][19373749?s][19373749733ns], average [0ms][7?s][7558ns] 
+        2018-07-25 23:44:21,909 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [0.018] Zone count [224] Zone total [2563201] Avg zone size [11442] Max zone size [12808] Min zone size [1601]] 
+        2018-07-25 23:44:21,910 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][7ms][7294?s][7294518ns], average [0ms][911?s][911814ns] PASS 
+        2018-07-25 23:44:21,910 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:46:33,246 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [131s][131335ms][131335415?s][131335415556ns], average [0ms][51?s][51238ns] 
+        2018-07-25 23:46:33,263 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [0.0018] Zone count [1601] Zone total [2563201] Avg zone size [1601] Max zone size [1601] Min zone size [1601]] 
+        2018-07-25 23:46:33,263 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][13ms][13513?s][13513022ns], average [1ms][1689?s][1689127ns] FAIL 
+        2018-07-25 23:46:33,263 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:48:44,265 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [131s][131000ms][131000603?s][131000603760ns], average [0ms][51?s][51108ns] 
+        2018-07-25 23:48:44,284 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [SEPARATE] Zone height [1.8E-4] Zone count [1601] Zone total [2563201] Avg zone size [1601] Max zone size [1601] Min zone size [1601]] 
+        2018-07-25 23:48:44,284 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][14ms][14821?s][14821803ns], average [1ms][1852?s][1852725ns] FAIL 
+        2018-07-25 23:48:44,284 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:48:57,666 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [13s][13380ms][13380802?s][13380802935ns], average [0ms][5?s][5220ns] 
+        2018-07-25 23:48:59,829 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [18.0] Zone count [2] Zone total [2563201] Avg zone size [1281600] Max zone size [1282401] Min zone size [1280800]] 
+        2018-07-25 23:48:59,829 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [2s][2159ms][2159673?s][2159673504ns], average [269ms][269959?s][269959188ns] FAIL 
+        2018-07-25 23:48:59,829 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:49:16,341 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [16s][16511ms][16511227?s][16511227702ns], average [0ms][6?s][6441ns] 
+        2018-07-25 23:49:18,526 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [1.8] Zone count [4] Zone total [2563201] Avg zone size [640800] Max zone size [1152720] Min zone size [128080]] 
+        2018-07-25 23:49:18,527 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [2s][2183ms][2183109?s][2183109964ns], average [272ms][272888?s][272888745ns] FAIL 
+        2018-07-25 23:49:18,527 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:49:33,275 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [14s][14747ms][14747288?s][14747288741ns], average [0ms][5?s][5753ns] 
+        2018-07-25 23:49:33,463 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [0.18] Zone count [24] Zone total [2563201] Avg zone size [106800] Max zone size [116873] Min zone size [12808]] 
+        2018-07-25 23:49:33,463 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][186ms][186632?s][186632894ns], average [23ms][23329?s][23329111ns] FAIL 
+        2018-07-25 23:49:33,463 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:49:53,566 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [20s][20102ms][20102699?s][20102699698ns], average [0ms][7?s][7842ns] 
+        2018-07-25 23:49:53,583 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [0.018] Zone count [224] Zone total [2563201] Avg zone size [11442] Max zone size [12808] Min zone size [1601]] 
+        2018-07-25 23:49:53,583 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][15ms][15559?s][15559863ns], average [1ms][1944?s][1944982ns] FAIL 
+        2018-07-25 23:49:53,583 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:51:35,507 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [101s][101923ms][101923273?s][101923273746ns], average [0ms][39?s][39764ns] 
+        2018-07-25 23:51:35,529 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [0.0018] Zone count [1601] Zone total [2563201] Avg zone size [1601] Max zone size [1601] Min zone size [1601]] 
+        2018-07-25 23:51:35,529 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][18ms][18566?s][18566075ns], average [2ms][2320?s][2320759ns] FAIL 
+        2018-07-25 23:51:35,529 INFO  [main] [AbstractTestCase] ---- ---- 
+        2018-07-25 23:53:14,686 INFO  [main] [AbstractTestCase] Inserted [2,563,201] in [99s][99155ms][99155994?s][99155994611ns], average [0ms][38?s][38684ns] 
+        2018-07-25 23:53:14,696 INFO  [main] [AbstractTestCase] Matcher [Class [ZoneSetImpl] Total rows [2,563,201] Indexing [COMBINED] Zone height [1.8E-4] Zone count [1601] Zone total [2563201] Avg zone size [1601] Max zone size [1601] Min zone size [1601]] 
+        2018-07-25 23:53:14,696 INFO  [main] [AbstractTestCase] Searched [2,563,201] rows, [8] loops, total [0s][8ms][8476?s][8476784ns], average [1ms][1059?s][1059598ns] FAIL 
+
+
+    #
+    # Loooks like a plateau at around 1ms. 
+    # Something that isn't data size related.
+    
+
+    #
+    # Next steps - use compose file to start/stop the tests, preserving code and logs in volumes.
+    # Iterativley add data/query/add/query/add/query to see if there is a flat spot.
+    
+    
+    
+    #
+    # Query firethorn, write to Kafka stream.
+    # Import into test from Kafka.
+    # Kafka acts as a data store for the test.
+
+
+
+
+
+
+

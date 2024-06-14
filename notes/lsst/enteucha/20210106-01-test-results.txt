@@ -1,0 +1,454 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+
+
+Modifications
+
+Initial testing highlighted a significant issue with using the
+algorithmically generated test data to test the zone based
+cross match algorithms.
+
+The test data is aligned on a grid pattern,
+with horizontal rows of points all with the same
+right ascension.
+
+This results in a distorted distribution of points
+when mapped onto the crossmatch zones.
+
+All of the points in a row of test data
+would be mapped to a single crossmatch zone that matched
+the specific right ascension of that row.
+
+Conversley, all of the zones in between, that did not match
+a row of test data would be empty.
+
+This results in a few densely populated zones with
+specific right ascension that matched the test data rows,
+and many completley empty zones in between.
+
+Two solutions were considered, one would be to rotate the
+test data in some way so that each row of points would no
+longer correspoind to just a single zone.
+
+This would be maintain the systematic grid pattern of the
+test data while avoiding a direct match between
+the rows of test data and the horizontal zones
+of the cross match.
+
+In the end a simpler alternative was selected which added a random
+jitter to the position of the data points before they were
+inserted into the database.
+The value of the jitter was calculated to spread the points
+evenly accross the zones.
+
+The range and insert parameters still control the overall
+density of the test data as before, but the positions of
+individual points are randomly distributed within the range.
+
+
+Test settings
+
+The settings for the tests were configured as follows:
+
+
+    enteucha.loop=100
+
+    enteucha.select.min=10
+    enteucha.insert.max=10
+
+    enteucha.radius.min=1
+    enteucha.radius.max=7
+
+    enteucha.radius.min=1
+    enteucha.radius.max=7
+
+    enteucha.range.min=5
+    enteucha.range.max=7
+
+    enteucha.zone.min=1
+    enteucha.zone.max=7
+
+
+
+        enteucha.loop=100
+
+    Meaning that the timings measured represent the
+    average time for 100 cross match operations
+    performed at each stage in the test sequence.
+
+The insert.max value sets the total size of the
+test data set as a grid of 4,198,401 points.
+
+    enteucha.insert.max=10
+
+    (2^(10+1))+1 = 2049
+          2049^2 = 4198401
+
+The radius.min and radius.max values set the
+maximum and minimum values for the cross match
+radius to 0.5 and 0.0078125 degrees.
+
+    enteucha.radius.min=1
+    enteucha.radius.max=7
+
+    2^(-1) = 0.5
+    2^(-7) = 0.0078125
+
+The range.min and range.max values set the
+maximum and minimum values for the test data
+range to 32 and 128 degrees.
+
+    enteucha.range.min=5
+    enteucha.range.max=7
+
+    2^5 =  32.0
+    2^7 = 128.0
+
+The zone.min and zone.max values set the
+maximum and minimum zone height to
+0.5 and 0.0078125 degrees.
+
+    enteucha.zone.min=1
+    enteucha.zone.max=7
+
+    2^(-1) = 0.5
+    2^(-7) = 0.0078125
+
+Test results
+
+The full set of test results are provided in a
+supplementary document generated from a spread sheet
+containing the test results and a set of graphs plotting
+lines for each stage of the tests.
+
+Each section of the results contains a table of data
+and two graphs based on that data.
+
+The first graph plots a set of lines for the full
+range of values in the table.
+
+The second graph plots a set of lines
+that concentrate on the last four points
+in the data, effectivley providing a
+zoomed view of the bottom left corner of
+the full graph.
+
+
+
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textit{Table} & \textit{matcher} & \textit{indexing} & \textit{range} \\ \hline
+Table 01 & HsqlHtmidMatcher & HTMID & 128 \\ \hline
+Table 02 & HsqlHtmidMatcher & HTMID & 64 \\ \hline
+Table 03 & HsqlHtmidMatcher & HTMID & 32 \\ \hline
+Table 04 & HsqlZoneMatcher & SEPARATE & 128 \\ \hline
+Table 05 & HsqlZoneMatcher & SEPARATE & 64 \\ \hline
+Table 06 & HsqlZoneMatcher & SEPARATE & 32 \\ \hline
+.... \\ \hline
+.... \\ \hline
+Table 13 & CQZoneMatcher & SEPARATE & 128 \\ \hline
+Table 14 & CQZoneMatcher & SEPARATE & 64 \\ \hline
+Table 15 & CQZoneMatcher & SEPARATE & 32 \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textit{zone} & \textit{radius} & \textit{found} & \textit{timeavg} \\ \hline
+0.5 & 0.5    & 48 & 7.127 \\ \hline
+0.5 & 0.25   & 12 & 1.877 \\ \hline
+0.5 & 0.125  &  3 & 0.748 \\ \hline
+0.5 & 0.0625 &  1 & 0.384 \\ \hline
+.... \\ \hline
+.... \\ \hline
+0.0078125 & 0.0625    & 1 & 0.148 \\ \hline
+0.0078125 & 0.03125   & 1 & 0.081 \\ \hline
+0.0078125 & 0.015625  & 1 & 0.058 \\ \hline
+0.0078125 & 0.0078125 & 1 & 0.053 \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+\hline
+HsqlHtmidMatcher & HTMID & 128 \\ \hline
+
+
+
+HsqlHtmidMatcher & HTMID & 64 \\ \hline
+
+
+Table 03 & HsqlHtmidMatcher & HTMID & 32 \\ \hline
+Table 04 & HsqlZoneMatcher & SEPARATE & 128 \\ \hline
+Table 05 & HsqlZoneMatcher & SEPARATE & 64 \\ \hline
+Table 06 & HsqlZoneMatcher & SEPARATE & 32 \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+Table 13 & CQZoneMatcher & SEPARATE & 128 \\ \hline
+Table 14 & CQZoneMatcher & SEPARATE & 64 \\ \hline
+Table 15 & CQZoneMatcher & SEPARATE & 32 \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+    example:
+
+
+
+
+    The results document contains two sets of data.
+    The first set of tables
+    conttain the test data in the sequence
+    that it was generated by the tests
+    and the corresponding graphs plot
+    lines for search radius against time
+    for each value of zone height.
+
+    The second set of tables re-arranges the result
+    data to sort and group the data by
+    search radius and zone height to provide
+    the data for the second set of graphs that plot
+    zone height against time
+    for each value of search radius.
+
+
+Performance target
+
+    The main aim of these tests was to see if we could find an algorithm and
+    cross matcher implementation that could meet the required performance target
+    of cross matching point sources against a million row dataset in less than
+    one millisecond per match.
+
+    Both the HTMID and zone indexed database implementations
+    and the CQEngine implementation are all capable of reaching
+    this target for a range of values for dataset size,
+    data density and crossmatch radius.
+
+
+Algorithm comparison
+
+To compare just the \crossmatch algoritms, and to keep as much of the rest of the variables
+the same, we compared the best set of results for the zone indexed \HSQL database with the
+results from the \HTMID indexed HSQL database.
+
+The results of our tests suggest that in all of the cases we tested the \HTMID indexing
+performed better than the zone based indexing.
+
+Table 01 contains the results for \HTMID indexed data with zone height of 0.0078125
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textit{zone (deg)} & \textit{radius (deg)} & \textit{found} & \textit{timeavg (ms)} \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+0.0078125 & 0.5       & 46 & 3.811 \\ \hline
+0.0078125 & 0.25      & 12 & 1.123 \\ \hline
+0.0078125 & 0.125     &  3 & 0.371 \\ \hline
+0.0078125 & 0.0625    &  1 & 0.148 \\ \hline
+0.0078125 & 0.03125   &  1 & 0.081 \\ \hline
+0.0078125 & 0.015625  &  1 & 0.058 \\ \hline
+0.0078125 & 0.0078125 &  1 & 0.053 \\ \hline
+\end{tabular}
+\end{table}
+
+For copmparison, table 04 shows the corresponding results for zone indexed data with the same zone height
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textit{zone (deg)} & \textit{radius (deg)} & \textit{found} & \textit{timeavg (ms)} \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+\multicolumn{4}{|c|}{....} \\ \hline
+0.0078125 & 0.5       & 49 & 13.861
+0.0078125 & 0.25      & 10 &  7.499
+0.0078125 & 0.125     &  2 &  3.681
+0.0078125 & 0.0625    &  1 &  1.491
+0.0078125 & 0.03125   &  1 &  1.221
+0.0078125 & 0.015625  &  1 &  0.715
+0.0078125 & 0.0078125 &  1 &  0.424
+\end{tabular}
+\end{table}
+
+
+In almost all of the cases that we tested, the \HTMID indexed data consistently
+out performed the zone indexed data.
+
+This result does not match the results described by Gray et al in 2004[1]
+and Petar Zečević et al in 2019[6].
+
+It is important to note that where the original papers reported
+results based on cross matching real archive data wheras our results are
+based on generated test data.
+
+The original aim of our this project was to identify a cross matcher
+implementation that was capable of meeting the performance targets.
+
+As such the tests were defined to to look for a specific result,
+crossmatching against a fix set of data within a specific time.
+
+The benchmarking comparison between different algorithms and implementations
+came later as the project evolved.
+
+As a result it is likley that our results have been skewed by a systematic
+error in either our cross matcher implementation or the data used to
+test them.
+
+We hope to be able to return to these experiemnts in subsequent projects
+to impove the accuracy and confidence level of the results.
+
+
+
+Database indexing
+
+    The HSQL database tests performed exactly the same queries on the same
+    data set on identical database deployments.
+    The database itself was deployed as an in-memory database, eliminating
+    any effects disc I/O could have on the results from a conventional
+    database deployment.
+
+    The HSQL database tests showed that for the most part, the
+    COMBINED and COMPLEX indexing methods performed better than the
+    SEPARATE indexing.
+
+    Chart 61 - 65 show a consistent advantage of COMBINED and COMPLEX
+    over SEPARATE indexing over a range of zone sizes from 0.5 to 0.03125.
+
+    However this advantage shrinks for smaller zone sizes.
+
+    Chart 66, for zone size 0.015625, shows COMBINED indexing as slower,
+    Chart 67, for zone size 0.0078125 shows all three indexing methods
+    performing equally.
+
+    The tests did not show a significant difference between
+    the COMBINED and COMPLEX indexing methods.
+    In 4 out of 7 tests COMPLEX indexing perfomed better,
+    in 2 out of 7 tests COMBINED indexing performed better
+    and one test they were equal.
+
+
+Collection indexing
+
+    Drop this section
+
+Zone height
+
+        C01 HSQL HTMID range 128 - similar
+            blue     0.5
+            green  * 0.0625
+            red      0.25
+            yellow   0.125
+            brown    0.03125
+            lightb   0.015625
+            black    0.0078125
+
+        C02 HSQL HTMID range 128 - similar
+            blue     0.5
+            red      0.25
+            yellow   0.125
+            green    0.0625
+            brown    0.03125
+            lightb   0.015625
+            black    0.0078125
+
+        C03 HSQL HTMID range 64 - all the same
+
+        C04 HSQL HTMID range 64 - close, mixed
+            lightb * 0.015625
+            blue     0.5
+            green  * 0.0625
+            red      0.25
+            brown  * 0.03125
+            black  * 0.0078125
+            yellow   0.125
+
+        C05 HSQL HTMID range 32 - all the same
+
+        C06 HSQL HTMID range 32 - all the same
+
+    For HSQL HTMID - appears to be a small advantage to tests run with a smaller zone size.
+    Which is unexpected because zone size should have has no effect on the performance of the HTMID indexing.
+
+    The test framework was implemented as a set of nested for-next loops.
+
+        range decreasing range, increasing density
+        zone  decreasing height
+        data inserts
+        radius decreasing
+
+    The HSQL HTMID tests were run with different zone sizes because it was easier to re-run the same
+    test than to add complexity to filter out one set of tests in the nexted loop structure.
+
+    Ideally, all else being equal, we should expect all of the HSQL HTMID tests to perform
+    exactly the same, within the level of noise expected by the introduction of the random jitter
+    and the background noise from the execution environment.
+
+    This suggesst there may be a systematic error
+    related to the order in which the tests were
+    performed.
+
+    One way to test this theory would be to change the
+    test sequence to by changing the for-next loop
+    for zone neight to perform that part of the tests
+    in reverse order, increasing zone height.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

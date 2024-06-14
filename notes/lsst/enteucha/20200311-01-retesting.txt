@@ -1,0 +1,72 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+16:00:42.347 INFO  >>>> 
+16:00:42.348 INFO  ---- ---- 
+16:00:42.348 INFO  Radius [2^-3 = 0.125] 
+16:00:42.382 INFO  Class [HsqlHtmidMatcherImpl] ] Total rows [1,089] Depth [20] URL [jdbc:hsqldb:mem:zonematch] 
+16:00:42.383 INFO  Searched [1,089] radius [0.125] found [1] in [1] loops, total [0s][33ms][33253µs][33253539ns], average [33ms][33253µs][33253539ns] FAIL 
+16:00:42.385 INFO  ---- ---- 
+16:00:42.385 INFO  Radius [2^-4 = 0.0625] 
+16:00:42.392 INFO  Class [HsqlHtmidMatcherImpl] ] Total rows [1,089] Depth [20] URL [jdbc:hsqldb:mem:zonematch] 
+16:00:42.393 INFO  Searched [1,089] radius [0.0625] found [1] in [1] loops, total [0s][6ms][6013µs][6013022ns], average [6ms][6013µs][6013022ns] FAIL 
+16:00:42.394 INFO  <<<< 
+
+15:57:24.115 INFO  >>>> 
+15:57:24.115 INFO  ---- ---- 
+15:57:24.115 INFO  Radius [2^-3 = 0.125] 
+15:57:24.117 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [1,089] Zone height [0.0625] URL [jdbc:hsqldb:mem:zonematch] 
+15:57:24.117 INFO  Searched [1,089] radius [0.125] found [23] in [1] loops, total [0s][1ms][1163µs][1163367ns], average [1ms][1163µs][1163367ns] FAIL 
+15:57:24.118 INFO  ---- ---- 
+15:57:24.118 INFO  Radius [2^-4 = 0.0625] 
+15:57:24.119 INFO  Class [HsqlZoneMatcherImpl] Indexing [COMPLEX] Total rows [1,089] Zone height [0.0625] URL [jdbc:hsqldb:mem:zonematch] 
+15:57:24.119 INFO  Searched [1,089] radius [0.0625] found [4] in [1] loops, total [0s][0ms][555µs][555654ns], average [0ms][555µs][555654ns] PASS 
+15:57:24.120 INFO  <<<< 
+
+16:01:59.550 INFO  >>>> 
+16:01:59.550 INFO  ---- ---- 
+16:01:59.551 INFO  Radius [2^-3 = 0.125] 
+16:01:59.552 INFO  Class [CQZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Zone height [0.0625] Zone count [33] Zone size avg [33] min [33] max [33] 
+16:01:59.553 INFO  Searched [1,089] radius [0.125] found [23] in [1] loops, total [0s][1ms][1623µs][1623682ns], average [1ms][1623µs][1623682ns] FAIL 
+16:01:59.553 INFO  ---- ---- 
+16:01:59.553 INFO  Radius [2^-4 = 0.0625] 
+16:01:59.554 INFO  Class [CQZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Zone height [0.0625] Zone count [33] Zone size avg [33] min [33] max [33] 
+16:01:59.554 INFO  Searched [1,089] radius [0.0625] found [4] in [1] loops, total [0s][0ms][765µs][765354ns], average [0ms][765µs][765354ns] PASS 
+16:01:59.554 INFO  <<<< 
+
+
+
+
+
+retest()
+    {
+    mvn test -D 'test=HsqlHtmidMatcherTestCase' ; mv target/enteucha-trace.log target/enteucha-htmid.log
+    mvn test -D 'test=HsqlZoneMatcherTestCase'  ; mv target/enteucha-trace.log target/enteucha-zone.log
+    }
+
+

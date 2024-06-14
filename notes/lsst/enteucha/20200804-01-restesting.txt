@@ -1,0 +1,391 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+# -----------------------------------------------------
+# Login to work01 run a virtual machine.
+#[user@desktop]
+
+    ssh work01
+
+        createvm
+
+    >   ....
+    >   INFO : Node name [Onaukon]
+    >   INFO : Base name [fedora-30-docker-base-20190903.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
+    >   INFO : Disc name [Onaukon.qcow]
+    >   INFO : Disc size [16GiB]
+    >   ....
+
+# -----------------------------------------------------
+# Update the virtual machine memory allocation.
+#[user@work01]
+
+    vmname=Onaukon
+    vmsize=250G
+
+    source "${HOME}/libvirt.env"
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        shutdown "${vmname:?}"
+
+    >   Domain Onaukon is being shutdown
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        list \
+            --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    -     Onaukon                        shut off
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        setmaxmem "${vmname:?}" \
+            "${vmsize:?}" \
+            --config
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        setmem "${vmname:?}" \
+            "${vmsize:?}" \
+            --config
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        start "${vmname:?}"
+
+    >   Domain Onaukon started
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        list \
+            --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    64    Onaukon                        running
+
+
+# -----------------------------------------------------
+# Login to the new virtual machine.
+#[user@work01]
+
+    vmipv4=$(
+        host "${vmname,,}" | sed 's/\(.*\) has address \([.0-9]*\)$/\2/'
+        )
+
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${vmname,,}"
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${vmipv4:?}"
+
+    ssh "${vmname:?}"
+
+# -----------------------------------------------------
+# Create our cache directory.
+#[user@virtual]
+
+    sudo mkdir /var/local/cache
+    sudo chgrp 'users' /var/local/cache
+    sudo chmod 'a+rwx' /var/local/cache
+
+    # Need to make it 'a' rather than 'g' because Docker user still has root group.
+
+# -----------------------------------------------------
+# Create our build directory.
+#[user@virtual]
+
+    sudo mkdir -p /var/local/build
+    sudo chgrp 'users' /var/local/build
+    sudo chmod 'a+rwx' /var/local/build
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Transfer (push) a copy of the JHU source code.
+#[user@desktop]
+
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${vmname:?}"
+
+    ssh "${vmname:?}" 'date ; hostname'
+
+    source "${HOME}/phymatopus.env"
+    pushd "${PHYMATOPUS_CODE:?}"
+
+        scp -r "../external/htmid/jhu-htmid" \
+            Onaukon:/var/local/build/jhu-htmid
+
+    popd
+
+    >   TestHTMfunc.java.bak                                                                               100% 6087   162.1KB/s   00:00
+    >   TestHTMrange.java.bak                                                                              100% 1730    60.8KB/s   00:00
+    >   ....
+    >   ....
+    >   htmid-3.0.1.jar                                                                                    100%   83KB 108.9KB/s   00:00
+    >   duplicate-finder-result.xml                                                                        100% 5627   174.0KB/s   00:00
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our settings file.
+#[user@virtual]
+
+    cat > "${HOME}/enteucha.env" << 'EOF'
+ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_CODE='/var/local/build/enteucha'
+EOF
+
+
+# -----------------------------------------------------
+# Checkout our source code.
+#[user@virtual]
+
+    source "${HOME}/enteucha.env"
+
+    echo "Checking [${ENTEUCHA_CODE}]"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        echo "Creating [${ENTEUCHA_CODE}]"
+        mkdir "$(dirname ${ENTEUCHA_CODE:?})"
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+        popd
+    else
+        echo "Updating [${ENTEUCHA_CODE}]"
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+    >   ....
+    >   ....
+    >   remote: Enumerating objects: 546, done.
+    >   remote: Counting objects: 100% (546/546), done.
+    >   remote: Compressing objects: 100% (208/208), done.
+    >   remote: Total 1524 (delta 199), reused 484 (delta 142), pack-reused 978
+    >   Receiving objects: 100% (1524/1524), 682.87 KiB | 1.71 MiB/s, done.
+    >   Resolving deltas: 100% (489/489), done.
+
+
+# -----------------------------------------------------
+# Checkout the current dev branch.
+#[user@virtual]
+
+    branchname=20200309-zrq-retest
+
+    source "${HOME}/enteucha.env"
+
+    pushd "${ENTEUCHA_CODE:?}"
+        git checkout "${branchname:?}"
+    popd
+
+
+    >   Branch '20200309-zrq-retest' set up to track remote branch '20200309-zrq-retest' from 'origin'.
+    >   Switched to a new branch '20200309-zrq-retest'
+
+# -----------------------------------------------------
+# Run an instance of firethorn builder container.
+#[user@virtual]
+
+    docker run \
+        --rm \
+        --tty \
+        --interactive \
+        --user "$(id -u)" \
+        --hostname builder \
+        --volume "/var/local/cache:/var/local/cache" \
+        --volume "/var/local/build:/var/local/build" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock" \
+        --volume "/var/run/docker.sock:/var/run/docker.sock" \
+        "firethorn/builder:latest" \
+        'bash'
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build the JHU library.
+#[user@builder]
+
+    # Need to skip tests because they fail for some reason !?
+
+    pushd /var/local/build/jhu-htmid
+        mvn clean install -D 'skipTests=true'
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 13.733 s
+    >   [INFO] Finished at: 2020-08-04T10:15:19Z
+    >   [INFO] Final Memory: 37M/2394M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Build our Enteucha source code.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        mvn clean compile test-compile
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 2.226 s
+    >   [INFO] Finished at: 2020-08-04T10:17:01Z
+    >   [INFO] Final Memory: 38M/1577M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Collect our classpath.
+# https://stackoverflow.com/questions/16655010/in-maven-how-output-the-classpath-being-used
+# https://stackoverflow.com/a/27451672
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        mvn \
+            dependency:build-classpath \
+            -D 'mdep.outputFile=/tmp/classpath.txt'
+
+    popd
+
+
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 0.937 s
+    >   [INFO] Finished at: 2020-08-04T10:47:17Z
+    >   [INFO] Final Memory: 33M/1963M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Build our classpath.
+#[user@builder]
+
+    classpath=$(cat /tmp/classpath.txt)
+    classpath=/var/local/build/enteucha/target/classes:${classpath}
+    classpath=/var/local/build/enteucha/target/test-classes:${classpath}
+
+    echo "Classpath [${classpath:?}]"
+
+    >   Classpath [/var/local/build/enteucha/target/test-classes:/var/local/build/enteucha/target/classes:/var/local/cache/maven/....]
+
+
+# -----------------------------------------------------
+# Update logging config.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        pushd target/test-classes
+
+            vi logback.xml
+
+                <!--+
+                    | Enteucha logging.
+                    +-->
+                <logger name="uk.ac.roe.wfau.enteucha">
+            -       <level value="DEBUG"/>
+            +       <level value="INFO"/>
+                </logger>
+
+
+        popd
+    popd
+
+
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+            ~   enteucha.loop=10
+
+            ~   enteucha.select.min=10
+            ~   enteucha.insert.max=10
+
+                enteucha.radius.min=4
+                enteucha.radius.max=4
+
+            ~   enteucha.range.min=6
+            ~   enteucha.range.max=6
+
+                enteucha.zone.min=6
+                enteucha.zone.max=6
+
+                enteucha.target.ra=0
+                enteucha.target.dec=0
+
+    popd
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@desktop]
+
+    pushd /var/local/build/enteucha
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlZoneMatcherTestCase
+
+
+        java \
+            -Xmx200g \
+            -Xms200g \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.cqengine.CQZoneMatcherTestCase
+
+    popd
+
+
+
+
+
