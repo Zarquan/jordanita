@@ -1,0 +1,150 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (C) 2024 by Wizzard Solutions Ltd, wizzard@metagrid.co.uk
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Plans for how we manage our notes going forwards.
+        It is probably not appropriate to keep our notes in SKA SRCNet projects.
+        Time to move to a single repository for all our notes.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Celastrina to become our global notes repository.
+    https://github.com/Zarquan/celastrina
+
+        Currently GPL licensed.
+        Do we want to change to CC ?
+
+    Unstaged changes and untracked files.
+    2021 notes are for Etherium validator deployment
+    all on an unmerged branch 20210829-zrq-ocean-deploy.
+
+        Changes not staged for commit:
+          (use "git add <file>..." to update what will be committed)
+          (use "git restore <file>..." to discard changes in working directory)
+	        modified:   notes/zrq/20210901-01-ocean-deploy.txt
+
+        Untracked files:
+          (use "git add <file>..." to include in what will be committed)
+	        notes/20240325-01-plans-for-notes.txt
+	        notes/20240325-02-plans-for-code.txt
+	        notes/zrq/20210822-04-docker-deploy.txt
+	        notes/zrq/20210902-01-ocean-deploy.txt
+	        notes/zrq/20210903-01-ocean-deploy.txt
+	        notes/zrq/20210903-02-ocean-billing.txt
+	        notes/zrq/20210904-01-ocean-deploy.txt
+
+    Copy 2021 notes into 'Metagrid/crypto/Etherium' directory.
+
+    Create directories for each project.
+
+    Metagrid
+        Crypto
+            Etherium
+                2021 notes from Celastrina
+
+    WFAU/
+        Firethorn
+            how much do we want to copy ?
+        Aglais
+            how much do we want to copy ?
+
+    IVOA/
+        p3t
+            mv SKAO/p3t/20240324-01-error-messages.txt IVOA/p3t/
+
+        ExecutionService
+            mv projects/SKAO/execution/20240322-01-execution-service.txt IVOA/ExecutionService
+            mv projects/IVOA/attic/EP-TDL/V2/scratch.odt  IVOA/ExecutionService/20230803-ideas.txt
+
+        Interop
+            mv projects/IVOA/attic/2022-interop/20220915-01-notes.txt IVOA/interop/
+            mv projects/IVOA/interop/2023 IVOA/interop/
+
+        Cosmopterix
+            cp projects/IVOA/cosmopterix/github-zrq/notes IVOA/cosmopterix/
+
+        Lyonetia
+            cp projects/IVOA/ivoa/lyonetia/github-zrq/notes IVOA/lyonetia/
+
+        Ivoatex-docker
+            cp projects/IVOA/ivoa/ivoatex-docker/github-zrq/notes IVOA/ivoatex-docker/
+
+        General
+            mv projects/IVOA/ivoa/VOCloud/VOCloudData/notes/20221226-01-notes.txt IVOA/General
+
+    SKAO/
+        General
+
+        Blockchain
+            mv SKAO/blockchain/20240322-01-initial-ideas.txt SKAO/Blockchain
+
+        ExecutionService
+
+
+# -----------------------------------------------------
+
+    Empty these directories
+
+        projects/IVOA/interop/2023
+        projects/IVOA/attic/EP-TDL
+        projects/IVOA/attic/2022-interop
+        projects/IVOA/ivoa/timedomain
+        projects/IVOA/ivoa/time-series-note
+        projects/IVOA/ivoa/VOCloud/VOCloudData
+
+        projects/SKAO/blockchain
+        projects/SKAO/execution
+        projects/SKAO/p3t
+
+
+# -----------------------------------------------------
+
+    CIRASA-planner
+    Unstaged changes and untracked files
+
+        Changes not staged for commit:
+          (use "git add <file>..." to update what will be committed)
+          (use "git restore <file>..." to discard changes in working directory)
+	        modified:   experiments/pandak/data/temp/test-001.json
+	        modified:   experiments/pandak/data/temp/test-001.xml
+	        modified:   experiments/pandak/data/temp/test-001.yaml
+	        modified:   experiments/pandak/data/temp/test-002.yaml
+	        modified:   experiments/pandak/data/temp/test-003.yaml
+	        modified:   experiments/pandak/pom.xml
+
+        Untracked files:
+          (use "git add <file>..." to include in what will be committed)
+	        notes/zrq/20240122-01-standards.txt
+	        notes/zrq/20240124-01-resources.txt
+	        notes/zrq/20240221-01-accept-header.txt
+	        notes/zrq/20240322-01-notes.txt
+	        notes/zrq/20240322-02-plans.txt
+
+

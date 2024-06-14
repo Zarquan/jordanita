@@ -1,0 +1,290 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        TODO list for work
+
+    Result:
+
+        Work in progress ...
+
+        P3T team meeting notes
+        https://yopad.eu/p/IVOA_26Mar_PTTT
+        https://wiki.ivoa.net/twiki/bin/view/IVOA/DALGWSTigerTeam
+
+# -----------------------------------------------------
+
+    GitHub suggestions
+
+        https://en.wikipedia.org/wiki/Heliophorus_epicles
+        https://en.wikipedia.org/wiki/Talicada_nyseus
+        https://en.wikipedia.org/wiki/Cyaniris_semiargus
+        https://en.wikipedia.org/wiki/Loxura_atymnus
+
+# -----------------------------------------------------
+
+    CIRASA-planner
+    https://github.com/Zarquan/CIRASA-planner
+
+        Do we want to continue in this project,
+        do we want to rename this repository,
+        or do we want to create a new repository.
+
+        Rename to Loxura ?
+        https://en.wikipedia.org/wiki/Loxura_atymnus
+
+        Create a new experiment now and start work on the service API.
+        This can evolve into the main project as we add more.
+
+        Eventually we should move all the experiments to the attic
+
+# -----------------------------------------------------
+
+    Execution Service
+
+        SKA Compute API input / output definitions
+        https://confluence.skatelescope.org/pages/viewpage.action?pageId=257464243
+
+        Site Capabilities API Overview 1.0
+        https://site-capabilities.srcdev.skao.int/api/v1/www/docs/oper#overview
+
+        Initial Compute API definition
+        https://jira.skatelescope.org/browse/SP-3953
+        https://site-capabilities.srcdev.skao.int/api/v1/www/docs/oper#get-/compute
+        https://site-capabilities.srcdev.skao.int/api/v1/schemas/render/compute
+
+        ska-src-compute-api
+        https://gitlab.com/ska-telescope/src/src-service-apis/ska-src-compute-api
+
+# -----------------------------------------------------
+
+    Execution Service
+
+        Reasons for name change.
+
+        Having thought about it some more I have refined the name suggestion a bit more.
+
+        Why make the change
+
+        The service API we are defining doesn't make any planning decisions.
+        The service API we are defining provides the information (offers)
+        that enables someone to make planning decisions e.g. which offer to choose,
+        but the service API itself doesn't specify or describe any planning algorithms.
+
+        It is possible for a high level service that does make planning decisions
+        to implement the same service API, e.g. can_I_do_this,
+        but the current IVOA standard is just defining the web service API,
+        indepentent of what scheduling or planning happens inside the service.
+
+        A mid-level service that uses a calendar to keep track of the resources it has
+        committed to processing jobs may need to do some level of scheduling.
+
+        At the lower end of the scale, a simple service that responds with yes/no
+        based soley on the technical requirements of the job, with no date/time scheduling,
+        implements the same service API, but it doesn't perform any planning.
+
+        Taking this into account, I propose we introduce a couple of new names,
+        ExecutionService and ExecutionServiceInterface.
+
+        ExecutionService refers to the concept of a service that can execute tasks.
+
+        ExecutionServiceInterface is the webservice API specification
+        that we are defining in our standard.
+
+        In general:
+        ExecutionService implements ExecutionServiceInterface
+
+        This makes it clearer that we are just defining the interface,
+        not the full service functionality.
+
+        Taking the three examples above, the high level service that makes
+        planning decisions could be an ExecutionPlanningService.
+
+        It contains the business logic to poll a set of lower level
+        ExecutionServices and make a selection based on the offers
+        they provide.
+
+        The planning service implements the same web service API
+
+            ExecutionPlanningService implements ExecutionServiceInterface
+
+        The planning service combines the results from lower level ExecutionServices.
+
+            ExecutionPlanningService contains ExecutionServices
+
+        The lower level ExecutionServices provide a common interface in front of a range
+        of different execution platforms.
+
+            DockerExecutionService
+            KubernetesExecutionService
+            SingularityExecutionService
+            SlurmExecutionService
+            NotebookExecutionService
+            WorkflowExecutionService
+
+        All of which implement the same ExecutionService API.
+
+            DockerExecutionService implements ExecutionServiceInterface
+            KubernetesExecutionService implements ExecutionServiceInterface
+            SingularityExecutionService implements ExecutionServiceInterface
+            SlurmExecutionService implements ExecutionServiceInterface
+            NotebookExecutionService implements ExecutionServiceInterface
+            WorkflowExecutionService implements ExecutionServiceInterface
+
+
+
+# -----------------------------------------------------
+
+    Execution Service
+
+        Change name to Execution Service Interface.
+
+        Create a new GitHub repo for our prototype ?
+        Based on code from CIRASA-planner
+        Rename CIRASA-planner to Loxura
+        Add another experiment
+        Then migrate it into the main code and drop the experiments.
+
+        Outline SKAO use cases for each level.
+
+        Avoid request storm by using aggregating services that caches basic capabilities.
+
+        Add a TTL field to positive and negative responses.
+
+        Think about error codes for negative responses.
+        Valid request, good authentication and authorisation, able to execute, just not now.
+        This is still a 200, but no offers.
+        Equivalent to no rows in a TAP response ?
+
+        Flexibility makes it easy to add new things like "AI optimised infrastructure"
+        https://www.run.ai/
+
+        People are going to ask why we can't do the execution using UWS.
+        Because we have steps before and after the execution for data staging.
+        If we can, people will want this. Even if it isn't the best option.
+        Need to think about this one.
+
+        Can we imcorporate functionality from UWS, like the long polling ?
+        Need to think about this one.
+
+        Injected test codes.
+        Extra params that make things fail at predictable places.
+        Add these as part of the 0.1 specification.
+        They can be removed later if we need to.
+        Or they become part of the validation suite.
+        Most of them will be in the test-task types.
+        Some of them will be in the HTTP headers.
+
+        Define some of them in an appendix to the standard ?
+
+
+    IVOA error codes
+
+        [p3t] On structured errors
+        http://mail.ivoa.net/pipermail/p3t/2024-March/000032.html
+        [p3t] `namespace` proposal
+        http://mail.ivoa.net/pipermail/p3t/2024-March/000034.html
+
+        Namespace URI for error messages means we can uniquely identify them all.
+
+        TAP URI identifies an error code defined in the TAP specification.
+
+        Generic error structure has error code and name space URI.
+
+        We could shorten long lists buy using a name space prefix like XML.
+
+    VOSpace URIs
+
+        vosb://hostname:port/vosb/path ...
+        http://hostname:port/capabilities
+
+        vosbs://hostname:port/vosb/path ...
+        https://hostname:port/capabilities
+
+    SKA crypto
+
+        Create a new GitHub repo to experiment in.
+
+        Put an Etherium validatior on a raspberry pi.
+
+        No hostile members.
+
+        Payment directly linked to the number of jobs you execute.
+
+        Whuffie based on feedback
+
+        Both client and service get credit rating based on job resolution
+
+# -----------------------------------------------------
+
+    From projects/SKAO/execution/20240322-01-execution-service.txt
+
+    ExecutionServiceAPI (ESAPI) urgh
+
+    ExecutionServiceInterface (ESI) nice
+
+    abstract class ExecutionServiceBase implements ExecutionServiceInterface
+
+    class BasicExecutionService
+        extends ExecutionServiceBase
+        implements ExecutionServiceInterface
+
+    class SKAOExecutionService
+        extends ExecutionServiceBase
+        implements ExecutionServiceInterface
+
+
+    PingExecutionService
+    DelayExecutionService
+    ChecksumExecutionService
+    ....
+
+    DockerExecutionService
+    SingularityExecutionService
+    HelmExecutionService
+    OpenstackExecutionService
+    KubernetesExecutionService
+    ....
+
+    SlurmExecutionService
+    BatchExecutionService
+    ....
+
+    NotebookExecutionService
+    WorkflowExecutionService
+    ...
+
+    ExecutionPlanningService
+    ExecutionSchedulingService
+    ...
+
+    ExecutionServiceAggregator
+    ExecutionServicePortal
+    ...
+
+
+
+
