@@ -1,0 +1,554 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+# -----------------------------------------------------
+# Login to work01 run a virtual machine.
+#[user@desktop]
+
+    ssh work01
+
+        createvm
+
+    >   ....
+    >   INFO : Node name [Onaukon]
+    >   INFO : Base name [fedora-30-docker-base-20190903.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
+    >   INFO : Disc name [Onaukon.qcow]
+    >   INFO : Disc size [16GiB]
+    >   ....
+
+# -----------------------------------------------------
+# Update the virtual machine memory allocation.
+#[user@work01]
+
+    vmname=Onaukon
+    vmsize=250G
+
+    source "${HOME}/libvirt.env"
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        shutdown "${vmname:?}"
+
+    >   Domain Onaukon is being shutdown
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        list \
+            --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    -     Onaukon                        shut off
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        setmaxmem "${vmname:?}" \
+            "${vmsize:?}" \
+            --config
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        setmem "${vmname:?}" \
+            "${vmsize:?}" \
+            --config
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        start "${vmname:?}"
+
+    >   Domain Onaukon started
+
+
+    virsh \
+        --connect "${libvirtcon:?}" \
+        list \
+            --all
+
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    64    Onaukon                        running
+
+
+# -----------------------------------------------------
+# Login to the new virtual machine.
+#[user@work01]
+
+    ssh "${vmname:?}"
+
+# -----------------------------------------------------
+# Create our cache directory.
+#[user@virtual]
+
+    sudo mkdir /var/local/cache
+    sudo chgrp 'users' /var/local/cache
+    sudo chmod 'a+rwx' /var/local/cache
+
+    # Need to make it 'a' ragter than 'g' because Docker user still has root group.
+
+# -----------------------------------------------------
+# Create our build directory.
+#[user@virtual]
+
+    sudo mkdir -p /var/local/build
+    sudo chgrp 'users' /var/local/build
+    sudo chmod 'a+rwx' /var/local/build
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Transfer (push) a copy of the JHU source code.
+#[user@desktop]
+
+    source "${HOME}/phymatopus.env"
+    pushd "${PHYMATOPUS_CODE:?}"
+
+        scp -r "../external/htmid/jhu-htmid" \
+            Onaukon:/var/local/build/jhu-htmid
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our settings file.
+#[user@virtual]
+
+    cat > "${HOME}/enteucha.env" << 'EOF'
+ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_CODE='/var/local/build/enteucha'
+EOF
+
+
+# -----------------------------------------------------
+# Checkout our source code.
+#[user@virtual]
+
+    source "${HOME}/enteucha.env"
+
+    echo "Checking [${ENTEUCHA_CODE}]"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        echo "Creating [${ENTEUCHA_CODE}]"
+        mkdir "$(dirname ${ENTEUCHA_CODE:?})"
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+        popd
+    else
+        echo "Updating [${ENTEUCHA_CODE}]"
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+    >   ....
+    >   ....
+    >   remote: Enumerating objects: 546, done.
+    >   remote: Counting objects: 100% (546/546), done.
+    >   remote: Compressing objects: 100% (208/208), done.
+    >   remote: Total 1524 (delta 199), reused 484 (delta 142), pack-reused 978
+    >   Receiving objects: 100% (1524/1524), 682.87 KiB | 1.71 MiB/s, done.
+    >   Resolving deltas: 100% (489/489), done.
+
+
+# -----------------------------------------------------
+# Checkout the current dev branch.
+#[user@virtual]
+
+    branchname=20200309-zrq-retest
+
+    source "${HOME}/enteucha.env"
+
+    pushd "${ENTEUCHA_CODE:?}"
+        git checkout "${branchname:?}"
+    popd
+
+
+    >   Branch '20200309-zrq-retest' set up to track remote branch '20200309-zrq-retest' from 'origin'.
+    >   Switched to a new branch '20200309-zrq-retest'
+
+# -----------------------------------------------------
+# Run an instance of firethorn builder container.
+#[user@virtual]
+
+    docker run \
+        --rm \
+        --tty \
+        --interactive \
+        --user "$(id -u)" \
+        --hostname builder \
+        --volume "/var/local/cache:/var/local/cache" \
+        --volume "/var/local/build:/var/local/build" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock" \
+        --volume "/var/run/docker.sock:/var/run/docker.sock" \
+        --volume "${secretsh}:/bin/secret" \
+        "firethorn/builder:latest" \
+        'bash'
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build the JHU library.
+#[user@builder]
+
+    # Need to skip tests because they fail for some reason !?
+
+    pushd /var/local/build/jhu-htmid
+        mvn clean install -D 'skipTests=true'
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 16.827 s
+    >   [INFO] Finished at: 2020-04-28T04:44:05Z
+    >   [INFO] Final Memory: 37M/2378M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Build our Enteucha source code.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+        mvn clean compile
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time: 18.841 s
+    >   [INFO] Finished at: 2020-04-28T04:44:43Z
+    >   [INFO] Final Memory: 37M/1508M
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# Update logging config.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi src/test/conf/logback.xml
+
+            <!--+
+                | Enteucha logging.
+                +-->
+            <logger name="uk.ac.roe.wfau.enteucha">
+        -       <level value="DEBUG"/>
+        +       <level value="INFO"/>
+            </logger>
+
+
+    popd
+
+
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi src/test/conf/test.properties
+
+        ~   enteucha.loop=10
+
+        ~   enteucha.select.min=10
+        ~   enteucha.insert.max=10
+
+            enteucha.radius.min=4
+            enteucha.radius.max=4
+
+        ~   enteucha.range.min=6
+        ~   enteucha.range.max=6
+
+            enteucha.zone.min=6
+            enteucha.zone.max=6
+
+            enteucha.target.ra=0
+            enteucha.target.dec=0
+
+    popd
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@builder]
+
+    ENTEUCHA_CODE=/var/local/build/enteucha
+
+    retest()
+        {
+        pushd "${ENTEUCHA_CODE:?}"
+            mvn clean compile
+            mvn test -D 'test=HsqlHtmidMatcherTestCase' ; mv target/enteucha-trace.log target/enteucha-htmid.log
+            mvn test -D 'test=HsqlZoneMatcherTestCase'  ; mv target/enteucha-trace.log target/enteucha-zone.log
+            mvn test -D 'test=CQZoneMatcherTestCase'    ; mv target/enteucha-trace.log target/enteucha-cq.log
+        popd
+        }
+
+    reset
+    retest
+
+
+    >   ....
+    >   ....
+    >   05:21:05.743 INFO  >>>>
+    >   05:21:05.743 INFO  ---- ----
+    >   05:21:05.743 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:21:06.133 INFO  Class [HsqlHtmidMatcherImpl] Total rows [4,198,401] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:21:06.134 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [0s][389ms], average [0.390ms][389.711us] PASS
+    >   05:21:06.135 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>389<timesum><timeavg>0.390</timeavg></data-row>
+    >   05:21:06.135 INFO  <<<<
+
+    >   ....
+    >   ....
+    >   05:21:30.565 INFO  >>>>
+    >   05:21:30.565 INFO  ---- ----
+    >   05:21:30.566 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:21:36.920 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:21:36.921 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [6s][6,353ms], average [6.353ms][6,353.412us] FAIL
+    >   05:21:36.922 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>6353<timesum><timeavg>6.353</timeavg></data-row>
+    >   05:21:36.923 INFO  <<<<
+
+    >   ....
+    >   ....
+    >   05:23:54.339 INFO  >>>>
+    >   05:23:54.339 INFO  ---- ----
+    >   05:23:54.339 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:23:54.520 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [2049]  avg size [2049] min [2049] max [2049]
+    >   05:23:54.520 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [0s][176ms], average [0.176ms][176.326us] PASS
+    >   05:23:54.521 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>176<timesum><timeavg>0.176</timeavg></data-row>
+    >   05:23:54.522 INFO  <<<<
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Push code changes to GitHub and pull a new copy.
+
+
+# -----------------------------------------------------
+# Update logging config.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi src/test/conf/logback.xml
+
+            <!--+
+                | Enteucha logging.
+                +-->
+            <logger name="uk.ac.roe.wfau.enteucha">
+        -       <level value="DEBUG"/>
+        +       <level value="INFO"/>
+            </logger>
+
+
+    popd
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi src/test/conf/test.properties
+
+        ~   enteucha.loop=10
+
+            enteucha.select.min=10
+            enteucha.insert.max=10
+
+            enteucha.radius.min=4
+            enteucha.radius.max=4
+
+            enteucha.range.min=6
+            enteucha.range.max=6
+
+            enteucha.zone.min=6
+            enteucha.zone.max=6
+
+            enteucha.target.ra=0
+            enteucha.target.dec=0
+
+    popd
+
+
+# -----------------------------------------------------
+# remove thememory restriction.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi pom.xml
+
+            ....
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+        -           <argLine>-Xmx10g -Xms10g</argLine>
+        +           <!--argLine>-Xmx10g -Xms10g</argLine-->
+                </configuration>
+            </plugin>
+            ....
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@builder]
+
+    reset
+    retest
+
+
+    >   ....
+    >   ....
+    >   05:28:43.331 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:28:43.332 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:28:43.332 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:28:43.332 INFO  Memory [6.5GiB][2.2GiB][26.7GiB]
+    >   05:28:43.333 INFO  >>>>
+    >   05:28:43.333 INFO  ---- ----
+    >   05:28:43.333 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:28:43.754 INFO  Class [HsqlHtmidMatcherImpl] Total rows [4,198,401] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:28:43.755 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [0s][420ms], average [0.420ms][420.008us] PASS
+    >   05:28:43.756 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>420<timesum><timeavg>0.420</timeavg></data-row>
+    >   05:28:43.756 INFO  <<<<
+
+    >   ....
+    >   ....
+    >   05:29:08.617 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:29:08.617 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:29:08.617 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:29:08.618 INFO  Memory [4.7GiB][2.9GiB][26.7GiB]
+    >   05:29:08.618 INFO  >>>>
+    >   05:29:08.619 INFO  ---- ----
+    >   05:29:08.619 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:29:15.323 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:29:15.323 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [6s][6,703ms], average [6.703ms][6,703.201us] FAIL
+    >   05:29:15.324 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>6703<timesum><timeavg>6.703</timeavg></data-row>
+    >   05:29:15.324 INFO  <<<<
+
+
+    >   ....
+    >   ....
+    >   05:29:36.034 INFO  Insert [10][2,049][4,198,401]
+    >   05:31:39.709 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:31:39.709 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:31:39.709 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:31:39.710 INFO  Memory [11.8GiB][3.8GiB][26.7GiB]
+    >   05:31:39.710 INFO  >>>>
+    >   05:31:39.710 INFO  ---- ----
+    >   05:31:39.710 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:31:39.893 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [2049]  avg size [2049] min [2049] max [2049]
+    >   05:31:39.894 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [1,000] loops, total [0s][179ms], average [0.179ms][179.494us] PASS
+    >   05:31:39.894 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>1000</repeat><timesum>179<timesum><timeavg>0.179</timeavg></data-row>
+    >   05:31:39.894 INFO  <<<<
+
+
+
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@builder]
+
+    reset
+    retest
+
+    >   ....
+    >   ....
+    >   05:44:30.328 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:44:30.329 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:44:30.329 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:44:30.330 INFO  Memory [6.6GiB][2.3GiB][26.7GiB]
+    >   05:44:30.330 INFO  >>>>
+    >   05:44:30.330 INFO  ---- ----
+    >   05:44:30.330 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:44:30.381 INFO  Class [HsqlHtmidMatcherImpl] Total rows [4,198,401] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:44:30.381 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][50ms], average [5.027ms][5,026.622us] FAIL
+    >   05:44:30.382 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>50<timesum><timeavg>5.027</timeavg></data-row>
+    >   05:44:30.382 INFO  <<<<
+
+
+    >   ....
+    >   ....
+    >   05:44:55.522 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:44:55.523 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:44:55.523 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:44:55.523 INFO  Memory [4.8GiB][3.0GiB][26.7GiB]
+    >   05:44:55.523 INFO  >>>>
+    >   05:44:55.523 INFO  ---- ----
+    >   05:44:55.523 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:44:55.642 INFO  Class [HsqlZoneMatcherImpl] Indexing [SEPARATE] Total rows [4,198,401] Zone height [0.015625] URL [jdbc:hsqldb:mem:zonematch]
+    >   05:44:55.642 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][117ms], average [11.797ms][11,797.285us] FAIL
+    >   05:44:55.643 INFO  <data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>117<timesum><timeavg>11.797</timeavg></data-row>
+    >   05:44:55.643 INFO  <<<<
+
+
+    >   ....
+    >   ....
+    >   05:47:18.075 INFO  Total  [10][(2^(10+1))+1 = 2049] => [2049^2 = 4198401]
+    >   05:47:18.075 INFO  Range  [6][2^6 = 64.0] [64.0/4198401 = 0.00001524]
+    >   05:47:18.076 INFO  Zone   [6][2^(-6) = 0.015625]
+    >   05:47:18.076 INFO  Memory [11.8GiB][3.8GiB][26.7GiB]
+    >   05:47:18.076 INFO  >>>>
+    >   05:47:18.077 INFO  ---- ----
+    >   05:47:18.077 INFO  Radius [4][2^(-4) = 0.0625]
+    >   05:47:18.113 INFO  Class [CQZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Zone height [0.015625] count [2049]  avg size [2049] min [2049] max [2049]
+    >   05:47:18.114 INFO  Searched [4,198,401] range [64.0] zone [0.015625] radius [0.0625] found [3] in [10] loops, total [0s][30ms], average [3.011ms][3,011.252us] FAIL
+    >   05:47:18.115 INFO  <data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>3</found><repeat>10</repeat><timesum>30<timesum><timeavg>3.011</timeavg></data-row>
+    >   05:47:18.115 INFO  <<<<
+
+
+
+
+
+

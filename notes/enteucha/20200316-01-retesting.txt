@@ -1,0 +1,294 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+
+# -----------------------------------------------------
+# Update our source code.
+#[user@virtual]
+
+    source "${HOME}/enteucha.settings"
+
+    echo "Checking [${ENTEUCHA_CODE}]"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        echo "Creating [${ENTEUCHA_CODE}]"
+        mkdir "$(dirname ${ENTEUCHA_CODE:?})"
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+        popd
+    else
+        echo "Updating [${ENTEUCHA_CODE}]"
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+
+# -----------------------------------------------------
+# Update the memory limits for our build.
+#[user@virtual]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        xmlstarlet \
+            edit \
+            --pf \
+            --delete \
+                "//_:plugin[_:artifactId='maven-surefire-plugin']/_:configuration/_:argLine" \
+            pom.xml \
+        > pom.new
+
+
+        diff pom.xml pom.new
+        
+
+        
+        rm pom.xml
+        mv pom.new pom.xml
+    
+    popd
+
+# -----------------------------------------------------
+# Run an instance of firethorn builder container.
+#[user@virtual]
+
+    docker run \
+        --rm \
+        --tty \
+        --interactive \
+        --user "$(id -u)" \
+        --volume "/var/local/cache:/var/local/cache" \
+        --volume "/var/local/build:/var/local/build" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh_auth_sock" \
+        --volume "/var/run/docker.sock:/var/run/docker.sock" \
+        --volume "${secretsh}:/bin/secret" \
+        "firethorn/builder:latest" \
+        'bash'
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@builder]
+
+    ENTEUCHA_CODE=/var/local/build/enteucha
+    ENTEUCHA_LOGS=/var/local/cache/logs
+
+    pushd "${ENTEUCHA_CODE:?}"
+
+        datetime=$(date +%Y%m%dT%H%M%S)
+
+        mvn clean compile
+
+        mvn test -D 'test=HsqlHtmidMatcherTestCase'
+
+        mvn test -D 'test=HsqlZoneMatcherTestCase'
+
+        mvn test -D 'test=CQZoneMatcherTestCase'
+
+            cp 'target/enteucha-trace.log' "${ENTEUCHA_LOGS:?}/latest-trace.log"
+            cp 'target/enteucha-trace.log' "${ENTEUCHA_LOGS:?}/${datetime:?}-trace.log"
+
+    popd
+
+
+# -----------------------------------------------------
+# Check our results.
+#[user@builder]
+
+    ENTEUCHA_LOGS=/var/local/cache/logs
+    pushd "${ENTEUCHA_LOGS:?}"
+
+        sed -n '
+            s/^.*\(<data-row>.*<\/data-row>\)/\1/p
+            ' latest-trace.log
+
+<20200317T003754-trace>
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>8466<timesum><timeavg>8.466</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>204<timesum><timeavg>0.204</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>162<timesum><timeavg>0.163</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>167<timesum><timeavg>0.167</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>127<timesum><timeavg>0.127</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>113<timesum><timeavg>0.114</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>156<timesum><timeavg>0.156</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>148<timesum><timeavg>0.149</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>139<timesum><timeavg>0.140</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>470<timesum><timeavg>0.471</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>329<timesum><timeavg>0.329</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>762<timesum><timeavg>0.762</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>4</found><repeat>1000</repeat><timesum>2188<timesum><timeavg>2.189</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>1851<timesum><timeavg>1.852</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>1206<timesum><timeavg>1.206</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>22</found><repeat>1000</repeat><timesum>8557<timesum><timeavg>8.558</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>6565<timesum><timeavg>6.565</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>6635<timesum><timeavg>6.636</timeavg></data-row> 
+
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>94</found><repeat>1000</repeat><timesum>60659<timesum><timeavg>60.660</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>25297<timesum><timeavg>25.298</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>4</found><repeat>1000</repeat><timesum>24902<timesum><timeavg>24.903</timeavg></data-row> 
+
+
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>153<timesum><timeavg>0.153</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>84<timesum><timeavg>0.085</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>141<timesum><timeavg>0.141</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>364<timesum><timeavg>0.364</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>167<timesum><timeavg>0.168</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>321<timesum><timeavg>0.322</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>994<timesum><timeavg>0.995</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>718<timesum><timeavg>0.719</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>789<timesum><timeavg>0.790</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>3487<timesum><timeavg>3.488</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>2782<timesum><timeavg>2.782</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>2000<timesum><timeavg>2.001</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>4</found><repeat>1000</repeat><timesum>14449<timesum><timeavg>14.450</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>12288<timesum><timeavg>12.288</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>11800<timesum><timeavg>11.801</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>22</found><repeat>1000</repeat><timesum>72896<timesum><timeavg>72.896</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>63568<timesum><timeavg>63.568</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>60754<timesum><timeavg>60.754</timeavg></data-row> 
+
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>94</found><repeat>1000</repeat><timesum>255620<timesum><timeavg>255.621</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>242500<timesum><timeavg>242.500</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>4</found><repeat>1000</repeat><timesum>243685<timesum><timeavg>243.686</timeavg></data-row> 
+
+
+
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>96<timesum><timeavg>0.096</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>31<timesum><timeavg>0.031</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>26<timesum><timeavg>0.027</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>41<timesum><timeavg>0.042</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>35<timesum><timeavg>0.036</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>33<timesum><timeavg>0.033</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>24<timesum><timeavg>0.024</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>23<timesum><timeavg>0.023</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>106<timesum><timeavg>0.106</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>1</found><repeat>1000</repeat><timesum>7<timesum><timeavg>0.008</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>7<timesum><timeavg>0.008</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>7<timesum><timeavg>0.008</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>4</found><repeat>1000</repeat><timesum>17<timesum><timeavg>0.018</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>19<timesum><timeavg>0.020</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>19<timesum><timeavg>0.019</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>22</found><repeat>1000</repeat><timesum>28<timesum><timeavg>0.029</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>30<timesum><timeavg>0.031</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>1</found><repeat>1000</repeat><timesum>18<timesum><timeavg>0.018</timeavg></data-row> 
+
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>0.001953125</radius><found>94</found><repeat>1000</repeat><timesum>149<timesum><timeavg>0.149</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>78<timesum><timeavg>0.078</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.015625</zone><radius>4.8828125E-4</radius><found>4</found><repeat>1000</repeat><timesum>26<timesum><timeavg>0.027</timeavg></data-row> 
+</20200317T003754-trace>
+
+
+
+<20200317T013008-trace>
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>8982<timesum><timeavg>8.982</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>222<timesum><timeavg>0.223</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>225<timesum><timeavg>0.225</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>671<timesum><timeavg>0.671</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>1732<timesum><timeavg>1.732</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>8999<timesum><timeavg>9.000</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>48453<timesum><timeavg>48.453</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>111<timesum><timeavg>0.112</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>99<timesum><timeavg>0.100</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>164<timesum><timeavg>0.165</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>389<timesum><timeavg>0.389</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>1499<timesum><timeavg>1.500</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>6852<timesum><timeavg>6.852</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>46404<timesum><timeavg>46.405</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>79<timesum><timeavg>0.079</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>1138<timesum><timeavg>1.138</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>116<timesum><timeavg>0.116</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>408<timesum><timeavg>0.409</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>2532<timesum><timeavg>2.532</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>6570<timesum><timeavg>6.571</timeavg></data-row> 
+<data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>45374<timesum><timeavg>45.374</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>163<timesum><timeavg>0.164</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>201<timesum><timeavg>0.201</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>357<timesum><timeavg>0.357</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>722<timesum><timeavg>0.723</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>2416<timesum><timeavg>2.417</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>8521<timesum><timeavg>8.522</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>55130<timesum><timeavg>55.131</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>59<timesum><timeavg>0.059</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>91<timesum><timeavg>0.092</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>164<timesum><timeavg>0.164</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>262<timesum><timeavg>0.262</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>777<timesum><timeavg>0.777</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>7650<timesum><timeavg>7.650</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>28976<timesum><timeavg>28.977</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>31<timesum><timeavg>0.031</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>60<timesum><timeavg>0.061</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>264<timesum><timeavg>0.264</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>250<timesum><timeavg>0.250</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>1210<timesum><timeavg>1.210</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>6506<timesum><timeavg>6.506</timeavg></data-row> 
+<data-row><matcher>HsqlZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>21397<timesum><timeavg>21.398</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>95<timesum><timeavg>0.096</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>37<timesum><timeavg>0.037</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>103<timesum><timeavg>0.104</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>33<timesum><timeavg>0.033</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>86<timesum><timeavg>0.086</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>119<timesum><timeavg>0.119</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>0.001953125</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>118<timesum><timeavg>0.118</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>5<timesum><timeavg>0.005</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>6<timesum><timeavg>0.007</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>20<timesum><timeavg>0.021</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>15<timesum><timeavg>0.015</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>50<timesum><timeavg>0.050</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>148<timesum><timeavg>0.149</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>9.765625E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>148<timesum><timeavg>0.149</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4225</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>3<timesum><timeavg>0.003</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16641</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>4<timesum><timeavg>0.005</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>66049</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>19<timesum><timeavg>0.019</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>263169</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>17<timesum><timeavg>0.017</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>1050625</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>1</found><repeat>1000</repeat><timesum>46<timesum><timeavg>0.047</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>4198401</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>4</found><repeat>1000</repeat><timesum>205<timesum><timeavg>0.205</timeavg></data-row> 
+<data-row><matcher>CQZoneMatcherImpl</matcher><points>16785409</points><range>1.0</range><zone>4.8828125E-4</zone><radius>9.765625E-4</radius><found>22</found><repeat>1000</repeat><timesum>385<timesum><timeavg>0.386</timeavg></data-row> 
+</20200317T013008-trace>
+
+
+
+
+
+

@@ -1,0 +1,82 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+    #
+    # Continue from previous notes.
+    # 20200428-03-retesting.txt
+    #
+
+
+
+# -----------------------------------------------------
+# Update the test settings.
+#[user@builder]
+
+    # Vary the zone size (2^-5)..(2^-7)
+
+    pushd /var/local/build/enteucha
+
+        vi src/test/conf/test.properties
+
+            enteucha.loop=10
+
+            enteucha.select.min=10
+            enteucha.insert.max=10
+
+            enteucha.radius.min=4
+            enteucha.radius.max=4
+
+            enteucha.range.min=6
+            enteucha.range.max=6
+
+        ~   enteucha.zone.min=5
+        ~   enteucha.zone.max=7
+
+            enteucha.target.ra=0
+            enteucha.target.dec=0
+
+    popd
+
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@builder]
+
+    ENTEUCHA_CODE=/var/local/build/enteucha
+
+    testCQ()
+        {
+        pushd "${ENTEUCHA_CODE:?}"
+            mvn clean compile
+            mvn test -D 'test=CQZoneMatcherTestCase'    ; mv target/enteucha-trace.log target/enteucha-cq.log
+        popd
+        }
+
+    reset
+    testCQ
+

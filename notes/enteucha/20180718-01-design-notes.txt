@@ -1,0 +1,197 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#  
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+    #
+    # From the paper.
+    # "There Goes the Neighborhood: Relational Algebra for Spatial Data Search"
+
+
+
+        split the globe into vertical zones based on dec
+        
+            dec           (-90 .. 90)
+            dec + 90      (0 .. 180)
+            
+            zoneNumber = (dec + 90) / zoneHeight
+
+            zoneHeight = 180 / zoneCount
+
+            zoneCount = 10,000
+
+            zoneHeight = 180 / 10,000
+
+            zoneNumber = (dec + 90) / (180 / 10,000)
+
+            zoneNumber = (dec + 90) * (10,000 / 180)
+
+
+        floor() = the largest integer value that is equal to or less than the specified number
+        aka round down
+
+
+    #
+    # All in one query ..
+
+        select
+            obj
+        from
+            zone
+        where (
+            zoneID between
+                floor((@dec+90-@r)/@zoneHeight)
+            and
+                floor((@dec+90+@r)/@zoneHeight)
+            )
+        and (
+            ra between
+                @ra-@r/(cos(radians(abs(@dec)))+@epsilon)
+            and
+                @ra+@r/(cos(radians(abs(@dec)))+@epsilon)
+            )
+        and (
+            dec between
+                    @dec-@r
+                and
+                    @dec+@r
+            )
+        and ( -- careful distance filter
+            4 * power(
+                    sin(
+                        radians(
+                            @r / 2
+                            )
+                        ),
+                    2
+                    )
+            )
+            >
+            (
+            power(
+                x-@x,
+                2
+                )
+            +
+            power(
+                y-@y,
+                2
+                )
+            +
+            power(
+                z-@z,
+                2
+                )
+            )
+
+        
+    #
+    # Initial zone select, select on integer between 
+
+
+
+
+        zone between
+            floor((@dec+90-@r)/@zoneHeight)
+        and
+            floor((@dec+90+@r)/@zoneHeight)
+
+
+floor((@dec+90+@r)/@zoneHeight)
+zoneHeight = (180 / zoneCount)
+
+
+(dec + 90 + radius) / (180 / zoneCount)
+(dec + 90 + radius) * (zoneCount / 180)
+
+
+
+    #
+    # ra select, select on float between (within the selected zones) 
+
+        ra between
+            @ra-@r/(cos(radians(abs(@dec)))+@epsilon)
+        and
+            @ra+@r/(cos(radians(abs(@dec)))+@epsilon)
+
+    #
+    # dec select select on float between (within the selected zones)
+
+        dec between
+                @dec-@r
+            and
+                @dec+@r
+    
+    #
+    # distance filter - iterate the select results
+
+            4 * power(
+                    sin(
+                        radians(
+                            @r / 2
+                            )
+                        ),
+                    2
+                    )
+            )
+            >
+            (
+            power(x-@x, 2)
+            +
+            power(y-@y, 2)
+            +
+            power(z-@z, 2)
+            )
+
+    4 * sin(r/2)^2 > dx^2 + dy^2 + dz^2
+
+
+    #
+    # Select on zone, ra, dec
+
+
+    package ...dataset
+
+    interface Zone {
+
+        static interface ZoneFactory
+            {
+            }
+
+        }
+
+    interface Position {
+
+        double ra()  ;
+        double dec() ;
+
+        double cx() ;
+        double cy() ;
+        double cz() ;
+
+        }
+
+
+
+
+
+
+

@@ -1,0 +1,812 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+# -----------------------------------------------------
+# Trop VM settings.
+#[user@trop03]
+    
+    createvm
+
+        INFO : Node name [Umiawyth]
+        INFO : Base name [fedora-28-docker-base-20180708.qcow]
+        INFO : Base path [/var/lib/libvirt/images/base/fedora-28-docker-base-20180708.qcow]
+        INFO : Disc name [Umiawyth.qcow]
+        INFO : Disc size [16GiB]
+
+    vmname=Umiawyth
+
+# -----------------------------------------------------
+# Modify the VM memory allocation from 16G to 64G.
+#[user@trop03]
+
+    source "${HOME}/libvirt.settings" 
+
+    virsh \
+        -c "${connection:?}" \
+        setmaxmem \
+            "${vmname:?}" '100GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setmem \
+            "${vmname:?}" '100GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --maximum \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        shutdown \
+            "${vmname:?}"
+
+    sleep 20
+    
+    virsh \
+        -c "${connection:?}" \
+        start \
+            "${vmname:?}"
+
+# -----------------------------------------------------
+# Login to the VM and check the resources.
+#[user@trop03]
+
+    ssh "${vmname:?}"
+
+        cat /proc/cpuinfo | grep processor
+
+            processor	: 0
+            processor	: 1
+            processor	: 2
+            processor	: 3
+            processor	: 4
+            processor	: 5
+            processor	: 6
+            processor	: 7
+
+        free -h
+
+                          total        used        free      shared  buff/cache   available
+            Mem:            91G        308M         90G        544K        347M         90G
+            Swap:          1.0G          0B        1.0G
+
+# -----------------------------------------------------
+# Run a Java container.
+#[user@virtual]
+
+        docker run \
+            --rm  \
+            --tty \
+            --interactive \
+            firethorn/builder:2.1.25 \
+            bash 
+
+# -----------------------------------------------------
+# Builder settings
+#[user@builder]
+
+cat > "${HOME}/enteucha.settings" << 'EOF'
+BUILD_HOME=/var/local/build/
+ENTEUCHA_BASE="${BUILD_HOME:?}/enteucha"
+ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
+#NTEUCHA_REPO='git@github.com:lsst-uk/enteucha.git'
+#NTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_REPO='https://github.com/Zarquan/enteucha.git'
+EOF
+
+# -----------------------------------------------------
+# Checkout a copy of our source code.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        if [ ! -e "$(dirname ${ENTEUCHA_CODE:?})" ]
+        then
+            mkdir -p "$(dirname ${ENTEUCHA_CODE:?})"
+        fi
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+
+        popd
+    else
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+# -----------------------------------------------------
+# Set the git username and email.
+# (needed to accept a merge commit when pull a new set of upstream changes onto an edited local copy) 
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        git config user.email "ident@example.com"
+        git config user.name  "Example Identity"
+
+    popd
+
+# -----------------------------------------------------
+# Edit the test resolution and logging level.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+            int looprepeat = 10;
+
+            int    insertmin = 4;
+        ~   int    insertmax = 12;
+
+            double insertwidth = 2;
+
+            int zonemin = 2 ;
+            int zonemax = 8 ;
+
+            int radiusmin = 2 ;
+            int radiusmax = 6 ;
+
+        vi src/test/conf/logback.xml
+
+        ~   <level>DEBUG</level>
+
+    popd
+
+# -----------------------------------------------------
+# Build our code and run our tests.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        mvn clean test
+        mvn clean test -D 'test=HsqlMatcherTestCase'
+        mvn clean test -D 'test=ZoneMatcherTestCase'
+
+    popd
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+
+    vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+        int looprepeat = 10;
+
+    ~   int    insertmin = 11;
+    ~   int    insertmax = 12;
+        double insertwidth = 2;
+
+        int zonemin = 2 ;
+        int zonemax = 8 ;
+
+        int radiusmin = 2 ;
+        int radiusmax = 6 ;
+
+
+
+    #
+    # https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#forkedProcessTimeoutInSeconds
+    mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
+
+        int looprepeat = 10;
+
+        int    insertmin = 11;
+        int    insertmax = 12;
+        double insertwidth = 2;
+
+        int zonemin = 2 ;
+        int zonemax = 8 ;
+
+        int radiusmin = 2 ;
+        int radiusmax = 8 ;
+
+            00:52:22.458 INFO  ---- find start ---- 
+            00:52:22.466 INFO  ---- Zone height [0.25] 
+            00:52:22.534 INFO  ---- Insert depth [11.0][2048.0] 
+            00:53:13.785 INFO  ---- Search radius[0.25] 
+            00:53:14.977 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            00:53:14.978 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1190ms][1190985?s][1190985324ns], average [119ms][119098?s][119098532ns] FAIL 
+            00:53:14.978 INFO  ---- Search radius[0.125] 
+            00:53:15.391 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            00:53:15.391 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][412ms][412248?s][412248670ns], average [41ms][41224?s][41224867ns] FAIL 
+            00:53:15.392 INFO  ---- Search radius[0.0625] 
+            00:53:15.539 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            00:53:15.539 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][146ms][146642?s][146642625ns], average [14ms][14664?s][14664262ns] FAIL 
+            00:53:15.539 INFO  ---- Search radius[0.03125] 
+            00:53:15.579 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            00:53:15.579 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][39ms][39101?s][39101129ns], average [3ms][3910?s][3910112ns] FAIL 
+            00:53:15.579 INFO  ---- Search radius[0.015625] 
+            00:53:15.596 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            00:53:15.596 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][16ms][16652?s][16652902ns], average [1ms][1665?s][1665290ns] FAIL 
+
+            00:53:15.597 INFO  ---- Zone height [0.125] 
+            00:53:15.597 INFO  ---- Insert depth [11.0][2048.0] 
+            00:54:07.716 INFO  ---- Search radius[0.25] 
+            00:54:09.326 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            00:54:09.327 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1608ms][1608902?s][1608902894ns], average [160ms][160890?s][160890289ns] FAIL 
+            00:54:09.327 INFO  ---- Search radius[0.125] 
+            00:54:09.668 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            00:54:09.668 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][340ms][340775?s][340775611ns], average [34ms][34077?s][34077561ns] FAIL 
+            00:54:09.669 INFO  ---- Search radius[0.0625] 
+            00:54:09.827 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            00:54:09.827 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][157ms][157879?s][157879372ns], average [15ms][15787?s][15787937ns] FAIL 
+            00:54:09.828 INFO  ---- Search radius[0.03125] 
+            00:54:09.868 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            00:54:09.869 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][39ms][39741?s][39741872ns], average [3ms][3974?s][3974187ns] FAIL 
+            00:54:09.869 INFO  ---- Search radius[0.015625] 
+            00:54:09.892 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            00:54:09.893 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][23ms][23121?s][23121069ns], average [2ms][2312?s][2312106ns] FAIL 
+
+            00:54:09.893 INFO  ---- Zone height [0.0625] 
+            00:54:09.894 INFO  ---- Insert depth [11.0][2048.0] 
+            00:54:57.957 INFO  ---- Search radius[0.25] 
+            00:54:59.130 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            00:54:59.131 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1172ms][1172416?s][1172416688ns], average [117ms][117241?s][117241668ns] FAIL 
+            00:54:59.131 INFO  ---- Search radius[0.125] 
+            00:54:59.408 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            00:54:59.409 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][277ms][277392?s][277392370ns], average [27ms][27739?s][27739237ns] FAIL 
+            00:54:59.409 INFO  ---- Search radius[0.0625] 
+            00:54:59.456 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            00:54:59.457 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][46ms][46788?s][46788723ns], average [4ms][4678?s][4678872ns] FAIL 
+            00:54:59.457 INFO  ---- Search radius[0.03125] 
+            00:54:59.472 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            00:54:59.473 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][15ms][15434?s][15434740ns], average [1ms][1543?s][1543474ns] FAIL 
+            00:54:59.473 INFO  ---- Search radius[0.015625] 
+            00:54:59.480 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            00:54:59.480 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][6ms][6698?s][6698541ns], average [0ms][669?s][669854ns] PASS 
+
+            00:54:59.480 INFO  ---- Zone height [0.03125] 
+            00:54:59.480 INFO  ---- Insert depth [11.0][2048.0] 
+            00:55:58.880 INFO  ---- Search radius[0.25] 
+            00:56:00.576 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            00:56:00.577 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1695ms][1695872?s][1695872577ns], average [169ms][169587?s][169587257ns] FAIL 
+            00:56:00.577 INFO  ---- Search radius[0.125] 
+            00:56:00.958 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            00:56:00.958 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][380ms][380630?s][380630045ns], average [38ms][38063?s][38063004ns] FAIL 
+            00:56:00.959 INFO  ---- Search radius[0.0625] 
+            00:56:01.011 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            00:56:01.011 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][52ms][52175?s][52175120ns], average [5ms][5217?s][5217512ns] FAIL 
+            00:56:01.012 INFO  ---- Search radius[0.03125] 
+            00:56:01.027 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            00:56:01.028 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][15ms][15276?s][15276639ns], average [1ms][1527?s][1527663ns] FAIL 
+            00:56:01.028 INFO  ---- Search radius[0.015625] 
+            00:56:01.033 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            00:56:01.034 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][5ms][5286?s][5286558ns], average [0ms][528?s][528655ns] PASS 
+
+            00:56:01.034 INFO  ---- Zone height [0.015625] 
+            00:56:01.034 INFO  ---- Insert depth [11.0][2048.0] 
+            00:57:16.388 INFO  ---- Search radius[0.25] 
+            00:57:17.745 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            00:57:17.746 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1356ms][1356228?s][1356228663ns], average [135ms][135622?s][135622866ns] FAIL 
+            00:57:17.746 INFO  ---- Search radius[0.125] 
+            00:57:18.074 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            00:57:18.075 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][327ms][327852?s][327852177ns], average [32ms][32785?s][32785217ns] FAIL 
+            00:57:18.075 INFO  ---- Search radius[0.0625] 
+            00:57:18.128 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            00:57:18.129 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][52ms][52595?s][52595481ns], average [5ms][5259?s][5259548ns] FAIL 
+            00:57:18.129 INFO  ---- Search radius[0.03125] 
+            00:57:18.142 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            00:57:18.143 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][13ms][13138?s][13138243ns], average [1ms][1313?s][1313824ns] FAIL 
+            00:57:18.143 INFO  ---- Search radius[0.015625] 
+            00:57:18.147 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            00:57:18.147 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][4ms][4198?s][4198674ns], average [0ms][419?s][419867ns] PASS 
+
+            00:57:18.148 INFO  ---- Zone height [0.0078125] 
+            00:57:18.148 INFO  ---- Insert depth [11.0][2048.0] 
+            00:59:14.397 INFO  ---- Search radius[0.25] 
+            00:59:15.862 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            00:59:15.863 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1464ms][1464475?s][1464475009ns], average [146ms][146447?s][146447500ns] FAIL 
+            00:59:15.863 INFO  ---- Search radius[0.125] 
+            00:59:16.228 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            00:59:16.228 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][363ms][363995?s][363995568ns], average [36ms][36399?s][36399556ns] FAIL 
+            00:59:16.228 INFO  ---- Search radius[0.0625] 
+            00:59:16.282 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            00:59:16.282 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][53ms][53034?s][53034873ns], average [5ms][5303?s][5303487ns] FAIL 
+            00:59:16.282 INFO  ---- Search radius[0.03125] 
+            00:59:16.297 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            00:59:16.297 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][14ms][14160?s][14160408ns], average [1ms][1416?s][1416040ns] FAIL 
+            00:59:16.297 INFO  ---- Search radius[0.015625] 
+            00:59:16.302 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            00:59:16.302 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][4ms][4506?s][4506453ns], average [0ms][450?s][450645ns] PASS 
+
+            00:59:16.303 INFO  ---- Zone height [0.00390625] 
+            00:59:16.303 INFO  ---- Insert depth [11.0][2048.0] 
+            01:02:58.068 INFO  ---- Search radius[0.25] 
+            01:02:59.613 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:02:59.614 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [1s][1544ms][1544057?s][1544057400ns], average [154ms][154405?s][154405740ns] FAIL 
+            01:02:59.614 INFO  ---- Search radius[0.125] 
+            01:03:00.056 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:03:00.057 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [0s][440ms][440861?s][440861929ns], average [44ms][44086?s][44086192ns] FAIL 
+            01:03:00.057 INFO  ---- Search radius[0.0625] 
+            01:03:00.134 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:03:00.134 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][76ms][76122?s][76122995ns], average [7ms][7612?s][7612299ns] FAIL 
+            01:03:00.135 INFO  ---- Search radius[0.03125] 
+            01:03:00.155 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:03:00.156 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][19ms][19726?s][19726035ns], average [1ms][1972?s][1972603ns] FAIL 
+            01:03:00.156 INFO  ---- Search radius[0.015625] 
+            01:03:00.162 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:03:00.163 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][6ms][6076?s][6076940ns], average [0ms][607?s][607694ns] PASS 
+            01:03:00.163 INFO  ---- find finalize ---- 
+            01:03:10.164 INFO  ---- find gc ---- 
+            01:03:20.805 INFO  ---- find done ---- 
+            01:03:20.805 INFO  ---- find start ---- 
+
+            01:03:20.806 INFO  ---- Zone height [0.25] 
+            01:03:20.813 INFO  ---- Insert depth [11.0][2048.0] 
+            01:04:24.038 INFO  ---- Search radius[0.25] 
+            01:04:33.302 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:04:33.302 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [9s][9262ms][9262751?s][9262751240ns], average [926ms][926275?s][926275124ns] FAIL 
+            01:04:33.303 INFO  ---- Search radius[0.125] 
+            01:04:39.064 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:04:39.065 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [5s][5761ms][5761202?s][5761202814ns], average [576ms][576120?s][576120281ns] FAIL 
+            01:04:39.065 INFO  ---- Search radius[0.0625] 
+            01:04:44.121 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:04:44.122 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [5s][5055ms][5055924?s][5055924591ns], average [505ms][505592?s][505592459ns] FAIL 
+            01:04:44.122 INFO  ---- Search radius[0.03125] 
+            01:04:48.947 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:04:48.948 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [4s][4824ms][4824844?s][4824844676ns], average [482ms][482484?s][482484467ns] FAIL 
+            01:04:48.948 INFO  ---- Search radius[0.015625] 
+            01:04:53.650 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:04:53.650 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [4s][4701ms][4701747?s][4701747793ns], average [470ms][470174?s][470174779ns] FAIL 
+
+            01:04:53.651 INFO  ---- Zone height [0.125] 
+            01:04:53.651 INFO  ---- Insert depth [11.0][2048.0] 
+            01:05:43.517 INFO  ---- Search radius[0.25] 
+            01:05:52.223 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:05:52.223 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [8s][8705ms][8705332?s][8705332676ns], average [870ms][870533?s][870533267ns] FAIL 
+            01:05:52.224 INFO  ---- Search radius[0.125] 
+            01:06:10.415 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:06:10.416 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [18s][18191ms][18191523?s][18191523292ns], average [1819ms][1819152?s][1819152329ns] FAIL 
+            01:06:10.416 INFO  ---- Search radius[0.0625] 
+            01:06:13.101 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:06:13.101 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [2s][2684ms][2684748?s][2684748563ns], average [268ms][268474?s][268474856ns] FAIL 
+            01:06:13.102 INFO  ---- Search radius[0.03125] 
+            01:06:15.490 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:06:15.490 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [2s][2387ms][2387847?s][2387847178ns], average [238ms][238784?s][238784717ns] FAIL 
+            01:06:15.490 INFO  ---- Search radius[0.015625] 
+            01:06:17.794 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:06:17.795 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [2s][2303ms][2303882?s][2303882994ns], average [230ms][230388?s][230388299ns] FAIL 
+
+            01:06:17.795 INFO  ---- Zone height [0.0625] 
+            01:06:17.795 INFO  ---- Insert depth [11.0][2048.0] 
+            01:07:14.203 INFO  ---- Search radius[0.25] 
+            01:07:21.647 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:07:21.647 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [7s][7443ms][7443402?s][7443402897ns], average [744ms][744340?s][744340289ns] FAIL 
+            01:07:21.648 INFO  ---- Search radius[0.125] 
+            01:07:25.526 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:07:25.527 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [3s][3878ms][3878578?s][3878578086ns], average [387ms][387857?s][387857808ns] FAIL 
+            01:07:25.528 INFO  ---- Search radius[0.0625] 
+            01:07:27.595 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:07:27.595 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [2s][2066ms][2066818?s][2066818428ns], average [206ms][206681?s][206681842ns] FAIL 
+            01:07:27.596 INFO  ---- Search radius[0.03125] 
+            01:07:28.918 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:07:28.918 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [1s][1321ms][1321233?s][1321233662ns], average [132ms][132123?s][132123366ns] FAIL 
+            01:07:28.919 INFO  ---- Search radius[0.015625] 
+            01:07:30.106 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:07:30.107 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [1s][1186ms][1186777?s][1186777975ns], average [118ms][118677?s][118677797ns] FAIL 
+
+            01:07:30.107 INFO  ---- Zone height [0.03125] 
+            01:07:30.108 INFO  ---- Insert depth [11.0][2048.0] 
+            01:08:35.163 INFO  ---- Search radius[0.25] 
+            01:08:42.573 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:08:42.574 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [7s][7409ms][7409077?s][7409077021ns], average [740ms][740907?s][740907702ns] FAIL 
+            01:08:42.574 INFO  ---- Search radius[0.125] 
+            01:08:46.352 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:08:46.353 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [3s][3778ms][3778126?s][3778126637ns], average [377ms][377812?s][377812663ns] FAIL 
+            01:08:46.353 INFO  ---- Search radius[0.0625] 
+            01:08:48.320 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:08:48.321 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1967ms][1967346?s][1967346809ns], average [196ms][196734?s][196734680ns] FAIL 
+            01:08:48.321 INFO  ---- Search radius[0.03125] 
+            01:08:49.444 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:08:49.444 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [1s][1122ms][1122137?s][1122137266ns], average [112ms][112213?s][112213726ns] FAIL 
+            01:08:49.444 INFO  ---- Search radius[0.015625] 
+            01:08:50.155 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:08:50.155 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][710ms][710219?s][710219425ns], average [71ms][71021?s][71021942ns] FAIL 
+
+            01:08:50.155 INFO  ---- Zone height [0.015625] 
+            01:08:50.156 INFO  ---- Insert depth [11.0][2048.0] 
+            01:10:25.928 INFO  ---- Search radius[0.25] 
+            01:10:32.724 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:10:32.724 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [6s][6794ms][6794482?s][6794482413ns], average [679ms][679448?s][679448241ns] FAIL 
+            01:10:32.724 INFO  ---- Search radius[0.125] 
+            01:10:36.108 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:10:36.108 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [3s][3383ms][3383331?s][3383331068ns], average [338ms][338333?s][338333106ns] FAIL 
+            01:10:36.109 INFO  ---- Search radius[0.0625] 
+            01:10:37.792 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:10:37.794 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1682ms][1682935?s][1682935037ns], average [168ms][168293?s][168293503ns] FAIL 
+            01:10:37.794 INFO  ---- Search radius[0.03125] 
+            01:10:38.669 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:10:38.670 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][874ms][874436?s][874436550ns], average [87ms][87443?s][87443655ns] FAIL 
+            01:10:38.670 INFO  ---- Search radius[0.015625] 
+            01:10:39.147 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:10:39.147 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][476ms][476739?s][476739616ns], average [47ms][47673?s][47673961ns] FAIL 
+
+            01:10:39.147 INFO  ---- Zone height [0.0078125] 
+            01:10:39.147 INFO  ---- Insert depth [11.0][2048.0] 
+            01:13:05.371 INFO  ---- Search radius[0.25] 
+            01:13:12.285 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:13:12.286 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [6s][6913ms][6913290?s][6913290051ns], average [691ms][691329?s][691329005ns] FAIL 
+            01:13:12.286 INFO  ---- Search radius[0.125] 
+            01:13:17.190 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:13:17.191 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [4s][4903ms][4903502?s][4903502716ns], average [490ms][490350?s][490350271ns] FAIL 
+            01:13:17.191 INFO  ---- Search radius[0.0625] 
+            01:13:18.783 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:13:18.784 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1591ms][1591986?s][1591986459ns], average [159ms][159198?s][159198645ns] FAIL 
+            01:13:18.784 INFO  ---- Search radius[0.03125] 
+            01:13:19.593 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:13:19.594 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][808ms][808731?s][808731506ns], average [80ms][80873?s][80873150ns] FAIL 
+            01:13:19.594 INFO  ---- Search radius[0.015625] 
+            01:13:20.019 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:13:20.019 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][424ms][424758?s][424758040ns], average [42ms][42475?s][42475804ns] FAIL 
+
+            01:13:20.019 INFO  ---- Zone height [0.00390625] 
+            01:13:20.020 INFO  ---- Insert depth [11.0][2048.0] 
+            01:18:27.025 INFO  ---- Search radius[0.25] 
+            01:18:33.962 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:18:33.962 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [6s][6935ms][6935298?s][6935298070ns], average [693ms][693529?s][693529807ns] FAIL 
+            01:18:33.963 INFO  ---- Search radius[0.125] 
+            01:18:37.243 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:18:37.243 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [3s][3279ms][3279021?s][3279021950ns], average [327ms][327902?s][327902195ns] FAIL 
+            01:18:37.243 INFO  ---- Search radius[0.0625] 
+            01:18:38.849 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:18:38.849 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1604ms][1604817?s][1604817685ns], average [160ms][160481?s][160481768ns] FAIL 
+            01:18:38.850 INFO  ---- Search radius[0.03125] 
+            01:18:39.760 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:18:39.761 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][908ms][908890?s][908890532ns], average [90ms][90889?s][90889053ns] FAIL 
+            01:18:39.761 INFO  ---- Search radius[0.015625] 
+            01:18:40.161 INFO  Class [ZoneMatcherImpl] Indexing [COMBINED_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:18:40.162 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][399ms][399601?s][399601628ns], average [39ms][39960?s][39960162ns] FAIL 
+            01:18:40.162 INFO  ---- find finalize ---- 
+            01:18:50.163 INFO  ---- find gc ---- 
+            01:19:00.912 INFO  ---- find done ---- 
+            01:19:00.912 INFO  ---- find start ---- 
+
+            01:19:00.912 INFO  ---- Zone height [0.25] 
+            01:19:00.916 INFO  ---- Insert depth [11.0][2048.0] 
+            01:19:47.350 INFO  ---- Search radius[0.25] 
+            01:19:51.987 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:19:51.988 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [4s][4636ms][4636863?s][4636863421ns], average [463ms][463686?s][463686342ns] FAIL 
+            01:19:51.988 INFO  ---- Search radius[0.125] 
+            01:19:54.107 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:19:54.108 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2119ms][2119201?s][2119201033ns], average [211ms][211920?s][211920103ns] FAIL 
+            01:19:54.108 INFO  ---- Search radius[0.0625] 
+            01:19:55.130 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:19:55.130 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1021ms][1021497?s][1021497243ns], average [102ms][102149?s][102149724ns] FAIL 
+            01:19:55.130 INFO  ---- Search radius[0.03125] 
+            01:19:55.623 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:19:55.623 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][492ms][492170?s][492170265ns], average [49ms][49217?s][49217026ns] FAIL 
+            01:19:55.623 INFO  ---- Search radius[0.015625] 
+            01:19:55.834 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.25] Zone count [17] Zone size [740412][786561][2048] 
+            01:19:55.835 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][211ms][211110?s][211110575ns], average [21ms][21111?s][21111057ns] FAIL 
+
+            01:19:55.835 INFO  ---- Zone height [0.125] 
+            01:19:55.836 INFO  ---- Insert depth [11.0][2048.0] 
+            01:20:43.894 INFO  ---- Search radius[0.25] 
+            01:20:48.485 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:20:48.486 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [4s][4590ms][4590552?s][4590552084ns], average [459ms][459055?s][459055208ns] FAIL 
+            01:20:48.486 INFO  ---- Search radius[0.125] 
+            01:20:50.601 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:20:50.601 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2114ms][2114378?s][2114378991ns], average [211ms][211437?s][211437899ns] FAIL 
+            01:20:50.601 INFO  ---- Search radius[0.0625] 
+            01:20:51.616 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:20:51.617 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1014ms][1014650?s][1014650560ns], average [101ms][101465?s][101465056ns] FAIL 
+            01:20:51.617 INFO  ---- Search radius[0.03125] 
+            01:20:52.112 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:20:52.112 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][495ms][495047?s][495047075ns], average [49ms][49504?s][49504707ns] FAIL 
+            01:20:52.112 INFO  ---- Search radius[0.015625] 
+            01:20:52.323 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.125] Zone count [33] Zone size [381424][393281][2048] 
+            01:20:52.323 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][209ms][209964?s][209964285ns], average [20ms][20996?s][20996428ns] FAIL 
+
+            01:20:52.323 INFO  ---- Zone height [0.0625] 
+            01:20:52.324 INFO  ---- Insert depth [11.0][2048.0] 
+            01:21:48.021 INFO  ---- Search radius[0.25] 
+            01:21:52.820 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:21:52.820 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [4s][4798ms][4798053?s][4798053111ns], average [479ms][479805?s][479805311ns] FAIL 
+            01:21:52.821 INFO  ---- Search radius[0.125] 
+            01:21:55.045 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:21:55.045 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2223ms][2223107?s][2223107576ns], average [222ms][222310?s][222310757ns] FAIL 
+            01:21:55.045 INFO  ---- Search radius[0.0625] 
+            01:21:56.041 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:21:56.042 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][995ms][995870?s][995870241ns], average [99ms][99587?s][99587024ns] FAIL 
+            01:21:56.042 INFO  ---- Search radius[0.03125] 
+            01:21:56.520 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:21:56.520 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][478ms][478324?s][478324307ns], average [47ms][47832?s][47832430ns] FAIL 
+            01:21:56.521 INFO  ---- Search radius[0.015625] 
+            01:21:56.716 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0625] Zone count [65] Zone size [193646][196641][2048] 
+            01:21:56.716 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][195ms][195277?s][195277540ns], average [19ms][19527?s][19527754ns] FAIL 
+
+            01:21:56.717 INFO  ---- Zone height [0.03125] 
+            01:21:56.717 INFO  ---- Insert depth [11.0][2048.0] 
+            01:23:03.659 INFO  ---- Search radius[0.25] 
+            01:23:09.502 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:23:09.502 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [5s][5841ms][5841959?s][5841959670ns], average [584ms][584195?s][584195967ns] FAIL 
+            01:23:09.502 INFO  ---- Search radius[0.125] 
+            01:23:11.689 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:23:11.689 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2186ms][2186529?s][2186529955ns], average [218ms][218652?s][218652995ns] FAIL 
+            01:23:11.689 INFO  ---- Search radius[0.0625] 
+            01:23:12.716 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:23:12.716 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1026ms][1026529?s][1026529217ns], average [102ms][102652?s][102652921ns] FAIL 
+            01:23:12.717 INFO  ---- Search radius[0.03125] 
+            01:23:13.205 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:23:13.205 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][487ms][487877?s][487877498ns], average [48ms][48787?s][48787749ns] FAIL 
+            01:23:13.205 INFO  ---- Search radius[0.015625] 
+            01:23:13.418 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.03125] Zone count [129] Zone size [97573][98321][2048] 
+            01:23:13.419 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][212ms][212793?s][212793360ns], average [21ms][21279?s][21279336ns] FAIL 
+
+            01:23:13.419 INFO  ---- Zone height [0.015625] 
+            01:23:13.419 INFO  ---- Insert depth [11.0][2048.0] 
+            01:24:43.460 INFO  ---- Search radius[0.25] 
+            01:24:47.816 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:24:47.817 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [4s][4355ms][4355386?s][4355386939ns], average [435ms][435538?s][435538693ns] FAIL 
+            01:24:47.817 INFO  ---- Search radius[0.125] 
+            01:24:49.807 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:24:49.807 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [1s][1989ms][1989459?s][1989459818ns], average [198ms][198945?s][198945981ns] FAIL 
+            01:24:49.807 INFO  ---- Search radius[0.0625] 
+            01:24:50.756 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:24:50.756 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [0s][948ms][948232?s][948232947ns], average [94ms][94823?s][94823294ns] FAIL 
+            01:24:50.756 INFO  ---- Search radius[0.03125] 
+            01:24:51.218 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:24:51.219 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][461ms][461876?s][461876333ns], average [46ms][46187?s][46187633ns] FAIL 
+            01:24:51.219 INFO  ---- Search radius[0.015625] 
+            01:24:51.416 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.015625] Zone count [257] Zone size [48976][49161][2048] 
+            01:24:51.417 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][197ms][197169?s][197169546ns], average [19ms][19716?s][19716954ns] FAIL 
+
+            01:24:51.417 INFO  ---- Zone height [0.0078125] 
+            01:24:51.417 INFO  ---- Insert depth [11.0][2048.0] 
+            01:27:19.736 INFO  ---- Search radius[0.25] 
+            01:27:24.406 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:27:24.407 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [4s][4669ms][4669295?s][4669295332ns], average [466ms][466929?s][466929533ns] FAIL 
+            01:27:24.407 INFO  ---- Search radius[0.125] 
+            01:27:26.551 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:27:26.552 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2144ms][2144008?s][2144008992ns], average [214ms][214400?s][214400899ns] FAIL 
+            01:27:26.552 INFO  ---- Search radius[0.0625] 
+            01:27:27.571 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:27:27.571 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1018ms][1018119?s][1018119954ns], average [101ms][101811?s][101811995ns] FAIL 
+            01:27:27.571 INFO  ---- Search radius[0.03125] 
+            01:27:28.069 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:27:28.069 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][497ms][497240?s][497240609ns], average [49ms][49724?s][49724060ns] FAIL 
+            01:27:28.069 INFO  ---- Search radius[0.015625] 
+            01:27:28.281 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.0078125] Zone count [513] Zone size [24536][24581][2048] 
+            01:27:28.281 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][210ms][210783?s][210783250ns], average [21ms][21078?s][21078325ns] FAIL 
+
+            01:27:28.281 INFO  ---- Zone height [0.00390625] 
+            01:27:28.281 INFO  ---- Insert depth [11.0][2048.0] 
+            01:32:23.486 INFO  ---- Search radius[0.25] 
+            01:32:28.630 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:32:28.630 INFO  Searched [12,587,009] radius [0.25] found [308841] in [10] loops, total [5s][5142ms][5142856?s][5142856727ns], average [514ms][514285?s][514285672ns] FAIL 
+            01:32:28.630 INFO  ---- Search radius[0.125] 
+            01:32:30.844 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:32:30.845 INFO  Searched [12,587,009] radius [0.125] found [77205] in [10] loops, total [2s][2213ms][2213729?s][2213729995ns], average [221ms][221372?s][221372999ns] FAIL 
+            01:32:30.845 INFO  ---- Search radius[0.0625] 
+            01:32:32.011 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:32:32.011 INFO  Searched [12,587,009] radius [0.0625] found [19291] in [10] loops, total [1s][1165ms][1165355?s][1165355845ns], average [116ms][116535?s][116535584ns] FAIL 
+            01:32:32.012 INFO  ---- Search radius[0.03125] 
+            01:32:32.559 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:32:32.559 INFO  Searched [12,587,009] radius [0.03125] found [4821] in [10] loops, total [0s][546ms][546579?s][546579133ns], average [54ms][54657?s][54657913ns] FAIL 
+            01:32:32.559 INFO  ---- Search radius[0.015625] 
+            01:32:32.756 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_QUANTIZED] Height [0.00390625] Zone count [1025] Zone size [12280][12291][2048] 
+            01:32:32.756 INFO  Searched [12,587,009] radius [0.015625] found [1205] in [10] loops, total [0s][195ms][195804?s][195804578ns], average [19ms][19580?s][19580457ns] FAIL 
+            01:32:32.756 INFO  ---- find finalize ---- 
+            01:32:42.757 INFO  ---- find gc ---- 
+            01:32:53.444 INFO  ---- find done ---- 
+
+        int looprepeat = 10;
+
+        int    insertmin = 12;
+        int    insertmax = 13;
+        double insertwidth = 2;
+
+        int zonemin = 8  ;
+        int zonemax = 10 ;
+
+        int radiusmin = 8  ;
+        int radiusmax = 10 ;
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# -----------------------------------------------------
+# VM dead overnight ..
+
+
+
+
+# -----------------------------------------------------
+# Login to the VM and check the resources.
+#[user@trop03]
+
+    vmname=Umiawyth
+    ssh "${vmname:?}"
+
+        docker ps
+        
+            CONTAINER ID        IMAGE                      COMMAND             CREATED             STATUS              PORTS               NAMES
+            7d54ba3ae43d        firethorn/builder:2.1.25   "bash"              11 hours ago        Up 11 hours                             frosty_blackwell
+
+        sudo -s
+        pushd $(
+            docker inspect \
+                frosty_blackwell \
+              | jq -r '.[].Mounts | .[] | select(.Destination == "/var/local/build") | .Source'
+              )
+
+            pushd enteucha/github.zrq/target/
+
+                ls -al
+
+                    -rw-r--r--. 1 root root 3927 Jul 31 05:39 enteucha-debug.log
+                    -rw-r--r--. 1 root root 3927 Jul 31 05:39 enteucha-info.log
+                    -rw-r--r--. 1 root root    0 Jul 31 04:46 enteucha-trace.log
+
+
+                cat enteucha-debug.log
+
+                    2018-07-31 03:46:00,226 INFO  [main] [AbstractTestCase] ---- find start ---- 
+                    2018-07-31 03:46:00,229 INFO  [main] [AbstractTestCase] ---- Zone height [0.00390625] 
+                    2018-07-31 03:46:00,279 INFO  [main] [AbstractTestCase] ---- Insert depth [0.0][1.0] 
+                    2018-07-31 03:46:00,280 INFO  [main] [AbstractTestCase] ---- Insert depth [1.0][2.0] 
+                    2018-07-31 03:46:00,282 INFO  [main] [AbstractTestCase] ---- Insert depth [2.0][4.0] 
+                    2018-07-31 03:46:00,287 INFO  [main] [AbstractTestCase] ---- Insert depth [3.0][8.0] 
+                    2018-07-31 03:46:00,301 INFO  [main] [AbstractTestCase] ---- Insert depth [4.0][16.0] 
+                    2018-07-31 03:46:00,326 INFO  [main] [AbstractTestCase] ---- Insert depth [5.0][32.0] 
+                    2018-07-31 03:46:00,369 INFO  [main] [AbstractTestCase] ---- Insert depth [6.0][64.0] 
+                    2018-07-31 03:46:00,549 INFO  [main] [AbstractTestCase] ---- Insert depth [7.0][128.0] 
+                    2018-07-31 03:46:01,255 INFO  [main] [AbstractTestCase] ---- Insert depth [8.0][256.0] 
+                    2018-07-31 03:46:03,898 INFO  [main] [AbstractTestCase] ---- Insert depth [9.0][512.0] 
+                    2018-07-31 03:46:22,449 INFO  [main] [AbstractTestCase] ---- Insert depth [10.0][1024.0] 
+                    2018-07-31 03:47:30,495 INFO  [main] [AbstractTestCase] ---- Insert depth [11.0][2048.0] 
+                    2018-07-31 03:51:45,429 INFO  [main] [AbstractTestCase] ---- Insert depth [12.0][4096.0] 
+                    2018-07-31 04:26:01,931 INFO  [main] [AbstractTestCase] ---- Search radius[0.00390625] 
+                    2018-07-31 04:26:01,994 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                    2018-07-31 04:26:01,995 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [0.00390625] found [391] in [10] loops, total [0s][59ms][59163?s][59163594ns], average [5ms][5916?s][5916359ns] FAIL 
+                    2018-07-31 04:26:01,996 INFO  [main] [AbstractTestCase] ---- Search radius[0.001953125] 
+                    2018-07-31 04:26:02,005 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                    2018-07-31 04:26:02,006 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [0.001953125] found [94] in [10] loops, total [0s][7ms][7192?s][7192285ns], average [0ms][719?s][719228ns] PASS 
+                    2018-07-31 04:26:02,006 INFO  [main] [AbstractTestCase] ---- Search radius[9.765625E-4] 
+                    2018-07-31 04:26:02,013 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                    2018-07-31 04:26:02,013 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [9.765625E-4] found [22] in [10] loops, total [0s][4ms][4941?s][4941066ns], average [0ms][494?s][494106ns] PASS 
+                    2018-07-31 04:26:02,013 INFO  [main] [AbstractTestCase] ---- Zone height [0.001953125] 
+                    2018-07-31 04:26:02,014 INFO  [main] [AbstractTestCase] ---- Insert depth [0.0][1.0] 
+                    2018-07-31 04:26:02,014 INFO  [main] [AbstractTestCase] ---- Insert depth [1.0][2.0] 
+                    2018-07-31 04:26:02,015 INFO  [main] [AbstractTestCase] ---- Insert depth [2.0][4.0] 
+                    2018-07-31 04:26:02,015 INFO  [main] [AbstractTestCase] ---- Insert depth [3.0][8.0] 
+                    2018-07-31 04:26:02,016 INFO  [main] [AbstractTestCase] ---- Insert depth [4.0][16.0] 
+                    2018-07-31 04:26:02,021 INFO  [main] [AbstractTestCase] ---- Insert depth [5.0][32.0] 
+                    2018-07-31 04:26:02,037 INFO  [main] [AbstractTestCase] ---- Insert depth [6.0][64.0] 
+                    2018-07-31 04:26:02,100 INFO  [main] [AbstractTestCase] ---- Insert depth [7.0][128.0] 
+                    2018-07-31 04:26:02,403 INFO  [main] [AbstractTestCase] ---- Insert depth [8.0][256.0] 
+                    2018-07-31 04:26:04,860 INFO  [main] [AbstractTestCase] ---- Insert depth [9.0][512.0] 
+                    2018-07-31 04:26:18,297 INFO  [main] [AbstractTestCase] ---- Insert depth [10.0][1024.0] 
+                    2018-07-31 04:28:50,859 INFO  [main] [AbstractTestCase] ---- Insert depth [11.0][2048.0] 
+                    2018-07-31 04:39:00,302 INFO  [main] [AbstractTestCase] ---- Insert depth [12.0][4096.0] 
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+
+            vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+                int looprepeat = 10;
+
+                int    insertmin = 12;
+                int    insertmax = 13;
+                double insertwidth = 2;
+
+                int zonemin =  8 ;
+                int zonemax = 10 ;
+
+                int radiusmin =  8 ;
+                int radiusmax = 10 ;
+
+            mvn clean test -D 'test=ZoneMatcherTestCase'
+
+                ....
+                ....
+
+            cat target/enteucha-debug.log 
+
+                2018-07-31 11:23:52,485 INFO  [main] [AbstractTestCase] ---- Zone height [0.00390625] 
+                2018-07-31 11:23:52,532 INFO  [main] [AbstractTestCase] ---- Insert depth [0.0][1.0] 
+                2018-07-31 11:23:52,533 INFO  [main] [AbstractTestCase] ---- Insert depth [1.0][2.0] 
+                2018-07-31 11:23:52,535 INFO  [main] [AbstractTestCase] ---- Insert depth [2.0][4.0] 
+                2018-07-31 11:23:52,541 INFO  [main] [AbstractTestCase] ---- Insert depth [3.0][8.0] 
+                2018-07-31 11:23:52,553 INFO  [main] [AbstractTestCase] ---- Insert depth [4.0][16.0] 
+                2018-07-31 11:23:52,578 INFO  [main] [AbstractTestCase] ---- Insert depth [5.0][32.0] 
+                2018-07-31 11:23:52,619 INFO  [main] [AbstractTestCase] ---- Insert depth [6.0][64.0] 
+                2018-07-31 11:23:52,776 INFO  [main] [AbstractTestCase] ---- Insert depth [7.0][128.0] 
+                2018-07-31 11:23:53,511 INFO  [main] [AbstractTestCase] ---- Insert depth [8.0][256.0] 
+                2018-07-31 11:23:55,864 INFO  [main] [AbstractTestCase] ---- Insert depth [9.0][512.0] 
+                2018-07-31 11:24:12,747 INFO  [main] [AbstractTestCase] ---- Insert depth [10.0][1024.0] 
+                2018-07-31 11:25:18,593 INFO  [main] [AbstractTestCase] ---- Insert depth [11.0][2048.0] 
+                2018-07-31 11:29:21,336 INFO  [main] [AbstractTestCase] ---- Insert depth [12.0][4096.0] 
+
+                2018-07-31 11:58:46,389 INFO  [main] [AbstractTestCase] ---- Search radius[0.00390625] 
+                2018-07-31 11:58:46,449 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                2018-07-31 11:58:46,450 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [0.00390625] found [391] in [10] loops, total [0s][55ms][55663?s][55663542ns], average [5ms][5566?s][5566354ns] FAIL 
+
+                2018-07-31 11:58:46,450 INFO  [main] [AbstractTestCase] ---- Search radius[0.001953125] 
+                2018-07-31 11:58:46,461 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                2018-07-31 11:58:46,461 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [0.001953125] found [94] in [10] loops, total [0s][8ms][8953?s][8953349ns], average [0ms][895?s][895334ns] PASS 
+
+                2018-07-31 11:58:46,462 INFO  [main] [AbstractTestCase] ---- Search radius[9.765625E-4] 
+                2018-07-31 11:58:46,467 INFO  [main] [AbstractTestCase] Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+                2018-07-31 11:58:46,468 INFO  [main] [AbstractTestCase] Searched [67,125,249] radius [9.765625E-4] found [22] in [10] loops, total [0s][4ms][4588?s][4588615ns], average [0ms][458?s][458861ns] PASS 
+
+                2018-07-31 11:58:46,468 INFO  [main] [AbstractTestCase] ---- Zone height [0.001953125] 
+                2018-07-31 11:58:46,469 INFO  [main] [AbstractTestCase] ---- Insert depth [0.0][1.0] 
+                2018-07-31 11:58:46,469 INFO  [main] [AbstractTestCase] ---- Insert depth [1.0][2.0] 
+                2018-07-31 11:58:46,470 INFO  [main] [AbstractTestCase] ---- Insert depth [2.0][4.0] 
+                2018-07-31 11:58:46,470 INFO  [main] [AbstractTestCase] ---- Insert depth [3.0][8.0] 
+                2018-07-31 11:58:46,471 INFO  [main] [AbstractTestCase] ---- Insert depth [4.0][16.0] 
+                2018-07-31 11:58:46,475 INFO  [main] [AbstractTestCase] ---- Insert depth [5.0][32.0] 
+                2018-07-31 11:58:46,492 INFO  [main] [AbstractTestCase] ---- Insert depth [6.0][64.0] 
+                2018-07-31 11:58:46,557 INFO  [main] [AbstractTestCase] ---- Insert depth [7.0][128.0] 
+                2018-07-31 11:58:46,857 INFO  [main] [AbstractTestCase] ---- Insert depth [8.0][256.0] 
+                2018-07-31 11:58:49,388 INFO  [main] [AbstractTestCase] ---- Insert depth [9.0][512.0] 
+                2018-07-31 11:59:02,270 INFO  [main] [AbstractTestCase] ---- Insert depth [10.0][1024.0] 
+                2018-07-31 12:01:25,105 INFO  [main] [AbstractTestCase] ---- Insert depth [11.0][2048.0] 
+                2018-07-31 12:11:02,723 INFO  [main] [AbstractTestCase] ---- Insert depth [12.0][4096.0] 
+
+            cat target/surefire-reports/2018-07-31T11-23-51_474-jvmRun1.dump 
+
+                # Created at 2018-07-31T12:51:52.816
+                Killing self fork JVM. PING timeout elapsed.
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+            vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+                int looprepeat = 10;
+
+                int    insertmin = 12;
+                int    insertmax = 13;
+                double insertwidth = 2;
+
+                int zonemin =  8 ;
+                int zonemax = 10 ;
+
+                int radiusmin =  8 ;
+                int radiusmax = 10 ;
+
+            mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
+
+

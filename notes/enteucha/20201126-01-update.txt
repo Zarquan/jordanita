@@ -1,0 +1,475 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+    #
+    # The HsqlHtmidMatcher test shows a difference for zone size?
+    # First run is slowr than the other two.
+    # Is this an atrifact - zone size should have no effect on HTMID indexing.
+    #
+
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+    >   ....
+    >   ....
+    >   17:30:42.736 INFO  ---- ----
+    >   17:30:42.737 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:30:44.292 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.293 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.5] found [801] in [100] loops, total [1s][1,554ms], average [15.549ms][15,549.202us] FAIL
+    >   17:30:44.293 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.5</radius><found>801</found><repeat>100</repeat><timesum>1554</timesum><timeavg>15.549</timeavg></data-row>
+    >   17:30:44.293 INFO  ---- ----
+    >   17:30:44.294 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:30:44.668 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.669 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [204] in [100] loops, total [0s][374ms], average [3.742ms][3,741.582us] FAIL
+    >   17:30:44.670 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>204</found><repeat>100</repeat><timesum>374</timesum><timeavg>3.742</timeavg></data-row>
+    >   17:30:44.670 INFO  ---- ----
+    >   17:30:44.670 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:30:44.800 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.800 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [48] in [100] loops, total [0s][129ms], average [1.295ms][1,295.381us] FAIL
+    >   17:30:44.801 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>48</found><repeat>100</repeat><timesum>129</timesum><timeavg>1.295</timeavg></data-row>
+    >   17:30:44.801 INFO  ---- ----
+    >   17:30:44.801 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:30:44.857 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.858 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [100] loops, total [0s][55ms], average [0.557ms][556.660us] PASS
+    >   17:30:44.859 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>11</found><repeat>100</repeat><timesum>55</timesum><timeavg>0.557</timeavg></data-row>
+    >   17:30:44.859 INFO  ---- ----
+    >   17:30:44.859 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:30:44.893 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.894 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [2] in [100] loops, total [0s][34ms], average [0.342ms][341.577us] PASS
+    >   17:30:44.894 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>2</found><repeat>100</repeat><timesum>34</timesum><timeavg>0.342</timeavg></data-row>
+    >   17:30:44.894 INFO  ---- ----
+    >   17:30:44.894 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:30:44.914 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.914 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [100] loops, total [0s][19ms], average [0.191ms][191.058us] PASS
+    >   17:30:44.914 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>19</timesum><timeavg>0.191</timeavg></data-row>
+    >   17:30:44.914 INFO  ---- ----
+    >   17:30:44.914 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:30:44.930 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:30:44.930 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0078125] found [1] in [100] loops, total [0s][15ms], average [0.153ms][153.267us] PASS
+    >   17:30:44.931 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>15</timesum><timeavg>0.153</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:32:22.909 INFO  ---- ----
+    >   17:32:22.909 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:32:23.799 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:23.799 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.5] found [810] in [100] loops, total [0s][889ms], average [8.897ms][8,896.538us] FAIL
+    >   17:32:23.799 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.5</radius><found>810</found><repeat>100</repeat><timesum>889</timesum><timeavg>8.897</timeavg></data-row>
+    >   17:32:23.800 INFO  ---- ----
+    >   17:32:23.800 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:32:24.086 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.087 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [201] in [100] loops, total [0s][285ms], average [2.859ms][2,858.568us] FAIL
+    >   17:32:24.087 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>201</found><repeat>100</repeat><timesum>285</timesum><timeavg>2.859</timeavg></data-row>
+    >   17:32:24.087 INFO  ---- ----
+    >   17:32:24.087 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:32:24.166 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.167 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [51] in [100] loops, total [0s][78ms], average [0.788ms][787.790us] PASS
+    >   17:32:24.167 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>51</found><repeat>100</repeat><timesum>78</timesum><timeavg>0.788</timeavg></data-row>
+    >   17:32:24.168 INFO  ---- ----
+    >   17:32:24.168 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:32:24.218 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.218 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [100] loops, total [0s][49ms], average [0.497ms][497.152us] PASS
+    >   17:32:24.219 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>11</found><repeat>100</repeat><timesum>49</timesum><timeavg>0.497</timeavg></data-row>
+    >   17:32:24.219 INFO  ---- ----
+    >   17:32:24.219 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:32:24.236 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.237 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [4] in [100] loops, total [0s][17ms], average [0.173ms][172.646us] PASS
+    >   17:32:24.237 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>4</found><repeat>100</repeat><timesum>17</timesum><timeavg>0.173</timeavg></data-row>
+    >   17:32:24.237 INFO  ---- ----
+    >   17:32:24.237 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:32:24.246 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.246 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [100] loops, total [0s][8ms], average [0.089ms][89.355us] PASS
+    >   17:32:24.247 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>8</timesum><timeavg>0.089</timeavg></data-row>
+    >   17:32:24.247 INFO  ---- ----
+    >   17:32:24.247 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:32:24.255 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:32:24.255 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms], average [0.078ms][77.730us] PASS
+    >   17:32:24.255 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>7</timesum><timeavg>0.078</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:33:34.516 INFO  ---- ----
+    >   17:33:34.516 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:33:35.398 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.400 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.5] found [806] in [100] loops, total [0s][880ms], average [8.810ms][8,809.510us] FAIL
+    >   17:33:35.401 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.5</radius><found>806</found><repeat>100</repeat><timesum>880</timesum><timeavg>8.810</timeavg></data-row>
+    >   17:33:35.401 INFO  ---- ----
+    >   17:33:35.401 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:33:35.669 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.669 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [206] in [100] loops, total [0s][267ms], average [2.671ms][2,670.698us] FAIL
+    >   17:33:35.669 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>206</found><repeat>100</repeat><timesum>267</timesum><timeavg>2.671</timeavg></data-row>
+    >   17:33:35.670 INFO  ---- ----
+    >   17:33:35.670 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:33:35.751 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.752 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [48] in [100] loops, total [0s][81ms], average [0.815ms][814.632us] PASS
+    >   17:33:35.752 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>48</found><repeat>100</repeat><timesum>81</timesum><timeavg>0.815</timeavg></data-row>
+    >   17:33:35.752 INFO  ---- ----
+    >   17:33:35.752 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:33:35.783 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.784 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [12] in [100] loops, total [0s][30ms], average [0.307ms][306.902us] PASS
+    >   17:33:35.784 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>12</found><repeat>100</repeat><timesum>30</timesum><timeavg>0.307</timeavg></data-row>
+    >   17:33:35.784 INFO  ---- ----
+    >   17:33:35.784 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:33:35.799 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.799 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [100] loops, total [0s][14ms], average [0.147ms][146.940us] PASS
+    >   17:33:35.799 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>3</found><repeat>100</repeat><timesum>14</timesum><timeavg>0.147</timeavg></data-row>
+    >   17:33:35.800 INFO  ---- ----
+    >   17:33:35.800 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:33:35.808 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.809 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [100] loops, total [0s][8ms], average [0.084ms][84.026us] PASS
+    >   17:33:35.810 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>8</timesum><timeavg>0.084</timeavg></data-row>
+    >   17:33:35.810 INFO  ---- ----
+    >   17:33:35.810 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:33:35.818 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:33:35.818 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0078125] found [1] in [100] loops, total [0s][7ms], average [0.076ms][76.034us] PASS
+    >   17:33:35.818 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>7</timesum><timeavg>0.076</timeavg></data-row>
+
+
+
+
+
+
+
+    >   17:30:44.293 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.5] found [801] in [100] loops, total [1s][1,554ms],   average [15.549ms][15,549.202us] FAIL
+    >   17:30:44.669 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [204] in [100] loops, total [0s][374ms],    average [3.742ms][3,741.582us] FAIL
+    >   17:30:44.800 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [48] in [100] loops, total [0s][129ms],    average [1.295ms][1,295.381us] FAIL
+    >   17:30:44.858 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [11] in [100] loops, total [0s][55ms],    average [0.557ms][556.660us] PASS
+    >   17:30:44.894 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [2] in [100] loops, total [0s][34ms],    average [0.342ms][341.577us] PASS
+    >   17:30:44.914 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [100] loops, total [0s][19ms],   average [0.191ms][191.058us] PASS
+    >   17:30:44.930 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0078125] found [1] in [100] loops, total [0s][15ms],  average [0.153ms][153.267us] PASS
+    >   ....
+    >   ....
+    >   17:32:23.799 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.5] found [810] in [100] loops, total [0s][889ms],    average [8.897ms][8,896.538us] FAIL
+    >   17:32:24.087 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [201] in [100] loops, total [0s][285ms],   average [2.859ms][2,858.568us] FAIL
+    >   17:32:24.167 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [51] in [100] loops, total [0s][78ms],    average [0.788ms][787.790us] PASS
+    >   17:32:24.218 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [11] in [100] loops, total [0s][49ms],   average [0.497ms][497.152us] PASS
+    >   17:32:24.237 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [4] in [100] loops, total [0s][17ms],   average [0.173ms][172.646us] PASS
+    >   17:32:24.246 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [100] loops, total [0s][8ms],   average [0.089ms][89.355us] PASS
+    >   17:32:24.255 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms],  average [0.078ms][77.730us] PASS
+    >   ....
+    >   ....
+    >   17:33:35.400 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.5] found [806] in [100] loops, total [0s][880ms],   average [8.810ms][8,809.510us] FAIL
+    >   17:33:35.669 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [206] in [100] loops, total [0s][267ms],  average [2.671ms][2,670.698us] FAIL
+    >   17:33:35.752 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [48] in [100] loops, total [0s][81ms],   average [0.815ms][814.632us] PASS
+    >   17:33:35.784 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [12] in [100] loops, total [0s][30ms],  average [0.307ms][306.902us] PASS
+    >   17:33:35.799 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [3] in [100] loops, total [0s][14ms],  average [0.147ms][146.940us] PASS
+    >   17:33:35.809 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [100] loops, total [0s][8ms],  average [0.084ms][84.026us] PASS
+    >   17:33:35.818 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0078125] found [1] in [100] loops, total [0s][7ms], average [0.076ms][76.034us] PASS
+
+
+# -----------------------------------------------------
+# Edit the config and start the set of zones earlier.
+#[user@builder]
+
+    pushd /var/local/build/enteucha
+
+        vi target/test-classes/test.properties
+
+                enteucha.loop=100
+
+                enteucha.select.min=11
+                enteucha.insert.max=11
+
+                enteucha.radius.min=1
+                enteucha.radius.max=7
+
+                enteucha.range.min=6
+                enteucha.range.max=6
+
+            -   enteucha.zone.min=5
+            +   enteucha.zone.min=3
+                enteucha.zone.max=7
+
+                enteucha.target.ra=0.4
+                enteucha.target.dec=0.5
+
+        reset
+
+        xmxmem=300g
+        xmsmem=300g
+
+        java \
+            -Xmx${xmxmem:?} \
+            -Xms${xmsmem:?} \
+            -classpath "${classpath:?}" \
+            uk.ac.roe.wfau.enteucha.hsqldb.HsqlHtmidMatcherTestCase
+
+    >   ....
+    >   ....
+    >   17:54:12.055 INFO  ---- ----
+    >   17:54:12.056 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:54:13.600 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:13.601 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.5] found [805] in [100] loops, total [1s][1,543ms], average [15.434ms][15,434.463us] FAIL
+    >   17:54:13.601 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.5</radius><found>805</found><repeat>100</repeat><timesum>1543</timesum><timeavg>15.434</timeavg></data-row>
+    >   17:54:13.601 INFO  ---- ----
+    >   17:54:13.601 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:54:13.982 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:13.983 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.25] found [202] in [100] loops, total [0s][379ms], average [3.799ms][3,798.843us] FAIL
+    >   17:54:13.983 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.25</radius><found>202</found><repeat>100</repeat><timesum>379</timesum><timeavg>3.799</timeavg></data-row>
+    >   17:54:13.983 INFO  ---- ----
+    >   17:54:13.984 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:54:14.116 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:14.116 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.125] found [49] in [100] loops, total [0s][131ms], average [1.319ms][1,318.571us] FAIL
+    >   17:54:14.117 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.125</radius><found>49</found><repeat>100</repeat><timesum>131</timesum><timeavg>1.319</timeavg></data-row>
+    >   17:54:14.117 INFO  ---- ----
+    >   17:54:14.117 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:54:14.172 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:14.173 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.0625] found [12] in [100] loops, total [0s][54ms], average [0.545ms][544.893us] PASS
+    >   17:54:14.173 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.0625</radius><found>12</found><repeat>100</repeat><timesum>54</timesum><timeavg>0.545</timeavg></data-row>
+    >   17:54:14.174 INFO  ---- ----
+    >   17:54:14.174 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:54:14.206 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:14.206 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.03125] found [3] in [100] loops, total [0s][31ms], average [0.318ms][317.816us] PASS
+    >   17:54:14.206 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.03125</radius><found>3</found><repeat>100</repeat><timesum>31</timesum><timeavg>0.318</timeavg></data-row>
+    >   17:54:14.206 INFO  ---- ----
+    >   17:54:14.206 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:54:14.225 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:14.226 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.015625] found [1] in [100] loops, total [0s][18ms], average [0.187ms][187.368us] PASS
+    >   17:54:14.226 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>18</timesum><timeavg>0.187</timeavg></data-row>
+    >   17:54:14.226 INFO  ---- ----
+    >   17:54:14.226 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:54:14.241 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:54:14.241 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.0078125] found [1] in [100] loops, total [0s][14ms], average [0.143ms][142.625us] PASS
+    >   17:54:14.241 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.125</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>14</timesum><timeavg>0.143</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:55:53.703 INFO  ---- ----
+    >   17:55:53.703 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:55:54.563 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.564 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.5] found [810] in [100] loops, total [0s][859ms], average [8.598ms][8,598.034us] FAIL
+    >   17:55:54.564 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.5</radius><found>810</found><repeat>100</repeat><timesum>859</timesum><timeavg>8.598</timeavg></data-row>
+    >   17:55:54.564 INFO  ---- ----
+    >   17:55:54.564 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:55:54.803 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.803 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.25] found [199] in [100] loops, total [0s][238ms], average [2.382ms][2,381.624us] FAIL
+    >   17:55:54.803 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.25</radius><found>199</found><repeat>100</repeat><timesum>238</timesum><timeavg>2.382</timeavg></data-row>
+    >   17:55:54.804 INFO  ---- ----
+    >   17:55:54.804 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:55:54.883 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.883 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.125] found [51] in [100] loops, total [0s][78ms], average [0.789ms][789.392us] PASS
+    >   17:55:54.883 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.125</radius><found>51</found><repeat>100</repeat><timesum>78</timesum><timeavg>0.789</timeavg></data-row>
+    >   17:55:54.884 INFO  ---- ----
+    >   17:55:54.884 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:55:54.914 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.914 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.0625] found [12] in [100] loops, total [0s][29ms], average [0.297ms][297.051us] PASS
+    >   17:55:54.914 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.0625</radius><found>12</found><repeat>100</repeat><timesum>29</timesum><timeavg>0.297</timeavg></data-row>
+    >   17:55:54.915 INFO  ---- ----
+    >   17:55:54.915 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:55:54.930 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.931 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.03125] found [4] in [100] loops, total [0s][15ms], average [0.156ms][155.855us] PASS
+    >   17:55:54.931 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.03125</radius><found>4</found><repeat>100</repeat><timesum>15</timesum><timeavg>0.156</timeavg></data-row>
+    >   17:55:54.931 INFO  ---- ----
+    >   17:55:54.931 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:55:54.941 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.941 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.015625] found [1] in [100] loops, total [0s][9ms], average [0.094ms][93.896us] PASS
+    >   17:55:54.941 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>9</timesum><timeavg>0.094</timeavg></data-row>
+    >   17:55:54.941 INFO  ---- ----
+    >   17:55:54.941 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:55:54.949 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:55:54.949 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms], average [0.077ms][76.814us] PASS
+    >   17:55:54.950 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0625</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>7</timesum><timeavg>0.077</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:57:02.084 INFO  ---- ----
+    >   17:57:02.084 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:57:02.934 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:02.935 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.5] found [797] in [100] loops, total [0s][849ms], average [8.498ms][8,497.581us] FAIL
+    >   17:57:02.935 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.5</radius><found>797</found><repeat>100</repeat><timesum>849</timesum><timeavg>8.498</timeavg></data-row>
+    >   17:57:02.936 INFO  ---- ----
+    >   17:57:02.936 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:57:03.170 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.171 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [203] in [100] loops, total [0s][234ms], average [2.344ms][2,344.304us] FAIL
+    >   17:57:03.171 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.25</radius><found>203</found><repeat>100</repeat><timesum>234</timesum><timeavg>2.344</timeavg></data-row>
+    >   17:57:03.171 INFO  ---- ----
+    >   17:57:03.171 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:57:03.250 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.250 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [49] in [100] loops, total [0s][78ms], average [0.781ms][781.224us] PASS
+    >   17:57:03.250 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.125</radius><found>49</found><repeat>100</repeat><timesum>78</timesum><timeavg>0.781</timeavg></data-row>
+    >   17:57:03.251 INFO  ---- ----
+    >   17:57:03.251 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:57:03.282 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.283 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [12] in [100] loops, total [0s][31ms], average [0.314ms][313.661us] PASS
+    >   17:57:03.283 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0625</radius><found>12</found><repeat>100</repeat><timesum>31</timesum><timeavg>0.314</timeavg></data-row>
+    >   17:57:03.283 INFO  ---- ----
+    >   17:57:03.283 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:57:03.299 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.300 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [2] in [100] loops, total [0s][15ms], average [0.160ms][159.892us] PASS
+    >   17:57:03.300 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.03125</radius><found>2</found><repeat>100</repeat><timesum>15</timesum><timeavg>0.160</timeavg></data-row>
+    >   17:57:03.300 INFO  ---- ----
+    >   17:57:03.300 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:57:03.310 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.310 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [100] loops, total [0s][9ms], average [0.096ms][95.686us] PASS
+    >   17:57:03.311 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>9</timesum><timeavg>0.096</timeavg></data-row>
+    >   17:57:03.311 INFO  ---- ----
+    >   17:57:03.311 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:57:03.319 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:57:03.320 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0078125] found [1] in [100] loops, total [0s][8ms], average [0.081ms][81.362us] PASS
+    >   17:57:03.320 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.03125</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>8</timesum><timeavg>0.081</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:58:08.693 INFO  ---- ----
+    >   17:58:08.693 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:58:09.548 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.548 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.5] found [806] in [100] loops, total [0s][853ms], average [8.538ms][8,537.925us] FAIL
+    >   17:58:09.549 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.5</radius><found>806</found><repeat>100</repeat><timesum>853</timesum><timeavg>8.538</timeavg></data-row>
+    >   17:58:09.549 INFO  ---- ----
+    >   17:58:09.549 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:58:09.787 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.788 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [206] in [100] loops, total [0s][238ms], average [2.383ms][2,382.872us] FAIL
+    >   17:58:09.788 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.25</radius><found>206</found><repeat>100</repeat><timesum>238</timesum><timeavg>2.383</timeavg></data-row>
+    >   17:58:09.788 INFO  ---- ----
+    >   17:58:09.788 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:58:09.866 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.866 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [50] in [100] loops, total [0s][77ms], average [0.774ms][774.417us] PASS
+    >   17:58:09.867 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.125</radius><found>50</found><repeat>100</repeat><timesum>77</timesum><timeavg>0.774</timeavg></data-row>
+    >   17:58:09.867 INFO  ---- ----
+    >   17:58:09.867 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:58:09.897 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.897 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [10] in [100] loops, total [0s][29ms], average [0.295ms][294.714us] PASS
+    >   17:58:09.897 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0625</radius><found>10</found><repeat>100</repeat><timesum>29</timesum><timeavg>0.295</timeavg></data-row>
+    >   17:58:09.898 INFO  ---- ----
+    >   17:58:09.898 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:58:09.914 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.915 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [4] in [100] loops, total [0s][16ms], average [0.164ms][164.411us] PASS
+    >   17:58:09.915 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.03125</radius><found>4</found><repeat>100</repeat><timesum>16</timesum><timeavg>0.164</timeavg></data-row>
+    >   17:58:09.915 INFO  ---- ----
+    >   17:58:09.915 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:58:09.924 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.924 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [100] loops, total [0s][8ms], average [0.085ms][85.077us] PASS
+    >   17:58:09.925 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>8</timesum><timeavg>0.085</timeavg></data-row>
+    >   17:58:09.925 INFO  ---- ----
+    >   17:58:09.925 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:58:09.933 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:58:09.933 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms], average [0.075ms][75.440us] PASS
+    >   17:58:09.933 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.015625</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>7</timesum><timeavg>0.075</timeavg></data-row>
+    >   ....
+    >   ....
+    >   17:59:21.580 INFO  ---- ----
+    >   17:59:21.580 INFO  Radius [1][2^(-1) = 0.5]
+    >   17:59:22.375 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.375 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.5] found [807] in [100] loops, total [0s][794ms], average [7.946ms][7,946.333us] FAIL
+    >   17:59:22.375 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.5</radius><found>807</found><repeat>100</repeat><timesum>794</timesum><timeavg>7.946</timeavg></data-row>
+    >   17:59:22.375 INFO  ---- ----
+    >   17:59:22.375 INFO  Radius [2][2^(-2) = 0.25]
+    >   17:59:22.606 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.607 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [201] in [100] loops, total [0s][230ms], average [2.306ms][2,305.790us] FAIL
+    >   17:59:22.607 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.25</radius><found>201</found><repeat>100</repeat><timesum>230</timesum><timeavg>2.306</timeavg></data-row>
+    >   17:59:22.607 INFO  ---- ----
+    >   17:59:22.607 INFO  Radius [3][2^(-3) = 0.125]
+    >   17:59:22.680 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.681 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [50] in [100] loops, total [0s][72ms], average [0.730ms][729.696us] PASS
+    >   17:59:22.681 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.125</radius><found>50</found><repeat>100</repeat><timesum>72</timesum><timeavg>0.730</timeavg></data-row>
+    >   17:59:22.681 INFO  ---- ----
+    >   17:59:22.681 INFO  Radius [4][2^(-4) = 0.0625]
+    >   17:59:22.707 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.707 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [14] in [100] loops, total [0s][25ms], average [0.254ms][253.542us] PASS
+    >   17:59:22.707 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0625</radius><found>14</found><repeat>100</repeat><timesum>25</timesum><timeavg>0.254</timeavg></data-row>
+    >   17:59:22.707 INFO  ---- ----
+    >   17:59:22.707 INFO  Radius [5][2^(-5) = 0.03125]
+    >   17:59:22.720 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.720 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [1] in [100] loops, total [0s][12ms], average [0.129ms][129.270us] PASS
+    >   17:59:22.720 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.03125</radius><found>1</found><repeat>100</repeat><timesum>12</timesum><timeavg>0.129</timeavg></data-row>
+    >   17:59:22.720 INFO  ---- ----
+    >   17:59:22.720 INFO  Radius [6][2^(-6) = 0.015625]
+    >   17:59:22.728 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.728 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [100] loops, total [0s][7ms], average [0.071ms][70.692us] PASS
+    >   17:59:22.728 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.015625</radius><found>1</found><repeat>100</repeat><timesum>7</timesum><timeavg>0.071</timeavg></data-row>
+    >   17:59:22.728 INFO  ---- ----
+    >   17:59:22.728 INFO  Radius [7][2^(-7) = 0.0078125]
+    >   17:59:22.734 INFO  Class [HsqlHtmidMatcherImpl] Total rows [16,785,409] Depth [10] URL [jdbc:hsqldb:mem:zonematch]
+    >   17:59:22.734 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0078125] found [1] in [100] loops, total [0s][5ms], average [0.058ms][58.070us] PASS
+    >   17:59:22.734 INFO  <data-row><matcher>HsqlHtmidMatcherImpl</matcher><points>16785409</points><range>64.0</range><zone>0.0078125</zone><radius>0.0078125</radius><found>1</found><repeat>100</repeat><timesum>5</timesum><timeavg>0.058</timeavg></data-row>
+    >   17:59:22.734 INFO  <<<<
+    >   17:59:22.734 INFO  </outerloop>
+    >   17:59:22.735 INFO  Closing org.springframework.context.support.ClassPathXmlApplicationContext@4493d195: startup date [Thu Nov 26 17:52:24 UTC 2020]; root of context hierarchy
+
+
+    >   ....
+    >   ....
+    >   17:54:13.601 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.5] found [805] in [100] loops, total [1s][1,543ms],     average [15.434ms][15,434.463us] FAIL
+    >   17:54:13.983 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.25] found [202] in [100] loops, total [0s][379ms],      average [3.799ms][3,798.843us] FAIL
+    >   17:54:14.116 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.125] found [49] in [100] loops, total [0s][131ms],      average [1.319ms][1,318.571us] FAIL
+    >   17:54:14.173 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.0625] found [12] in [100] loops, total [0s][54ms],      average [0.545ms][544.893us] PASS
+    >   17:54:14.206 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.03125] found [3] in [100] loops, total [0s][31ms],      average [0.318ms][317.816us] PASS
+    >   17:54:14.226 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.015625] found [1] in [100] loops, total [0s][18ms],     average [0.187ms][187.368us] PASS
+    >   17:54:14.241 INFO  Searched [16,785,409] range [64.0] zone [0.125] radius [0.0078125] found [1] in [100] loops, total [0s][14ms],    average [0.143ms][142.625us] PASS
+    >   ....
+    >   ....
+    >   17:55:54.564 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.5] found [810] in [100] loops, total [0s][859ms],      average [8.598ms][8,598.034us] FAIL
+    >   17:55:54.803 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.25] found [199] in [100] loops, total [0s][238ms],     average [2.382ms][2,381.624us] FAIL
+    >   17:55:54.883 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.125] found [51] in [100] loops, total [0s][78ms],      average [0.789ms][789.392us] PASS
+    >   17:55:54.914 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.0625] found [12] in [100] loops, total [0s][29ms],     average [0.297ms][297.051us] PASS
+    >   17:55:54.931 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.03125] found [4] in [100] loops, total [0s][15ms],     average [0.156ms][155.855us] PASS
+    >   17:55:54.941 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.015625] found [1] in [100] loops, total [0s][9ms],     average [0.094ms][93.896us] PASS
+    >   17:55:54.949 INFO  Searched [16,785,409] range [64.0] zone [0.0625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms],    average [0.077ms][76.814us] PASS
+    >   ....
+    >   ....
+    >   17:57:02.935 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.5] found [797] in [100] loops, total [0s][849ms],     average [8.498ms][8,497.581us] FAIL
+    >   17:57:03.171 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.25] found [203] in [100] loops, total [0s][234ms],    average [2.344ms][2,344.304us] FAIL
+    >   17:57:03.250 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.125] found [49] in [100] loops, total [0s][78ms],     average [0.781ms][781.224us] PASS
+    >   17:57:03.283 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0625] found [12] in [100] loops, total [0s][31ms],    average [0.314ms][313.661us] PASS
+    >   17:57:03.300 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.03125] found [2] in [100] loops, total [0s][15ms],    average [0.160ms][159.892us] PASS
+    >   17:57:03.310 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.015625] found [1] in [100] loops, total [0s][9ms],    average [0.096ms][95.686us] PASS
+    >   17:57:03.320 INFO  Searched [16,785,409] range [64.0] zone [0.03125] radius [0.0078125] found [1] in [100] loops, total [0s][8ms],   average [0.081ms][81.362us] PASS
+    >   ....
+    >   ....
+    >   17:58:09.548 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.5] found [806] in [100] loops, total [0s][853ms],    average [8.538ms][8,537.925us] FAIL
+    >   17:58:09.788 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.25] found [206] in [100] loops, total [0s][238ms],   average [2.383ms][2,382.872us] FAIL
+    >   17:58:09.866 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.125] found [50] in [100] loops, total [0s][77ms],    average [0.774ms][774.417us] PASS
+    >   17:58:09.897 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0625] found [10] in [100] loops, total [0s][29ms],   average [0.295ms][294.714us] PASS
+    >   17:58:09.915 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.03125] found [4] in [100] loops, total [0s][16ms],   average [0.164ms][164.411us] PASS
+    >   17:58:09.924 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.015625] found [1] in [100] loops, total [0s][8ms],   average [0.085ms][85.077us] PASS
+    >   17:58:09.933 INFO  Searched [16,785,409] range [64.0] zone [0.015625] radius [0.0078125] found [1] in [100] loops, total [0s][7ms],  average [0.075ms][75.440us] PASS
+    >   ....
+    >   ....
+    >   17:59:22.375 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.5] found [807] in [100] loops, total [0s][794ms],   average [7.946ms][7,946.333us] FAIL
+    >   17:59:22.607 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.25] found [201] in [100] loops, total [0s][230ms],  average [2.306ms][2,305.790us] FAIL
+    >   17:59:22.681 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.125] found [50] in [100] loops, total [0s][72ms],   average [0.730ms][729.696us] PASS
+    >   17:59:22.707 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0625] found [14] in [100] loops, total [0s][25ms],  average [0.254ms][253.542us] PASS
+    >   17:59:22.720 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.03125] found [1] in [100] loops, total [0s][12ms],  average [0.129ms][129.270us] PASS
+    >   17:59:22.728 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.015625] found [1] in [100] loops, total [0s][7ms],  average [0.071ms][70.692us] PASS
+    >   17:59:22.734 INFO  Searched [16,785,409] range [64.0] zone [0.0078125] radius [0.0078125] found [1] in [100] loops, total [0s][5ms], average [0.058ms][58.070us] PASS
+
+
+
+
+
+
+17:52:29.041 INFO  <outerloop target='0.4,0.5'>
+17:52:31.917 INFO  ---- ----
+17:52:31.919 INFO  Insert [0][3][9]
+17:52:31.920 INFO  Insert [1][5][25]
+
+
+
+
+17:54:22.120 INFO  ---- ----
+17:54:22.120 INFO  Insert [0][3][9]
+17:54:22.121 INFO  Insert [1][5][25]
+
