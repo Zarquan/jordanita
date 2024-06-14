@@ -25,45 +25,36 @@
 
     Target:
 
-        TODO list
+        Plans for git repositories
 
     Result:
 
         Work in progress ...
 
 # -----------------------------------------------------
+# 20240614
 
     Git Repo for the Java version
-        Create a new GitHub repo.
-
-        cecrops
+        Create a new GitHub repo - cecrops
         https://en.wikipedia.org/wiki/Red-banded_hairstreak
         Calycopis cecrops
 
     Git Repo for the Python version
-        Create a new GitHub repo.
-
-        isobeon
+        Create a new GitHub repo - isobeon
         https://en.wikipedia.org/wiki/Calycopis_isobeon
         Calycopis isobeon
 
-    Create GitHub repository for Dave's notes
-        Repurpose Celastrina, rename to argiolus.
-
-        https://en.wikipedia.org/wiki/Holly_blue
-        Celastrina argiolus
-
-        or do we use Jordanita
-        https://github.com/Zarquan/jordanita
+    Transfer notes into Jordanita
+    https://github.com/Zarquan/jordanita
 
         Import notes from other projects.
         Subdirectories for each project.
             Subdirectories for each year.
 
+    Celastrina becomes repo for Etherium validator.
+    https://github.com/Zarquan/celastrina
 
-
-
-
-
+        We alreday have some notes and code on a branch
+        https://github.com/Zarquan/celastrina/tree/20210829-zrq-ocean-deploy
 
 
