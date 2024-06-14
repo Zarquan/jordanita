@@ -1,0 +1,325 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Links to stuff ...
+
+
+
+# -----------------------------------------------------
+# 20240614
+
+    UKSRC team bios
+    https://confluence.skatelescope.org/display/SRCSC/UKSRC+Team+Bio%27s
+
+# -----------------------------------------------------
+# 20240614
+
+    Links from old notes 20210304-01-cloud-interest.txt
+
+    Ceph - Application best practices for distributed file systems
+    https://docs.ceph.com/en/latest/cephfs/app-best-practices/
+
+        Interesting, but doesn't actually say it is bad on multiple re-writes
+
+    Ceph - Object Gateway Swift API
+    https://docs.ceph.com/en/latest/radosgw/swift/
+
+    Openstack - Object Storage API
+    https://docs.openstack.org/api-ref/object-store/index.html
+
+        Does Openstack pass through or proxy the Ceph Swift API, or does it run a separate service?
+
+    Cephfs is slow compared to samba
+    https://www.reddit.com/r/ceph/comments/ekzh0e/cephfs_is_slow_compared_to_samba/
+
+# -----------------------------------------------------
+# 20240614
+
+    Data Management API
+    https://data-management.srcdev.skao.int/api/v1/www/docs/oper
+
+# -----------------------------------------------------
+# 20240614
+
+    Coral team issues
+    https://jira.skatelescope.org/projects/COR/issues/COR-625?filter=allopenissues
+
+    [Exec broker] Learning
+    https://jira.skatelescope.org/browse/COR-628
+
+    [Exec broker] Bringing the IVOA document up to date.
+    https://jira.skatelescope.org/browse/COR-641
+
+    [Exec Broker] Update the service API
+    https://jira.skatelescope.org/browse/COR-642
+    Options or CRUD ?
+
+# -----------------------------------------------------
+# 20240612
+
+    PI23 Miro board
+    https://miro.com/app/board/uXjVKFyL7Nk=/
+
+    PI23-Coral Miro board
+    https://miro.com/app/board/uXjVKFyL7Nk=/?moveToWidget=3458764589594497196
+
+    PI23-Coral Meetings
+    https://confluence.skatelescope.org/display/SRCSC/PI23+-+Coral+Team+Iteration+Meetings
+
+# -----------------------------------------------------
+# 20240612
+
+    Data Access & Compute (DAAC)
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=277405167
+
+# -----------------------------------------------------
+# 20240612
+
+    CORAL Sprint 23.1
+    https://jira.skatelescope.org/secure/RapidBoard.jspa?rapidView=491
+
+        [Exec broker] Learning
+        https://jira.skatelescope.org/browse/COR-628
+
+        [Exec broker] Bringing the IVOA document up to date.
+        https://jira.skatelescope.org/browse/COR-641
+
+        [Exec Broker] Update the service API
+        https://jira.skatelescope.org/browse/COR-642
+
+
+# -----------------------------------------------------
+# 20240612
+
+    CANFAR Science Platform Deployment
+        Identity Management (for command line testing)
+    https://confluence.skatelescope.org/display/SRCSC/CANFAR+Science+Platform+Deployment#CANFARSciencePlatformDeployment-idmanagement
+
+# -----------------------------------------------------
+# 20240531
+
+    CAOM data model
+    https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/caom2/
+    https://www.opencadc.org/caom2/
+    https://github.com/opencadc/caom2
+
+    CAOM data access services
+    https://github.com/opencadc/caom2service
+
+    CAOM database
+    https://github.com/opencadc/caom2db
+
+    CAOM tools
+    https://github.com/opencadc/caom2tools
+
+    Blank project to generate CAOM2 Observations from FITS files
+    https://github.com/opencadc/blank2caom2
+
+# -----------------------------------------------------
+# 20240531
+
+    Feature red - Develop an IVOA standard for a rich science metadata model that includes improved support for radio data
+    https://jira.skatelescope.org/browse/SP-4397
+    Red team lead, UKSRC will collaborate
+
+    Feature red - Implement URI mapping from Artifact to data location
+    https://jira.skatelescope.org/browse/SP-4267
+
+    Feature red - Deploy a science metadata management stack
+    https://jira.skatelescope.org/browse/SP-4268
+    Not for 0.1
+
+# -----------------------------------------------------
+# 20240531
+
+    Feature unassigned - Extend Science gateway functionality to request data staging via the SRCNet Data Management API
+    https://jira.skatelescope.org/browse/SP-3731
+
+    Feature unassigned - Prototype a "Project" data model within the science gateway
+    https://jira.skatelescope.org/browse/SP-4310
+
+# -----------------------------------------------------
+# 20240531
+
+    Epic DAaC - Investigate Common Archive Observation Model (in progress from PI22)
+    https://jira.skatelescope.org/browse/TEAL-478
+
+    Feature DAaC - Investigate Common Archive Observation Model
+    https://jira.skatelescope.org/browse/SP-4314
+    Discarded, replaced by SP-4330
+
+    Feature DAaC - Metadata Observational Model for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4330
+    Discarded, joining SP-4397
+
+    Feature DAaC - Architectural strategy for Storing Science Metadata
+    https://jira.skatelescope.org/browse/SP-4237
+    Discarded
+
+    Feature DAaC - Architectural strategy for Storing Science Metadata
+    https://jira.skatelescope.org/browse/SP-4237
+    Discarded
+
+    Feature DAaC - Evaluate ObsCore Extension for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4236
+    Discarded
+
+    Feature DAaC - Define URI Prefix for SKA Data
+    https://jira.skatelescope.org/browse/SP-4284
+    Discarded
+
+    Feature DAaC - Resource Allocation OpenStack: Cloud credits limit size of resource reservations
+    https://jira.skatelescope.org/browse/SP-4280
+
+        Implementing this feature will involve adding a new enforcement plugin into
+        the existing Blazar enforcement system, that calls out to an external REST API
+        to check the cloud credits.
+
+        StackHPC - Coral Credits Mission
+        https://stackhpc.github.io/coral-credits/mission/
+
+# -----------------------------------------------------
+# 20240528
+
+    Defining compute API inputs and output JSON
+    https://jira.skatelescope.org/browse/TAN-189
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    Prototype an Execution broker within CANFAR Science platform (Coral)
+    https://jira.skatelescope.org/browse/SP-4241
+
+        Interest from CADC and AusSRC.
+        AusSRC are adding more use cases.
+            docker-compose
+
+    Verify IVOA Execution Broker Data Model
+    https://jira.skatelescope.org/browse/SP-4283
+
+        Deferred until PI24
+
+    Metadata Observational Model for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4330
+
+        Overlap with work by CADC.
+        CADC are proposing new work to bring CAOM and ObsCore+radio together.
+        See DM group presentation by Pat.
+
+    Define URI Prefix for SKA Data
+    https://jira.skatelescope.org/browse/SP-4284
+
+        rejected
+        Need to clarify why this is needed.
+
+# -----------------------------------------------------
+# 20240508
+
+    SRCNet Useful Documents and Presentations
+    https://confluence.skatelescope.org/pages/viewpage.action?spaceKey=SRCSC&title=SRCNet+Useful+Documents+and+Presentations
+
+    SRCNet Software Architecture
+    https://confluence.skatelescope.org/download/attachments/74711238/SRCNet%20Software%20Architecture.pdf
+
+# -----------------------------------------------------
+# 20240508
+
+    SKAO Planning process overview
+    https://confluence.skatelescope.org/display/SE/2023-02-23+PI+Planning+Process+Overview
+
+    Recording: https://skatelescope.zoom.us/rec/share/9yTJ8WwV3dZZ_y8DMu9oLOXkX1bS8svLaaU4Z3bm4QYGcWpxbw7cPFpEQ0n27Uxp.aJitN2mUU6ZgwhiU
+    Passcode: 1uQ$wgDz
+
+# -----------------------------------------------------
+# 20240508
+
+    ComputeAPI-ExecutionBroker mini-Miro
+    https://miro.com/app/board/uXjVKNRDYn4=/
+
+# -----------------------------------------------------
+# 20240502
+
+    Evaluate ObsCore Extension for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4236
+    merged with SP-4314 to create SP-4330
+
+    Investigate Common Archive Observation Model
+    https://jira.skatelescope.org/browse/SP-4314
+    merged with SP-4236 to create SP-4330
+
+    Metadata Observational Model for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4330
+    DAAC
+
+    UKSRC team bios
+    https://confluence.skatelescope.org/display/SRCSC/UKSRC+Team+Bio%27s
+
+# -----------------------------------------------------
+# 20240418
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    Mapping MSND computing environments to workflows in the SRCNet repository
+    https://jira.skatelescope.org/browse/SP-3925
+
+# -----------------------------------------------------
+# 20240418
+
+    ComputeAPI - demo
+    MSND computing environments - demo
+
+    Demo page
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=265846039
+
+    Demo recording
+    https://skatelescope.zoom.us/rec/share/TTYPTa9y7YPJimLnu_S-V-CRDuyUU78atpTb_I_-uZjEpY8KwQrJ_vdAJYNNOBua.ea-z82Bg6ITR-s8q
+    Passcode: 94e0u.r=
+
+# -----------------------------------------------------
+# 20240508
+
+    Compute API input / output definitions
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=257464243
+
+    Defining compute API inputs and output JSON
+    https://jira.skatelescope.org/browse/TAN-189
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    ska-src-compute-api
+    https://gitlab.com/ska-telescope/src/src-service-apis/ska-src-compute-api/
+
+    Data model for compute platform - wrong
+    https://site-capabilities.srcdev.skao.int/api/v1/schemas/render/compute
+
+
+
+
+
+

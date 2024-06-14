@@ -1,0 +1,96 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Thoughts and ideas about using blockchain currency micro payments
+        to pay for computing resources in SKA.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Edinburgh
+    Blockchain Technology Laboratory
+    https://www.ed.ac.uk/informatics/blockchain
+
+        Professor Aggelos Kiayias
+        Director of the Blockchain Technlogy Lab
+
+        phone: +44 (0) 131 650 5129
+        mail: Aggelos.Kiayias@ed.ac.uk
+
+
+    https://www.ed.ac.uk/informatics/blockchain/btl-papers
+
+    Ouroboros: A Provably Secure Proof-of-Stake Blockchain Protocol
+    https://eprint.iacr.org/2016/889.pdf
+
+
+# -----------------------------------------------------
+
+    Integrate micro-payments into the ExecutionPlanner services.
+
+        micro-payment to accept an offer
+        micro-payment to execute a task
+
+    Payments are from wallet to wallet
+    Payments may be anonymous, but task execution requires authentication and authorization.
+    Payments are not linked with A&A.
+
+    Existing system architecture, plus micro payments.
+
+    Research teams are granted an initial allocation of coins.
+    Service providers charge for using their platform.
+    Service providers collect coins.
+    Funding bodies exchange coins for payments to cover infrastructure and resources.
+
+    Create a user account, get an initial allocation of coins to spend.
+    Users may buy additional coins from an exchange.
+
+    Proof of stake - funding bodies put up the stake.
+    STFC would contribute cash to gain a stake.
+
+# -----------------------------------------------------
+
+    Can we run the two systems in parallel ?
+    The existiting 'free' architecture, which of ExecutionService(s) require traditional authentication and authorization.
+    And a parallel system of ExecutionService(s) which also require payments.
+
+    Client tools are configured to use the 'free' services if they have no funds.
+    Gradually, as the technology spreads, more and more services will require payments.
+
+    If it works, service providers will like getting paid.
+    If it doesn't work, the 'free' services will remain active.
+
+
+
+
+
+
+
+

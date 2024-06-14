@@ -1,0 +1,80 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+
+    SRCNet Useful Documents and Presentations
+    https://confluence.skatelescope.org/pages/viewpage.action?spaceKey=SRCSC&title=SRCNet+Useful+Documents+and+Presentations
+
+    SRCNet Software Architecture
+    https://confluence.skatelescope.org/download/attachments/74711238/SRCNet%20Software%20Architecture.pdf
+
+# -----------------------------------------------------
+
+    SKAO Planning process overview
+    https://confluence.skatelescope.org/display/SE/2023-02-23+PI+Planning+Process+Overview
+
+    Recording: https://skatelescope.zoom.us/rec/share/9yTJ8WwV3dZZ_y8DMu9oLOXkX1bS8svLaaU4Z3bm4QYGcWpxbw7cPFpEQ0n27Uxp.aJitN2mUU6ZgwhiU
+    Passcode: 1uQ$wgDz
+
+# -----------------------------------------------------
+
+    Demo page
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=265846039
+
+    Demo recording
+    https://skatelescope.zoom.us/rec/share/TTYPTa9y7YPJimLnu_S-V-CRDuyUU78atpTb_I_-uZjEpY8KwQrJ_vdAJYNNOBua.ea-z82Bg6ITR-s8q
+    Passcode: 94e0u.r=
+
+    ComputeAPI-ExecutionBroker Miro
+    https://miro.com/app/board/uXjVKNRDYn4=/
+
+# -----------------------------------------------------
+
+    Compute API input / output definitions
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=257464243
+
+    Defining compute API inputs and output JSON
+    https://jira.skatelescope.org/browse/TAN-189
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    ska-src-compute-api
+    https://gitlab.com/ska-telescope/src/src-service-apis/ska-src-compute-api/
+
+    Data model for compute platform - wrong
+    https://site-capabilities.srcdev.skao.int/api/v1/schemas/render/compute
+
+
+
+

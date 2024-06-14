@@ -1,0 +1,86 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        TransferBroker service ?
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# 20240614
+
+    Data Management API
+    https://data-management.srcdev.skao.int/api/v1/www/docs/oper
+
+    The API is procediral.
+    Get this, put this, it doesn't have any predictive operations
+    e.g cost estimation for a transfer without actually doing it.
+
+    We could build a simple estimation service that moves
+    test files, measures the time, and builds a database
+    of cost estimates for node to node transfers.
+
+    We can define the API and create a mock service
+    using a simple database of guesses.
+
+    Using the same data model as execution broker ?
+
+    TransferBroker
+        Request to transfer data <A> to platform <B>
+        => offers
+        Use the TransferBroker offers to build the ExecutionBroker offers.
+
+    TransferBroker at EDI, checks if the data is already at EDI.
+        if islocal
+            increase the expiry date to match the offer lifetime
+            offer the data with zero transfer time
+        else
+            call upstream TransferBroker at RAL
+            calculate transfer time from RAL to EDI
+            add local transfer time to the RAL offers
+            offer the data with non-zero transfer time
+
+    TransferBroker at RAL, checks if the data is already at RAL.
+        if islocal
+            increase the expiry date to match the offer lifetime
+            offer the data with zero transfer time
+        else
+            do stuff with SKAO data managment API to find replicas
+            calculate transfer time for each replicas
+            add replicas transfer time to the offers
+            offer the data with non-zero transfer time
+
+# -----------------------------------------------------
+# 20240614
+
+    Feature unassigned - Extend Science gateway functionality to request data staging via the SRCNet Data Management API
+    https://jira.skatelescope.org/browse/SP-3731
+
+    Unasked question - *why* would the user want to move the data ?
+
+

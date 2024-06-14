@@ -1,0 +1,298 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+
+#-----------------------------------
+
+
+CANFAR Metadata Proving - Dave
+https://jira.skatelescope.org/browse/SP-4236
+
+There is a feature here, but I don't think we know enough to be able to describe
+it in enough detail to propose it this PI.
+I think the most we could do now is to propose a small task to explore/evaluate/compare
+the science metadata in SKAO and CANFAR and explore how they can be integrated.
+
+There is an issue being debated in the SKAO architecture meetings about whether
+the individual SRC nodes will be given any science metadata about the data that
+they store.
+
+At the moment the prevailing view is that individual SRC nodes will simply act as
+basic file storage for the Rucio DataLake, and won't have any knowledge about
+the contents of the files stored at their location.
+In this model, a CANFAR service deployed at a SRCNet node will not be given any
+information about the files that are stored on their node.
+
+If we can identify a use case that justifies providing the CANFAR service with
+science metadata about the files that are stored on their node, then there is a case
+for a feature to explore what metadata is needed and how to get it deployed.
+
+I will be meeting up with some of the key developers for the CANFAR platform
+at the IVOA conference at the end of May, so I will take the oppertunity to find
+out what they think.
+
+Note that this is different from the case where a researcher selects one or more
+data objects from the DataLake and selects some software to perform an analysis
+on them.
+At that point, we are going to need some tooling that understands what metadata the
+analysis task needs, what format it is needed in, and where to place it
+so that the analysis software can access it. See ExecutionBroker.
+
+
+
+#-----------------------------------
+
+
+Metadata Storage Strategy - Dave
+https://jira.skatelescope.org/browse/SP-4237
+
+I don't think there is a case for us looking at storing the metadata.
+From what I understand there is a whole section in the architecture design for
+a central metadata database that will hold all the science metadata about all of
+the objects in SKAO.
+
+How realistic that is, and how it will grow and adapt to changes over the lifetime
+of the project is debatable, but for now, that's the plan.
+
+Metadata storage is covered.
+
+There is however a case for looking at how the metadata is delivered, where and
+in what format, for a given analysis task.
+
+The researcher selects one or more data objects, selects some analysis software,
+and asks the system to do <this> analysis on <that> data. At which point the
+ExecutionBroker service(s) would bring the software and the data together on a
+compute platform that can process it.
+
+As far as I know, we have not defined how to describe what metadata an
+analysis task needs, what format it is needed in, and where to place it
+so that the analysis software can access it.
+
+There is a task here to first find out how much of this has laready been covered
+by the SKAO project team.
+Identify a representative set of analysis tasks (SRCNet-0.1 tests in the first case,
+followed by Michael's demonstrator cases?)
+and identify what software and what metadata they would require.
+Then develop an extension to the ExecutionBroker datamodel to be able to describe
+the required metadata so that the ExecutionBroker(s) can deliver it to the right place.
+
+Note - all of this may be unnecesary.
+Firstly, if the data objects contain all of their metadata in them, then no additional
+metadata is needed. Secondly, if the analysis code knows the object identifier
+for the data objects it is working on, then it may be able to get all the metadata that it needs
+simply by querying the main science database.
+
+So before we go any futher with this we should run it past someone with astronomy
+expertise like Rob or Paul who could tell us if this was useful.
+
+#-----------------------------------
+
+Resource Allocation for OpenStack Sites - John
+https://jira.skatelescope.org/browse/SP-4035
+This is basically installing Blazar at each of the sites, which is excellent.
+
+Once we have the first ExecutionBroker implementation done, there are a number of
+follow on tasks associated with it to implement the ExecutionBroker interface
+on a range of different execution platforms, one of which is Openstack.
+
+Once Blazar is avalable it would make it easier to implement the
+time scheduling parts of the ExecutionBroker interface by leveraging
+the resource booking features of Blazar.
+
+We developed the first iteration of the ExecutionBroker interface while I was
+working on the Gaia data miming platform at Edinburgh and integrating ExecutionBroker with
+Blazar has been part of the plan since 2019.
+
+#-----------------------------------
+
+Architecture Design for Distributed Storage & Compute - John
+https://jira.skatelescope.org/browse/SP-4240
+Paper
+
+ExecutionBroker is designed to provide part of that matrix.
+
+At the individual compute platform level, an ExecutionBroker service that
+answers techical questions about available resources and data access for individual tasks,
+and aggregator services above that to combine their responses that can evaluate the best
+options to select for a multi-step workflow.
+
+An ExecutionBroker service at each compute platform, Edinburgh, RAL, Cambridge etc.
+An aggregator service for each SRCNet node, e.g. UK, Italy, Spain, Canada etc.
+and potentially one top level service for the whole of SKAO.
+Each level would have different internal business logic, but they would
+all share the same interface.
+
+
+
+
+
+
+#-----------------------------------
+
+Getting all UK sites on some sort of consistent software stack
+https://jira.skatelescope.org/browse/TEAL-563
+
+#-----------------------------------
+
+CANFAR & Workflows that require data that has yet to be downloaded
+
+Developing Helm Charts for SRCNet0.1 - Dave & John
+
+#-----------------------------------
+
+Execution / Broker Interface - Dave
+
+This is based on the work I have been doing for the IVOA over the last 3+ years
+defining a common interface and data model for execution platforms
+that can be implemented across a heterogeneous federation of different
+platforms with different capabilities and policies.
+
+https://github.com/ivoa-std/ExecutionBroker
+
+I'm working within the IVOA to encourace adoption by our international partners
+and I'm working within SKA to adapt it to meet the needs of SRCNet.
+
+I'm working with Bob and Manu from team Coral to propose a Feature that will develop
+a working prototype of the ExecutionBroker, using CANFAR as the backend for launching
+the execution jobs.
+
+There is another feature I'd like to propose for our team to verify that the
+ExecutionBroker datamodel is detailed enough to describe all of the tests that are
+planned for SRCNet 0.1. (see below).
+
+
+
+
+#-----------------------------------
+
+Verify the ExecutionBroker datamodel
+
+This work will verify that the IVOA ExecutionBroker datamodel is sufficiently
+detailed enough to meet the needs of the SKAO project.
+
+The work will evaluate the IVOA ExecutionBroker datamodel
+by checking that it is capable of describing the
+software, execution environment, and the compute and data resources required
+to execute the workflows and benchmarking tests that have been selected to
+evaluate SRCNet-0.1.
+
+AC1: We can generate a complete description of software, execution environment, and compute and data resources for each item.
+AC2: Each item is described in sufficient detail to be able to execute it without requiring any additional information.
+AC3: Where there are missing or incompatible elements in the datamodel, the IVOA ExecutionBroker specification will be updated to resolve the issue.
+AC4: The result will be a catalog of metadata descriotions for all of the workflows and benchmarks that have been selected to evaluate SRCNet-0.1.
+
+Description:
+
+The IVOA ExecutionBroker datamodel has evolved over time as the ExecutionBroker
+has grown from an initial idea in the ESCAPE project into a draft of an IVOA specification.
+However, to date the datamodel itself has not been critically verified against a
+detailed set of real world examples.
+
+This work will verify that the IVOA ExecutionBroker datamodel is sufficiently
+detailed enough to meet the needs of the SKAO project.
+
+These metadata descriptions can be used to automate the execution of the workflow
+and benchmark tests using ExecutionBroker services in future iteratons.
+
+The resulting libary of metadata descriptions will form a reference library
+to guide users and software developers on how to create new descriptions for
+analysis software that is added to SRCNet in future iteratons.
+
+Contributing our changes to the datamodel back to the IVOA, will mean that when
+the IVOA ExecutionBroker is adopted as a standard, other projects across
+the astronomy domain will use be using the same metadata datamodel
+to describe their analysis software, making it available to
+SKAO users to run on SRCNet.
+
+
+
+
+#-----------------------------------
+
+Identify the science metadata required by CANFAR services deployed in SRCNet
+
+This work will identify what metadata (if any) is needed by CANFAR services deployed
+on SRCNet nodes in order to perform their function as Science Platforms.
+
+There are already plans in place to store, query and serve the
+science metadata in SKAO from a central science metadata service.
+
+At the time of writing there are no plans to store additional science metadata
+about the data objects stored by the Rucio data lake at each SRCNet node.
+
+The CANFAR Science Platform was originally designed to operate as a stand alone system,
+using science metadata about the data in its local archives
+to provide a a Science Platform to local users.
+
+What is unknown at this point is what metadat (if any) will the CANFAR services
+deployed at a SRCNet node need to know about the data objects stored by the
+Rucio data lake at the same SRCNet node.
+
+This might turn out to be 'none'.
+In which case, job done.
+We might discover that the CANFAR services
+do need to know some sceince metadata
+about the files stored
+locally.
+In which case, the next question is how to deliver that metadata to the right place
+at the right time.
+Possibly as part of the file transfer process that distributes
+the data objects to the individual nodes ... ?
+
+Possibly as an event stream .. ?
+
+Possibly as simple as an additional metadata file added to the
+HDF5 structure of an 'observation'.
+
+
+
+
+
+#-----------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

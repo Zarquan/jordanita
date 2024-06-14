@@ -1,0 +1,81 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Exploring ideas for name change.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    ExecutionServiceAPI (ESAPI) urgh
+
+    ExecutionServiceInterface (ESI) nice
+
+# -----------------------------------------------------
+
+    abstract class ExecutionServiceBase implements ExecutionServiceInterface
+
+    class BasicExecutionService
+        extends ExecutionServiceBase
+        implements ExecutionServiceInterface
+
+    class SKAOExecutionService
+        extends ExecutionServiceBase
+        implements ExecutionServiceInterface
+
+
+    PingExecutionService
+    DelayExecutionService
+    ChecksumExecutionService
+    ....
+
+    DockerExecutionService
+    SingularityExecutionService
+    HelmExecutionService
+    OpenstackExecutionService
+    KubernetesExecutionService
+    ....
+
+    SlurmExecutionService
+    BatchExecutionService
+    ....
+
+    NotebookExecutionService
+    WorkflowExecutionService
+    ...
+
+    ExecutionPlanningService
+    ExecutionSchedulingService
+    ...
+
+    ExecutionServiceAggregator
+    ExecutionServicePortal
+    ...
+
+

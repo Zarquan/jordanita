@@ -1,0 +1,194 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes for SP-4241
+        Prototype an Execution broker within CANFAR Science platform
+        https://jira.skatelescope.org/browse/SP-4241 (should PI23)
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+
+    Time allocation
+
+      * Bob 60% Coral.
+      * Dave 40% Coral, requested 60%.
+
+# -----------------------------------------------------
+
+    Directly linked tasks
+
+    Verify IVOA Execution Broker Data Model (PI24+)
+    https://jira.skatelescope.org/browse/SP-4283
+
+    CANFAR Science Platform User Container CI/CD (could PI23)
+    https://jira.skatelescope.org/browse/SP-3884
+
+    Draw out the internal compute APIs as a plugin infrastructure
+    https://jira.skatelescope.org/browse/SP-4294
+
+
+# -----------------------------------------------------
+
+    Indirectly linked tasks
+
+    Documenting the experience of porting of Jupyter notebooks to SLURM
+    https://jira.skatelescope.org/browse/SP-4295
+
+    Pull containers from alternate repositories for CANFAR Science Platform by CLI invocation
+    https://jira.skatelescope.org/browse/SP-4265
+
+    Implement Compute Quotas for CANFAR Science Platform
+    https://jira.skatelescope.org/browse/SP-4263
+
+    Describe the Auth flows currently used for OpenCADC software
+    https://jira.skatelescope.org/browse/SP-4105
+
+    Enabling Kubernetes Workloads on Traditional HPC Resources: Challenges and Solutions
+    https://jira.skatelescope.org/browse/SP-4084
+
+        Using Bridge-Operator
+        https://github.com/IBM/Bridge-Operator
+
+# -----------------------------------------------------
+
+    Compute API
+
+    Compute API input / output definitions
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=257464243
+
+    Defining compute API inputs and output JSON
+    https://jira.skatelescope.org/browse/TAN-189
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    ska-src-compute-api
+    https://gitlab.com/ska-telescope/src/src-service-apis/ska-src-compute-api/
+
+    Data model for compute platform - wrong
+    https://site-capabilities.srcdev.skao.int/api/v1/schemas/render/compute
+
+# -----------------------------------------------------
+
+    Resource Allocation OpenStack: Cloud credits limit size of resource reservations
+    https://jira.skatelescope.org/browse/SP-4280
+
+        Implementing this feature will involve adding a new enforcement plugin into
+        the existing Blazar enforcement system, that calls out to an external REST API
+        to check the cloud credits.
+
+    StackHPC - Coral Credits Mission
+    https://stackhpc.github.io/coral-credits/mission/
+
+# -----------------------------------------------------
+
+    Data Management API
+
+    Two layers:
+    * Global Data Management API
+      As defined by SKAO program team.
+
+      Is there a method in global Data Management API that will estimate the cost of a transfer ?
+      * Is the required data already in this SRCNet node ?
+      * If not, then how long will it take to transfer a copy here ?
+
+        can_we_stage_this(DataResource resource)
+        => DataResourceOffer[]
+
+    * Local Data Management API
+      Similar API but acts locally within a SRCNet node.
+      At the moment the project is concentrating on the Global Data Management API.
+      UK is probably not along in using compute facilities from more than one institute to implement their SRCNet node.
+
+      * Generic compute and main storage at Rutherford.
+      * Specialist compute at Cambridge.
+      * Specialist compute at Edinburgh.
+      * Specialist compute at Bristol?
+      * Specialist compute at Jodrell?
+
+      Suggests that the front UKSRCNet node is an aggregating service that acts as a broker in front of
+      Rutherford, Cambridge, Edinburgh, Bristol, Jodrell etc.
+
+      In which case, using compute at Cambridge, Edinburgh etc, will incurr a data staging cost
+      to transfer a copy of the data from the main storage at Rutherford to the local platform.
+
+      So we need a method in the local Data Management API that will estimate the cost of a transfer ?
+      * Is the required data already in this compute platform ?
+      * If not, then how long will it take to transfer a copy here ?
+
+        can_we_stage_this(DataResource resource)
+        => DataResourceOffer[]
+
+      The local API wraps the global one.
+      The local API acts as a broker for the global one.
+
+      Global SRCNet node
+      aggregate for national SRCNet nodes
+
+      UK SKA Regional Centre
+      aggregate for the compute platforms
+
+      |
+      \--+-- UKSRC
+         |    |
+         |    \--+-- Rutherford
+         |       |
+         |       +-- Cambridge
+         |       |
+         |       +-- Edinburgh
+         |       |
+         |       +-- Bristol
+         |       |
+         |       \-- Jodrell
+         |
+         +-- CSRC
+         |
+         +-- AusSRC
+         |
+         +-- CanSRC
+         |
+         +-- NL-SRC
+         |
+         +-- IT-SRC
+         |
+         \-- ZA-SRC
+
+
+
+
+
+    Define (local) Data Management API that can estimate the cost of a transfer.
+        Is the data local (within this SRCNet 'node') ?
+        If not, delegate to (global) Data Management API first.
+        If it is local (within this SRCNet 'node'), can we stage to this platform ?
+        If we can, how long will it take ?
+
+

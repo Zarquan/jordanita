@@ -1,0 +1,138 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+From the CADC website (https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/caom2/):
+The Common Archive Observation Model (CAOM) is a general purpose data model for use
+as the core data model of an astronomical data centre.
+The purpose of this model is to standardize the core parts of every archive implementation
+so that a common set of software tools can be used across archives.
+This set of tools includes simple data access mechanisms (web pages), discovery agents,
+advanced query capabilities (typically as IVOA web services), and advanced applications.
+
+This work explores how we can represent the eMerlin data in the CAOM data model.
+
+The work is split into two parts:
+1) The first part of the work involves comparing the
+CAOM data model with the eMerlin data, and creating a
+mapping between them.
+Identifying points where they don't match
+and developing solutions to solve the problems.
+2) The second part of the work involves using the
+CAOM toolkit to ingest a subset of the eMerlin data
+into a CAOM database, and demonstrate how the data
+can be accessed using the CAOM data access services.
+
+CAOM data model
+https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/caom2/
+https://www.opencadc.org/caom2/
+https://github.com/opencadc/caom2
+
+CAOM data access services
+https://github.com/opencadc/caom2service
+
+CAOM database
+https://github.com/opencadc/caom2db
+
+CAOM tools
+https://github.com/opencadc/caom2tools
+
+Blank project to generate CAOM2 Observations from FITS files
+https://github.com/opencadc/blank2caom2
+
+Related issues:
+
+Epic DAaC - Investigate Common Archive Observation Model (in progress from PI22)
+https://jira.skatelescope.org/browse/TEAL-478
+
+Feature DAaC - Investigate Common Archive Observation Model
+https://jira.skatelescope.org/browse/SP-4314
+Discarded, replaced by SP-4330
+
+Feature DAaC - Metadata Observational Model for Radio Astronomy
+https://jira.skatelescope.org/browse/SP-4330
+Discarded, joining SP-4397
+
+Feature Red - Develop an IVOA standard for a rich science metadata model that includes improved support for radio data
+https://jira.skatelescope.org/browse/SP-4397
+Red team lead, UKSRC will collaborate
+
+
+---------------------------------------------------------------------------
+
+Feature unassigned - Deploy a science metadata management stack
+https://jira.skatelescope.org/browse/SP-4268
+Not for 0.1
+
+Feature DAaC - Architectural strategy for Storing Science Metadata
+https://jira.skatelescope.org/browse/SP-4237
+Discarded
+
+Feature DAaC - Evaluate ObsCore Extension for Radio Astronomy
+https://jira.skatelescope.org/browse/SP-4236
+Discarded
+
+---------------------------------------------------------------------------
+Architectural strategy for Storing Science Metadata
+https://jira.skatelescope.org/browse/SP-4237
+discarded
+
+Extend Science gateway functionality to request data staging via the SRCNet Data Management API
+https://jira.skatelescope.org/browse/SP-3731
+
+Prototype a "Project" data model within the science gateway
+https://jira.skatelescope.org/browse/SP-4310
+
+---------------------------------------------------------------------------
+
+Feature DAaC - Define URI Prefix for SKA Data
+https://jira.skatelescope.org/browse/SP-4284
+discarded
+
+Feature unassigned - Implement URI mapping from Artifact to data location
+https://jira.skatelescope.org/browse/SP-4267
+
+---------------------------------------------------------------------------
+
+Resource Allocation OpenStack: Cloud credits limit size of resource reservations
+https://jira.skatelescope.org/browse/SP-4280
+
+    Implementing this feature will involve adding a new enforcement plugin into
+    the existing Blazar enforcement system, that calls out to an external REST API
+    to check the cloud credits.
+
+StackHPC - Coral Credits Mission
+https://stackhpc.github.io/coral-credits/mission/
+
+

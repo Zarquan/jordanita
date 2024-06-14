@@ -1,0 +1,121 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    Confluence page
+    https://confluence.skatelescope.org/display/SRCSC/SRCNet0.1+Data+Management+Software+Stack+Assessment
+
+    SRC Network Vision and Principles
+    https://confluence.skatelescope.org/display/SRCSC/SRCNet+Useful+Documents+and+Presentations?preview=/74711238/235973440/SRCNet%20Vision%20and%20Principles.pdf
+
+    Comments spreadsheet
+    https://docs.google.com/spreadsheets/d/1eBohIAvzA2TMPJMXO9MpEcqkgl_u57sWqoV6nJHmR3Y/edit#gid=0
+
+    Demo of what is currently in place
+    https://drive.google.com/file/d/1htMZiL7JjuP7fNyUJAb0eyr2jEVXYQzo/view
+
+
+
+
+P1 The SRC Network will be the only point of access to SKA data for the user community.
+Data will flow from the SKA telescopes into the SRC Network. There is no direct access to the SKAO computer systems from outside the SKAO.
+
+P4 SRC Network Operations will be supported in a distributed fashion and coordinated by a single body, the SRC Operations Group.
+The SRC Operations Group (SOG) will coordinate the operational support for the SRC Network. The SOG will be distributed across the SRC Network but coordinated from the SKAO. The SOG will not have a role to play in local operations that pertain to the maintenance and operation of local data centres.
+
+P16 Resources pledged into the SRC Network will enter, and be allocated from, a global federated pool.
+There will be a policy to describe how resources are pledged and enter into the SRC Network. The physical allocation of those resources to projects that request them will be centrally managed by the SRC Operations Group (following other principles outlined in this document).
+
+P17 [SRC] Network resources will be allocated to projects or teams rather than to individuals or groups constrained by country, institution of other affiliation.
+Storage and processing resources will be allocated to projects and not to individual users. The use of those resources by the project team will be the responsibility of the project PI(s). This applies to all projects, whether they are SKA observing projects or archival (public data) projects.
+
+P18 The physical location of SKA data products within the SRC Network will be determined to optimise access and minimise data redistribution within the Network.
+The efficiency of the SRC Network will be improved if data redistribution is minimal (or zero) in order to execute processing jobs for science projects. Individual SRC nodes will not be able to choose which data products they host in their pledged resources.
+
+P20The lifecycle of science data products will be managed by the SRC Operations Group.
+There will be a policy to determine when science data products should be moved to high-latency data storage devices rather than remain active in the SRC Network. For instance, this could be informed by the “popularity” of those data products, ie. how often they have been accessed over a period of time.
+
+# -----------------------------------------------------
+
+"Both Rucio and SI support IVOA TAP queries to discover data; once files are at appropriate storage locations"
+I'd like to see a bit more about this.
+
+# -----------------------------------------------------
+Is this a PI planning feature ?
+
+    Rucio Enhanced Astronomical Support: Discovery Service is now based on TAP.
+    Astroquery module on top of Rucio DDM (already in development).
+    Collaboration with other astronomical projects committed to using Rucio - e.g. Vera Rubin and CTAO.
+    SKAO involvement as IVOA partner (already in place).
+    Use of expertise on astronomical protocols within the SRCNet.
+    Integration with Astronomical Science Platforms (e.g. CANFAR) (already in development)
+
+# -----------------------------------------------------
+
+Defining a standard URI prefix for SKA data objects will make it easier to understand what they mean and how to use them.
+
+For example "skao:srcnet-0.1:/data-object-reference" can be returned in an IVOA service response, sent to someone in an email or referenced in a paper and the recipient (or their software e.g. astroquery/astropy) has a chance of understanding what to do with it.
+
+Including the srcnet version number in the prefix means we can change to a different identifier pattern in 10 years time and not break everything.
+
+# -----------------------------------------------------
+
+Will SRC nodes get a copy of the metadata about the data objects that they store ?
+
+Location of the data objects is decided by the central system, but when a data product is moved to a SRC node will the node also receive a copy of the relevant metadata about the data objects. This would enable a SCR node to answer the question "do I have a copy of [skao:srcnet-0.1:/data-object-reference]" without having to go back to the central controller to check. It would also enable nodes to provide local instances of the IVOA data discovery and data access services using a local copy of the metadata about the data objects that they hold. This in turn will enable nodes to experiment with new versions of the data discovery and data access services using their local data.
+
+
+# -----------------------------------------------------
+
+Will the metadata for the IVOA data discovery service be in the Rucio metadata database itself, or in a separate database alongside ?
+
+
+What data rate do we expect the metadata database to have to handle ?
+This is probably out of scope for this discussion.
+If we are ingesting O(10^5 to 10^6) files per day, then the central metadata database will need to be able
+to handle this rate of updates to the metadata and handle all the data discovery queries at the same time.
+
+This isn't a huge number, but it will impact how the metadata database is implemented.
+
+
+
+
+
+
+
+
+
+
+

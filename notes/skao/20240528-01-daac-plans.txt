@@ -1,0 +1,90 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        UK DAAC Features
+        Planning for next PI ...
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Defining compute API inputs and output JSON
+    https://jira.skatelescope.org/browse/TAN-189
+
+    Initial Compute API definition
+    https://jira.skatelescope.org/browse/SP-3953
+
+    Prototype an Execution broker within CANFAR Science platform (Coral)
+    https://jira.skatelescope.org/browse/SP-4241
+
+        Interest from CADC and AusSRC.
+        AusSRC are adding more use cases.
+            docker-compose
+
+    Verify IVOA Execution Broker Data Model
+    https://jira.skatelescope.org/browse/SP-4283
+
+        Deferred until PI24
+
+    Metadata Observational Model for Radio Astronomy
+    https://jira.skatelescope.org/browse/SP-4330
+
+        Overlap with work by CADC.
+        CADC are proposing new work to bring CAOM and ObsCore+radio together.
+        See DM group presentation by Pat.
+
+    Define URI Prefix for SKA Data
+    https://jira.skatelescope.org/browse/SP-4284
+
+        rejected
+        Do we need to clarify why we think we need this ?
+
+# -----------------------------------------------------
+
+    IVOA
+
+        Software discovery vocabulary
+
+            Need to get it off the ground.
+            AusSRC are interested.
+
+
+
+        Protocol Transition
+
+            Impact assesment of dropping URL form encoding.
+
+            Error message structure.
+
+            Restructure ExecutionBroker document.
+
+            Verify that OpenAPI is interoperable between toolsets.
+
+
+
