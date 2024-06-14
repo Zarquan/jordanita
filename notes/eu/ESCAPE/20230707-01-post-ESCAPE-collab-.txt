@@ -1,0 +1,154 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2023, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+# AIMetrics: []
+#
+
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+Introductory session.
+
+    Lots of 'open'
+    Lots of 'ivoa', but no specific funding for IVOA.
+
+    Reading between the lines, ESCAPE is/was open and interoperable because IVOA was open and interoperable.
+    No new standards for data sharing or discovery.
+
+    We guarantee the ability / rewards for scientists adopting this framework.
+    Ability to move between platforms and combine the data.
+    ... but ESCAPE is designed as silos.
+
+# -----------------------------------------------------
+OSSR
+
+    'Our repository' .. but OSSR doesn't have a repository.
+    They curated a set of entries in Zenodo.
+
+    Skipping over the search termns that enable software discovery.
+
+    EOSSR - a long term stable archive .. on other people's hardware, software and schemas.
+    Totally dependent on CERN continuing to run Zenodo.
+    Already 52 entries !! (including 5 of our own).
+
+    Software quality - but they dropped all the barriers to get ESAP into the repository.
+
+Show me
+Does the eOSSR library have full test coverage ?
+
+    Q Baptiste - you mentioned data sets ?
+    A Kay - yes, not for big data (science data - we have IVOA and DataLake for that)
+    more for test data published alongside the software.
+
+    Q roland - high cost, developers required to do lots to make it acceptable to ossr
+    what is the benefit ?
+
+    A Kay -linking your software and papers
+    potential 100's or 1000's of citations :-)?
+
+Show me
+What level of coverage do OSSR entries get ?
+Prove it, what metrics do you measure.
+
+# -----------------------------------------------------
+CEVO/IVOA
+
+# -----------------------------------------------------
+DataLake
+
+    You mentioned multiple projects using a common infrastructure.
+    Each project managing their own data lake.
+    Is there support for data interchange between the projects
+    e.g. CTA using SKA data ?
+
+    Is it possible to find out where data is located ?
+    Where the data is *now*, and where it _could_ be ..
+
+        Setup time  0 if already here
+                    estimate in seconds to transfer the data
+        Access speed [fast|medium|slow]
+
+        Machine learning model to estimate execution time.
+        Given a query and a dataset, estimate the execution time.
+            Prototype this on gaia-dmp
+
+    Nested set of 'groups' that client can match without needing to know the details.
+    Hirerarchy defined by 'parent' reference.
+
+    DataLake in a box - interesting
+
+# -----------------------------------------------------
+VirtualResearchEnvironment VRE
+
+    Reana + Rucio + Dask ...
+    CERN based system
+
+    Examples of science projects al;ready using VRE.
+    Very impressive, but a closed system.
+
+    How does Reana defne the hardware requirements ?
+    e.g. gpu type and count ?
+
+    Simplified architecture :
+        Single instance JupyterNotebook platform
+        Single instance of compute platform
+        Single instance of Rucio that has access on all the compute locations.
+
+    Scientist doesn't have to worry about compute location,
+    because they only have one.
+
+    How can we make this interoperable with other platforms ?
+
+# -----------------------------------------------------
+EOSC
+
+    Expertise in Exabyte datasets
+    .. but the demo relies on uploading the data to a central storage platform.
+
+
+elena
+
+
+
+
+
+
+
+
+
+
+
+
+
+
