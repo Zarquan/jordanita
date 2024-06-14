@@ -1,0 +1,319 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2019, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+
+    Paving the way to simultaneous multi-wavelength astronomy
+    https://arxiv.org/abs/1709.03520v3
+
+
+    "Given the discovery of an apparent disc-jet coupling cycle occurring far faster than expected
+    from viscous timescales in 3C 120 (Lohfink et al. 2013), simultaneous monitoring on the
+    timescales of weeks-months of such systems across IR-optical-UV-X-rays holds the promise of
+    revealing how jets from such AGN are launched."
+
+    "... This is a powerful technique and requires simultaneity between bands
+    on timescales of less than that of the time lag; as this is a light travel time, simultaneity on
+    timescales of < hours is often required (extending to day timescales for the largest size scales).
+
+    "... In this respect, having long term monitoring of a sample of blazars in radio,
+    optical and γ-rays, with at least a week sampling and simultaneity on day timescales, could add
+    important information about .... "
+
+    "... It is worth noting that even in this well-coordinated campaign, there were substantial
+    challenges: notably the lack of advanced warning of observations required scheduling of ToOs
+    to ensure optimal (if not overlapping) coverage."
+
+    "... In order to study TDE jet formation (and how this compares between the thermal and non-
+    thermal subclasses) rapid multi-wavelength follow-up (within a few days) mainly in radio and
+    X-rays is required to study the initial phase of the event and the onset of the jet. In order
+    to study substructures in the lightcurve, simultaneity on sub-day timescales is expected to be
+    required. Finally, it is important to stress the importance of long-term monitoring of TDEs
+    in order to identify the point at which the jet switches off and how this connects with the
+    properties of the accretion flow (see Donnarumma & Rossi 2015)."
+
+    "... X-ray observations show roughly daily non-thermal flares with amplitudes from a few to
+    hundreds of times the quiescent value."
+
+    "... The required simultaneity is ∼hour, however, unlike
+    other sources where there are populations available to study, Sgr A* is unique and presents
+    unique challenges. Notably, various instruments located around the world have to wait for
+    the Earth’s rotation to bring Sgr A ∗ into view which may take longer than a typical flare
+    duration (e.g. the source is not visible by Keck and VLA in the same visibility window making
+    simultaneity in those bands challenging to obtain)."
+
+    (page 10 of 52)
+
+    ....
+    ....
+
+    "By using (particularly wide-field) telescopes capable of automatically and rapidly respond-
+    ing to transient alerts reported by high-energy, neutrino and gravitational wave facilities (e.g.
+    Kashiyama et al., 2013; Abbott et al., 2016), it will become possible to capture the SN shock
+    exploding through the progenitor star, which is known as a“SN shock break-out”. As such an
+    event occurs within minutes to hours, they have only ever been detected serendipitously (e.g.
+    Soderberg et al. 2008 - Figure 11; Schawinski et al. 2008; Gezari et al. 2010; Ofek et al. 2010).
+    Rapid-response, multi-wavelength observations will allow us to detect this phenomenon whilst
+    strictly simultaneous observations at the very early-time (within a few days) will allow us to
+    explore the explosion physics, in turn shedding light on SN progenitors (e.g. Wang et al. 2007;
+    Maeda et al. 2013)."
+
+    (page 27 of 52)
+
+    ....
+    ....
+
+    "In studying the prompt emission, the very short duration (seconds) makes it difficult to
+    obtain multi-wavelength observations. However, the expanded bandpass of triggering instru-
+    ments (e.g. Fermi LAT with Fermi GBM), the advent of fully robotic ground-based telescopes
+    and the short Swift slew times has meant the wavelength coverage of bursts during this phase
+    has increased."
+
+    ....
+    ....
+
+    "... At early times (within a day
+    following the GRB), simultaneity requirements are generally hours or less for optical/IR and
+    X-rays, and up to a day or so for longer wavelengths. At later times following the GRB, these
+    requirements are more relaxed as the characteristic timescales are slower.
+
+    (page 31 of 52)
+
+    other examples (X-ray binary discs/jets) mention response times > 0.1 sec
+
+    "As indicated in the previous section, for some objects/processes, the relevant
+    timescales can be as short as milliseconds, which clearly sets the bar at a completely different
+    level."
+
+    (page 33 of 52)
+
+    "... While the former requires strict simultaneity, it can be scheduled days
+    in advance, and can in principle last for just a few hours; conversely, GRB observations need to
+    be activated and scheduled with very short notice, can last for several days (to several weeks
+    for the afterglow at radio frequencies) and can often achieve only quasi-simultaneity (within a
+    few hours)."
+
+    (page 33 of 52)
+
+
+    - response times
+
+    "Response times to ToO triggers and DDT requests at certain observatories can take a
+    long time to process depending upon available manpower, while some observatories do not
+    consider time-critical observations to be a key driver and so are not prepared to handle
+    such requests."
+
+    - provisional status
+
+    "As with obtaining non-simultaneous multi-wavelength observations, obtaining simultane-
+    ous observations can often involve double-jeopardy with multiple observatories, with one
+    observatory wishing to commit time only after another observatory has agreed to do so."
+
+    "Simultaneous observations are not occurring as often as they could be, because telescope
+    observing schedules are often not known (or cannot be known due to uncertain weather
+    conditions). Whereas some observatories report their short-term, or real-time, observing
+    schedules, most do not."
+
+
+    ------------------------------------------------------------------------------------------
+
+
+    Criteria for 'interesting' differ widely between the different areas of interest.
+
+    Each would require different systems for monitoring and filtering to detect 'interesting' things.
+    Given an 'interesting' thing ...
+
+    Parameters for an 'observation window' :
+
+        position in the sky
+        wavelengths required
+        time window required
+
+    Who is available to do an observation within that window ?
+
+    1) Select appropriate instruments
+    2) Select active instuments
+    3) Select based on field of view within timescale (geographical location, Earth's rotation and field of view)
+    4) Select request method .. automated or manual requests ?
+
+    IVOA data helps with
+
+    1) Instrument description, metadata and semantics.
+    2) Is there a registry of instruments ?
+    3) Footprint - MOCs etc.
+
+    looking forward using published observation plan
+    or looking back using database of observation history
+
+    Do we need to do all of the clever stuff beforehand, or just poll the databases ?
+
+
+    ------------------------------------------------------------------------------------------
+
+
+    Paving the way to simultaneous multi-wavelength astronomy
+    https://arxiv.org/abs/1709.03520v3
+
+
+    Astrophysical Multimessenger Observatory Network (AMON)
+    http://amon.gravity.psu.edu/amon_system.shtml
+
+
+    Fermi gamma-ray space telescope
+    https://en.wikipedia.org/wiki/Fermi_Gamma-ray_Space_Telescope
+
+
+    Swift targets of opportunity
+    https://swift.gsfc.nasa.gov/proposals/tech_appd/swiftta_v12/node71.html
+
+
+    Active galactic nucleus
+    https://en.wikipedia.org/wiki/Active_galactic_nucleus
+
+
+
+    ------------------------------------------------------------------------------------------
+    Multi-messenger science platform – videoconference
+    11th June 2018
+
+    ------------------------------------------------------------------------------------------
+    Report on Algorithms and Standard Interfaces for Cross-Facility Scheduling
+    18 June 2018
+
+
+    ------------------------------------------------------------------------------------------
+    Multi-messenger platform meeting
+    31st July 2018
+
+        Talking about a 'prototype', but pulling in different directions.
+
+
+    ------------------------------------------------------------------------------------------
+    Building a prototype of a multi-messenger platform
+
+        The actual proposal sent to the EU.
+
+        Hardly any detail at all about what the demonstrator would do ?
+
+    ------------------------------------------------------------------------------------------
+    Multi-messenger platform proposal
+    December 2018
+
+        Talking about a 'prototype', but pulling in different directions.
+
+
+        Marjan Timmer :
+
+            Too hard in time available :
+
+                Rapid response handling
+                Galaxy information
+                Other tools, e.g. those developed in ASTERICS and the VO
+                Alert handling
+
+            ESAC protocols that we could link to
+
+                Visibility and planning information
+
+        Mark Kettenis :
+
+            The dashboard idea is probably the part of the proposal that I picked up most.
+
+            (still not clear if we are talking about a website or a desktop app)
+
+
+    ------------------------------------------------------------------------------------------
+    20190111 telecon
+
+        - (Dave) Dashboard layers:
+
+            IVOA standard should be incorporated.
+            IVOA standard _could_ be incorporated.
+
+            LSST is engaged in the standards proposed from ESAC
+
+            (Dave participated in the ESAC meeting and is taking care on LSST involvement in this activity).
+            (Dave _has seen a presentation about_ the ESAC meeting and is _observing_ the LSST involvement in this activity.
+
+            The "low" level of maturity for this standard is considered a weakness, although it shouldn't be a drawback but an advantage to incorporate it in the platform, even if the maturity is low.
+            Um - I don't think I said that.
+
+    Actions
+
+        - Back-end I/O --> Dave: work on the IVOA standard to define the parameters to be included in the DB.
+
+
+
+            The "low" level of maturity for this standard is considered a weakness, although it shouldn't be a drawback but an advantage to incorporate it in the platform, even if the maturity is low.
+
+
+    ------------------------------------------------------------------------------------------
+    Object Visibility Simple Access Protocol
+    http://ivoa.net/documents/ObjVisSAP/20180723/WD-ObjVisSAP-0.2-20180723.pdf
+
+    When [ra,dec] be visible between [start][end] time ?
+
+    Response = set of visibility resords
+
+        start       - time ?
+        end         - time ?
+        duration    - seconds
+        altitude    - degrees above horizon
+        object      - name
+
+    Not 100% clear whether this is past or future observations .. ?
+
+    ------------------------------------------------------------------------------------------
+    Observation Locator Table Access Protocol
+    http://ivoa.net/documents/ObsLocTAP/20180723/WD-ObsLocTAP-0.2-20180723.pdf
+
+
+    TAP service for planned observations
+
+        t_planning
+        t_min
+        t_max
+        s_ra
+        s_dec
+        s_fov
+        ...
+
+    Poll for planning updates :
+
+        Get all the plans added since t_planning and store them locally.
+
+    Poll for specific object, location and/or timespan :
+
+        Get plans for s_ra, s_dec, em_min, em_max ... t_min, t_max
+
+    Query the registry for available services ..
+
+    ------------------------------------------------------------------------------------------
+    TOM tolkit ..
+    https://lco.global/tomtoolkit/
+    https://lco.global/documentation/
+
+
+    General-purpose software for managing astronomical observing programs in the LSST era
+    http://adsabs.harvard.edu/abs/2018SPIE10707E..11S
+
+    Target of Opportunity Observations with Gemini Observatory.
+    https://tomtoolkit.github.io/2019/01/11/gemini-video.html

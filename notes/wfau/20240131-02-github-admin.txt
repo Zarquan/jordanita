@@ -1,0 +1,180 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        GitHub off-boarding for WFAU and LSST:UK projects.
+        Remove my account from admin roles, delete unused forks and archive unused projects.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    https://github.com/Zarquan/Cicatricella
+    Ansible deployment for a Kafka and Cassandra test platform.
+        Project archived
+
+    https://github.com/lsst-uk/korscheltellus
+    Stage 1 Kafka FIFO buffer
+        Zarquan removed
+        Project archived
+
+    https://github.com/Zarquan/korscheltellus
+    Stage 1 Kafka FIFO buffer
+        Project archived
+
+    https://github.com/Zarquan/aglais-spark
+        Fork deleted
+
+    https://github.com/Zarquan/sherlock
+        Fork deleted
+
+    https://github.com/Zarquan/metadata
+        Fork deleted
+
+    https://github.com/Zarquan/firethorn.py
+        Fork deleted
+
+    https://github.com/organizations/astrotrop
+        Organization archived
+
+    https://github.com/astrotrop/astrotrop
+        Project archived
+
+    https://github.com/Zarquan/astrotrop
+        Fork deleted
+
+    https://github.com/lsst-uk/phymatopus
+    Kafka event stream handling for LSST:UK
+        Project archived
+
+    https://github.com/Zarquan/phymatopus
+    Kafka event stream handling for LSST:UK
+        Fork archived
+
+    https://github.com/wfau/esperia
+        Configuration and deployment scripts for the LSST/Gaia test system.
+        Zarquan removed
+        Project archived
+
+    https://github.com/Zarquan/esperia
+        Configuration and deployment scripts for the LSST/Gaia test system.
+        Fork archived
+
+    https://github.com/Zarquan/asov2023
+        Fork deleted
+
+    https://github.com/wfau/gaiadmpsetup
+        Stelios is owner
+
+    https://github.com/Zarquan/gaiadmpsetup
+        Fork deleted
+
+    https://github.com/wfau/aglais-testing
+        Stelios is owner
+
+    https://github.com/Zarquan/aglais-testing
+        Fork deleted
+
+    https://github.com/wfau/aglais-notebooks
+        Zarquan removed
+        Nigel is owner
+
+    https://github.com/Zarquan/aglais-notebooks
+        Fork deleted
+
+    https://github.com/Zarquan/TimeSeries
+        Fork deleted
+
+    https://github.com/Zarquan/ADQL
+        Fork deleted
+
+    https://github.com/Zarquan/SSO
+        Fork deleted
+
+    https://github.com/Zarquan/pavonia
+    https://github.com/wfau/pavonia
+        ESCAPE work package 4 work by Edinburgh University.
+        Integrating Rucio with VOSpace.
+         24 commits ahead of wfau/pavonia
+         Grab the notes and delete the projects ?
+        ....
+
+    https://github.com/Zarquan/enteucha
+    https://github.com/lsst-uk/enteucha
+        High bandwidth cross match service
+        Fork needs update
+        ....
+
+    https://github.com/Zarquan/lasair
+        Needs untangling ...
+        ....
+
+    https://github.com/Zarquan/firethorn
+    https://github.com/wfau/firethorn
+        Fork needs update
+        Needs handover.
+        ....
+
+    https://github.com/Zarquan/atolmis
+    https://github.com/wfau/atolmis
+        Needs handover.
+        ....
+
+    https://github.com/Zarquan/gaia-dmp-zeppelin
+    https://github.com/wfau/gaia-dmp-zeppelin/tree/gaia-dmp-0.10.1
+        Suspect we delete this
+        ....
+
+    https://github.com/wfau/aglais-spark
+        Fork deleted
+
+    https://github.com/wfau/aglais-axs
+        Fork deleted
+
+    https://github.com/Zarquan/lucia
+        IVOA execution planner
+        ....
+
+    https://github.com/Zarquan/celastrina
+        Empty project ....
+
+    https://github.com/Zarquan/Oreas
+        Empty project ....
+
+    https://github.com/Zarquan/Lutarea
+        Empty project ....
+
+    https://github.com/ivoa/TaskDescriptionLanguageNote
+    https://github.com/Zarquan/TaskDescriptionLanguageNote
+        Empty project ....
+

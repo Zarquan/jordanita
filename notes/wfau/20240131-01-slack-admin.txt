@@ -1,0 +1,111 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#zrq-notes-zeppelin
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Slack off-boarding for WFAU and LSST:UK projects.
+        Remove my accounts from admin roles and deactivate them.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Accounts to keep (email updated)
+
+        SKAO
+            https://skao.slack.com/account/settings
+            zrq-slack@metagrid.co.uk
+
+        IVOA
+            https://ivoa.slack.com/account/settings
+            zrq-slack@metagrid.co.uk
+
+        IRIS Technical Working Group
+            https://ukt0-twg.slack.com/account/settings
+            zrq-slack@metagrid.co.uk
+
+        STFC-cloud
+            https://stfc-cloud.slack.com/account/settings
+            zrq-slack@metagrid.co.uk
+
+        ADASS2023
+            https://adass2023.slack.com/account/settings
+            dave.morris@metagrid.co.uk
+
+    Accounts to close (TODO)
+
+        firethorn
+            https://firethorn-dev.slack.com/account/settings
+            dmr@roe.ac.uk
+
+        LSST:UK
+            https://lsstuk.slack.com/account/settings
+            dmr@roe.ac.uk
+
+        WFAU
+            https://wfau.slack.com/account/settings
+            dmr@roe.ac.uk
+
+        IfA Edinburgh (Somerville)
+            https://ifaedinburghs-ofn4738.slack.com/account/settings
+            dmr@roe.ac.uk
+
+    Ownership changed
+
+        https://firethorn-dev.slack.com/admin
+            => Stelios
+
+        https://lsstuk.slack.com/admin
+            => George
+
+    Deactivated accounts
+
+        ROE
+            https://roetalk.slack.com/account/deactivate
+            dmr@roe.ac.uk
+            Account deactivated
+
+        WFAU Monitoring
+            https://wfaumonitoring.slack.com/account/deactivate
+            dmr@roe.ac.uk
+            Account deactivated
+
+        Gaia-dmp
+            https://gaia-dmp.slack.com/account/deactivate
+            dmr@roe.ac.uk
+            Account deactivated
+
+        Metagrid
+            https://metagridgroup.slack.com/account/settings
+            Chanel deleted
+
+

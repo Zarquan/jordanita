@@ -1,0 +1,84 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+    https://ukri.zoom.us/j/91883319037
+    91883319037
+    iris20twg
+
+    https://indico.ph.qmul.ac.uk/indico/conferenceDisplay.py?confId=733
+
+------------------------
+
+    What can IAM do for you?
+    Convener: 	Tom Dack, Jens Jensen
+    Slides : https://indico.ph.qmul.ac.uk/indico/materialDisplay.py?sessionId=3&materialId=0&confId=733
+
+    Keycloak
+    open source RedHat project
+    manage realms separately
+    Aquilon feature
+
+    IAM
+    CLI integration
+    I think he said IAM CLI _will_ support X509
+    Standards and interoperable
+        SAML, OIDC
+        ssh plugin using Assent
+        round trip using combination of ssh client and browser
+        I need to work with the person doing the command line work
+        Jens Jensen ?
+
+    INDIGO IAM is used in WLCG, so strong development effotr behind it
+    delays to IAM 2.0 due to staffing issues
+
+    StackHPC clients using Vault to manage keys
+    proposal to add Vault to IAM ?
+
+------------------------
+
+    Radio Astronomy with IRIS
+    Convener: 	Anthony Holloway
+
+
+    SKA using Dask for distributed processing
+
+    ALMA Atomium - Anita Richards :-)
+    Looking at specific molecules in stars
+
+    What is the current 'Moores law' re big memory machines
+        Cost to hardware
+            people trying to do thinsg in less RAM
+            Intel Optane
+                RAM pricies aren't dropping massivley quickly
+                Won't have laptops with 1.5 Tbytes anytome soon
+
+------------------------
+
+    Next week is OPS
+    Edinburgh database from George in 2 weeks time
+

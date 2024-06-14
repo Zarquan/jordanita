@@ -1,0 +1,58 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2020, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+
+
+https://indico.ph.qmul.ac.uk/indico/conferenceDisplay.py?confId=751
+Host: David Crooks (STFC, RAL, SC)
+
+https://github.com/CESNET/pakiti-server
+https://wiki.egi.eu/wiki/SVG:SVG
+
+Monitoring tools
+https://www.openvas.org/
+https://www.ossec.net/
+https://www.tripwire.com/
+https://www.open-scap.org/
+http://www.chkrootkit.org/
+http://rkhunter.sourceforge.net/
+
+Central logging
+https://en.wikipedia.org/wiki/Syslog
+https://www.elastic.co/
+https://www.graylog.org/
+https://www.splunk.com/
+https://securityonion.net/
+
+Access control
+https://en.wikipedia.org/wiki/TCP_Wrappers
+https://en.wikipedia.org/wiki/Iptables
+https://firewalld.org/
+openstack security groups
+
+MISP
+https://www.misp-project.org/
+
