@@ -1,0 +1,174 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Thoughts in reply to Russ Allbery's email
+        http://mail.ivoa.net/pipermail/p3t/2024-March/000032.html
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Need a bit more detail about what an async service would return.
+
+    If we POST an ADQL query with unknown column.
+    If we POST an ADQL query to a column we don't have permission to read.
+    ...
+    It depends on when the query is parsed.
+
+
+# -----------------------------------------------------
+
+I'd like to suggest a couple of options that could enable us to
+categorise the majority of the 422 error codes by adding some metadata
+links to each error message.
+
+# -----------------------------------------------------
+
+The first option is a `namespace` field that contains a URL that points
+to a human readable document that describes the error codes
+in that namespace.
+
+In the case of our IVOA standards, the `namespace` field would contain the `standardID`
+of the relevant specification.
+In turn, each IVOA specification should define a list of the error codes that apply for
+that standard.
+
+This allows us to link the error messages to the relevant layer in the IVOA
+architecture e.g. UWS, DALI, TAP, ADQL etc.
+
+    httperror: 492
+    namespace: "ivo://ivoa.net/std/UWS#rest-1.1"
+    errorcode: 12
+    message: "Service unavailable, retry after [120] seconds"
+
+    httperror: 422
+    namespace: "ivo://ivoa.net/std/TAP#1.1"
+    errorcode: 10
+    message: "Unknown output format [TSV]"
+
+    httperror: 422
+    namespace: "ivo://ivoa.net/std/ADQL#2.1"
+    errorcode: 1012
+    message: "Invalid column reference [cas] line [5]"
+
+Note that the `namespace` URL is not intended to be de-referenced by the client
+software. It has two separate functions. First, as the field name suggests, is to
+provide a namespace that enables us to distinguish between similar error codes
+from different specifications e.g. UWS error code 12 and TAP error code 12.
+
+    httperror: 492
+    namespace: "ivo://ivoa.net/std/UWS#rest-1.1"
+    errorcode: 12
+    message: "Service unavailable, retry after [120] seconds"
+
+    httperror: 422
+    namespace: "ivo://ivoa.net/std/TAP#1.1"
+    errorcode: 12
+    message: "Missing upload table [table-three]"
+
+Which means we don't have to have a central authority checking that
+none of the standards use the same error codes.
+
+Second, it provides an off-line method for developers to lookup the details
+of the error message and learn how to handle it.
+
+In the case of an application or implementation specific error,
+including 3rd party services that are not part of an IVOA standard,
+the `namespace` field should
+contain a resolvable URL that points to a human readable resource
+that describes the error codes for that service or application.
+
+    httperror: 422
+    namespace: "http://github/my-project/error-codes.md5"
+    errorcode: 34
+    message: "Algorithm not supported [algo-21]"
+
+# -----------------------------------------------------
+
+The second option builds on thge `namespace` idea to define a schema
+for machine readable metadata describing the error messages.
+
+Each structured error message would include an `errormeta` field that contains
+a URL that points to machine readable metadata about that error.
+
+In the case of our IVOA standards, the `errormeta` field would point to a
+JSON document, defined as part of the standard, which provides machine readable
+details about the message, it's severity, how to interpret the error message,
+how to display it, and language translations of the message text.
+
+    httperror: 492
+    errorcode: 12
+    errormeta: "https://www.ivoa.net/static/errorcodes/uws-rest-1.1.json"
+    message: "Service unavailable, retry after [120] seconds"
+
+    httperror: 422
+    errorcode: 10
+    errormeta: "https://www.ivoa.net/static/errorcodes/tap-1.1.json"
+    message: "Invalid format [special]"
+
+    httperror: 422
+    errorcode: 1012
+    errormeta: "https://www.ivoa.net/static/errorcodes/adql-2.1.json"
+    message: "Invalid column reference [albert] line [5]"
+
+Similarly, 3rd party service providers could provide a URL pointing to a JSON
+document describing their error messages.
+
+    httperror: 422
+    errorcode: 34
+    errormeta: "http://github/my-project/error-codes.json"
+    message: "Algorithm not supported [algo-21]"
+
+Both methods could be used alongside each other, allowing the client
+to select which one it used.
+
+    httperror: 492
+    namespace: "ivo://ivoa.net/std/UWS#rest-1.1"
+    errorcode: 12
+    errormeta: "https://www.ivoa.net/static/errorcodes/uws-rest-1.1.json"
+    message: "Service unavailable, retry after [120] seconds"
+
+    httperror: 422
+    namespace: "ivo://ivoa.net/std/TAP#1.1"
+    errorcode: 10
+    errormeta: "https://www.ivoa.net/static/errorcodes/tap-1.1.json"
+    message: "Invalid format [special]"
+
+    httperror: 422
+    namespace: "ivo://ivoa.net/std/ADQL#2.1"
+    errorcode: 1012
+    errormeta: "https://www.ivoa.net/static/errorcodes/adql-2.1.json"
+    message: "Invalid column reference [albert] line [5]"
+
+    httperror: 422
+    namespace: "http://github/my-project/error-codes"
+    errorcode: 34
+    errormeta: "http://github/my-project/error-codes.json"
+    message: "Algorithm not supported [algo-21]"
+
