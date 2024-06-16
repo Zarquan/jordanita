@@ -25,36 +25,12 @@
 
     Target:
 
-        Plans for git repositories
+        Change the license header for our notes from GPL to CC-BY-SA.
 
     Result:
 
         Work in progress ...
 
 # -----------------------------------------------------
-# 20240614
-
-    Git Repo for the Java version
-        Create a new GitHub repo - cecrops
-        https://en.wikipedia.org/wiki/Red-banded_hairstreak
-        Calycopis cecrops
-
-    Git Repo for the Python version
-        Create a new GitHub repo - isobeon
-        https://en.wikipedia.org/wiki/Calycopis_isobeon
-        Calycopis isobeon
-
-    Transfer notes into Jordanita
-    https://github.com/Zarquan/jordanita
-
-        Import notes from other projects.
-        Subdirectories for each project.
-            Subdirectories for each year.
-
-    Celastrina becomes repo for Etherium validator.
-    https://github.com/Zarquan/celastrina
-
-        We alreday have some notes and code on a branch
-        https://github.com/Zarquan/celastrina/tree/20210829-zrq-ocean-deploy
 
 
