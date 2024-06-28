@@ -1,0 +1,164 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (C) 2024 by Wizzard Solutions Ltd, wizzard@metagrid.co.uk
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-time
+#zrq-notes-indent
+#zrq-notes-crypto
+#zrq-notes-ansible
+#zrq-notes-osformat
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Shell scripts for managing a git repo.
+
+    Result:
+
+        ...
+
+# -----------------------------------------------------
+# Add an upstream repository to our git config.
+#[user@desktop]
+
+    source "${HOME:?}/project.env"
+    pushd "${PROJECT_CODE}"
+
+        git remote -v
+
+        >   origin      git@github.com:Zarquan/gaia-dmp.git (fetch)
+        >   origin      git@github.com:Zarquan/gaia-dmp.git (push)
+
+
+        # Add the main upstream repository.
+        git remote add 'upstream' 'https://github.com/wfau/gaia-dmp.git'
+
+        git remote -v
+
+        >   origin      git@github.com:Zarquan/gaia-dmp.git (fetch)
+        >   origin      git@github.com:Zarquan/gaia-dmp.git (push)
+        >   upstream    https://github.com/wfau/gaia-dmp.git (fetch)
+        >   upstream    https://github.com/wfau/gaia-dmp.git (push)
+
+
+    popd
+
+    #
+    # Note - the names 'origin' and 'upstream' are convention.
+    # Technically, you can give them whatever names you want.
+    #
+    # You only need to do this once for a local clone.
+    # The remote URLs will be stored in the local config file.
+    #
+
+
+# -----------------------------------------------------
+# Start a new branch.
+#[user@desktop]
+
+    # Set the new branch name
+    branchname=github-notes
+    newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+    source "${HOME:?}/project.env"
+    pushd "${PROJECT_CODE}"
+
+        # Checkout our main branch.
+        git checkout main
+
+        # Create the new branch in our local repository.
+        git checkout -b "${newbranch:?}"
+
+        # Push the new branch to our fork (origin).
+        git push --set-upstream 'origin' "$(git branch --show-current)"
+
+    popd
+
+
+# -----------------------------------------------------
+# Make changes on local machine.
+#[user@desktop]
+
+    ....
+    ....
+
+
+# -----------------------------------------------------
+# Add changes and push to personal fork (origin).
+#[user@desktop]
+
+    source "${HOME:?}/project.env"
+    pushd "${PROJECT_CODE}"
+
+        git add .
+
+        git commit -m 'Notes on working with git command line (YMMV)'
+
+        git push
+
+    popd
+
+
+# -----------------------------------------------------
+# Create a pull request, review and merge on GitHub (upstream) ....
+#[user@desktop]
+
+    ....
+    ....
+
+
+# -----------------------------------------------------
+# Merge changes from main repo (upstream).
+#[user@desktop]
+
+    source "${HOME:?}/project.env"
+    pushd "${PROJECT_CODE}"
+
+        # Checkout our main branch.
+        git checkout main
+
+        # Pull any new changes from our fork (origin).
+        git pull
+
+        # Fetch the latest changes from the main repository (upstream).
+        git fetch upstream
+
+        # Merges the changes from the main branch of the upstream repository.
+        git merge upstream/main
+
+        # Sanity check.
+        git status
+
+        # Push the merged changes to our fork (origin).
+        git push
+
+    popd
+
+    #
+    # Assuming we haven't modifed the same files this should
+    # go straight through without creating another commit.
+    #
+    # If we have modified the same files, you will need to resolve
+    # the conflicts locally and comit the shanges before you can
+    # complete the merge.
+    #
+
+

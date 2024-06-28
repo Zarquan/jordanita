@@ -1,0 +1,477 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Understanding some of the DAAC Jira tickets.
+
+        03:30 start
+        03:30-03:45 ADASS registration
+        03:45-06:30 DAAC Jira tickets
+        06:30-07:30 break
+        07:30-09:40 IVOA Science Metadata Data Models for Astronomy
+        09:40 break
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+[DAAC-44] Epic (must, PI23, unresolbed)
+Vision document draft on connection between metadata and data access. How we see different areas.
+https://jira.skatelescope.org/browse/DAAC-44
+
+    Vision document draft on connection between metadata and data access (PH -2, SL - 1, MJ-2, GB -1) How we see different areas
+
+
+[DAAC-45] Story (must, PI23, SP1, blocked)
+Create UK Demonstrator Case Metadata Use Cases
+https://jira.skatelescope.org/browse/DAAC-45
+
+    Create metadata use cases (MJ) (5)
+
+[DAAC-46] Story (must, PI23, SP1, blocked)
+Draft UK Demonstrator Metadata Requirements & Assumptions
+https://jira.skatelescope.org/browse/DAAC-46
+
+    Draft metadata requirements & assumptions (MJ) (5)
+
+    Gather information from SKA science users to determine how they need to use the provenance/meta and subsequently, derive the requirements thereof.
+
+    Tasks:
+
+        create template for demonstrator cases
+        formalise completed documents into use cases and requirements
+        interview science users to confirm the above
+        create a matrix of demonstrator cases and requirements
+
+# -----------------------------------------------------
+
+[SKA-TEL-SKO-0001072]
+SKAO to SRC Technical Interface Description
+https://docs.google.com/document/d/1zho_8ii85iS7GYMXTIueZfOCxeL7lCVlpKDpH4ys6pQ/edit
+
+    4.2.1 Science Data Product Catalogue
+
+        The SDPC is an index of ODPs and ADPs.
+        An individual SRC may host a subset or all of the ODPs and may add and host ADPs.
+        The SDPC is federated and globally accessible with metadata about all available
+        ODPs and ADPs. SDP adds an entry to the SDPC when releasing a science data product.
+        The provenance of ADPs is harvested from SRCs using a yet-to-be-defined federation
+        protocol (TBD06).
+
+        The SDPC shall include sufficient metadata and linkage to
+            * uniquely identify each ODP and ADP,
+            * identify the publisher of each data product in this federated multi-telescope catalogue,
+            * crosslink with the Location Service (see Section 4.2.2) and associate all artefacts to each data product,
+            * provide data provenance in compliance with Observatory Data and Data Stewardship Policies (TBD01)
+              including those of the IVOA,
+            * provide software provenance to enable post-processing including linkage to snapshots of the
+              Science Data Model [AD1] and other auxiliary data products and metadata services,
+            * enable access control in compliance with the Data Access Policy (TBD02) and the TMC architecture [AD3].
+
+
+# -----------------------------------------------------
+
+Are we talking about general metadata, or are we specifically looking at
+the metadata associated with ODP and ADPs listed in [SKA-TEL-SKO-0001072]
+
+Q - What is a demonstrator case in this context ?
+it is probably 'one of those things', but we should
+add a link to a definition
+
+DAAC-45 is missing a description, and DAAC-46 contains parts of both.
+
+DAAC-45 should probably be
+
+  - Create UK Demonstrator Case Metadata Use Cases
+  + Document UK Demonstrator Case Metadata Use Cases
+
+        Gather information from SKA science users to determine how they would
+        use the provenance metadata associated with ODP and ADPs
+        in the context of the demonstrator cases.
+        (see [SKA-TEL-SKO-0001072] Section 4.2.1 Science Data Product Catalogue)
+
+and contain most of the steps in 46
+
+            * create a template for demonstrator cases
+            * formalise completed documents into use cases and requirements
+            * interview science users to confirm the above
+
+although not sure what 'create a template' means here
+.. or are we missing a step
+
+            * create a document template to describe demonstrator cases
+            * create an instance document for each demonstrator case
+            * formalise completed documents into use cases and requirements
+            * interview science users to confirm the above
+
+        Deliverable :
+        A section in the vision document [DAAC-44] describing the
+        demonstrator use cases
+
+Then, DAAC-46 becomes
+
+  - Draft UK Demonstrator Metadata Requirements & Assumptions
+  + Document UK Demonstrator Metadata Requirements & Assumptions
+
+        Derive and document the metadata requirements resulting from
+        the use cases described in [DAAC-45]
+
+        Deliverable:
+        A section in the vision document [DAAC-44] describing the
+        metadata requirements and assumptions derrived from [DAAC-45]
+
+# -----------------------------------------------------
+
+[DAAC-47] Story (must, PI23, SP1, unresolved)
+Evaluate CAOM Protocol for Conflicts & Gaps
+https://jira.skatelescope.org/browse/DAAC-47
+
+        Deliverable:
+        A section in the vision document [DAAC-44] evaluating
+        the IVOA protocol
+
+        Evaluate CAOM Protocol for conflicts & gaps (MJ) (5)
+
+        Cross referencing the requirements determined in DAAC-46 with the
+        IVOA provenance model to determine applicability of the provenance model. 
+
+
+This should probably be split into 2 or 3 parts.
+One to cover the CAOM science data model,
+one to cover the IVOA provenance data model,
+and possibly another to cover the IVOA Data Curation and Preservation
+working group [https://wiki.ivoa.net/twiki/bin/view/IVOA/IvoaDCP]
+
+# -----------------------------------------------------
+
+[DAAC-47]
+Title change:
+- Evaluate CAOM Protocol for Conflicts & Gaps
++ Evaluate CAOM data model in context of UK Demonstrator Metadata Requirements
+
+        Evaluate the CAOM data model compared to the
+        metadata requirements defined in [DAAC-46]
+
+        Deliverable:
+        A section in the vision document [DAAC-44] evaluating
+        the CAOM data model compared to the metadata requirements
+        defined in [DAAC-46]
+
+[DAAC-xx]
+Evaluate IVOA Provenance data model in context of UK Demonstrator Metadata Requirements
+
+        Evaluate the IVOA Provenance data model compared to the
+        metadata requirements defined in [DAAC-46]
+
+        Specifically - what are the benefits to science users of
+        using the IVOA Provenance data model to document the
+        provenance of ODPs and ADPs, and what extensions would
+        be needed to the IVOA Provenance data model to fulfill
+        the metadata requirements defined in [DAAC-46].
+
+        Deliverable:
+        A section in the vision document [DAAC-44] evaluating
+        the IVOA Provenance data model compared to the metadata
+        requirements defined in [DAAC-46]
+
+
+[DAAC-xx]
+Evaluate IVOA Data Curation practices in context of UK Demonstrator Metadata Requirements
+
+        Evaluate the IVOA Data Curation practices compared to the
+        metadata requirements defined in [DAAC-46]
+        See [https://wiki.ivoa.net/twiki/bin/view/IVOA/IvoaDCP]
+
+        Specifically - what are the benefits to science users of
+        automatically assigning DOIs to ODPs and ADPs.
+
+        Deliverable:
+        A section in the vision document [DAAC-44] evaluating
+        the IVOA Data Curation practices compared to the metadata
+        requirements defined in [DAAC-46]
+
+# -----------------------------------------------------
+
+[SP-4453] Feature (must, PI23, SP3, implementing, Ian Leigh)
+DAAC-7 ... Compute cluster set-up at JBO
+https://jira.skatelescope.org/browse/SP-4453
+
+    Physical installation of compute nodes and networking, configuration of OpenStack on bare metal.
+    All processes to be documented/scripted for reproducibility 
+
+        KR1: Functioning OpenStack cluster - OpenStack dashboard is running fine.
+        KR2: The documented/scripted processes for redeployment.
+
+
+
+# -----------------------------------------------------
+
+MALTOPUFT
+https://confluence.skatelescope.org/display/SRCSC/MALTOPUFT
+
+    A protoype MAchine Learning TOolkit for PUlsars and Fast Transients (MALTOPUFT) will be delivered as a digital asset.
+    Per the proposal (link?), the digital asset will provide:
+
+        1) A prototype generic and rapid database infrastructure which will eventually manage up to billions of input data products
+           from pulsar and fast transient searches.
+        2) A quick visualisation tool for viewing and labelling these candidates which can be extended to support other data products.
+        3) A development, testing, and analysis platform for interacting with derived data products.
+        4) A first version of the MALTOPUFT toolkit which is built and trained on data products from the LOFAR and MeerKAT pulsar and
+           fast transient searches.
+        5) A first API and GUI for toolkit users.
+
+MALTOPUFT Solution intent
+https://confluence.skatelescope.org/display/SRCSC/Solution+intent
+
+    1) The digital asset will be a web app that strictly uses open-source technologies.
+    2) It will allow users to inspect single pulse and pulsar candidate proposals and interactively assign labels to these candidates for future retrieval.
+    3) It should be possible to build and deploy all the required components on a local machine (to meet the definition of a digital asset).
+
+MALTOPUFT
+https://developer.skao.int/projects/ska-src-maltopuft-backend/en/latest/pages/maltopuft.html
+
+    MALTOPUFT is a prototype MAchine Learning TOolkit for PUlsars and Fast Transients. The toolkit will provide a unified interface to:
+
+        1) View single pulse and periodic candidates identified by SKA precursors and, once operational, the SKA.
+        2) Assign “ground-truth” labels to candidates for use in Machine Learning classifier training.
+        3) Retrieve and create version controlled datasets for use in the Machine Learning classifier training and evaluation pipelines.
+
+    MALTOPUFT does this by providing a database server for storing proposed pulsar and fast-transient candidate (meta) data and a RESTful (REST) API
+    which allows clients to interact with candidates stored in the database.
+    Furthermore, MALTOPUFT implements a GUI component to interactively view and label candidates with the REST API.
+
+
+# -----------------------------------------------------
+[DAAC-84] Epic (not assigned)
+CLONE - Prototype fast transient candidate labelling GUI
+https://jira.skatelescope.org/browse/DAAC-84
+
+    End-to-end fast-transient candidate labeller web app prototype deployment.
+    Fast-transient candidate labeller version 0.1 ready for initial user feedback.
+
+# -----------------------------------------------------
+
+[DAAC-85] Enabler (not assigned)
+Deploy prototype MALTOPUFT web application components
+https://jira.skatelescope.org/browse/DAAC-85
+
+    Acceptance criteria
+        Remotely accessible, functioning web application deployment ready to build out features.
+        Confluence documentation outlining deployment steps.
+
+    ** Needs a link to what MALTOPUFT is.
+
+# -----------------------------------------------------
+
+[DAAC-86] Improvement (not assigned)
+MALTOPUFT CI
+https://jira.skatelescope.org/browse/DAAC-86
+
+# -----------------------------------------------------
+
+    Need t follow up on the other MALTOPUFT tasks, in progress and done ?
+
+# -----------------------------------------------------
+
+[DAAC-1] Epic (could, in-progress)
+Map eMerlin to CAOM
+https://jira.skatelescope.org/browse/DAAC-1
+
+    This work explores how we can represent the eMerlin data in the CAOM data model.
+    The work is split into 2 stages.
+    This first part of the work involves comparing the CAOM data model with the structure of the eMerlin data and creating a mapping between them. Identifying points where they don't match and developing solutions to solve the problems.
+
+
+[SP-4452] Feature (could, implementing, was DAAC-133)
+DAAC-133 ... Map eMerlin to CAOM
+https://jira.skatelescope.org/browse/SP-4452
+https://jira.skatelescope.org/browse/DAAC-133 rediirects to [SP-4452]
+
+    This work explores how we can represent the eMerlin data in the CAOM data model.
+    The work is split into 2 stages.
+    This first part of the work involves comparing the CAOM data model with the structure
+    of the eMerlin data and creating a mapping between them.
+    Identifying points where they don't match and developing solutions to solve the problems.
+
+[SP-4397] Feature (must, implementing, Francois Bonnarel)
+Develop a first working draft of an IVOA standard for a rich science metadata model that includes improved support for radio data
+https://jira.skatelescope.org/browse/SP-4397
+
+    BH1: Provide a proper and standard description of complex radio data that could be used to support the creation of a SKA archive data model
+    BH2: Build a community for CAOM evolution in the context of radioastronomy missions
+
+    AC0: All interested parties have had the opportunity to contribute to the shaping of our Metadata Observational Model for Radio Astronomy
+    (i.e. a workshop) and such stakeholders are kept informed as the model is developed.
+    AC1: Working Draft (WD) and VO-DataModellingLanguage (VO-DML) documents available on the IVOA website
+    AC2: Demo to SRCNet ART, SDP and other relevant parties for SKA use
+    AC3: Plan to present to the IVOA Northern Fall InterOp meeting
+
+
+
+
+# -----------------------------------------------------
+
+    2024-06-27 Science Metadata Data Models for Astronomy
+    https://confluence.skatelescope.org/pages/viewpage.action?spaceKey=SRCSC&title=2024-06-27+Science+Metadata+Data+Models+for+Astronomy
+
+        Pat Dowler
+        Slides :
+        https://confluence.skatelescope.org/download/attachments/282495551/Toward-WD-CAOM-2.5.pdf
+
+        Jesus introduction about not just science metadata but technical processing provenance as well.
+        SKA probably needs not just ObsCore, but additional SKA specific information too.
+
+        Pat describing top down review of the model.
+        Observation -> Plane -> Artifact
+
+        CADC mirrors MAST data and metadata
+        CAOM community : CADC, ESAC, IRSA, IPAC, MAST, Rubin/LSST, TMT
+
+        IVOA has shown a desire to adopt CAOM
+        Current CAOM community are willing to pass governance over to IVOA
+
+        How to bring communities together to collaborate.
+        CADC, IVOA RadioIG, SRCNet
+
+        Francois Bonnarel
+        Slides:
+        https://confluence.skatelescope.org/download/attachments/282495551/ObsCoreRadioExtensionSRCNetwork.pdf
+
+        Discussion
+
+            Paul
+            ObsCore shouldn't have extensions.
+            A discovery data model should try to apply to all data equally.
+
+            Pat
+            Agreeing with Paul this is important to consider.
+            With CAOM we allow the model to be sparse.
+            Common is important word in the title.
+            Version 1 tried to keep the model small with mission specific extensions.
+            Didn't really work for data discovery
+            Version 2 allows for a more sparse model, but we still try to frame
+            everything in terms of being common across a majority of the landscape.
+
+            Francois
+            we think 80% can be discovered using basic ObsCore
+            but decision to expand to include the radio community
+            we discovered parameters were missing
+            e.g. you can miss things without the min max values
+
+            many radio astronomers are using the uv coverage to evaluate
+            the quality of the data
+            if we can descibe uv coverage in a couple of numbers
+            it enables data discovery across many services
+
+            Paul
+            Yes, I agree the min max values will be useful in the main table
+            but people are never going to search on the parameters for the uv coverage
+            because apart from anything else uv coverage depends on declination
+            so it isn't a good search parameter
+            also depends on the array
+            people are going to search on the characteristics of the array
+            more than ..
+
+            Rosie
+            Are you sure ?
+            I can imagine use cases where a general user might just want to see if they have
+            got some observations with a particular spacial coverge that maps to the
+            £$%^& effect they are looking for
+            Don't want to say 'never' at this stage because we can't predict.
+
+            Paul
+            We shouldn't add things before we know they are needed.
+            Keep things simple.
+
+            Characterisation of the uv coverage in terms of the eliptical
+            eccentricity etc. People aren't going to search on those.
+
+            Rosie
+            I honestly think I might.
+            If I was going to look for old VLA observations and I wanted them to be
+            when my source was high in the sky with a decent bean I think I might ..
+            If I had 100+ results I might ..
+
+            Paul
+            If these are specific top radio, then we could have a secondary way of
+            searching for them.
+
+            Francois
+            Jive have implemented it.
+            So I think the best thing to do is check with them to see how it is used.
+
+            Sevaran
+
+            Jesus
+            Four questions in a chain.
+            First one is you mentioned that you are tying to conside? (combine?) CAOM with ObsCore.
+            Maybe most of the people know that wherever you jave a CAOM data model in the service
+            you already have a view on top, and you already have ObCore and you already have
+            the radio extensions
+            so by selecting the radio extensions you already have the ObsCore and CAOM layers
+            I don't know how difficult this is ...
+            you have said you have plans to consilodate this.
+
+            Pat
+            When I said "recncile with ObsCore" I meant including the radio extension.
+            I kind of consdered the work that Francois has as probably sufficient
+            for the next version of CAOM in terms of improved radio support.
+            It is really seeing how those things would fit into CAOM and whether
+            some of them are already in there and how we would implement the support
+            for those use cases in CAOM.
+
+            And then how that would effect the way that the ObsCore view would
+            be defined because ObsCore isn't a data model in the IVOA sense.
+
+            There isn't a VODML description or a concrete thing.
+            It is really a relational mapping so it is more like a relational mapping
+            on top of something that doesn't have to be specified
+
+            But if CAOM goes forward as an IVOA standard, the it (ObsCore) can be defined
+            as a relational mapping of a view on CAOM that can be rigorously defined.
+
+            That's why I think there is synergy here in improving CAOM for radio
+            and making CAOM an IVOA standard and it means this community and skao use cases
+            can be in there, influencing it at this time, where there is a good oppertunity
+            to do so.
+
+            Jesus
+            Second question is ..
+
+            01:05:22/01:21:34
+
+
+
+
+
+
+
+
+            DAAC task to participate in [SP-4397] ?
+            Suggest changes based on [SP-4452 (DAAC-133)][DAAC-47]
+

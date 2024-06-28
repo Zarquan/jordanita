@@ -1,0 +1,185 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2024, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes for the Implementation Plan.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# 20240411
+
+The target for v0.1 is to be able to connect to the compute platform, create a compute resource, access some data, perform some basic tasks, and recover the results.
+
+At this stage in the project we have 2 different levels of use cases for technical and non-technical users.
+
+We will have some use cases for technical users who are already familiar with Slurm, Kubernetes, Openstack etc.
+who will prefer to have direct access to the platform with minimal obstacles.
+
+Level #1 compute platforms
+
+    Slurm queue
+        Create jobs connected to network and local storage.
+        The majority of tasks will not be interactive and will not need external access.
+
+    Openstack project
+        Create one or more VMs connected to network and local storage.
+        Some of the tasks will be interactive and need external access.
+
+    Kubernetes namespace
+        Create one or more Pods connected to network and storage.
+        Some of the tasks will be interactive and need external access.
+
+Our role here is to solve the access problems to make it easy, and then get out of the way.
+Things like getting single sign on to work and providing a common set of tools for acessing the science data.
+
+One way of acheiving this is to define a set of profiles for each type of platform that set the minimum level
+of resources and tools that a user can expect.
+
+IF a site provides Slurm, then for V0.1 it should provide the following set of components:
+    ....
+
+IF a site provides Openstack, then for V0.1 it should provide the following set of components:
+    templates
+    OS images
+    flavors
+    ....
+
+IF a site provides Kubernetes, then for V0.1 it should provide the following set of components:
+    operators
+    plugins
+    data access
+    ....
+
+The details of these profiles will be defined by the use cases and target tests.
+Start by defining what tasks we want to run and use that information to identify what components will be needed on each platform.
+
+Important note - we don't need Slurm, Openstack, or Kubernetes.
+To implement the target use cases we have selected for v0.1, we will need to be able to run batch jobs, create VMs, and deploy containers.
+Slurm, Openstack, and Kubernetes are the technologies selected to achieve this.
+
+At the other end of the scale, we will have some use cases for non-technical users
+who don't want to deal with the details of how the tasks are acheived.
+We will need to develop solutions that provide an appropriate level of abstraction
+for each of these use cases.
+
+Level #2 compute services
+
+    Singularity platform
+        Create one or more containers connected to network and storage.
+        The majority of tasks will not be interactive and will not need external access.
+
+    Docker platform
+        Create one or more containers connected to network and storage.
+        Some of the tasks will be interactive and need external access.
+
+    Notebook platform
+        Create an environment connected to network and storage.
+        The majority of tasks will be interactive and will need external access.
+
+The SKAO Compute API (IVOA ExecutionPlanner) is intended as a candidate solution for these use cases.
+Developing an API for managing compute resources that sits above the level #1 compute platforms
+and provides an appropriate level of abstraction to meet the level #2 science use cases.
+
+However at this stage in the process these service interfaces are still in early stages of development
+and represent a risk to the delivery for this iteration.
+
+To mitigate this risk we would suggest that level #2 services
+be included in the list of optional services that may be deployed in srcnet-0.1,
+but that until we have stable implementations of these services available for deployment
+we work on the assumption that the target use cases will need to be implemented
+using level #1 platforms.
+
+Access control policies are likley to be a significant risk
+to delivering both the level #1 platforms and level #2 services
+in a consistent manner across all the platforms.
+Access control policies are the unknown unknowns, we don't know what we are/not allowed to do (yet).
+
+The first step in mitigating this risk will be to categorise the
+access control policies that will be available at each
+site and match this with the access control requirements for our selected use cases.
+
+Are the control APIs open to the public, or do we need a ssh tunnel ?
+Are the compute resources open to the public, or do we need a tunnel ?
+Are the resources granted to a single shared user/project, or on an individual user basis ?
+
+# -----------------------------------------------------
+
+If a site provides Openstack ...
+
+Do we have one single Openstack project for all of SRCNet v0.1, or do we allocate a separate project for each user ?
+Allocating a separate project provides better isolation.
+This is what shared platforms like EOSC and (the Edinburgh one) provide.
+Sharing the same project makes things much simpler, but much harder to track who did what.
+
+Different project profiles, one shared project, individual projects per user.
+Different API profiles, public API access and ssh only access.
+Different networ profiles, direct conenction or private network and router.
+
+Can we auto-configure the project using heat templates ?
+
+Should we base this on basic Azimuth ?
+
+The Openstack platform should provide access via the Horizon GUI, integrated with the SKAO IAM service for authentication.
+The Horizon GUI must be accessible from the public internet.
+
+The Openstack platform should provide access via the command line tools, with plugins for all of the components needed to setup the target use cases.
+Ideally the command line API should be accessible from the public internet.
+If not, then the site needs to provide an automated process for setting up an ssh tunnel and bastion host.
+The site is responsible for making this easy.
+
+By default, the Openstack platform should provide all the tools and services needed to create a VM,
+connect it to the outside network and add some level of persistent storage.
+
+The Openstack service should provide command line access to the compute system,
+including creating and managing VMs and connecting them to the outside world.
+
+If the Openstack service includes CephFS storage co-located with the compute platform,
+then the Openstack service should provide support for command line access to the storage system,
+including creating and administering shares.
+
+If the Openstack service includes a Ceph object storage co-located with the compute platform,
+then the Openstack service should provide support for command line access to the storage system,
+including creating and administering storage containers and objects.
+
+Different sites may have different network policies.
+Do we define one standard policy (hard to get everyone to do the same),
+or do we define a way for sites to descibe their policy and provide
+the tools to make it useable.
+
+# -----------------------------------------------------
+From Jesus's text on Kubernetes:
+
+Main considerations:
+Cluster Size: The number of nodes depends on your workload requirements. Start small and scale up as needed based on resource demands.
+Node Hardware: Choose node hardware with sufficient CPU, memory, and storage to handle your containerised applications.
+High Availability: Configure your cluster with redundancy in the control plane and worker nodes to ensure high availability and fault tolerance.
+Storage: Persistent storage solutions like local storage, Network Attached Storage (NAS), or Ceph can be integrated with Kubernetes to store application data that needs to persist across pod restarts.
+Security: Implement security best practices like role-based access control (RBAC) and network policies to secure your cluster and containerised workloads.
+
+
