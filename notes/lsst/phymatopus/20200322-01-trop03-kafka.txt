@@ -31,26 +31,22 @@
 
     df -h /var/
 
---START--
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5        65G   61G     0 100% /var
---END--
+    >   Filesystem      Size  Used Avail Use% Mounted on
+    >   /dev/sda5        65G   61G     0 100% /var
 
 
     source "${HOME}/libvirt.env"
     virsh -c $libvirtcon list --all
 
---START--
- Id    Name                           State
-----------------------------------------------------
- 67    Stedigo                        paused
- 69    Edwalafia                      running
- 81    Angece                         paused
- 82    Onoza                          paused
- 83    Fosauri                        paused
- 84    Marpus                         paused
- 85    Byflame                        paused
---END--
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    67    Stedigo                        paused
+    >    69    Edwalafia                      running
+    >    81    Angece                         paused
+    >    82    Onoza                          paused
+    >    83    Fosauri                        paused
+    >    84    Marpus                         paused
+    >    85    Byflame                        paused
 
 
 # -----------------------------------------------------
@@ -71,31 +67,29 @@ Filesystem      Size  Used Avail Use% Mounted on
                     "${vmname}"
         done
 
---START--
----- ----
-Node [Stedigo]
-Domain Stedigo destroyed
-
----- ----
-Node [Angece]
-Domain Angece destroyed
-
----- ----
-Node [Onoza]
-Domain Onoza destroyed
-
----- ----
-Node [Fosauri]
-Domain Fosauri destroyed
-
----- ----
-Node [Marpus]
-Domain Marpus destroyed
-
----- ----
-Node [Byflame]
-Domain Byflame destroyed
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Domain Stedigo destroyed
+    >   
+    >   ---- ----
+    >   Node [Angece]
+    >   Domain Angece destroyed
+    >   
+    >   ---- ----
+    >   Node [Onoza]
+    >   Domain Onoza destroyed
+    >   
+    >   ---- ----
+    >   Node [Fosauri]
+    >   Domain Fosauri destroyed
+    >   
+    >   ---- ----
+    >   Node [Marpus]
+    >   Domain Marpus destroyed
+    >   
+    >   ---- ----
+    >   Node [Byflame]
+    >   Domain Byflame destroyed
 
 
 # -----------------------------------------------------
@@ -116,27 +110,23 @@ Domain Byflame destroyed
                     "${vmname}"
         done
 
---START--
----- ----
-Node [Edwalafia]
-Domain Edwalafia is being shutdown
---END--
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   Domain Edwalafia is being shutdown
 
 
     source "${HOME}/libvirt.env"
     virsh -c $libvirtcon list --all
 
---START--
- Id    Name                           State
-----------------------------------------------------
- -     Angece                         shut off
- -     Byflame                        shut off
- -     Edwalafia                      shut off
- -     Fosauri                        shut off
- -     Marpus                         shut off
- -     Onoza                          shut off
- -     Stedigo                        shut off
---END--
+    >    Id    Name                           State
+    >   ----------------------------------------------------
+    >    -     Angece                         shut off
+    >    -     Byflame                        shut off
+    >    -     Edwalafia                      shut off
+    >    -     Fosauri                        shut off
+    >    -     Marpus                         shut off
+    >    -     Onoza                          shut off
+    >    -     Stedigo                        shut off
 
 
 # -----------------------------------------------------
@@ -145,42 +135,36 @@ Domain Edwalafia is being shutdown
 
     sudo du -h /var | sed -n '/^[0-9.]*G/p'
 
---START--
-1.3G    /var/cache/apt/archives
-1.4G    /var/cache/apt
-1.4G    /var/cache
-57G     /var/lib/libvirt/images/live
-2.2G    /var/lib/libvirt/images/base
-60G     /var/lib/libvirt/images
-60G     /var/lib/libvirt
-60G     /var/lib
-61G     /var
---END--
+    >   1.3G    /var/cache/apt/archives
+    >   1.4G    /var/cache/apt
+    >   1.4G    /var/cache
+    >   57G     /var/lib/libvirt/images/live
+    >   2.2G    /var/lib/libvirt/images/base
+    >   60G     /var/lib/libvirt/images
+    >   60G     /var/lib/libvirt
+    >   60G     /var/lib
+    >   61G     /var
 
 
     ls -alh /var/lib/libvirt/images/live
 
---START--
-total 57G
-drwxr-xr-x 2 root root 4.0K Mar 21 11:16 .
-drwx--x--x 5 root root 4.0K Dec  9  2018 ..
--rw------- 1 root root 5.0G Mar 22 01:09 Angece.qcow
--rw------- 1 root root 9.0G Mar 22 02:09 Byflame.qcow
--rw------- 1 root root  12G Mar 22 02:18 Edwalafia.qcow
--rw------- 1 root root 9.0G Mar 22 02:09 Fosauri.qcow
--rw------- 1 root root 9.0G Mar 22 02:09 Marpus.qcow
--rw------- 1 root root 6.4G Mar 21 23:30 Onoza.qcow
--rw------- 1 root root 6.8G Mar 21 23:30 Stedigo.qcow
---END--
+    >   total 57G
+    >   drwxr-xr-x 2 root root 4.0K Mar 21 11:16 .
+    >   drwx--x--x 5 root root 4.0K Dec  9  2018 ..
+    >   -rw------- 1 root root 5.0G Mar 22 01:09 Angece.qcow
+    >   -rw------- 1 root root 9.0G Mar 22 02:09 Byflame.qcow
+    >   -rw------- 1 root root  12G Mar 22 02:18 Edwalafia.qcow
+    >   -rw------- 1 root root 9.0G Mar 22 02:09 Fosauri.qcow
+    >   -rw------- 1 root root 9.0G Mar 22 02:09 Marpus.qcow
+    >   -rw------- 1 root root 6.4G Mar 21 23:30 Onoza.qcow
+    >   -rw------- 1 root root 6.8G Mar 21 23:30 Stedigo.qcow
 
 
     source nodenames 
 
---START--
-Zookeepers    [Fosauri Marpus Byflame]
-Kafka nodes   [Stedigo Angece Edwalafia Onoza]
-Mirror makers [Dwalewen Gwoeric]
---END--
+    >   Zookeepers    [Fosauri Marpus Byflame]
+    >   Kafka nodes   [Stedigo Angece Edwalafia Onoza]
+    >   Mirror makers [Dwalewen Gwoeric]
 
     #
     # Edwalafia just didn't get the message (12G).
@@ -207,11 +191,9 @@ Mirror makers [Dwalewen Gwoeric]
             --remove-all-storage    
 
 
---START--
-Domain Byflame has been undefined
-Volume 'vda'(/var/lib/libvirt/images/live/Byflame.qcow) removed.
-Volume 'vdb'(/var/lib/libvirt/images/init/Byflame.iso) removed.
---END--
+    >   Domain Byflame has been undefined
+    >   Volume 'vda'(/var/lib/libvirt/images/live/Byflame.qcow) removed.
+    >   Volume 'vdb'(/var/lib/libvirt/images/init/Byflame.iso) removed.
 
 
 # -----------------------------------------------------
@@ -233,15 +215,13 @@ Volume 'vdb'(/var/lib/libvirt/images/init/Byflame.iso) removed.
                     "${vmname}"
         done
 
---START--
----- ----
-Node [Fosauri]
-Domain Fosauri started
-
----- ----
-Node [Marpus]
-Domain Marpus started
---END--
+    >   ---- ----
+    >   Node [Fosauri]
+    >   Domain Fosauri started
+    >   
+    >   ---- ----
+    >   Node [Marpus]
+    >   Domain Marpus started
 
 
 # -----------------------------------------------------
@@ -275,18 +255,16 @@ Domain Marpus started
                 '
         done
 
---START--
----- ----
-Node [Fosauri]
-Log path [/var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log]
--rw-r--r--. 1 root root 4.5M Mar 21 23:21 /var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log
--rw-r--r--. 1 root root 0 Mar 22 02:41 /var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log
----- ----
-Node [Marpus]
-Log path [/var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log]
--rw-r--r--. 1 root root 61K Mar 21 23:26 /var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log
--rw-r--r--. 1 root root 0 Mar 22 02:41 /var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log
---END--
+    >   ---- ----
+    >   Node [Fosauri]
+    >   Log path [/var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log]
+    >   -rw-r--r--. 1 root root 4.5M Mar 21 23:21 /var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 02:41 /var/lib/docker/containers/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51/b32817cb4465779fea8e31bb729a97d359af20a913f893ac0b9712a126a8dc51-json.log
+    >   ---- ----
+    >   Node [Marpus]
+    >   Log path [/var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log]
+    >   -rw-r--r--. 1 root root 61K Mar 21 23:26 /var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 02:41 /var/lib/docker/containers/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367/765f868419991fb2710849c2648afacb8c401023e5ebe0c9a40af22e11251367-json.log
 
 
 # -----------------------------------------------------
@@ -344,12 +322,10 @@ EOF
                 '
         done
 
---START--
----- ----
-Node [Fosauri]
----- ----
-Node [Marpus]
---END--
+    >   ---- ----
+    >   Node [Fosauri]
+    >   ---- ----
+    >   Node [Marpus]
 
 
 # -----------------------------------------------------
@@ -360,15 +336,13 @@ Node [Marpus]
 
         createvm
 
---START--
-....
-INFO : Node name [Sendalin]
-INFO : Base name [fedora-30-docker-base-20190903.qcow]
-INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
-INFO : Disc name [Sendalin.qcow]
-INFO : Disc size [16GiB]
-....
---END--
+    >   ....
+    >   INFO : Node name [Sendalin]
+    >   INFO : Base name [fedora-30-docker-base-20190903.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
+    >   INFO : Disc name [Sendalin.qcow]
+    >   INFO : Disc size [16GiB]
+    >   ....
 
 
 # -----------------------------------------------------
@@ -402,9 +376,7 @@ INFO : Disc size [16GiB]
                 shutdown \
                 ${vmname:?}
 
---START--
-Domain Sendalin is being shutdown
---END--
+    >   Domain Sendalin is being shutdown
 
         sleep 30
 
@@ -413,9 +385,7 @@ Domain Sendalin is being shutdown
                 start \
                 ${vmname:?}
 
---START--
-Domain Sendalin started
---END--
+    >   Domain Sendalin started
 
 
 # -----------------------------------------------------
@@ -453,14 +423,12 @@ Domain Sendalin started
                     "
         done
 
---START--
-Fosauri
-Sun 22 Mar 03:01:06 GMT 2020
-Marpus
-Sun 22 Mar 03:01:06 GMT 2020
-Sendalin
-Sun 22 Mar 03:01:06 GMT 2020
---END--
+    >   Fosauri
+    >   Sun 22 Mar 03:01:06 GMT 2020
+    >   Marpus
+    >   Sun 22 Mar 03:01:06 GMT 2020
+    >   Sendalin
+    >   Sun 22 Mar 03:01:06 GMT 2020
 
 
 # -----------------------------------------------------
@@ -502,11 +470,9 @@ Sun 22 Mar 03:01:06 GMT 2020
         echo "list[${i}] [${zkservers[${i}]}]"
     done
 
---START--
-list[0] [0.0.0.0:2888:3888;Marpus:2888:3888;Sendalin:2888:3888]
-list[1] [Fosauri:2888:3888;0.0.0.0:2888:3888;Sendalin:2888:3888]
-list[2] [Fosauri:2888:3888;Marpus:2888:3888;0.0.0.0:2888:3888]
---END--
+    >   list[0] [0.0.0.0:2888:3888;Marpus:2888:3888;Sendalin:2888:3888]
+    >   list[1] [Fosauri:2888:3888;0.0.0.0:2888:3888;Sendalin:2888:3888]
+    >   list[2] [Fosauri:2888:3888;Marpus:2888:3888;0.0.0.0:2888:3888]
 
 
 # -----------------------------------------------------
@@ -565,11 +531,9 @@ EOYML
                 ${sshuser:?}@${vmname:?}:zookeeper.yml
         done
 
---START--
-zookeeper.yml       100%  784   818.0KB/s   00:00    
-zookeeper.yml       100%  784     1.0MB/s   00:00    
-zookeeper.yml       100%  784   743.5KB/s   00:00
---END--
+    >   zookeeper.yml       100%  784   818.0KB/s   00:00    
+    >   zookeeper.yml       100%  784     1.0MB/s   00:00    
+    >   zookeeper.yml       100%  784   743.5KB/s   00:00
 
 
 # -----------------------------------------------------
@@ -594,11 +558,9 @@ ln -sf zookeeper.env .env
                     "
         done
 
---START--
-Node [0][Fosauri]
-Node [1][Marpus]
-Node [2][Sendalin]
---END--
+    >   Node [0][Fosauri]
+    >   Node [1][Marpus]
+    >   Node [2][Sendalin]
 
 
 # -----------------------------------------------------
@@ -618,23 +580,21 @@ Node [2][Sendalin]
                 "
         done
 
---START--
----- ----
-Fosauri
-Sun 22 Mar 03:03:46 GMT 2020
-ZOOKEEPER_SERVER_ID=1
-ZOOKEEPER_SERVERS=0.0.0.0:2888:3888;Marpus:2888:3888;Sendalin:2888:3888
----- ----
-Marpus
-Sun 22 Mar 03:03:46 GMT 2020
-ZOOKEEPER_SERVER_ID=2
-ZOOKEEPER_SERVERS=Fosauri:2888:3888;0.0.0.0:2888:3888;Sendalin:2888:3888
----- ----
-Sendalin
-Sun 22 Mar 03:03:46 GMT 2020
-ZOOKEEPER_SERVER_ID=3
-ZOOKEEPER_SERVERS=Fosauri:2888:3888;Marpus:2888:3888;0.0.0.0:2888:3888
---END--
+    >   ---- ----
+    >   Fosauri
+    >   Sun 22 Mar 03:03:46 GMT 2020
+    >   ZOOKEEPER_SERVER_ID=1
+    >   ZOOKEEPER_SERVERS=0.0.0.0:2888:3888;Marpus:2888:3888;Sendalin:2888:3888
+    >   ---- ----
+    >   Marpus
+    >   Sun 22 Mar 03:03:46 GMT 2020
+    >   ZOOKEEPER_SERVER_ID=2
+    >   ZOOKEEPER_SERVERS=Fosauri:2888:3888;0.0.0.0:2888:3888;Sendalin:2888:3888
+    >   ---- ----
+    >   Sendalin
+    >   Sun 22 Mar 03:03:46 GMT 2020
+    >   ZOOKEEPER_SERVER_ID=3
+    >   ZOOKEEPER_SERVERS=Fosauri:2888:3888;Marpus:2888:3888;0.0.0.0:2888:3888
 
 
 # -----------------------------------------------------
@@ -664,62 +624,52 @@ ZOOKEEPER_SERVERS=Fosauri:2888:3888;Marpus:2888:3888;0.0.0.0:2888:3888
 
     df -h /var
 
---START--
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5        65G   52G  8.9G  86% /var
---END--
+    >   Filesystem      Size  Used Avail Use% Mounted on
+    >   /dev/sda5        65G   52G  8.9G  86% /var
     
 
     ls -alh /var/lib/libvirt/images/live
 
---START--
-total 49G
-drwxr-xr-x 2 root         root         4.0K Mar 22 02:37 .
-drwx--x--x 5 root         root         4.0K Dec  9  2018 ..
--rw------- 1 root         root         5.0G Mar 22 01:09 Angece.qcow
--rw------- 1 root         root          12G Mar 22 02:18 Edwalafia.qcow
--rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:07 Fosauri.qcow
--rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:07 Marpus.qcow
--rw------- 1 root         root         6.4G Mar 21 23:30 Onoza.qcow
--rw------- 1 root         root         6.8G Mar 21 23:30 Stedigo.qcow
---END--
+    >   total 49G
+    >   drwxr-xr-x 2 root         root         4.0K Mar 22 02:37 .
+    >   drwx--x--x 5 root         root         4.0K Dec  9  2018 ..
+    >   -rw------- 1 root         root         5.0G Mar 22 01:09 Angece.qcow
+    >   -rw------- 1 root         root          12G Mar 22 02:18 Edwalafia.qcow
+    >   -rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:07 Fosauri.qcow
+    >   -rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:07 Marpus.qcow
+    >   -rw------- 1 root         root         6.4G Mar 21 23:30 Onoza.qcow
+    >   -rw------- 1 root         root         6.8G Mar 21 23:30 Stedigo.qcow
 
 
     sudo du -h /var | sed -n '/^[0-9.]*G/p'
 
---START--
-1.3G	/var/cache/apt/archives
-1.4G	/var/cache/apt
-1.4G	/var/cache
-49G	/var/lib/libvirt/images/live
-2.2G	/var/lib/libvirt/images/base
-51G	/var/lib/libvirt/images
-51G	/var/lib/libvirt
-51G	/var/lib
-52G	/var
---END--
+    >   1.3G	/var/cache/apt/archives
+    >   1.4G	/var/cache/apt
+    >   1.4G	/var/cache
+    >   49G	/var/lib/libvirt/images/live
+    >   2.2G	/var/lib/libvirt/images/base
+    >   51G	/var/lib/libvirt/images
+    >   51G	/var/lib/libvirt
+    >   51G	/var/lib
+    >   52G	/var
 
 
     sudo apt-get clean
 
     sudo du -h /var | sed -n '/^[0-9.]*G/p'
 
---START--
-49G	/var/lib/libvirt/images/live
-2.2G	/var/lib/libvirt/images/base
-51G	/var/lib/libvirt/images
-51G	/var/lib/libvirt
-51G	/var/lib
-51G	/var
---END--
+    >   49G	/var/lib/libvirt/images/live
+    >   2.2G	/var/lib/libvirt/images/base
+    >   51G	/var/lib/libvirt/images
+    >   51G	/var/lib/libvirt
+    >   51G	/var/lib
+    >   51G	/var
 
 
     df -h /var
 
---START--
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5        65G   51G   11G  84% /var
---END--
+    >   Filesystem      Size  Used Avail Use% Mounted on
+    >   /dev/sda5        65G   51G   11G  84% /var
 
 
 # -----------------------------------------------------
@@ -733,9 +683,7 @@ Filesystem      Size  Used Avail Use% Mounted on
             start \
             ${vmname:?}
 
---START--
-Domain Edwalafia started
---END--
+    >   Domain Edwalafia started
 
 
 # -----------------------------------------------------
@@ -760,11 +708,9 @@ Domain Edwalafia started
         sudo ls -lh "${logpath:?}"
         '
 
---START--
-Log path [/var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log]
--rw-r--r--. 1 root root 2.5G Mar 22 02:18 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
--rw-r--r--. 1 root root 0 Mar 22 03:16 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
---END--
+    >   Log path [/var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log]
+    >   -rw-r--r--. 1 root root 2.5G Mar 22 02:18 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:16 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
     
     #
     # Didn't really save much space.
@@ -772,10 +718,8 @@ Log path [/var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e2981
 
     df -h /var
 
---START--
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5        65G   51G   11G  84% /var
---END--
+    >   Filesystem      Size  Used Avail Use% Mounted on
+    >   /dev/sda5        65G   51G   11G  84% /var
 
 
 # -----------------------------------------------------
@@ -791,9 +735,7 @@ Filesystem      Size  Used Avail Use% Mounted on
             shutdown \
             ${vmname:?}
 
---START--
-Domain Edwalafia is being shutdown
---END--
+    >   Domain Edwalafia is being shutdown
 
 
 # -----------------------------------------------------
@@ -828,9 +770,7 @@ Domain Edwalafia is being shutdown
         </disk>
 
 
---START--
-Domain Edwalafia XML configuration edited.
---END--
+    >   Domain Edwalafia XML configuration edited.
 
 
 # -----------------------------------------------------
@@ -844,9 +784,7 @@ Domain Edwalafia XML configuration edited.
             start \
             ${vmname:?}
 
---START--
-Domain Edwalafia started
---END--
+    >   Domain Edwalafia started
 
 
 # -----------------------------------------------------
@@ -855,23 +793,19 @@ Domain Edwalafia started
 
     df -h /var
 
---START--
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5        65G   39G   23G  64% /var
---END--
+    >   Filesystem      Size  Used Avail Use% Mounted on
+    >   /dev/sda5        65G   39G   23G  64% /var
 
 
     ls -alh /var/lib/libvirt/images/live
 
---START--
-drwxr-xr-x 2 root         root         4.0K Mar 22 03:46 .
-drwx--x--x 5 root         root         4.0K Dec  9  2018 ..
--rw------- 1 root         root         5.0G Mar 22 01:09 Angece.qcow
--rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:49 Fosauri.qcow
--rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:49 Marpus.qcow
--rw------- 1 root         root         6.4G Mar 21 23:30 Onoza.qcow
--rw------- 1 root         root         6.8G Mar 21 23:30 Stedigo.qcow
---END--
+    >   drwxr-xr-x 2 root         root         4.0K Mar 22 03:46 .
+    >   drwx--x--x 5 root         root         4.0K Dec  9  2018 ..
+    >   -rw------- 1 root         root         5.0G Mar 22 01:09 Angece.qcow
+    >   -rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:49 Fosauri.qcow
+    >   -rw------- 1 libvirt-qemu libvirt-qemu 9.0G Mar 22 03:49 Marpus.qcow
+    >   -rw------- 1 root         root         6.4G Mar 21 23:30 Onoza.qcow
+    >   -rw------- 1 root         root         6.8G Mar 21 23:30 Stedigo.qcow
 
 
 # -----------------------------------------------------
@@ -890,19 +824,17 @@ drwx--x--x 5 root         root         4.0K Dec  9  2018 ..
                     "${vmname}"
         done
 
---START--
----- ----
-Node [Angece]
-Domain Angece started
-
----- ----
-Node [Onoza]
-Domain Onoza started
-
----- ----
-Node [Stedigo]
-Domain Stedigo started
---END--
+    >   ---- ----
+    >   Node [Angece]
+    >   Domain Angece started
+    >   
+    >   ---- ----
+    >   Node [Onoza]
+    >   Domain Onoza started
+    >   
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Domain Stedigo started
 
 
 # -----------------------------------------------------
@@ -932,28 +864,26 @@ Domain Stedigo started
                 '
         done
 
---START--
----- ----
-Node [Stedigo]
-Log path [/var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log]
--rw-r--r--. 1 root root 2.2G Mar 21 23:29 /var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log
--rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log
----- ----
-Node [Angece]
-Log path [/var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log]
--rw-r--r--. 1 root root 2.0G Mar 22 01:08 /var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log
--rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log
----- ----
-Node [Edwalafia]
-Log path [/var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log]
--rw-r--r--. 1 root root 0 Mar 22 03:16 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
--rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
----- ----
-Node [Onoza]
-Log path [/var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log]
--rw-r--r--. 1 root root 1.7G Mar 21 23:29 /var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log
--rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Log path [/var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log]
+    >   -rw-r--r--. 1 root root 2.2G Mar 21 23:29 /var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097/d16a051975c06903e28152d3d9cb20d42341d3063a6ef3734348582f83645097-json.log
+    >   ---- ----
+    >   Node [Angece]
+    >   Log path [/var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log]
+    >   -rw-r--r--. 1 root root 2.0G Mar 22 01:08 /var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b/54af20eec4e413c023121f554198d29e5dfa1c948a90114d9e1062e56fdbab0b-json.log
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   Log path [/var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log]
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:16 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c/e7f81f6dceb599ded533ee39545428b01cced7e29816938faca4024bfa51974c-json.log
+    >   ---- ----
+    >   Node [Onoza]
+    >   Log path [/var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log]
+    >   -rw-r--r--. 1 root root 1.7G Mar 21 23:29 /var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log
+    >   -rw-r--r--. 1 root root 0 Mar 22 03:54 /var/lib/docker/containers/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848/ee678ed8f55aa462e513b07db3ccf241a124055429c80c078e6494c86c04e848-json.log
 
 
 # -----------------------------------------------------
@@ -982,16 +912,14 @@ EOF
                 '
         done
 
---START--
----- ----
-Node [Stedigo]
----- ----
-Node [Angece]
----- ----
-Node [Edwalafia]
----- ----
-Node [Onoza]
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   ---- ----
+    >   Node [Angece]
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   ---- ----
+    >   Node [Onoza]
 
 
 # -----------------------------------------------------
@@ -1014,16 +942,14 @@ Node [Onoza]
                 '
         done
 
---START--
----- ----
-Node [Stedigo]
----- ----
-Node [Angece]
----- ----
-Node [Edwalafia]
----- ----
-Node [Onoza]
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   ---- ----
+    >   Node [Angece]
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   ---- ----
+    >   Node [Onoza]
 
 
 # -----------------------------------------------------
@@ -1046,9 +972,7 @@ Node [Onoza]
         'stevedore_emily_1'
 
 
---START--
-[2020-03-22 03:57:46,778] INFO Connecting to zookeeper on Fosauri,Marpus,Byflame (kafka.server.KafkaServer)
---END--
+    >   [2020-03-22 03:57:46,778] INFO Connecting to zookeeper on Fosauri,Marpus,Byflame (kafka.server.KafkaServer)
 
     #
     # TODO Need to edit the Kafka config to update the Zookeeper address.
@@ -1077,28 +1001,26 @@ Node [Onoza]
         done
 
 
---START--
----- ----
-Node [Stedigo]
-Stopping stevedore_emily_1 ... done
-Removing stevedore_emily_1 ... done
-Removing network stevedore_default
----- ----
-Node [Angece]
-Stopping stevedore_emily_1 ... done
-Removing stevedore_emily_1 ... done
-Removing network stevedore_default
----- ----
-Node [Edwalafia]
-Stopping stevedore_emily_1 ... done
-Removing stevedore_emily_1 ... done
-Removing network stevedore_default
----- ----
-Node [Onoza]
-Stopping stevedore_emily_1 ... done
-Removing stevedore_emily_1 ... done
-Removing network stevedore_default
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Stopping stevedore_emily_1 ... done
+    >   Removing stevedore_emily_1 ... done
+    >   Removing network stevedore_default
+    >   ---- ----
+    >   Node [Angece]
+    >   Stopping stevedore_emily_1 ... done
+    >   Removing stevedore_emily_1 ... done
+    >   Removing network stevedore_default
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   Stopping stevedore_emily_1 ... done
+    >   Removing stevedore_emily_1 ... done
+    >   Removing network stevedore_default
+    >   ---- ----
+    >   Node [Onoza]
+    >   Stopping stevedore_emily_1 ... done
+    >   Removing stevedore_emily_1 ... done
+    >   Removing network stevedore_default
 
 
 # -----------------------------------------------------
@@ -1110,9 +1032,7 @@ Removing network stevedore_default
 
     echo "zklist [${zklist}]"
 
---START--
-zklist [Fosauri,Marpus,Sendalin]
---END--
+    >   zklist [Fosauri,Marpus,Sendalin]
 
 
 # -----------------------------------------------------
@@ -1137,16 +1057,14 @@ zklist [Fosauri,Marpus,Sendalin]
                 "
         done
 
---START--
----- ----
-Node [Stedigo]
----- ----
-Node [Angece]
----- ----
-Node [Edwalafia]
----- ----
-Node [Onoza]
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   ---- ----
+    >   Node [Angece]
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   ---- ----
+    >   Node [Onoza]
 
 
 # -----------------------------------------------------
@@ -1171,24 +1089,22 @@ Node [Onoza]
                 '
         done
 
---START--
----- ----
-Node [Stedigo]
-Creating network "stevedore_default" with the default driver
-Creating stevedore_emily_1 ... done
----- ----
-Node [Angece]
-Creating network "stevedore_default" with the default driver
-Creating stevedore_emily_1 ... done
----- ----
-Node [Edwalafia]
-Creating network "stevedore_default" with the default driver
-Creating stevedore_emily_1 ... done
----- ----
-Node [Onoza]
-Creating network "stevedore_default" with the default driver
-Creating stevedore_emily_1 ... done
---END--
+    >   ---- ----
+    >   Node [Stedigo]
+    >   Creating network "stevedore_default" with the default driver
+    >   Creating stevedore_emily_1 ... done
+    >   ---- ----
+    >   Node [Angece]
+    >   Creating network "stevedore_default" with the default driver
+    >   Creating stevedore_emily_1 ... done
+    >   ---- ----
+    >   Node [Edwalafia]
+    >   Creating network "stevedore_default" with the default driver
+    >   Creating stevedore_emily_1 ... done
+    >   ---- ----
+    >   Node [Onoza]
+    >   Creating network "stevedore_default" with the default driver
+    >   Creating stevedore_emily_1 ... done
 
 
     #
@@ -1224,29 +1140,27 @@ Creating stevedore_emily_1 ... done
 
         done
 
---START--
----- ----
-Node [Dwalewen]
-Sun 22 Mar 04:21:40 GMT 2020
-Dwalewen
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
----- ----
-Node [Gwoeric]
-Sun 22 Mar 04:21:40 GMT 2020
-Gwoeric
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
----- ----
-Node [Wumar]
-Sun 22 Mar 04:21:40 GMT 2020
-Wumar
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
----- ----
-Node [Sendalin]
-Sun 22 Mar 04:21:40 GMT 2020
-Sendalin
-CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
-858c1ab9b30d        confluentinc/cp-zookeeper:4.1.1   "/etc/confluent/dock…"   About an hour ago   Up About an hour    0.0.0.0:2181->2181/tcp, 0.0.0.0:2888->2888/tcp, 0.0.0.0:3888->3888/tcp   stevedore_courtney_1
---END--
+    >   ---- ----
+    >   Node [Dwalewen]
+    >   Sun 22 Mar 04:21:40 GMT 2020
+    >   Dwalewen
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Gwoeric]
+    >   Sun 22 Mar 04:21:40 GMT 2020
+    >   Gwoeric
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Wumar]
+    >   Sun 22 Mar 04:21:40 GMT 2020
+    >   Wumar
+    >   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    >   ---- ----
+    >   Node [Sendalin]
+    >   Sun 22 Mar 04:21:40 GMT 2020
+    >   Sendalin
+    >   CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+    >   858c1ab9b30d        confluentinc/cp-zookeeper:4.1.1   "/etc/confluent/dock…"   About an hour ago   Up About an hour    0.0.0.0:2181->2181/tcp, 0.0.0.0:2888->2888/tcp, 0.0.0.0:3888->3888/tcp   stevedore_courtney_1
 
 
 # -----------------------------------------------------
@@ -1277,29 +1191,27 @@ CONTAINER ID        IMAGE                             COMMAND                  C
                     --remove-all-storage    
         done
 
---START--
----- ----
-Node [Dwalewen]
-Domain Dwalewen destroyed
-
-Domain Dwalewen has been undefined
-Volume 'vda'(/var/lib/libvirt/images/live/Dwalewen.qcow) removed.
-Volume 'vdb'(/var/lib/libvirt/images/init/Dwalewen.iso) removed.
-
----- ----
-Node [Gwoeric]
-Domain Gwoeric destroyed
-
-Domain Gwoeric has been undefined
-Volume 'vda'(/var/lib/libvirt/images/live/Gwoeric.qcow) removed.
-Volume 'vdb'(/var/lib/libvirt/images/init/Gwoeric.iso) removed.
-
----- ----
-Node [Wumar]
-Domain Wumar destroyed
-
-Domain Wumar has been undefined
-Volume 'vda'(/var/lib/libvirt/images/live/Wumar.qcow) removed.
-Volume 'vdb'(/var/lib/libvirt/images/init/Wumar.iso) removed.
---END--
+    >   ---- ----
+    >   Node [Dwalewen]
+    >   Domain Dwalewen destroyed
+    >   
+    >   Domain Dwalewen has been undefined
+    >   Volume 'vda'(/var/lib/libvirt/images/live/Dwalewen.qcow) removed.
+    >   Volume 'vdb'(/var/lib/libvirt/images/init/Dwalewen.iso) removed.
+    >   
+    >   ---- ----
+    >   Node [Gwoeric]
+    >   Domain Gwoeric destroyed
+    >   
+    >   Domain Gwoeric has been undefined
+    >   Volume 'vda'(/var/lib/libvirt/images/live/Gwoeric.qcow) removed.
+    >   Volume 'vdb'(/var/lib/libvirt/images/init/Gwoeric.iso) removed.
+    >   
+    >   ---- ----
+    >   Node [Wumar]
+    >   Domain Wumar destroyed
+    >   
+    >   Domain Wumar has been undefined
+    >   Volume 'vda'(/var/lib/libvirt/images/live/Wumar.qcow) removed.
+    >   Volume 'vdb'(/var/lib/libvirt/images/init/Wumar.iso) removed.
 

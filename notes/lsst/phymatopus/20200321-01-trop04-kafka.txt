@@ -85,18 +85,16 @@
             info \
                 "${basefile:?}"
 
---START--
-image: fedora-30-docker-base-20190903.qcow
-file format: qcow2
-virtual size: 16G (17179869184 bytes)
-disk size: 1.1G
-cluster_size: 65536
-Format specific information:
-    compat: 1.1
-    lazy refcounts: false
-    refcount bits: 16
-    corrupt: false
---END--
+    >   image: fedora-30-docker-base-20190903.qcow
+    >   file format: qcow2
+    >   virtual size: 16G (17179869184 bytes)
+    >   disk size: 1.1G
+    >   cluster_size: 65536
+    >   Format specific information:
+    >       compat: 1.1
+    >       lazy refcounts: false
+    >       refcount bits: 16
+    >       corrupt: false
 
 #---------------------------------------------------------------------
 # Delete any existing volume.
@@ -108,10 +106,8 @@ Format specific information:
                 --pool "${basepool}" \
                 "${basefile:?}"
 
---START--
-error: failed to get vol 'fedora-30-docker-base-20190903.qcow'
-error: Storage volume not found: no storage vol with matching path 'fedora-30-docker-base-20190903.qcow'
---END--
+    >   error: failed to get vol 'fedora-30-docker-base-20190903.qcow'
+    >   error: Storage volume not found: no storage vol with matching path 'fedora-30-docker-base-20190903.qcow'
 
 #---------------------------------------------------------------------
 # Create a new (empty) volume.
@@ -125,9 +121,7 @@ error: Storage volume not found: no storage vol with matching path 'fedora-30-do
                 "${basesize:?}" \
                 --format qcow2
 
---START--
-Vol fedora-30-docker-base-20190903.qcow created
---END--
+    >   Vol fedora-30-docker-base-20190903.qcow created
 
 #---------------------------------------------------------------------
 # Upload the image into the new volume.
@@ -155,24 +149,20 @@ Vol fedora-30-docker-base-20190903.qcow created
 
     createvm
 
---START--
-INFO : Node name [Dwalewen]
-INFO : Base name [fedora-30-docker-base-20190903.qcow]
-INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
-INFO : Disc name [Dwalewen.qcow]
-INFO : Disc size [16GiB]
---END--
+    >   INFO : Node name [Dwalewen]
+    >   INFO : Base name [fedora-30-docker-base-20190903.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
+    >   INFO : Disc name [Dwalewen.qcow]
+    >   INFO : Disc size [16GiB]
     
 
     createvm
 
---START--
-INFO : Node name [Gwoeric]
-INFO : Base name [fedora-30-docker-base-20190903.qcow]
-INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
-INFO : Disc name [Gwoeric.qcow]
-INFO : Disc size [16GiB]
---END--
+    >   INFO : Node name [Gwoeric]
+    >   INFO : Base name [fedora-30-docker-base-20190903.qcow]
+    >   INFO : Base path [/var/lib/libvirt/images/base/fedora-30-docker-base-20190903.qcow]
+    >   INFO : Disc name [Gwoeric.qcow]
+    >   INFO : Disc size [16GiB]
 
 
 #---------------------------------------------------------------------
@@ -213,22 +203,20 @@ INFO : Disc size [16GiB]
 
         done
 
---START--
----- ----
-Node [Dwalewen]
-Host Dwalewen not found in /home/dmr/.ssh/known_hosts
-# Dwalewen:22 SSH-2.0-OpenSSH_8.0
-# Dwalewen:22 SSH-2.0-OpenSSH_8.0
-# Dwalewen:22 SSH-2.0-OpenSSH_8.0
-# 172.16.6.31:22 SSH-2.0-OpenSSH_8.0
----- ----
-Node [Gwoeric]
-Host Gwoeric not found in /home/dmr/.ssh/known_hosts
-# Gwoeric:22 SSH-2.0-OpenSSH_8.0
-# Gwoeric:22 SSH-2.0-OpenSSH_8.0
-# Gwoeric:22 SSH-2.0-OpenSSH_8.0
-# 172.16.6.32:22 SSH-2.0-OpenSSH_8.0
---END--
+    >   ---- ----
+    >   Node [Dwalewen]
+    >   Host Dwalewen not found in /home/dmr/.ssh/known_hosts
+    >   # Dwalewen:22 SSH-2.0-OpenSSH_8.0
+    >   # Dwalewen:22 SSH-2.0-OpenSSH_8.0
+    >   # Dwalewen:22 SSH-2.0-OpenSSH_8.0
+    >   # 172.16.6.31:22 SSH-2.0-OpenSSH_8.0
+    >   ---- ----
+    >   Node [Gwoeric]
+    >   Host Gwoeric not found in /home/dmr/.ssh/known_hosts
+    >   # Gwoeric:22 SSH-2.0-OpenSSH_8.0
+    >   # Gwoeric:22 SSH-2.0-OpenSSH_8.0
+    >   # Gwoeric:22 SSH-2.0-OpenSSH_8.0
+    >   # 172.16.6.32:22 SSH-2.0-OpenSSH_8.0
 
 
 # -----------------------------------------------------
@@ -254,13 +242,11 @@ Host Gwoeric not found in /home/dmr/.ssh/known_hosts
                 "
         done
 
---START--
----- ----
-Node [Dwalewen]
-
----- ----
-Node [Gwoeric]
---END--
+    >   ---- ----
+    >   Node [Dwalewen]
+    >   
+    >   ---- ----
+    >   Node [Gwoeric]
 
 
 # -----------------------------------------------------
@@ -281,11 +267,9 @@ Node [Gwoeric]
                 "                
         done
 
---START--
-Domain Dwalewen is being shutdown
-
-Domain Gwoeric is being shutdown
---END--
+    >   Domain Dwalewen is being shutdown
+    >   
+    >   Domain Gwoeric is being shutdown
 
     sleep 30
 
@@ -300,11 +284,9 @@ Domain Gwoeric is being shutdown
                 "
         done
 
---START--
-Domain Dwalewen started
-
-Domain Gwoeric started
---END--
+    >   Domain Dwalewen started
+    >   
+    >   Domain Gwoeric started
 
 
 # -----------------------------------------------------
@@ -329,12 +311,10 @@ EOF
 
     cat "${HOME}/connections"
 
---START--
-ztftopicid=ztf_20200321_programid1
-ztfconnect=public.alerts.ztf.uw.edu:9092
-roeconnect=Stedigo:9092,Angece:9092,Edwalafia:9092,Onoza:9092
-roegroupid=ztf-mirror.roe.ac.uk
---END--
+    >   ztftopicid=ztf_20200321_programid1
+    >   ztfconnect=public.alerts.ztf.uw.edu:9092
+    >   roeconnect=Stedigo:9092,Angece:9092,Edwalafia:9092,Onoza:9092
+    >   roegroupid=ztf-mirror.roe.ac.uk
 
 
     #
@@ -364,91 +344,87 @@ EOF
 
 
 
---START--
-Unable to find image 'phymatopus/kafka-core:latest' locally
-latest: Pulling from phymatopus/kafka-core
-e71c36a80ba9: Pulling fs layer
-ddd7f2d439fc: Pulling fs layer
-....
-....
-906d0ec5db14: Pull complete
-57d9f5cfa5f7: Pull complete
-Digest: sha256:998482164d8991aa867730ec2b0d7b0c062311687964d53d255c7857621f28f1
-Status: Downloaded newer image for phymatopus/kafka-core:latest
---END--
+    >   Unable to find image 'phymatopus/kafka-core:latest' locally
+    >   latest: Pulling from phymatopus/kafka-core
+    >   e71c36a80ba9: Pulling fs layer
+    >   ddd7f2d439fc: Pulling fs layer
+    >   ....
+    >   ....
+    >   906d0ec5db14: Pull complete
+    >   57d9f5cfa5f7: Pull complete
+    >   Digest: sha256:998482164d8991aa867730ec2b0d7b0c062311687964d53d255c7857621f28f1
+    >   Status: Downloaded newer image for phymatopus/kafka-core:latest
 
---START--
-banana
-__confluent.support.metrics
-__consumer_offsets
-ztf_20190724_programid1
-ztf_20190725_programid1
-ztf_20190726_programid1
-ztf_20190727_programid1
-ztf_20190728_programid1
-ztf_20190729_programid1
-ztf_20190730_programid1
-ztf_20190731_programid1
-ztf_20190801_programid1
-ztf_20190802_programid1
-ztf_20190803_programid1
-ztf_20190804_programid1
-ztf_20190805_programid1
-ztf_20190806_programid1
-ztf_20190807_programid1
-ztf_20190808_programid1
-ztf_20190809_programid1
-ztf_20190810_programid1
-ztf_20190811_programid1
-ztf_20190812_programid1
-ztf_20190813_programid1
-ztf_20190814_programid1
-ztf_20190815_programid1
-ztf_20190816_programid1
-ztf_20190817_programid1
-ztf_20190818_programid1
-ztf_20190819_programid1
-ztf_20190820_programid1
-ztf_20190821_programid1
-ztf_20190822_programid1
-ztf_20190823_programid1
-ztf_20190824_programid1
-ztf_20190825_programid1
-ztf_20190826_programid1
-ztf_20190827_programid1
-ztf_20190828_programid1
-ztf_20190829_programid1
-ztf_20190830_programid1
-ztf_20190831_programid1
-ztf_20190901_programid1
-ztf_20190902_programid1
-ztf_20190903_programid1
-ztf_20190904_programid1
-ztf_20190905_programid1
-ztf_20190906_programid1
-ztf_20190907_programid1
-ztf_20190908_programid1
-ztf_20190909_programid1
-ztf_20190910_programid1
-ztf_20190911_programid1
-ztf_20190912_programid1
-ztf_20190913_programid1
-ztf_20190914_programid1
-ztf_20190915_programid1
-ztf_20190916_programid1
-ztf_20190917_programid1
-ztf_20190918_programid1
-ztf_20190919_programid1
-ztf_20190920_programid1
-ztf_20190921_programid1
-ztf_20190922_programid1
-ztf_20190923_programid1
-ztf_20190924_programid1
-ztf_20190925_programid1
-ztf_20190930_programid1
-ztf_20191012_programid1
-ztf_20191126_programid1
---END--
+    >   banana
+    >   __confluent.support.metrics
+    >   __consumer_offsets
+    >   ztf_20190724_programid1
+    >   ztf_20190725_programid1
+    >   ztf_20190726_programid1
+    >   ztf_20190727_programid1
+    >   ztf_20190728_programid1
+    >   ztf_20190729_programid1
+    >   ztf_20190730_programid1
+    >   ztf_20190731_programid1
+    >   ztf_20190801_programid1
+    >   ztf_20190802_programid1
+    >   ztf_20190803_programid1
+    >   ztf_20190804_programid1
+    >   ztf_20190805_programid1
+    >   ztf_20190806_programid1
+    >   ztf_20190807_programid1
+    >   ztf_20190808_programid1
+    >   ztf_20190809_programid1
+    >   ztf_20190810_programid1
+    >   ztf_20190811_programid1
+    >   ztf_20190812_programid1
+    >   ztf_20190813_programid1
+    >   ztf_20190814_programid1
+    >   ztf_20190815_programid1
+    >   ztf_20190816_programid1
+    >   ztf_20190817_programid1
+    >   ztf_20190818_programid1
+    >   ztf_20190819_programid1
+    >   ztf_20190820_programid1
+    >   ztf_20190821_programid1
+    >   ztf_20190822_programid1
+    >   ztf_20190823_programid1
+    >   ztf_20190824_programid1
+    >   ztf_20190825_programid1
+    >   ztf_20190826_programid1
+    >   ztf_20190827_programid1
+    >   ztf_20190828_programid1
+    >   ztf_20190829_programid1
+    >   ztf_20190830_programid1
+    >   ztf_20190831_programid1
+    >   ztf_20190901_programid1
+    >   ztf_20190902_programid1
+    >   ztf_20190903_programid1
+    >   ztf_20190904_programid1
+    >   ztf_20190905_programid1
+    >   ztf_20190906_programid1
+    >   ztf_20190907_programid1
+    >   ztf_20190908_programid1
+    >   ztf_20190909_programid1
+    >   ztf_20190910_programid1
+    >   ztf_20190911_programid1
+    >   ztf_20190912_programid1
+    >   ztf_20190913_programid1
+    >   ztf_20190914_programid1
+    >   ztf_20190915_programid1
+    >   ztf_20190916_programid1
+    >   ztf_20190917_programid1
+    >   ztf_20190918_programid1
+    >   ztf_20190919_programid1
+    >   ztf_20190920_programid1
+    >   ztf_20190921_programid1
+    >   ztf_20190922_programid1
+    >   ztf_20190923_programid1
+    >   ztf_20190924_programid1
+    >   ztf_20190925_programid1
+    >   ztf_20190930_programid1
+    >   ztf_20191012_programid1
+    >   ztf_20191126_programid1
 
 
 # -----------------------------------------------------
@@ -483,218 +459,216 @@ ztf_20191126_programid1
 EOF
 
 
---START--
----- ----
-Topic [banana]
-0
----- ----
-Topic [__confluent.support.metrics]
-8
----- ----
-Topic [__consumer_offsets]
-1631848
----- ----
-Topic [ztf_20190724_programid1]
-148172
----- ----
-Topic [ztf_20190725_programid1]
-138401
----- ----
-Topic [ztf_20190726_programid1]
-183338
----- ----
-Topic [ztf_20190727_programid1]
-175771
----- ----
-Topic [ztf_20190728_programid1]
-117805
----- ----
-Topic [ztf_20190729_programid1]
-300398
----- ----
-Topic [ztf_20190730_programid1]
-385676
----- ----
-Topic [ztf_20190731_programid1]
-492796
----- ----
-Topic [ztf_20190801_programid1]
-230719
----- ----
-Topic [ztf_20190802_programid1]
-134017
----- ----
-Topic [ztf_20190803_programid1]
-405474
----- ----
-Topic [ztf_20190804_programid1]
-338233
----- ----
-Topic [ztf_20190805_programid1]
-188285
----- ----
-Topic [ztf_20190806_programid1]
-160355
----- ----
-Topic [ztf_20190807_programid1]
-152091
----- ----
-Topic [ztf_20190808_programid1]
-161932
----- ----
-Topic [ztf_20190809_programid1]
-161663
----- ----
-Topic [ztf_20190810_programid1]
-132515
----- ----
-Topic [ztf_20190811_programid1]
-157253
----- ----
-Topic [ztf_20190812_programid1]
-140192
----- ----
-Topic [ztf_20190813_programid1]
-98768
----- ----
-Topic [ztf_20190814_programid1]
-125047
----- ----
-Topic [ztf_20190815_programid1]
-53788
----- ----
-Topic [ztf_20190816_programid1]
-122321
----- ----
-Topic [ztf_20190817_programid1]
-82858
----- ----
-Topic [ztf_20190818_programid1]
-183640
----- ----
-Topic [ztf_20190819_programid1]
-140270
----- ----
-Topic [ztf_20190820_programid1]
-23
----- ----
-Topic [ztf_20190821_programid1]
-125293
----- ----
-Topic [ztf_20190822_programid1]
-130109
----- ----
-Topic [ztf_20190823_programid1]
-179150
----- ----
-Topic [ztf_20190824_programid1]
-130805
----- ----
-Topic [ztf_20190825_programid1]
-184504
----- ----
-Topic [ztf_20190826_programid1]
-967968
----- ----
-Topic [ztf_20190827_programid1]
-156985
----- ----
-Topic [ztf_20190828_programid1]
-191259
----- ----
-Topic [ztf_20190829_programid1]
-204910
----- ----
-Topic [ztf_20190830_programid1]
-178185
----- ----
-Topic [ztf_20190831_programid1]
-155960
----- ----
-Topic [ztf_20190901_programid1]
-162694
----- ----
-Topic [ztf_20190902_programid1]
-2363
----- ----
-Topic [ztf_20190903_programid1]
-1346
----- ----
-Topic [ztf_20190904_programid1]
-297247
----- ----
-Topic [ztf_20190905_programid1]
-46716
----- ----
-Topic [ztf_20190906_programid1]
-302297
----- ----
-Topic [ztf_20190907_programid1]
-93769
----- ----
-Topic [ztf_20190908_programid1]
-66268
----- ----
-Topic [ztf_20190909_programid1]
-70498
----- ----
-Topic [ztf_20190910_programid1]
-22897
----- ----
-Topic [ztf_20190911_programid1]
-4511
----- ----
-Topic [ztf_20190912_programid1]
-136540
----- ----
-Topic [ztf_20190913_programid1]
-87759
----- ----
-Topic [ztf_20190914_programid1]
-75575
----- ----
-Topic [ztf_20190915_programid1]
-144136
----- ----
-Topic [ztf_20190916_programid1]
-205752
----- ----
-Topic [ztf_20190917_programid1]
-120193
----- ----
-Topic [ztf_20190918_programid1]
-158791
----- ----
-Topic [ztf_20190919_programid1]
-128549
----- ----
-Topic [ztf_20190920_programid1]
-89021
----- ----
-Topic [ztf_20190921_programid1]
-199245
----- ----
-Topic [ztf_20190922_programid1]
-218818
----- ----
-Topic [ztf_20190923_programid1]
-180366
----- ----
-Topic [ztf_20190924_programid1]
-226140
----- ----
-Topic [ztf_20190925_programid1]
-194392
----- ----
-Topic [ztf_20190930_programid1]
-0
----- ----
-Topic [ztf_20191012_programid1]
-0
----- ----
-Topic [ztf_20191126_programid1]
-35
---END--
+    >   ---- ----
+    >   Topic [banana]
+    >   0
+    >   ---- ----
+    >   Topic [__confluent.support.metrics]
+    >   8
+    >   ---- ----
+    >   Topic [__consumer_offsets]
+    >   1631848
+    >   ---- ----
+    >   Topic [ztf_20190724_programid1]
+    >   148172
+    >   ---- ----
+    >   Topic [ztf_20190725_programid1]
+    >   138401
+    >   ---- ----
+    >   Topic [ztf_20190726_programid1]
+    >   183338
+    >   ---- ----
+    >   Topic [ztf_20190727_programid1]
+    >   175771
+    >   ---- ----
+    >   Topic [ztf_20190728_programid1]
+    >   117805
+    >   ---- ----
+    >   Topic [ztf_20190729_programid1]
+    >   300398
+    >   ---- ----
+    >   Topic [ztf_20190730_programid1]
+    >   385676
+    >   ---- ----
+    >   Topic [ztf_20190731_programid1]
+    >   492796
+    >   ---- ----
+    >   Topic [ztf_20190801_programid1]
+    >   230719
+    >   ---- ----
+    >   Topic [ztf_20190802_programid1]
+    >   134017
+    >   ---- ----
+    >   Topic [ztf_20190803_programid1]
+    >   405474
+    >   ---- ----
+    >   Topic [ztf_20190804_programid1]
+    >   338233
+    >   ---- ----
+    >   Topic [ztf_20190805_programid1]
+    >   188285
+    >   ---- ----
+    >   Topic [ztf_20190806_programid1]
+    >   160355
+    >   ---- ----
+    >   Topic [ztf_20190807_programid1]
+    >   152091
+    >   ---- ----
+    >   Topic [ztf_20190808_programid1]
+    >   161932
+    >   ---- ----
+    >   Topic [ztf_20190809_programid1]
+    >   161663
+    >   ---- ----
+    >   Topic [ztf_20190810_programid1]
+    >   132515
+    >   ---- ----
+    >   Topic [ztf_20190811_programid1]
+    >   157253
+    >   ---- ----
+    >   Topic [ztf_20190812_programid1]
+    >   140192
+    >   ---- ----
+    >   Topic [ztf_20190813_programid1]
+    >   98768
+    >   ---- ----
+    >   Topic [ztf_20190814_programid1]
+    >   125047
+    >   ---- ----
+    >   Topic [ztf_20190815_programid1]
+    >   53788
+    >   ---- ----
+    >   Topic [ztf_20190816_programid1]
+    >   122321
+    >   ---- ----
+    >   Topic [ztf_20190817_programid1]
+    >   82858
+    >   ---- ----
+    >   Topic [ztf_20190818_programid1]
+    >   183640
+    >   ---- ----
+    >   Topic [ztf_20190819_programid1]
+    >   140270
+    >   ---- ----
+    >   Topic [ztf_20190820_programid1]
+    >   23
+    >   ---- ----
+    >   Topic [ztf_20190821_programid1]
+    >   125293
+    >   ---- ----
+    >   Topic [ztf_20190822_programid1]
+    >   130109
+    >   ---- ----
+    >   Topic [ztf_20190823_programid1]
+    >   179150
+    >   ---- ----
+    >   Topic [ztf_20190824_programid1]
+    >   130805
+    >   ---- ----
+    >   Topic [ztf_20190825_programid1]
+    >   184504
+    >   ---- ----
+    >   Topic [ztf_20190826_programid1]
+    >   967968
+    >   ---- ----
+    >   Topic [ztf_20190827_programid1]
+    >   156985
+    >   ---- ----
+    >   Topic [ztf_20190828_programid1]
+    >   191259
+    >   ---- ----
+    >   Topic [ztf_20190829_programid1]
+    >   204910
+    >   ---- ----
+    >   Topic [ztf_20190830_programid1]
+    >   178185
+    >   ---- ----
+    >   Topic [ztf_20190831_programid1]
+    >   155960
+    >   ---- ----
+    >   Topic [ztf_20190901_programid1]
+    >   162694
+    >   ---- ----
+    >   Topic [ztf_20190902_programid1]
+    >   2363
+    >   ---- ----
+    >   Topic [ztf_20190903_programid1]
+    >   1346
+    >   ---- ----
+    >   Topic [ztf_20190904_programid1]
+    >   297247
+    >   ---- ----
+    >   Topic [ztf_20190905_programid1]
+    >   46716
+    >   ---- ----
+    >   Topic [ztf_20190906_programid1]
+    >   302297
+    >   ---- ----
+    >   Topic [ztf_20190907_programid1]
+    >   93769
+    >   ---- ----
+    >   Topic [ztf_20190908_programid1]
+    >   66268
+    >   ---- ----
+    >   Topic [ztf_20190909_programid1]
+    >   70498
+    >   ---- ----
+    >   Topic [ztf_20190910_programid1]
+    >   22897
+    >   ---- ----
+    >   Topic [ztf_20190911_programid1]
+    >   4511
+    >   ---- ----
+    >   Topic [ztf_20190912_programid1]
+    >   136540
+    >   ---- ----
+    >   Topic [ztf_20190913_programid1]
+    >   87759
+    >   ---- ----
+    >   Topic [ztf_20190914_programid1]
+    >   75575
+    >   ---- ----
+    >   Topic [ztf_20190915_programid1]
+    >   144136
+    >   ---- ----
+    >   Topic [ztf_20190916_programid1]
+    >   205752
+    >   ---- ----
+    >   Topic [ztf_20190917_programid1]
+    >   120193
+    >   ---- ----
+    >   Topic [ztf_20190918_programid1]
+    >   158791
+    >   ---- ----
+    >   Topic [ztf_20190919_programid1]
+    >   128549
+    >   ---- ----
+    >   Topic [ztf_20190920_programid1]
+    >   89021
+    >   ---- ----
+    >   Topic [ztf_20190921_programid1]
+    >   199245
+    >   ---- ----
+    >   Topic [ztf_20190922_programid1]
+    >   218818
+    >   ---- ----
+    >   Topic [ztf_20190923_programid1]
+    >   180366
+    >   ---- ----
+    >   Topic [ztf_20190924_programid1]
+    >   226140
+    >   ---- ----
+    >   Topic [ztf_20190925_programid1]
+    >   194392
+    >   ---- ----
+    >   Topic [ztf_20190930_programid1]
+    >   0
+    >   ---- ----
+    >   Topic [ztf_20191012_programid1]
+    >   0
+    >   ---- ----
+    >   Topic [ztf_20191126_programid1]
+    >   35
 
 
 

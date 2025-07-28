@@ -97,11 +97,9 @@
 
                 wget https://ztf.uw.edu/alerts/public/ztf_public_20191206.tar.gz
 
---START--
---2020-03-22 17:30:24--  https://ztf.uw.edu/alerts/public/ztf_public_20191206.tar.gz
-....
-2020-03-22 17:47:56 (1.58 MB/s) - ‘ztf_public_20191206.tar.gz’ saved [1739933850/1739933850]
---END--
+    >   --2020-03-22 17:30:24--  https://ztf.uw.edu/alerts/public/ztf_public_20191206.tar.gz
+    >   ....
+    >   2020-03-22 17:47:56 (1.58 MB/s) - ‘ztf_public_20191206.tar.gz’ saved [1739933850/1739933850]
 
 
 
