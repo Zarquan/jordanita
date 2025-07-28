@@ -1,0 +1,145 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+        Find out about CANFAR codebase.look at the contribution guidelines
+        https://jira.skatelescope.org/browse/COR-883
+
+# -----------------------------------------------------
+# Install older version of Java on desktop.
+#[user@desktop]
+
+    #
+    # For Gradle we needed to downgrade our platform to compile it.
+    # What does this mean for Eclipse ?
+    #
+    # Importing Gradle project into Eclipse meets the same issue with class type.
+    #
+
+    java.lang.IllegalArgumentException: Unsupported class file major version 66
+        at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:196)
+        at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:177)
+
+    #
+    # We solved the command line build by using a eclipse-temurin:11 container.
+    # Can we do the same for Eclipse ?
+    #
+
+    dnf info java-11-openjdk
+
+    >   Last metadata expiration check: 0:01:48 ago on Mon 16 Jun 2025 16:33:03 BST.
+    >   Available Packages
+    >   Name         : java-11-openjdk
+    >   Epoch        : 1
+    >   Version      : 11.0.27.0.6
+    >   Release      : 1.fc40
+    >   Architecture : x86_64
+    >   Size         : 409 k
+    >   Source       : java-11-openjdk-11.0.27.0.6-1.fc40.src.rpm
+    >   Repository   : updates
+    >   Summary      : OpenJDK 11 Runtime Environment
+    >   URL          : http://openjdk.java.net/
+    >   License      : Apache-1.1 AND Apache-2.0 AND LicenseRef-Callaway-BSD AND LicenseRef-Callaway-BSD-with-advertising AND
+    >                : GPL-1.0-or-later AND GPL-2.0-only AND LicenseRef-Callaway-GPLv2-with-exceptions AND IJG AND
+    >                : LicenseRef-Callaway-LGPLv2+ AND LicenseRef-Callaway-MIT AND MPL-2.0 AND LicenseRef-Callaway-Public-Domain
+    >                : AND W3C AND Zlib AND ISC AND FTL AND LicenseRef-RSA
+    >   Description  : The OpenJDK 11 runtime environment.
+
+
+    sudo \
+        dnf install java-11-openjdk
+
+    #
+    # Seems to work OK.
+    # We can see and edit the source code.
+    # Resolving variable declarations doesn't work, but it is a small codebase.
+    #
+
+# -----------------------------------------------------
+# Add the Eclipse plugin to Gradle.
+#[user@builder]
+
+    pushd /cadc-reg
+        pushd cadc-registry
+
+        vi build.gradle
+
+            plugins {
+        +       id 'eclipse'
+                id 'java-library'
+                id 'maven-publish'
+                id 'checkstyle'
+            }
+
+        #
+        # Run the Eclipse plugin.
+
+         ../gradlew  eclipse
+
+        #
+        # Check the Eclipse config.
+        cat .project
+
+    >   <?xml version="1.0" encoding="UTF-8"?>
+    >   <projectDescription>
+    >   	<name>cadc-registry</name>
+    >   	<comment>OpenCADC Registry client library</comment>
+    >   	<projects/>
+    >   	<natures>
+    >   		<nature>org.eclipse.jdt.core.javanature</nature>
+    >   	</natures>
+    >   	<buildSpec>
+    >   		<buildCommand>
+    >   			<name>org.eclipse.jdt.core.javabuilder</name>
+    >   			<arguments/>
+    >   		</buildCommand>
+    >   	</buildSpec>
+    >   	<linkedResources/>
+    >   	<filteredResources/>
+    >   </projectDescription>
+
+
+    TODO
+    MultiValuedProperties
+    core/cadc-util/src/main/java/ca/nrc/cadc/util/MultiValuedProperties.java
+    https://github.com/opencadc/core/blob/main/cadc-util/src/main/java/ca/nrc/cadc/util/MultiValuedProperties.java
+
+    PropertiesReaderTest
+    core/cadc-util/src/test/java/ca/nrc/cadc/util/PropertiesReaderTest.java
+    https://github.com/opencadc/core/blob/main/cadc-util/src/test/java/ca/nrc/cadc/util/PropertiesReaderTest.java
+
+
+
+
+
+
+

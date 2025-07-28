@@ -1,0 +1,534 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Deploy a new CANFAR registry within the SRCNet
+        https://jira.skatelescope.org/browse/SP-5555
+
+        Main part of the work is to update the RegistryClient to use more than one endpoint.
+        https://github.com/opencadc/reg/blob/main/cadc-registry/src/main/java/ca/nrc/cadc/reg/client/RegistryClient.java
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Found the RegistryClient source code.
+    https://github.com/opencadc/reg/blob/main/cadc-registry/src/main/java/ca/nrc/cadc/reg/client/RegistryClient.java
+
+    Main repository
+    https://github.com/opencadc/reg
+
+    Our own fork
+    https://github.com/Zarquan/cadc-reg
+
+# -----------------------------------------------------
+# Create our local directories.
+#[user@desktop]
+
+    cat > "${HOME}/cadc-reg.env" << 'EOF'
+source "${HOME:?}/projects.env"
+CADCREG_REPO='git@github.com:Zarquan/cadc-reg.git'
+CADCREG_HOME="${PROJECTS_ROOT}/CADC/cadc-reg"
+CADCREG_CODE="${CADCREG_HOME:?}/github-zrq"
+EOF
+
+    source "${HOME}/cadc-reg.env"
+
+    echo "Checking CADCREG_HOME [${CADCREG_HOME}]"
+    if [ ! -e "${CADCREG_HOME:?}" ]
+    then
+        echo "Creating CADCREG_HOME [${CADCREG_HOME}]"
+        mkdir "${CADCREG_HOME:?}"
+    fi
+
+    echo "Checking CADCREG_CODE [${CADCREG_CODE}]"
+    if [ ! -e "${CADCREG_CODE:?}" ]
+    then
+        echo "Creating CADCREG_CODE [${CADCREG_CODE}]"
+        git clone "${CADCREG_REPO:?}" "${CADCREG_CODE:?}"
+    fi
+
+    echo "Checking CADCREG_CODE [${CADCREG_CODE}]"
+    pushd "${CADCREG_CODE:?}"
+        git status
+    popd
+
+
+# -----------------------------------------------------
+# Create a new branch.
+#[user@desktop]
+
+    branchname=SKAO-SP-5555
+
+    source "${HOME}/cadc-reg.env"
+    pushd "${CADCREG_CODE}"
+
+        newbranch=$(date '+%Y%m%d')-${branchname:?}
+
+        git checkout main
+
+        git checkout -b "${newbranch:?}"
+
+    popd
+
+
+# -----------------------------------------------------
+# Launch a build container.
+#[user@desktop]
+
+    source "${HOME}/cadc-reg.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name gradle-builder \
+        --volume "${CADCREG_CODE}:/cadc-reg:rw,z" \
+        ghcr.io/ivoa/calycopis/java-builder:2024.08.30 \
+        bash
+
+    >   ....
+    >   ....
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build and test ....
+#[user@builder]
+
+    pushd /cadc-reg
+
+        ./gradlew
+
+    popd
+
+    >   Downloading https://services.gradle.org/distributions/gradle-6.8.3-bin.zip
+    >   ..........10%..........20%..........30%...........40%..........50%..........60%..........70%...........80%..........90%..........100%
+    >   
+    >   Welcome to Gradle 6.8.3!
+    >   
+    >   Here are the highlights of this release:
+    >    - Faster Kotlin DSL script compilation
+    >    - Vendor selection for Java toolchains
+    >    - Convenient execution of tasks in composite builds
+    >    - Consistent dependency resolution
+    >   
+    >   For more details see https://docs.gradle.org/6.8.3/release-notes.html
+    >   
+    >   Starting a Gradle Daemon (subsequent builds will be faster)
+    >   
+    >   > Task :help
+    >   
+    >   Welcome to Gradle 6.8.3.
+    >   
+    >   To run a build, run gradlew <task> ...
+    >   
+    >   To see a list of available tasks, run gradlew tasks
+    >   
+    >   To see a list of command-line options, run gradlew --help
+    >   
+    >   To see more detail about a task, run gradlew help --task <task>
+    >   
+    >   For troubleshooting, visit https://help.gradle.org
+    >   
+    >   Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
+    >   Use '--warning-mode all' to show the individual deprecation warnings.
+    >   See https://docs.gradle.org/6.8.3/userguide/command_line_interface.html#sec:command_line_warnings
+    >   
+    >   BUILD SUCCESSFUL in 18s
+    >   1 actionable task: 1 executed
+
+
+    ./gradlew tasks
+
+    >   > Task :tasks
+    >   
+    >   ------------------------------------------------------------
+    >   Tasks runnable from root project 'cadc-reg'
+    >   ------------------------------------------------------------
+    >   
+    >   Build Setup tasks
+    >   -----------------
+    >   init - Initializes a new Gradle build.
+    >   wrapper - Generates Gradle wrapper files.
+    >   
+    >   Help tasks
+    >   ----------
+    >   buildEnvironment - Displays all buildscript dependencies declared in root project 'cadc-reg'.
+    >   dependencies - Displays all dependencies declared in root project 'cadc-reg'.
+    >   dependencyInsight - Displays the insight into a specific dependency in root project 'cadc-reg'.
+    >   help - Displays a help message.
+    >   javaToolchains - Displays the detected java toolchains. [incubating]
+    >   outgoingVariants - Displays the outgoing variants of root project 'cadc-reg'.
+    >   projects - Displays the sub-projects of root project 'cadc-reg'.
+    >   properties - Displays the properties of root project 'cadc-reg'.
+    >   tasks - Displays the tasks runnable from root project 'cadc-reg'.
+    >   
+    >   To see all tasks and more detail, run gradlew tasks --all
+    >   
+    >   To see more detail about a task, run gradlew help --task <task>
+    >   
+    >   Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
+    >   Use '--warning-mode all' to show the individual deprecation warnings.
+    >   See https://docs.gradle.org/6.8.3/userguide/command_line_interface.html#sec:command_line_warnings
+    >   
+    >   BUILD SUCCESSFUL in 871ms
+    >   1 actionable task: 1 executed
+
+
+    ./gradlew projects
+
+    >   > Task :projects
+    >   
+    >   ------------------------------------------------------------
+    >   Root project 'cadc-reg'
+    >   ------------------------------------------------------------
+    >   
+    >   Root project 'cadc-reg'
+    >   No sub-projects
+    >   
+    >   To see a list of the tasks of a project, run gradlew <project-path>:tasks
+    >   For example, try running gradlew :tasks
+    >   
+    >   Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
+    >   Use '--warning-mode all' to show the individual deprecation warnings.
+    >   See https://docs.gradle.org/6.8.3/userguide/command_line_interface.html#sec:command_line_warnings
+    >   
+    >   BUILD SUCCESSFUL in 760ms
+    >   1 actionable task: 1 executed
+
+
+    ./gradlew init
+
+    >   Select type of project to generate:
+    >     1: basic
+    >     2: application
+    >     3: library
+    >     4: Gradle plugin
+    >   Enter selection (default: basic) [1..4]
+    >   ....
+
+    #
+    # A clue from the GitHub workflow file ..
+    # https://github.com/Zarquan/cadc-reg/blob/af26a79dd8438f46f99ea43cfdeccdec1a0e62c7/.github/workflows/gradle.yml#L20-L21
+    #
+    #    - name: build and test cadc-registry
+    #      run: cd cadc-registry && ../gradlew --info clean build javadoc checkstyleMain install
+    #
+
+    pushd cadc-registry
+
+        ../gradlew --info clean build javadoc checkstyleMain install
+
+    popd
+
+    >   Initialized native services in: /root/.gradle/native
+    >   The client will now receive all logging from the daemon (pid: 62). The daemon log file: /root/.gradle/daemon/6.8.3/daemon-62.out.log
+    >   Starting 5th build in daemon [uptime: 7 mins 5.985 secs, performance: 100%, non-heap usage: 15% of 256 MiB]
+    >   Using 4 worker leases.
+    >   Watching the file system is disabled
+    >   Starting Build
+    >   Compiling settings file '/cadc-reg/settings.gradle' using SubsetScriptTransformer.
+    >   Compiling settings file '/cadc-reg/settings.gradle' using BuildScriptTransformer.
+    >   
+    >   FAILURE: Build failed with an exception.
+    >   
+    >   * Where:
+    >   Settings file '/cadc-reg/settings.gradle'
+    >   
+    >   * What went wrong:
+    >   Could not compile settings file '/cadc-reg/settings.gradle'.
+    >   > startup failed:
+    >     General error during semantic analysis: Unsupported class file major version 66
+    >   
+    >     java.lang.IllegalArgumentException: Unsupported class file major version 66
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:196)
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:177)
+    >   ....
+
+    #
+    # Several files created by the 'init' task that shouldn't be here.
+    #
+
+
+# -----------------------------------------------------
+# Remove the changes created by 'init'.
+#[user@desktop]
+
+    source "${HOME}/cadc-reg.env"
+    pushd "${CADCREG_CODE}"
+
+        git status
+
+        git restore gradlew.bat
+
+        rm \
+          .gitattributes \
+          .gitignore \
+          build.gradle \
+          settings.gradle
+
+        rm -rf \
+          .gradle
+
+        git status
+
+    popd
+
+
+    >   On branch 20250610-SKAO-SP-5555
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   gradlew.bat
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitattributes
+    >   	.gitignore
+    >   	build.gradle
+    >   	settings.gradle
+
+
+    >   On branch 20250610-SKAO-SP-5555
+    >   nothing to commit, working tree clean
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build and test ....
+#[user@builder]
+
+    pushd /cadc-reg
+        pushd cadc-registry
+
+            ../gradlew --info clean build javadoc checkstyleMain install
+
+        popd
+    popd
+
+    >   Initialized native services in: /root/.gradle/native
+    >   The client will now receive all logging from the daemon (pid: 62). The daemon log file: /root/.gradle/daemon/6.8.3/daemon-62.out.log
+    >   Starting 6th build in daemon [uptime: 38 mins 26.714 secs, performance: 100%, non-heap usage: 15% of 256 MiB]
+    >   Using 4 worker leases.
+    >   Watching the file system is disabled
+    >   Starting Build
+    >   Settings evaluated using settings file '/cadc-reg/cadc-registry/settings.gradle'.
+    >   Projects loaded. Root project using build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   Included projects: [root project 'cadc-registry']
+    >   
+    >   > Configure project :
+    >   Evaluating root project 'cadc-registry' using build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   Compiling build file '/cadc-reg/cadc-registry/build.gradle' using SubsetScriptTransformer.
+    >   
+    >   FAILURE: Build failed with an exception.
+    >   
+    >   * Where:
+    >   Build file '/cadc-reg/cadc-registry/build.gradle'
+    >   
+    >   * What went wrong:
+    >   Could not compile build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   > startup failed:
+    >     General error during semantic analysis: Unsupported class file major version 66
+    >   
+    >     java.lang.IllegalArgumentException: Unsupported class file major version 66
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:196)
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:177)
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:163)
+    >   ....
+    >   ....
+
+    #
+    # Google foo for some clues ....
+    # [Could not compile build file 'build.gradle' Unsupported class file major version 66]
+
+    #
+    # An issue to do with the Java version ?
+    # https://github.com/react-native-community/cli/issues/2348
+
+    #
+    # Check what Java version we are using.
+    java --version
+
+    >   openjdk 22.0.2 2024-07-16
+    >   OpenJDK Runtime Environment (Red_Hat-22.0.2.0.9-2) (build 22.0.2+9)
+    >   OpenJDK 64-Bit Server VM (Red_Hat-22.0.2.0.9-2) (build 22.0.2+9, mixed mode, sharing)
+
+    #
+    # OK, so we need to cerate a custom builder with an older version of Java.
+    # sigh
+    #
+    # Two options ..
+    # 1) Run a modified version of our builder.
+    # 2) Use the eclipse-temurin image.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Launch a the eclipse-temurin build container.
+#[user@desktop]
+
+    source "${HOME}/cadc-reg.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name gradle-builder \
+        --volume "${CADCREG_CODE}:/cadc-reg:rw,z" \
+        docker.io/library/eclipse-temurin:21 \
+        bash
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and test ....
+#[user@builder]
+
+    pushd /cadc-reg
+        pushd cadc-registry
+
+            ../gradlew --info clean build javadoc checkstyleMain install
+
+        popd
+    popd
+
+    >   Downloading https://services.gradle.org/distributions/gradle-6.8.3-bin.zip
+    >   ..........10%..........20%..........30%...........40%..........50%..........60%..........70%...........80%..........90%..........100%
+    >   Initialized native services in: /root/.gradle/native
+    >   
+    >   Welcome to Gradle 6.8.3!
+    >   
+    >   Here are the highlights of this release:
+    >    - Faster Kotlin DSL script compilation
+    >    - Vendor selection for Java toolchains
+    >    - Convenient execution of tasks in composite builds
+    >    - Consistent dependency resolution
+    >   
+    >   For more details see https://docs.gradle.org/6.8.3/release-notes.html
+    >   
+    >   Removing 0 daemon stop events from registry
+    >   Starting a Gradle Daemon (subsequent builds will be faster)
+    >   Starting process 'Gradle build daemon'. Working directory: /root/.gradle/daemon/6.8.3 Command: /opt/java/openjdk/bin/java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.prefs/java.util.prefs=ALL-UNNAMED -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -Xms256m -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp /root/.gradle/wrapper/dists/gradle-6.8.3-bin/7ykxq50lst7lb7wx1nijpicxn/gradle-6.8.3/lib/gradle-launcher-6.8.3.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 6.8.3
+    >   Successfully started process 'Gradle build daemon'
+    >   An attempt to start the daemon took 1.057 secs.
+    >   The client will now receive all logging from the daemon (pid: 56). The daemon log file: /root/.gradle/daemon/6.8.3/daemon-56.out.log
+    >   Starting build in new daemon [memory: 512 MiB]
+    >   Using 4 worker leases.
+    >   Watching the file system is disabled
+    >   Starting Build
+    >   Settings evaluated using settings file '/cadc-reg/cadc-registry/settings.gradle'.
+    >   Projects loaded. Root project using build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   Included projects: [root project 'cadc-registry']
+    >   
+    >   > Configure project :
+    >   Evaluating root project 'cadc-registry' using build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   Compiling build file '/cadc-reg/cadc-registry/build.gradle' using SubsetScriptTransformer.
+    >   
+    >   FAILURE: Build failed with an exception.
+    >   
+    >   * Where:
+    >   Build file '/cadc-reg/cadc-registry/build.gradle'
+    >   
+    >   * What went wrong:
+    >   Could not compile build file '/cadc-reg/cadc-registry/build.gradle'.
+    >   > startup failed:
+    >     General error during semantic analysis: Unsupported class file major version 65
+    >   
+    >     java.lang.IllegalArgumentException: Unsupported class file major version 65
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:196)
+    >           at groovyjarjarasm.asm.ClassReader.<init>(ClassReader.java:177)
+    >   ....
+    >   ....
+
+    #
+    # Not Java 21 .. Java 11.
+    # https://github.com/Zarquan/cadc-reg/blob/af26a79dd8438f46f99ea43cfdeccdec1a0e62c7/.github/workflows/gradle.yml#L16-L18
+    #
+    #      with:
+    #        distribution: 'temurin'
+    #        java-version: 11
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Launch a the eclipse-temurin build container.
+#[user@desktop]
+
+    source "${HOME}/cadc-reg.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name gradle-builder \
+        --volume "${CADCREG_CODE}:/cadc-reg:rw,z" \
+        docker.io/library/eclipse-temurin:11 \
+        bash
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and test ....
+#[user@builder]
+
+    pushd /cadc-reg
+        pushd cadc-registry
+
+            ../gradlew --info clean build javadoc checkstyleMain install
+
+        popd
+    popd
+
+
+
+    >   Downloading https://services.gradle.org/distributions/gradle-6.8.3-bin.zip
+    >   ..........10%..........20%..........30%...........40%..........50%..........60%..........70%...........80%..........90%..........100%
+    >   Initialized native services in: /root/.gradle/native
+    >   
+    >   Welcome to Gradle 6.8.3!
+    >   ....
+    >   ....
+    >   BUILD SUCCESSFUL in 59s
+    >   12 actionable tasks: 11 executed, 1 up-to-date
+    >   Created user preferences directory.
+    >   /cadc-reg /
+    >   /
+
+    #
+    # OK, so we need to downgrade our platform to compile it.
+    # ..
+    # What does this mean for Eclipse ?
+    #
+
+
+

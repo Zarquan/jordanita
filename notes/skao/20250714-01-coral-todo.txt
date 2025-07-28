@@ -1,0 +1,83 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Watch how compute-api is developing.
+    https://gitlab.com/ska-telescope/src/src-api/ska-src-api-compute
+
+# -----------------------------------------------------
+
+    [SP-5555] Deploy a new CANFAR registry within the SRCNet
+    https://jira.skatelescope.org/browse/SP-5555
+
+        [COR-906] [CANFAR registry] Agree on a repo-structure
+        https://jira.skatelescope.org/browse/COR-906
+
+            Agree on a repo-structure to have
+            a) only one point of truth for the ivo-url mapping;
+            b) site-specific configuration (either via sub-directories or branches)
+
+        [COR-905] [CANFAR registry] Create ska-gitlab repo for the registry deployment/configuration
+        https://jira.skatelescope.org/browse/COR-905
+
+            ....
+
+        [COR-895] [CANFAR registry] Make the change to the CANFAR code
+        https://jira.skatelescope.org/browse/COR-895
+
+            In progress
+
+        [COR-896] [CANFAR registry] A second registry deployed at sweSRC - SKAO Jira
+        https://jira.skatelescope.org/browse/COR-896
+
+            Done
+            https://dev.docs.espsrc.iaa.csic.es/reg/
+
+        [COR-897] [CANFAR registry] 3 registry tests
+        https://jira.skatelescope.org/browse/COR-897
+
+            AC: Present a demo within the Sprint Planning on these 3 registry tests
+
+            Use our JUnit tests, create slides to explain them, then run them.
+            Green = good.
+            Done
+
+
+# -----------------------------------------------------
+
+
+
+
+
+

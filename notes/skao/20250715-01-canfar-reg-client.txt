@@ -1,0 +1,136 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Check the service capabilities listed in the SKAO registry.
+
+    resources:
+
+        mockserver/mockserver-examples
+        https://github.com/mock-server/mockserver/tree/master/mockserver-examples
+
+        CADC registry
+        https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/reg
+        https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/reg/resource-caps
+        https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/reg/resource-caps
+        https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/reg/#!/Canned_Queries/get_resource_caps
+
+        SKAO registry
+        https://spsrc27.iaa.csic.es/reg/
+        https://spsrc27.iaa.csic.es/reg/resource-caps
+        https://spsrc27.iaa.csic.es/reg/#!/Canned_Queries/get_resource_caps
+        https://gitlab.com/ska-telescope/src/deployments/espsrc/ska-src-espsrc-services-cd/-/blob/main/apps/global-reg/config/reg/reg-resource-caps.properties
+
+        ESPSRC dev registry
+        https://dev.docs.espsrc.iaa.csic.es/reg/resource-caps
+        https://dev.docs.espsrc.iaa.csic.es/reg/#!/Canned_Queries/get_resource_caps
+        ....
+
+
+
+
+
+        Three things have slightly different content.
+        https://gitlab.com/ska-telescope/src/deployments/espsrc/ska-src-espsrc-services-cd/-/blob/main/apps/global-reg/config/reg/reg-resource-caps.properties
+        https://spsrc27.iaa.csic.es/reg/resource-caps
+        https://dev.docs.espsrc.iaa.csic.es/reg/resource-caps
+
+
+
+    Result:
+
+        SKAO registry - capabilities
+        https://spsrc27.iaa.csic.es/reg/capabilities
+        Timeout
+
+        ESPSRC registry - capabilities
+        https://dev.docs.espsrc.iaa.csic.es/reg/capabilities
+        unexpected exception: ca.nrc.cadc.util.InvalidConfigException: failed to load configured IdentityManager: org.opencadc.auth.StandardIdentityManager
+
+# -----------------------------------------------------
+
+    [COR-905] [CANFAR registry] Create ska-gitlab repo for the registry
+    https://jira.skatelescope.org/browse/COR-905
+
+        TODO
+
+    [COR-906] [CANFAR registry] Agree on a repo-structure
+    https://jira.skatelescope.org/browse/COR-906
+
+        TODO
+
+    [COR-895] [CANFAR registry] Make the change to the CANFAR code - SKAO Jira
+    https://jira.skatelescope.org/browse/COR-895
+
+        In progress ..
+
+    [COR-897] [CANFAR registry] 3 registry tests
+    https://jira.skatelescope.org/browse/COR-897
+
+    [COR-896] [CANFAR registry] A second registry deployed at sweSRC
+    https://jira.skatelescope.org/browse/COR-896
+
+        Confluence in development
+        https://confluence.skatelescope.org/pages/viewpage.action?pageId=335233195
+
+        GitLab code in development
+        https://gitlab.com/ska-telescope/src/deployments/espsrc/ska-src-espsrc-services-cd/-/tree/main/apps/global-reg
+
+
+# -----------------------------------------------------
+
+    https://spsrc27.iaa.csic.es/reg/
+        200 OK
+
+    https://spsrc27.iaa.csic.es/reg/resource-caps
+        200 OK
+
+    https://spsrc27.iaa.csic.es/reg/applications
+        200 OK
+
+    https://spsrc27.iaa.csic.es/reg/capabilities
+        timeout
+
+# -----------------------------------------------------
+
+    This is a test K8s deployment that will be used to deploy the registry in Sweden.
+
+    https://dev.docs.espsrc.iaa.csic.es/reg
+        200 OK
+
+    https://dev.docs.espsrc.iaa.csic.es/reg/resource-caps
+        200 OK
+
+    https://dev.docs.espsrc.iaa.csic.es/reg/applications
+        200 OK
+
+    https://dev.docs.espsrc.iaa.csic.es/reg/capabilities
+        unexpected exception: ca.nrc.cadc.util.InvalidConfigException:
+            failed to load configured IdentityManager:
+                org.opencadc.auth.StandardIdentityManager
+
+
+

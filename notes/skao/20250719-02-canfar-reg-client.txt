@@ -1,0 +1,148 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        JUnit tests for the registry client.
+
+    Result:
+
+        Work in progress ...
+
+
+        [COR-921] [CANFAR registry] Create JUnit tests for the registry client using a MockServer to enable them to function reliable without relying on an external service.
+        https://jira.skatelescope.org/browse/COR-921
+
+        [COR-920] [CANFAR registry] Create a test script to iterate the services registered in the registry and do a health check on their /capabilities endpoint.
+        https://jira.skatelescope.org/browse/COR-920
+
+
+# -----------------------------------------------------
+
+    Start with the SKAO registry and use the results to create some simple test data.
+    https://spsrc27.iaa.csic.es/reg/
+
+    https://spsrc27.iaa.csic.es/reg/resource-caps
+        200 OK
+
+        ivo://skao.int/reg = https://spsrc27.iaa.csic.es/reg/capabilities
+        ivo://skao.int/gms = https://permissions.srcnet.skao.int/api/v1/gms/capabilities
+        ivo://skao.int/baldur = https://spsrc27.iaa.csic.es/baldur/capabilities
+        ivo://skao.int/luskan = https://spsrc27.iaa.csic.es/luskan/capabilities
+        ivo://skao.int/raven = https://spsrc27.iaa.csic.es/raven/capabilities
+        ivo://skao.int/argus = https://spsrc31.iaa.csic.es/argus/capabilities
+        ivo://skao.int/torkeep = https://spsrc31.iaa.csic.es/torkeep/capabilities
+        ....
+        ....
+
+    https://spsrc27.iaa.csic.es/reg/applications
+        200 OK
+
+        # Then SRC node services:
+        # Swedish SRC node
+        ivo://swesrc.chalmers.se/luskan = https://se.swesrc.chalmers.se/luskan
+        ivo://swesrc.chalmers.se/minoc = https://se.swesrc.chalmers.se/minoc
+
+        # Swiss SRC node
+        ivo://src.skach.org/luskan = https://si.src.skach.org/luskan
+        ivo://src.skach.org/minoc = https://si.src.skach.org/minoc
+
+        # Spanish node
+        ivo://espsrc.iaa.csic.es/luskan = https://spsrc29.iaa.csic.es/luskan
+        ivo://espsrc.iaa.csic.es/minoc = https://spsrc29.iaa.csic.es/minoc
+
+        # Canadian 'seed' node with radio data collections
+        ivo://cadc.nrc.ca/uvic/luskan = https://ws-uv.canfar.net/luskan
+        ivo://cadc.nrc.ca/uvic/minoc = https://ws-uv.canfar.net/minoc
+        ....
+        ....
+
+
+    https://spsrc27.iaa.csic.es/reg/capabilities
+        200 OK
+
+<?xml version="1.0" encoding="UTF-8"?>
+<vosi:capabilities
+    xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
+    xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
+    xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <capability standardID="ivo://ivoa.net/std/VOSI#capabilities">
+    <interface xsi:type="vs:ParamHTTP" role="std">
+      <accessURL use="full">https://spsrc27.iaa.csic.es/reg/capabilities</accessURL>
+    </interface>
+  </capability>
+  <capability standardID="ivo://ivoa.net/std/VOSI#availability">
+    <interface xsi:type="vs:ParamHTTP" role="std">
+      <accessURL use="full">https://spsrc27.iaa.csic.es/reg/availability</accessURL>
+    </interface>
+  </capability>
+  <capability standardID="vos://cadc.nrc.ca~vospace/CADC/std/Logging#control-1.0">
+    <interface xsi:type="vs:ParamHTTP" role="std" version="1.0">
+      <accessURL use="full">https://spsrc27.iaa.csic.es/reg/logControl</accessURL>
+      <securityMethod standardID="ivo://ivoa.net/sso#tls-with-certificate" />
+    </interface>
+  </capability>
+</vosi:capabilities>
+
+# -----------------------------------------------------
+
+    simple-capabilities.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<vosi:capabilities
+    xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
+    xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
+    xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <capability standardID="ivo://ivoa.net/std/VOSI#capabilities">
+    <interface xsi:type="vs:ParamHTTP" role="std">
+      <accessURL use="full">https://spsrc27.iaa.csic.es/reg/capabilities</accessURL>
+    </interface>
+  </capability>
+  <capability standardID="ivo://ivoa.net/std/VOSI#availability">
+    <interface xsi:type="vs:ParamHTTP" role="std">
+      <accessURL use="full">https://spsrc27.iaa.csic.es/reg/availability</accessURL>
+    </interface>
+  </capability>
+</vosi:capabilities>
+
+# -----------------------------------------------------
+
+    Turns out it is difficult to load a file from the classpath into
+    something that MockServer can use as the response content,
+    e.g. a byte array.
+
+    Yes, it is possible to use a resource, but by the time we have
+    all the levels of extra code needed it is no longer clear
+    to the human what is being tested where.
+
+    Easier and clearer to just put the response into a String.
+
+    Not helped by the Gradle requirement to use an old version of the JDK.
+    Old JDK doesn't support multi-line strings.
+
+
+

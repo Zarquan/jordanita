@@ -1,0 +1,105 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        [COR-883] [CANFAR registry] Find out about CANFAR codebase.look at the contribution guidelines
+        https://jira.skatelescope.org/browse/COR-883
+
+        [COR-895] [CANFAR registry] Make the change to the CANFAR code
+        https://jira.skatelescope.org/browse/COR-895
+
+        [COR-896] [CANFAR registry] A second registry deployed at sweSRC
+        https://jira.skatelescope.org/browse/COR-896
+
+        [COR-897] [CANFAR registry] 3 registry tests - SKAO Jira
+        https://jira.skatelescope.org/browse/COR-897
+
+        [COR-901] [Tech Debt] Complete changes to the Execution Broker data model
+        https://jira.skatelescope.org/browse/COR-901
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+Multiple registry endpoints · Issue #206 · opencadc/reg
+https://github.com/opencadc/reg/issues/206
+
+Delegate to network of reg services · Issue #182 · opencadc/reg
+https://github.com/opencadc/reg/issues/182
+
+
+    Current
+
+        Global reg
+            single URL
+
+    Next
+
+        Global reg
+            multiple URLs
+            with fail over
+
+    Options
+
+        Local reg
+            multiple URLs
+            with fail over
+
+        Global reg
+            multiple URLs
+            with fail over
+
+        Check local registry first, then global if not known.
+
+
+    Options
+
+        Hierarchical config
+
+        Registies:
+          - name: first
+            endpoints:
+              - http://....
+              - http://....
+          - name: second
+            endpoints:
+              - http://....
+              - http://....
+          - name: third
+            endpoints:
+              - http://....
+              - http://....
+
+        Ordered list of endpoints.
+        Check them in sequence; first, then second, then third ...
+        Requires a hierarchical config file format.
+        YAML or JSON ...
+        We can provide this in testing ..
+        Allow CADC to choose if they want to deploy it.
+
+

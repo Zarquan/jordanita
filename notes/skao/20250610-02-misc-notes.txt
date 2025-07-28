@@ -1,0 +1,87 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Keeping track of what is where.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    04.03. Prep for PI28 - Backlog Prioritisation
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=330639645
+
+        [SP-5590] Update the software discovery API to support the latest software metadata version
+        https://jira.skatelescope.org/browse/SP-5590
+        FUNNEL
+
+        [SP-5591] Support software metadata synchronising in Software Discovery service
+        https://jira.skatelescope.org/browse/SP-5591
+        FUNNEL
+
+            Updating using OpenAPI
+              - Good plan
+            Scheme for managing changes
+              - This should be just URL based - no special registry.
+                learn from XML, OpenAPI, and K8s.
+            (*) remove the word 'ivoa' from the filenames - politics
+
+
+        [SP-5237] Implement a workflow execution service (Global Service) - SKAO Jira
+        https://jira.skatelescope.org/browse/SP-5237?src=confmacro
+        BACKLOG
+
+
+        [SP-5241] Software Discovery and Software Access Service
+        https://jira.skatelescope.org/browse/SP-5241
+        BACKLOG
+
+
+
+    PI-27 Software Discovery Service suggested features
+    https://confluence.skatelescope.org/pages/viewpage.action?pageId=330629712
+
+        Still a very simplistic concept of 'software'.
+
+# -----------------------------------------------------
+
+    ADASS XXXV
+    Astronomical Data Analysis Software and Systems Conference Series
+
+    9-13 November, 2025
+    Görlitz, Germany
+
+    I would need to know I have the backing of SKAO .. which I don't.
+    Or I go on my own.
+
+
+# -----------------------------------------------------
+
+
+
+

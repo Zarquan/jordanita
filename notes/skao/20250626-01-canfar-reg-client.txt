@@ -1,0 +1,99 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes on the existing reg client code ..
+        Using Eclipse to step through the code to analyse how it works.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    #
+    # The temp directory for the cache file includes the endpoint hostname.
+
+    File queryCacheFile = getQueryCacheFile(queryName);
+
+        2025-06-26 15:50:16.618[main] DEBUG RegistryClient - getQueryCacheFile [/resource-caps] in dir [/tmp/Zarquan/cadc-registry-1.5/reg-domains/ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca]
+
+        /tmp/Zarquan/cadc-registry-1.5/reg-domains/ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/resource-caps
+
+    URL queryURL = new URL(regBaseURL + "/" + queryName.getValue());
+
+        https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/reg/resource-caps
+
+    CacheFile uses File.lastModified() to decide if it has expired
+
+        long lastModified = localCache.lastModified();
+        long expiryMillis = expirySeconds * 1000;
+        long now = System.currentTimeMillis();
+        return ((now - lastModified) > expiryMillis);
+
+    CacheFile includes custom code to read a file into a ByteArrayOutputStream and then convert it into a UTF-8 String.
+
+    RegistryClient contains a single regBaseURL for the registry endpoint.
+    RegistryClient constructor uses MultiValuedProperties to get a List<String> for the registry endpoint(s),
+    but it only reads the first value from the List to create the regBaseURL.
+    RegistryClient constructor uses regBaseURL.getHost() to set the capsDomain String,
+    which is used later to create the CacheFile directory.
+
+
+    Capabilities caps = regClient.getCapabilities(...)
+
+        final URL serviceCapsURL = getAccessURL(Query.CAPABILITIES, resourceID);
+
+            public URL getAccessURL(Query queryName, URI uri)
+
+                File getQueryCacheFile(Query queryName)
+
+                    String baseCacheDir = getBaseCacheDirectory();
+
+                        tempDir + / + userName + / + CONFIG_CAHE_DIR
+                        => /tmp/Zarquan/cadc-registry-1.5
+
+
+                    baseCacheDir += FILE_SEP + capsDomain;
+                    String path = FILE_SEP + queryName.getValue();
+                    log.debug("getQueryCacheFile [" + path + "] in dir [" + baseCacheDir + "]");
+                    File file = new File(baseCacheDir + path);
+
+                    => 2025-06-26 16:45:24.801[main] DEBUG RegistryClient - getQueryCacheFile [/resource-caps] in dir [/tmp/Zarquan/cadc-registry-1.5/reg-domains/ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca]
+
+    If we want to handle multiple endpoints ...
+
+    Multiple values for the URL in the properties file.
+    Make regBaseURL a List<URL>
+    Replace capsDomain with getCapsDomain(URL)
+    Pass the endpoint URL down the call chain as a parameter.
+
+
+
+
+
+
+

@@ -1,0 +1,184 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Test script to scan the CANFAR registry entries.
+
+    Result:
+
+        Work in progress ...
+
+        TODO:
+
+            Put jsonresult back into the main function.
+            Use a case statement to convert retcode into known error codes.
+            Use doctype to add entries for 'xml', 'html' and 'text'.
+            Use the known error code names to index the totals array.
+            Parse 'xml' results to count the capabilities.
+
+
+# -----------------------------------------------------
+
+    #
+    # Start with the entry for the SKAO registry.
+    https://spsrc27.iaa.csic.es/reg/resource-caps
+
+    regscan()
+        {
+        local regurl="${1}"
+        local timeout=1
+
+        echo "{"
+
+            tempdir=$(mktemp -d)
+            scandate=$(date --iso-8601=seconds)
+
+            declare -A totals
+
+            echo "\"scandate\": \"${scandate}\","
+            echo "\"registry\": \"${regurl}\","
+
+            curl \
+                --silent \
+                --show-error \
+                --request GET \
+                --header 'Accept: text/plain' \
+                "${regurl}" \
+            > "${tempdir}/resource-caps.txt"
+
+            sed -n '
+                s|^\(ivo:\/\/[^[:space:]]*\)[[:space:]]*=[[:space:]]*\([^[:space:]]*\).*$|\1#\2| p
+                ' "${tempdir}/resource-caps.txt" \
+            > "${tempdir}/uripairs.txt"
+
+            echo "\"queries\": ["
+
+            delim=""
+            for uripair in $(cat ${tempdir}/uripairs.txt)
+                do
+                    uri=$(echo "${uripair}" | sed 's|\([^#]*\)#\([^#]*\)|\1|' )
+                    url=$(echo "${uripair}" | sed 's|\([^#]*\)#\([^#]*\)|\2|' )
+
+                    echo '' > "${tempdir}/response-content.txt"
+                    echo '' > "${tempdir}/response-error.txt" \
+
+                    curl \
+                        --silent \
+                        --show-error \
+                        --insecure \
+                        --request GET \
+                        --max-time ${timeout} \
+                        --fail-with-body \
+                        --output "${tempdir}/response-content.txt" \
+                        --stderr "${tempdir}/response-error.txt" \
+                        "${url}"
+
+                    retcode=${?}
+                    (( totals[${retcode}] += 1 ))
+
+                    echo "${delim}"
+                    delim=","
+
+                    jsonresult "${tempdir}" "${uri}" "${url}" "${retcode}"
+
+                done
+
+            echo "]"
+            echo ","
+            echo "\"totals\": {"
+                delim=""
+                for key in "${!totals[@]}"
+                do
+                    echo "${delim}"
+                    delim=","
+                    echo "\"${key}\": ${totals[${key}]}"
+                done
+
+            echo "}"
+
+
+        echo "}"
+        }
+
+    jsonresult()
+        {
+        local tempdir=${1}
+        local uri=${2}
+        local url=${3}
+        local retcode=${4}
+
+        if (( ${retcode} == 0 ))
+        then
+            startline=$(
+                head --lines 1 "${tempdir}/response-content.txt" | cut --characters 1-80
+                )
+
+            case "${startline}" in
+
+                \<\!doctype* | \<\!DOCTYPE* )
+                    doctype='html'
+                    ;;
+
+                \<\?xml* )
+                    doctype='xml'
+                    ;;
+
+                * ) doctype='txt'
+                    ;;
+            esac
+
+            jq -n \
+                --arg uri "${uri}" \
+                --arg url "${url}" \
+                --arg doctype "${doctype}" \
+                --arg content "${startline}" \
+                --argjson retcode "${retcode}" \
+                '{$uri, $url, $retcode, $doctype, $content}'
+
+        else
+
+            message=$(
+                head --lines 1 "${tempdir}/response-error.txt"
+                )
+
+            jq -n \
+                --arg uri "${uri}" \
+                --arg url "${url}" \
+                --arg message "${message}" \
+                --argjson retcode "${retcode}" \
+                '{$uri, $url, $retcode, $message}'
+
+        fi
+
+        }
+
+
+    regscan 'https://spsrc27.iaa.csic.es/reg/resource-caps' | tee regscan.temp
+
+    jq '.' regscan.temp | tee regscan.json
+
+
+
