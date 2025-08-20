@@ -1,0 +1,297 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    git checkout 20250610-SKAO-SP-5555
+
+    >   Switched to branch '20250610-SKAO-SP-5555'
+    >   Your branch is up to date with 'origin/20250610-SKAO-SP-5555'.
+
+
+    git checkout -b 20250804-SKAO-SP-5555
+
+    >   Switched to a new branch '20250804-SKAO-SP-5555'
+
+
+    git branch
+
+    >     20250610-SKAO-SP-5555
+    >   * 20250804-SKAO-SP-5555
+    >     main
+
+
+    git log
+
+    >   commit b73617dd6922792eeca9cb5b9289f633ecc149f3 (HEAD -> 20250804-SKAO-SP-5555, origin/20250610-SKAO-SP-5555, 20250610-SKAO-SP-5555)
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Fri Aug 1 14:58:58 2025 +0100
+    >   
+    >       White space
+    >   
+    >   commit 2ae2fd10e29019716f55e9440832218c3c1bf8d4
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Fri Aug 1 14:37:42 2025 +0100
+    >   
+    >       Comment out Eclipse before merge
+    >   
+    >   ....
+    >   ....
+
+
+    git rebase main
+
+    >   Successfully rebased and updated refs/heads/20250804-SKAO-SP-5555.
+
+
+    git branch
+
+    >     20250610-SKAO-SP-5555
+    >   * 20250804-SKAO-SP-5555
+    >     main
+
+
+git log
+
+    >   commit c5729319ee4d014be5552fe00d08324905551b1d (HEAD -> 20250804-SKAO-SP-5555)
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Fri Aug 1 14:58:58 2025 +0100
+    >   
+    >       White space
+    >   
+    >   commit ddc8212304fa61a3437ab898110a750c0df05e7c
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Fri Aug 1 14:37:42 2025 +0100
+    >   
+    >       Comment out Eclipse before merge
+    >   
+    >   ....
+    >   ....
+    >   
+    >   commit b01d5e61bf00a7b40aeb7cd6f4186c25d9c9e9a0
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Sun Jun 29 07:11:51 2025 +0100
+    >   
+    >       Support for multiple endpoints
+    >   
+    >   commit f5a34e65118b43f203b3a278128072d7fb79f0fb (origin/main, origin/HEAD, main)
+    >   Merge: 8c4f5a8 4a76833
+    >   Author: Patrick Dowler <pdowler.cadc@gmail.com>
+    >   Date:   Tue Jul 22 11:25:35 2025 -0700
+    >   
+    >       Merge pull request #212 from SharonGoliath/CADC-14488
+    >   
+    >       CADC-14488 - /files is vault and arc haproxy rules.
+    >   
+    >   ....
+    >   ....
+
+
+    git push --set-upstream origin 20250804-SKAO-SP-5555
+
+    >   Enumerating objects: 291, done.
+    >   Counting objects: 100% (291/291), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (121/121), done.
+    >   Writing objects: 100% (271/271), 45.06 KiB | 5.63 MiB/s, done.
+    >   Total 271 (delta 132), reused 166 (delta 82), pack-reused 0 (from 0)
+    >   remote: Resolving deltas: 100% (132/132), completed with 7 local objects.
+    >   remote:
+    >   remote: Create a pull request for '20250804-SKAO-SP-5555' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/cadc-reg/pull/new/20250804-SKAO-SP-5555
+    >   remote:
+    >   To github.com:Zarquan/cadc-reg.git
+    >    * [new branch]      20250804-SKAO-SP-5555 -> 20250804-SKAO-SP-5555
+    >   branch '20250804-SKAO-SP-5555' set up to track 'origin/20250804-SKAO-SP-5555'.
+    >   ....
+    >   ....
+
+# -----------------------------------------------------
+# Delete the unused test resources.
+
+    git status
+
+    >   On branch 20250804-SKAO-SP-5555
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+    >   Changes not staged for commit:
+    >     (use "git add/rm <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	deleted:    cadc-registry/src/test/resources/simple-capabilities.xml
+    >   	deleted:    cadc-registry/src/test/resources/test-001.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-002.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-003.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-004.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-005.properties
+    >   
+    >   no changes added to commit (use "git add" and/or "git commit -a")
+
+    git add .
+    git status
+
+    >   On branch 20250804-SKAO-SP-5555
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+    >   
+    >   Changes to be committed:
+    >     (use "git restore --staged <file>..." to unstage)
+    >   	deleted:    cadc-registry/src/test/resources/simple-capabilities.xml
+    >   	deleted:    cadc-registry/src/test/resources/test-001.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-002.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-003.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-004.properties
+    >   	deleted:    cadc-registry/src/test/resources/test-005.properties
+
+
+git commit -m "Removed unused test resources"
+    >   [20250804-SKAO-SP-5555 7f97316] Removed unused test resources
+    >    6 files changed, 41 deletions(-)
+    >    delete mode 100644 cadc-registry/src/test/resources/simple-capabilities.xml
+    >    delete mode 100644 cadc-registry/src/test/resources/test-001.properties
+    >    delete mode 100644 cadc-registry/src/test/resources/test-002.properties
+    >    delete mode 100644 cadc-registry/src/test/resources/test-003.properties
+    >    delete mode 100644 cadc-registry/src/test/resources/test-004.properties
+    >    delete mode 100644 cadc-registry/src/test/resources/test-005.properties
+
+
+git push
+
+    >   Enumerating objects: 11, done.
+    >   Counting objects: 100% (11/11), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (6/6), done.
+    >   Writing objects: 100% (6/6), 510 bytes | 510.00 KiB/s, done.
+    >   Total 6 (delta 3), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+    >   To github.com:Zarquan/cadc-reg.git
+    >      c572931..7f97316  20250804-SKAO-SP-5555 -> 20250804-SKAO-SP-5555
+
+
+# -----------------------------------------------------
+# Remove our build artefacts.
+
+    git rm .gitignore
+
+    >   rm '.gitignore'
+
+
+    git status
+
+    >   On branch 20250804-SKAO-SP-5555
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+    >   
+    >   Changes to be committed:
+    >     (use "git restore --staged <file>..." to unstage)
+    >   	deleted:    .gitignore
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gradle/
+    >   	.project
+    >   	.settings/
+    >   	caches/
+    >   	cadc-registry/.classpath
+    >   	cadc-registry/.gradle/
+    >   	cadc-registry/.project
+    >   	cadc-registry/.settings/
+    >   	cadc-registry/bin/
+    >   	cadc-registry/build/
+    >   	daemon/
+    >   	native/
+    >   	wrapper/
+
+
+    rm .project
+    rm -rf .gradle/
+    rm -rf .settings/
+    rm -rf caches/
+    rm -rf cadc-registry/.classpath
+    rm -rf cadc-registry/.gradle/
+    rm -rf cadc-registry/.project
+    rm -rf cadc-registry/.settings/
+    rm -rf cadc-registry/bin/
+    rm -rf cadc-registry/build/
+    rm -rf daemon/
+    rm -rf native/
+    rm -rf wrapper/
+
+    git status
+
+    >   On branch 20250804-SKAO-SP-5555
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+    >   
+    >   Changes to be committed:
+    >     (use "git restore --staged <file>..." to unstage)
+    >   	deleted:    .gitignore
+
+    git commit -m "Deleted .gitignore hiding local build artefacts"
+    git push
+
+    #
+    # Removed Eclipse plugin.
+
+
+    git status
+
+    >   On branch 20250804-SKAO-SP-5555
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+    >   
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   cadc-registry/build.gradle
+    >   
+    >   no changes added to commit (use "git add" and/or "git commit -a")
+
+
+    git commit -m "Removed eclipse plugin from build.gradle"
+
+    >   [20250804-SKAO-SP-5555 4a14d47] Removed eclipse plugin from build.gradle
+    >    1 file changed, 1 deletion(-)
+
+
+    git push
+
+    >   Enumerating objects: 7, done.
+    >   Counting objects: 100% (7/7), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (4/4), done.
+    >   Writing objects: 100% (4/4), 440 bytes | 440.00 KiB/s, done.
+    >   Total 4 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+    >   To github.com:Zarquan/cadc-reg.git
+    >      1edaf16..4a14d47  20250804-SKAO-SP-5555 -> 20250804-SKAO-SP-5555
+    >   ....
+    >   ....
+
+
+
