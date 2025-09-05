@@ -1,0 +1,75 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Import the suggestions from Pat's code review.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Restore the Gradle and Eclipse files for now.
+#[user@desktop]
+
+    pushd /home/Zarquan/Projects/CADC/cadc-reg
+
+        cp github-20250801-before/.gitignore \
+           github-zrq
+
+        cp -r github-20250801-before/.gradle \
+           github-zrq
+
+        cp github-20250801-before/.project \
+           github-zrq
+
+        cp -r github-20250801-before/.settings \
+           github-zrq
+
+
+        cp github-20250801-before/cadc-registry/.classpath \
+           github-zrq/cadc-registry
+
+        cp -r github-20250801-before/cadc-registry/.gradle \
+           github-zrq/cadc-registry
+
+        cp github-20250801-before/cadc-registry/.project \
+           github-zrq/cadc-registry
+
+        cp -r github-20250801-before/cadc-registry/.settings \
+           github-zrq/cadc-registry
+
+
+# -----------------------------------------------------
+# Run Eclipse ....
+#[user@desktop]
+
+    /opt/eclipse/eclipse
+
+
+
+
+

@@ -1,0 +1,104 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Resolving comments from Pat.
+        https://github.com/opencadc/reg/pull/213#pullrequestreview-3134019127
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Use String.join() and system line separator to replace the '\n' in our config files.
+    https://www.baeldung.com/java-multiline-string#string-join
+
+        //
+        // Create the registry client configuration file.
+        printWriter.print(
+                "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-one:1080/bad-registry-one"
+              + "\n"
+              + "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-two:1080/good-registry-one"
+              + "\n"
+              + "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-three:1080/good-registry-two"
+            );
+
+        printWriter.print(
+            String.join(
+                System.getProperty("line.separator"),
+                "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-one:1080/bad-registry-one",
+                "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-two:1080/good-registry-one",
+                "ca.nrc.cadc.reg.client.RegistryClient.baseURL = http://testhost-three:1080/good-registry-two"
+            );
+
+# -----------------------------------------------------
+
+    Fold the testOnce and testTwice methods into one method.
+    The testTwice method always (check) repeats the testOnce part anyway.
+
+# -----------------------------------------------------
+
+    Use Meld to make all of the tests have the same text.
+
+    meld MixedHostnamesDroppedConnectionTest.java MixedHostnamesResourceNotFoundTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedHostnamesResponseTimeoutTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedHostnamesDroppedConnectionTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedRegistriesDroppedConnectionTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedRegistriesResourceNotFoundTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedRegistriesResponseTimeoutTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MixedRegistriesUnknownServiceTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MultipleRegistriesBadCapabilitiesXmlTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MultipleRegistriesCapabilitiesNotFoundTest.java
+    meld MixedHostnamesDroppedConnectionTest.java MultipleRegistriesDroppedConnectionTest.java
+    ....
+    ....
+
+# -----------------------------------------------------
+
+    Be more precise about the hostnames and path names.
+    Gradually bring them together to use the same mock service for all the tests.
+    Just have multiple endpoints within the mock service, one for each type of response.
+    Use 'or' for the mock request paths to produce similar responses.
+
+    Everything uses one Mock service with multiple responses.
+
+    Bring everything into a single test ?
+
+# -----------------------------------------------------
+
+    Copy the CADC workflow to run the checkstyle test.
+    https://github.com/opencadc/reg/actions/runs/17074564886/workflow#L20-L21
+
+    - name: build and test cadc-registry
+      run: cd cadc-registry && ../gradlew --info clean build javadoc checkstyleMain install
+
+
+# -----------------------------------------------------
+
+    Probably a week's work to get things right.
+
+
