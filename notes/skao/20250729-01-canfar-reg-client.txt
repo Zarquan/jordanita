@@ -1,0 +1,76 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Add clearCache() method to the client.
+
+
+    Test get capabilities with one registry endpoint
+        calls the registry endpoint once
+        calls the capabilities endpoint once
+        gets two capabilities
+
+
+
+
+
+    Test get capabilities with one bad registry endpoint (missing)
+    Test get capabilities with one bad registry endpoint (bad URI format)
+    Test get capabilities with one bad registry endpoint (unknown hostname)
+    Test get capabilities with one bad registry endpoint (unknown path 404)
+    Test get capabilities with one bad registry endpoint (service error 500)
+    Test get capabilities with one bad registry endpoint (not authorised 500)
+        calls the registry endpoint twice
+        fails with execption
+
+
+    Test get capabilities with bad capabilities endpoint (missing)
+    Test get capabilities with bad capabilities endpoint (bad URI format)
+    Test get capabilities with bad capabilities endpoint (unknown hostname)
+    Test get capabilities with bad capabilities endpoint (unknown resource 404)
+    Test get capabilities with bad capabilities endpoint (service error 500)
+    Test get capabilities with bad capabilities endpoint (not authorised 500)
+
+        calls the registry endpoint once
+        calls the capabilities endpoint twice ?
+        fails with execption
+
+
+    Test get capabilities with bad capabilities content (no content)
+    Test get capabilities with bad capabilities content (not XML)
+    Test get capabilities with bad capabilities content (bad XML)
+
+
+
+
