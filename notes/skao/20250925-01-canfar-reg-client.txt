@@ -1,0 +1,168 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            \\.withPath(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+            \\.withBody(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+        ' "${filename:?}"
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            \\request()$\ {
+                N
+            	s/)[[:space:]]*\.with/).with/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+        ' "${filename:?}"
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            s/,[[:space:]]\{4\}\([[:space:]]*Verification\)/\n\1/
+        ' "${filename:?}"
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            \\log.warn(\ {
+                N
+                N
+                d
+                }
+            \\log.debug(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+            \\fail(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+        ' "${filename:?}";         ' "${filename:?}"
+    done
+
+    for filename in Mock*.java;
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            \\log.warn(\ {
+                N
+                N
+                d
+                }
+            \\log.debug(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+            \\fail(\ {
+                N
+            	s/([[:space:]]*"/("/
+            	s/\n//
+                N
+            	s/"[[:space:]]*)/")/
+            	s/\n//
+                }
+        ' "${filename:?}";
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            s/(c) 2022/(c) 2025/g
+        ' "${filename:?}"
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            s/)[[:space:]]*)/))/g
+        ' "${filename:?}"
+    done
+
+    for filename in Mock*.java
+    do
+        echo "filename [${filename}]"
+        sed -i '
+            s/withStatusCode(200)/withStatusCode(HttpStatus.SC_OK)/
+        ' "${filename:?}"
+    done
+
+    git add cadc-registry/src/test/java/ca/nrc/cadc/reg/client
+
+    git commit -m "Formatting and folding"
+
+# -----------------------------------------------------
+
+

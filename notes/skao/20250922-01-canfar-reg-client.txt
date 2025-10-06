@@ -1,0 +1,571 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    git checkout 20250804-SKAO-SP-5555
+
+    >   Already on '20250804-SKAO-SP-5555'
+    >   Your branch is up to date with 'origin/20250804-SKAO-SP-5555'.
+
+
+    git checkout -b 20250922-SKAO-SP-5555
+
+    >   Switched to a new branch '20250922-SKAO-SP-5555'
+
+
+    git branch
+
+    >     20250610-SKAO-SP-5555
+    >     20250804-SKAO-SP-5555
+    >   * 20250922-SKAO-SP-5555
+    >     main
+
+
+    git log
+
+    >   commit 73eedce969b2086a7994ef3eff40cce3311fb471 (HEAD -> 20250922-SKAO-SP-5555, origin/20250804-SKAO-SP-5555, 20250804-SKAO-SP-5555)
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Tue Aug 19 16:37:43 2025 +0100
+    >   
+    >       Fixing Javadoc issues
+    >   
+    >   commit 75611fb6aeeb0e576ab14c853090d49759fe7dd5
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Fri Aug 15 06:39:14 2025 +0100
+    >   
+    >       Fixes for pull request review comments
+    >   ....
+    >   ....
+
+
+    git rebase main
+
+    >   error: cannot rebase: You have unstaged changes.
+    >   error: Please commit or stash them.
+
+
+    git stash
+
+    >   Saved working directory and index state WIP on 20250922-SKAO-SP-5555: 73eedce Fixing Javadoc issues
+
+
+    git rebase main
+
+    >   Current branch 20250922-SKAO-SP-5555 is up to date.
+
+
+    git checkout main
+
+    >   Switched to branch 'main'
+    >   Your branch is up to date with 'origin/main'.
+
+
+    git fetch upstream
+
+    >   fatal: 'upstream' does not appear to be a git repository
+    >   fatal: Could not read from remote repository.
+
+
+    git remote -v
+
+    >   origin	git@github.com:Zarquan/cadc-reg.git (fetch)
+    >   origin	git@github.com:Zarquan/cadc-reg.git (push)
+
+
+    cd ..
+    ls -al
+
+    >   total 0
+    >   drwxr-xr-x. 1 Zarquan Zarquan  20 Sep  8 13:16 .
+    >   drwxr-xr-x. 1 Zarquan Zarquan  16 Jun 10 13:17 ..
+    >   drwxr-xr-x. 1 Zarquan Zarquan 318 Aug 15 04:07 github-zrq
+
+
+    cp -a github-zrq 20250922-SKAO-SP-5555-before
+    ls -al
+
+    >   total 0
+    >   drwxr-xr-x. 1 Zarquan Zarquan  76 Sep 22 02:48 .
+    >   drwxr-xr-x. 1 Zarquan Zarquan  16 Jun 10 13:17 ..
+    >   drwxr-xr-x. 1 Zarquan Zarquan 318 Aug 15 04:07 20250922-SKAO-SP-5555-before
+    >   drwxr-xr-x. 1 Zarquan Zarquan 318 Aug 15 04:07 github-zrq
+
+    cd github-zrq
+
+    git remote add upstream git@github.com:opencadc/reg.git
+    git remote -v
+
+    >   origin      git@github.com:Zarquan/cadc-reg.git (fetch)
+    >   origin      git@github.com:Zarquan/cadc-reg.git (push)
+    >   upstream    git@github.com:opencadc/reg.git (fetch)
+    >   upstream    git@github.com:opencadc/reg.git (push)
+
+
+    git fetch upstream
+
+    >   remote: Enumerating objects: 63, done.
+    >   remote: Counting objects: 100% (63/63), done.
+    >   remote: Compressing objects: 100% (34/34), done.
+    >   remote: Total 63 (delta 28), reused 41 (delta 17), pack-reused 0 (from 0)
+    >   Unpacking objects: 100% (63/63), 11.82 KiB | 576.00 KiB/s, done.
+    >   From github.com:opencadc/reg
+    >    * [new branch]      main            -> upstream/main
+    >    * [new branch]      pdowler-patch-1 -> upstream/pdowler-patch-1
+
+
+    git merge upstream
+
+    >   Updating f5a34e6..47c1380
+    >   Fast-forward
+    >    cadc-registry-server/reg-resource-caps.properties          | 11 +++++++++--
+    >    cadc-registry/build.gradle                                 |  2 +-
+    >    cadc-registry/src/main/java/ca/nrc/cadc/reg/Standards.java | 19 +++++++++++++++++--
+    >    cadc-vosi/build.gradle                                     |  4 ++--
+    >    4 files changed, 29 insertions(+), 7 deletions(-)
+
+
+    git status
+
+    >   On branch main
+    >   Your branch is ahead of 'origin/main' by 15 commits.
+    >     (use "git push" to publish your local commits)
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitignore
+    >   	cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/
+    >   	cadc-registry/src/test/resources/good-capabilities.xml
+
+
+    git push
+
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   To github.com:Zarquan/cadc-reg.git
+    >      f5a34e6..47c1380  main -> main
+
+
+    git branch
+
+    >     20250610-SKAO-SP-5555
+    >     20250804-SKAO-SP-5555
+    >     20250922-SKAO-SP-5555
+    >   * main
+
+
+    git checkout 20250922-SKAO-SP-5555
+
+    >   ....
+    >   ....
+
+    pushd ..
+        cp -a github-zrq 20250922-SKAO-SP-5555-001
+    popd
+
+
+    git rebase main
+
+    >   error: The following untracked working tree files would be overwritten by merge:
+    >   	.gitignore
+    >   Please move or remove them before you merge.
+    >   Aborting
+    >   hint: Could not execute the todo command
+    >   hint:
+    >   hint:     pick b01d5e61bf00a7b40aeb7cd6f4186c25d9c9e9a0 Support for multiple endpoints
+    >   hint:
+    >   hint: It has been rescheduled; To edit the command before continuing, please
+    >   hint: edit the todo list first:
+    >   hint:
+    >   hint:     git rebase --edit-todo
+    >   hint:     git rebase --continue
+
+
+    mv .gitignore gitignore-mod
+
+    git rebase --edit-todo
+
+    git rebase --continue
+
+    >   Successfully rebased and updated refs/heads/20250922-SKAO-SP-5555.
+
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gradle/
+    >   	.project
+    >   	.settings/
+    >   	cadc-registry/.classpath
+    >   	cadc-registry/.gradle/
+    >   	cadc-registry/.project
+    >   	cadc-registry/.settings/
+    >   	cadc-registry/bin/
+    >   	cadc-registry/build/
+    >   	cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	cadc-registry/src/test/resources/good-capabilities.xml
+    >   	gitignore-mod
+
+
+    mv gitignore-mod .gitignore
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitignore
+    >   	cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	cadc-registry/src/test/resources/good-capabilities.xml
+
+
+    pushd ..
+        cp -a github-zrq 20250922-SKAO-SP-5555-002
+    popd
+
+
+    git stash list
+
+    >   stash@{0}: WIP on 20250922-SKAO-SP-5555: 73eedce Fixing Javadoc issues
+
+
+    git stash pop
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResponseTimeoutTest.java
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitignore
+    >   	cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	cadc-registry/src/test/resources/good-capabilities.xml
+
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResponseTimeoutTest.java
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitignore
+    >   	cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	cadc-registry/src/test/resources/good-capabilities.xml
+
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+        cadc-registry/src/test/resources/good-capabilities.xml
+
+    git commit -m "Refactoring DroppedConnectionTests to use a common base class" \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+        cadc-registry/src/test/resources/good-capabilities.xml
+
+    >   [20250922-SKAO-SP-5555 c5915c8] Refactoring DroppedConnectionTests to use a common base class
+    >    5 files changed, 252 insertions(+), 456 deletions(-)
+    >    create mode 100644 cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >    create mode 100644 cadc-registry/src/test/resources/good-capabilities.xml
+
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResponseTimeoutTest.java
+    >   
+    >   Untracked files:
+    >     (use "git add <file>..." to include in what will be committed)
+    >   	.gitignore
+
+
+    git push --set-upstream origin 20250922-SKAO-SP-5555
+
+    >   Enumerating objects: 352, done.
+    >   Counting objects: 100% (352/352), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (172/172), done.
+    >   Writing objects: 100% (332/332), 54.23 KiB | 1.94 MiB/s, done.
+    >   Total 332 (delta 161), reused 130 (delta 76), pack-reused 0 (from 0)
+    >   remote: Resolving deltas: 100% (161/161), completed with 7 local objects.
+    >   ....
+    >   ....
+
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java
+
+    git commit -m "Refactoring DroppedConnectionTests to use a common base class"
+
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java
+
+    git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Your branch is ahead of 'origin/20250922-SKAO-SP-5555' by 1 commit.
+    >     (use "git push" to publish your local commits)
+    >   
+    >   Changes to be committed:
+    >     (use "git restore --staged <file>..." to unstage)
+    >   	new file:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesDroppedConnectionTest.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesDroppedConnectionTest.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesDroppedConnectionTest.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryDroppedConnectionTest.java
+
+    git commit -m "Refactoring DroppedConnectionTests into a single test class"
+
+    >   ....
+    >   ....
+
+
+
+    git add cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    git add cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.java
+
+    git rm -f cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResponseTimeoutTest.java
+    git rm -f cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResponseTimeoutTest.java
+    git rm -f cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResponseTimeoutTest.java
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Your branch is ahead of 'origin/20250922-SKAO-SP-5555' by 3 commits.
+    >     (use "git push" to publish your local commits)
+    >   
+    >   Changes to be committed:
+    >     (use "git restore --staged <file>..." to unstage)
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesResponseTimeoutTest.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResponseTimeoutTest.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResponseTimeoutTest.java
+    >   	new file:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.java
+    >   	deleted:    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResponseTimeoutTest.java
+
+    git commit -m "Refactoring ResponseTimeoutTests into a single test class"
+
+    >   ....
+    >   ....
+
+    >   ....
+    >   ....
+
+
+    git status
+
+    >   On branch 20250922-SKAO-SP-5555
+    >   Your branch is ahead of 'origin/20250922-SKAO-SP-5555' by 4 commits.
+    >     (use "git push" to publish your local commits)
+    >   
+    >   Changes not staged for commit:
+    >     (use "git add <file>..." to update what will be committed)
+    >     (use "git restore <file>..." to discard changes in working directory)
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java
+    >   	modified:   cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.jav
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.java
+
+    git commit -m "Refactoring setup methods"
+
+    >   ....
+    >   ....
+
+    >   ....
+    >   ....
+
+
+    git status
+
+	git add \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResourceNotFoundTests.java
+
+	git rm \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesResourceNotFoundTest.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesResourceNotFoundTest.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryResourceNotFoundTest.java \
+	git rm \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedHostnamesResourceNotFoundTest.java
+
+    git commit -m "Refactoring ResourceNotFoundTests into a single test class"
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+
+	git add \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/UnknownServiceTests.java
+	git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MixedRegistriesUnknownServiceTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesUnknownServiceTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryUnknownServiceTest.java
+
+    git commit -m "Refactoring UnknownServiceTests into a single test class"
+
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResourceNotFoundTests.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/ResponseTimeoutTests.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/UnknownServiceTests.java
+
+    git commit -m "Removed the localhost tests"
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/DroppedConnectionTests.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/CapabilitiesNotFoundTests.java
+
+	git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesCapabilitiesNotFoundTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryCapabilitiesNotFoundTest.java
+
+    git commit -m "Refactoring CapabilitiesNotFoundTests into a single test class"
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/BadCapabilitiesXmlTests.java \
+	    cadc-registry/src/test/resources/bad-capabilities.xml
+
+	git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesBadCapabilitiesXmlTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryBadCapabilitiesXmlTest.java
+
+    git commit -m "Refactoring BadCapabilitiesXmlTests into a single test class"
+
+    >   ....
+    >   ....
+    >   ....
+    >   ....
+
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/GoodAvailabilityTests.java \
+	    cadc-registry/src/test/resources/good-availability.xml
+
+	git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesGoodAvailabilityTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryGoodAvailabilityTest.java
+
+    git commit -m "Refactoring GoodAvailabilityTests into a single test class"
+
+
+
+    git add \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MockServerTestBase.java \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/GoodCapabilitiesTests.java
+
+	git rm \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/MultipleRegistriesGoodCapabilitiesTest.java \
+        cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock/SingleRegistryGoodCapabilitiesTest.java
+
+    git commit -m "Refactoring GoodCapabilitiesTests into a single test class"
+
+
+    git add \
+	    cadc-registry/src/test/java/ca/nrc/cadc/reg/client/mock
+
+    git commit -m "Tidying base class methods"
+
+

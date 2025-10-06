@@ -1,0 +1,72 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    From the GitHub workflow.
+
+    - name: build and test cadc-registry
+      run: cd cadc-registry && ../gradlew --info clean build javadoc checkstyleMain install
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Launch a the eclipse-temurin build container.
+#[user@desktop]
+
+    source "${HOME}/cadc-reg.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name gradle-builder \
+        --volume "${CADCREG_CODE}:/cadc-reg:rw,z" \
+        docker.io/library/eclipse-temurin:11 \
+        bash
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and test ....
+#[user@builder]
+
+    pushd /cadc-reg
+        pushd cadc-registry
+
+            ../gradlew --info clean build javadoc checkstyleMain install
+
+        popd
+    popd
+
