@@ -59,10 +59,3 @@
             wfau
 
 
-    Celastrina becomes repo for Etherium validator.
-    https://github.com/Zarquan/celastrina
-
-        We alreday have some notes and code on a branch
-        https://github.com/Zarquan/celastrina/tree/20210829-zrq-ocean-deploy
-
-

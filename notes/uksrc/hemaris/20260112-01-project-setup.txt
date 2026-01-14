@@ -1,0 +1,250 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Initial setup of the project repository.
+
+    Result:
+
+        Success.
+        Changed the name of the GitHub project.
+        Changed the name of the master branch.
+        Added license and code of conduct etc.
+
+
+
+
+# -----------------------------------------------------
+# Create the project config files.
+#[user@desktop]
+
+    cat > ${HOME:?}/hemaris.env << 'EOF'
+source "${HOME:?}/projects.env"
+HEMARIS_DM_REPO='git@github.com:Zarquan/HemarisDM.git'
+HEMARIS_DM_HOME="${PROJECTS_ROOT}/IVOA/ivoa/Hemaris/HemarisDM"
+HEMARIS_DM_CODE="${HEMARIS_DM_HOME:?}/github-zrq"
+
+HEMARIS_BROKER_REPO='git@github.com:Zarquan/HemarisBroker.git'
+HEMARIS_BROKER_HOME="${PROJECTS_ROOT}/IVOA/ivoa/ivoa/Hemaris/HemarisBroker"
+HEMARIS_BROKER_CODE="${HEMARIS_BROKER_HOME:?}/github-zrq"
+EOF
+
+
+# -----------------------------------------------------
+# Rename master to main in the upstream repository.
+# https://gist.github.com/danieldogeanu/739f88ea5312aaa23180e162e3ae89ab
+#[user@desktop]
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_HOME}"
+
+        git clone git@github.com:ivoa/HemarisDM.git github-upstream
+
+        pushd github-upstream
+
+            git remote -v
+
+--START--
+origin	git@github.com:ivoa/HemarisDM.git (fetch)
+origin	git@github.com:ivoa/HemarisDM.git (push)
+--END--
+
+
+            git branch
+
+--START--
+* master
+--END--
+
+
+            git branch -m master main
+
+            git push -u origin main
+
+--START--
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+....
+....
+To github.com:ivoa/HemarisDM.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+--END--
+
+
+            git branch
+
+--START--
+* main
+--END--
+
+        popd
+    popd
+
+    #
+    # Change the default branch on GitHub
+    # https://github.com/ivoa/HemarisDM/settings
+    # - done
+    # Renamed master branch to master-old on GitHub
+    # - done
+    #
+    # Delete our fork on GitHub and create a new one.
+    # - done
+    #
+
+
+# -----------------------------------------------------
+# Checkout a new clone.
+#[user@desktop]
+
+    source "${HOME:?}/hemaris.env"
+    pushd "$(dirname ${HEMARIS_DM_CODE})"
+
+        git clone "${HEMARIS_DM_REPO}" "$(basename ${HEMARIS_DM_CODE})"
+
+    popd
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        git status
+
+        git branch
+
+        git remote -v
+
+    popd
+
+--START--
+On branch main
+Your branch is up to date with 'origin/main'.
+--END--
+
+--START--
+* main
+--END--
+
+--START--
+origin  git@github.com:Zarquan/HemarisDM.git (fetch)
+origin  git@github.com:Zarquan/HemarisDM.git (push)
+--END--
+
+
+# -----------------------------------------------------
+# Add the upstream repository.
+#[user@desktop]
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        git remote add upstream git@github.com:ivoa/HemarisDM.git
+
+        git remote -v
+
+    popd
+
+--START--
+origin      git@github.com:Zarquan/HemarisDM.git (fetch)
+origin      git@github.com:Zarquan/HemarisDM.git (push)
+upstream    git@github.com:ivoa/HemarisDM.git (fetch)
+upstream    git@github.com:ivoa/HemarisDM.git (push)
+--END--
+
+
+# -----------------------------------------------------
+# Configure our username.
+#[user@desktop]
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        git config user.email "dave.morris@manchester.ac.uk"
+        git config user.name  "Dave Morris"
+
+    popd
+
+# -----------------------------------------------------
+# Create a new branch.
+#[user@desktop]
+
+    branchname=project-setup
+    newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        git checkout main
+
+        git checkout -b "${newbranch:?}"
+
+    popd
+
+
+# -----------------------------------------------------
+# Add the project license files.
+#[user@desktop]
+
+    source "${HOME:?}/hemaris.env"
+    source "${HOME:?}/jordanita.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        cp "${JORDANITA_CODE}/licenses/CODE_OF_CONDUCT.md" .
+        cp "${JORDANITA_CODE}/licenses/CONTRIBUTING.md" .
+        cp "${JORDANITA_CODE}/licenses/GPL-3/LICENSE" .
+
+        git add .
+
+        git commit -s -m "Added project license files"
+
+        git push --set-upstream origin 20260112-zrq-project-setup
+
+    popd
+
+--START--
+Enumerating objects: 6, done.
+Counting objects: 100% (6/6), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 14.14 KiB | 7.07 MiB/s, done.
+Total 5 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+remote:
+remote: Create a pull request for '20260112-zrq-project-setup' on GitHub by visiting:
+remote:      https://github.com/Zarquan/HemarisDM/pull/new/20260112-zrq-project-setup
+remote:
+To github.com:Zarquan/HemarisDM.git
+ * [new branch]      20260112-zrq-project-setup -> 20260112-zrq-project-setup
+branch '20260112-zrq-project-setup' set up to track 'origin/20260112-zrq-project-setup'.
+--END--
+
+
+
+
+
+
+
+
+
+

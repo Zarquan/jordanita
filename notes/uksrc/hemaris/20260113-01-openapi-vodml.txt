@@ -1,0 +1,603 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Learn how to generate the VODML model from the OpenAPI schema.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Experiment with the Redocly CLI tools
+# https://redocly.com/docs/cli/file-management
+#[user@desktop]
+
+    #
+    # The split and join functions might be useful for the OpenAPI schema.
+    # Need to experiment with them to see how they perform.
+    #
+
+    #
+    # For now, we want to try the bundle command.
+    # https://redocly.com/docs/cli/file-management#bundle-openapi-to-a-single-file
+    #
+
+# -----------------------------------------------------
+# Create a new branch.
+#[user@desktop]
+
+    branchname=openapi-vodml
+    newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+    source "${HOME:?}/hemaris.env"
+    pushd "${HEMARIS_DM_CODE}"
+
+        git checkout main
+
+        git checkout -b "${newbranch:?}"
+
+    popd
+
+
+# -----------------------------------------------------
+# Run an instance of our developer tools.
+#[user@desktop]
+
+    mkdir "${HOME:?}/hemaris-tmp"
+
+    source "${HOME:?}/hemaris.env"
+    source "${HOME:?}/calycopis.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --publish 8082:8082 \
+        --name hemaris-dev \
+        --volume "${TREBULA_CODE}:/trebula:rw,z" \
+        --volume "${ISOBEON_CODE}:/isobeon:rw,z" \
+        --volume "${CALYCOPIS_CODE}:/calycopis:rw,z" \
+        --volume "${HEMARIS_DM_CODE}:/hemarisDM:rw,z" \
+        --volume "${HOME}/hemaris-tmp:/hemaris-tmp:rw,z" \
+        --volume "${HOME}/.m2/repository:/root/.m2/repository:rw,z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2025.08.12 \
+        bash
+
+    ....
+    ....
+
+
+# -----------------------------------------------------
+# Install the Redocly CLI tools.
+# https://redocly.com/docs/cli/installation#install-locally
+#[user@hemaris-dev]
+
+    # Install Node.js and npm.
+    # TODO Move this into the developer-tools container image.
+    # https://developer.fedoraproject.org/tech/languages/nodejs/nodejs.html
+    dnf install -y nodejs
+
+--START--
+....
+....
+--END--
+
+
+    #
+    # Install the Redocly CLI tools.
+    # https://redocly.com/docs/cli/installation#install-locally
+
+    pushd /hemaris-tmp
+
+        npm install @redocly/cli@latest
+
+        redocly --version
+
+--START--
+added 244 packages in 18s
+....
+--END--
+
+--START--
+bash: redocly: command not found
+--END--
+
+        #
+        # Lame install procedure.
+        # Missing something that makes this an executable.
+        #
+
+        #
+        # We can try the package runner version.
+        # https://redocly.com/docs/cli/installation#use-the-command-at-runtime
+
+        npx @redocly/cli@latest --version
+
+--START--
+2.14.5
+--END--
+
+
+# -----------------------------------------------------
+# Run the bundle command and see what we get.
+# https://redocly.com/docs/cli/commands/bundle
+#[user@hemaris-dev]
+
+    pushd /hemaris-tmp
+
+        npx @redocly/cli@latest \
+            bundle \
+                /trebula/schema/v1.0/execution-broker.yaml \
+                --output execution-broker-single.yaml
+
+--START--
+bundling ../trebula/schema/v1.0/execution-broker.yaml...
+📦 Created a bundle for ../trebula/schema/v1.0/execution-broker.yaml at execution-broker-single.yaml 170ms.
+--END--
+
+    #
+    # Take a look in text editor to see what it produced ....
+    # Looks good, everything in one big YAML file.
+    #
+
+
+# -----------------------------------------------------
+# Run the split command and see what we get.
+# https://redocly.com/docs/cli/commands/split
+#[user@hemaris-dev]
+
+    pushd /hemaris-tmp
+
+        npx @redocly/cli@latest \
+            split \
+                execution-broker-single.yaml \
+                --outDir split
+
+--START--
+An unexpected error occurred. This is likely a bug that should be reported.
+TypeError: Cannot read properties of undefined (reading 'kind')
+    at implicitlyReferenceDiscriminator (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:133:51)
+    at iterateComponentTypes (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:243:17)
+    at Array.forEach (<anonymous>)
+    at iterateComponents (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:226:24)
+    at splitDefinition (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:24:5)
+    at handleSplit (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:16:5)
+    at file:///hemaris-tmp/node_modules/@redocly/cli/lib/wrapper.js:55:23
+--END--
+
+
+    #
+    # implicitlyReferenceDiscriminator
+    # Is this because 'kind' is defined in a base class, not the AbstractXyz class where it is used as the discriminator ?
+    # Edit the single.yaml file to add  a 'kind' property to the AbstractXyz classes.
+    # Nope, same error.
+    #
+    # No line number or hint of what/where in the source file is causing the issue.
+    #
+
+--START--
+An unexpected error occurred. This is likely a bug that should be reported.
+TypeError: Cannot read properties of undefined (reading 'kind')
+    at implicitlyReferenceDiscriminator (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:133:51)
+    at iterateComponentTypes (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:243:17)
+    at Array.forEach (<anonymous>)
+    at iterateComponents (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:226:24)
+    at splitDefinition (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:24:5)
+    at handleSplit (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:16:5)
+    at file:///hemaris-tmp/node_modules/@redocly/cli/lib/wrapper.js:55:23
+--END--
+
+    #
+    # Edit the single.yaml file to reduce the complexity.
+    #
+
+--START--
+....
+    AbstractExecutionSession:
+      description: Abstract base class for execution sessions.
+      type: object
+      title: AbstractExecutionSession
+      required:
+        - kind
+      discriminator:
+        propertyName: kind
+        mapping:
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/simple-execution-session-1.0: '#/components/schemas/SimpleExecutionSession'
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/scheduled-execution-session-1.0: '#/components/schemas/ScheduledExecutionSession'
+      allOf:
+        - type: object
+          properties:
+            kind:
+              description: The component type identifier.
+              type: string
+              format: uri
+        - $ref: '#/components/schemas/AbstractComponent'
+....
+--END--
+
+--START--
+An unexpected error occurred. This is likely a bug that should be reported.
+TypeError: Cannot read properties of undefined (reading 'kind')
+    at implicitlyReferenceDiscriminator (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:133:51)
+    at iterateComponentTypes (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:243:17)
+    at Array.forEach (<anonymous>)
+    at iterateComponents (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:226:24)
+    at splitDefinition (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:24:5)
+    at handleSplit (file:///hemaris-tmp/node_modules/@redocly/cli/lib/commands/split/index.js:16:5)
+    at file:///hemaris-tmp/node_modules/@redocly/cli/lib/wrapper.js:55:23
+--END--
+
+
+
+--START--
+....
+    AbstractExecutionSession:
+      description: Abstract base class for execution sessions.
+      type: object
+      title: AbstractExecutionSession
+      required:
+        - kind
+      discriminator:
+        propertyName: kind
+        mapping:
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/simple-execution-session-1.0: '#/components/schemas/SimpleExecutionSession'
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/scheduled-execution-session-1.0: '#/components/schemas/ScheduledExecutionSession'
+      properties:
+        kind:
+          description: The component type identifier.
+          type: string
+          format: uri
+....
+--END--
+
+--START--
+🪓 Document: execution-broker-single.yaml is successfully split
+    and all related files are saved to the directory: execution-broker-split
+
+execution-broker-single.yaml: split processed in 52ms
+--END--
+
+    #
+    # It fails if the discriminator property is defined in the allOf section
+    # rather than a top level property.
+    #
+    # Interesting that our use of discriminator is different to the OpenAPI example.
+    # The OpenAPI shows the discriminator in combination with a oneOf structure listing the classes.
+    #
+
+--START--
+....
+  schema:
+    oneOf:
+      - $ref: '#/components/schemas/Object1'
+      - $ref: '#/components/schemas/Object2'
+      - $ref: 'sysObject.json#/sysObject'
+    discriminator:
+      propertyName: objectType
+      mapping:
+        obj1: '#/components/schemas/Object1'
+        obj2: '#/components/schemas/Object2'
+        system: 'sysObject.json#/sysObject'....
+....
+--END--
+
+    #
+    # Their derived classes don't reference the parent class.
+    #
+
+--START--
+    Object1:
+      type: object
+      required:
+        - objectType
+      properties:
+        objectType:
+          type: string
+        ....
+
+    Object2:
+      type: object
+      required:
+        - objectType
+      properties:
+        objectType:
+          type: string
+        ....
+--END--
+
+
+
+    #
+    # We have the mapping in the AbstractXyz class, but then an anyOf structure that defines the base class.
+    #
+
+--START--
+....
+    AbstractExecutionSession:
+      description: Abstract base class for execution sessions.
+      type: object
+      title: AbstractExecutionSession
+      required:
+        - kind
+      discriminator:
+        propertyName: kind
+        mapping:
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/simple-execution-session-1.0: '#/components/schemas/SimpleExecutionSession'
+          https://www.purl.org/ivoa.net/EB/schema/v1.0/types/session/scheduled-execution-session-1.0: '#/components/schemas/ScheduledExecutionSession'
+      allOf:
+        - type: object
+          properties:
+            kind:
+              description: The component type identifier.
+              type: string
+              format: uri
+        - $ref: '#/components/schemas/AbstractComponent'
+....
+--END--
+
+    #
+    # OK, this is for later.
+    # Basically, the way we use polymorphism might be wrong.
+    # The code generation works, which is waht we developed against.
+    # The Redocly split tool doesn't say it is wrong, it just fails at that point.
+    #
+
+
+# -----------------------------------------------------
+# Run the lint command and see what we get.
+# https://redocly.com/docs/cli/commands/lint
+#[user@hemaris-dev]
+
+    pushd /hemaris-tmp
+
+        rm execution-broker-single.yaml
+
+        npx @redocly/cli@latest \
+            bundle \
+                /trebula/schema/v1.0/execution-broker.yaml \
+                --output execution-broker-single.yaml
+
+        npx @redocly/cli@latest \
+            lint \
+                execution-broker-single.yaml
+
+
+--START--
+No configurations were provided -- using built in recommended configuration by default.
+
+validating execution-broker-single.yaml...
+[1] execution-broker-single.yaml:18:5 at #/paths/~1offersets/post/summary
+
+Operation object should contain `summary` field.
+
+16 | paths:
+17 |   /offersets:
+18 |     post:
+19 |       operationId: OfferSetPost
+20 |       requestBody:
+
+Error was generated by the operation-summary rule.
+
+
+[2] execution-broker-single.yaml:54:5 at #/paths/~1offersets~1{uuid}/get/summary
+
+Operation object should contain `summary` field.
+
+52 |               format: url
+53 | /offersets/{uuid}:
+54 |   get:
+55 |     operationId: OfferSetGet
+56 |     parameters:
+
+Error was generated by the operation-summary rule.
+
+
+[3] execution-broker-single.yaml:79:5 at #/paths/~1sessions~1{uuid}/get/summary
+
+Operation object should contain `summary` field.
+
+77 |               $ref: '#/components/schemas/OfferSetResponse'
+78 | /sessions/{uuid}:
+79 |   get:
+80 |     operationId: ExecutionSessionGet
+81 |     parameters:
+
+Error was generated by the operation-summary rule.
+
+
+[4] execution-broker-single.yaml:103:5 at #/paths/~1sessions~1{uuid}/post/summary
+
+Operation object should contain `summary` field.
+
+101 |           schema:
+102 |             $ref: '#/components/schemas/ExecutionSessionResponseFour'
+103 | post:
+104 |   operationId: ExecutionSessionPost
+105 |   parameters:
+
+Error was generated by the operation-summary rule.
+
+
+[5] execution-broker-single.yaml:18:5 at #/paths/~1offersets/post
+
+Every operation should have security defined on it or on the root level.
+
+16 | paths:
+17 |   /offersets:
+18 |     post:
+19 |       operationId: OfferSetPost
+20 |       requestBody:
+
+Error was generated by the security-defined rule.
+
+
+[6] execution-broker-single.yaml:54:5 at #/paths/~1offersets~1{uuid}/get
+
+Every operation should have security defined on it or on the root level.
+
+52 |               format: url
+53 | /offersets/{uuid}:
+54 |   get:
+55 |     operationId: OfferSetGet
+56 |     parameters:
+
+Error was generated by the security-defined rule.
+
+
+[7] execution-broker-single.yaml:79:5 at #/paths/~1sessions~1{uuid}/get
+
+Every operation should have security defined on it or on the root level.
+
+77 |               $ref: '#/components/schemas/OfferSetResponse'
+78 | /sessions/{uuid}:
+79 |   get:
+80 |     operationId: ExecutionSessionGet
+81 |     parameters:
+
+Error was generated by the security-defined rule.
+
+
+[8] execution-broker-single.yaml:103:5 at #/paths/~1sessions~1{uuid}/post
+
+Every operation should have security defined on it or on the root level.
+
+101 |           schema:
+102 |             $ref: '#/components/schemas/ExecutionSessionResponseFour'
+103 | post:
+104 |   operationId: ExecutionSessionPost
+105 |   parameters:
+
+Error was generated by the security-defined rule.
+
+
+[9] execution-broker-single.yaml:14:10 at #/servers/0/url
+
+Server `url` should not point to example.com or localhost.
+
+12 |     identifier: CC-BY-SA-4.0
+13 | servers:
+14 |   - url: http://localhost:8080
+15 |     description: Localhost development
+16 | paths:
+
+Warning was generated by the no-server-example.com rule.
+
+
+[10] execution-broker-single.yaml:32:7 at #/paths/~1offersets/post/responses
+
+Operation must have at least one `4XX` response.
+
+30 |         $ref: '#/components/schemas/OfferSetRequest'
+31 |   required: true
+32 | responses:
+33 |   '200':
+34 |     description: A simple OK response with the offerset details.
+
+Warning was generated by the operation-4xx-response rule.
+
+
+[11] execution-broker-single.yaml:65:7 at #/paths/~1offersets~1{uuid}/get/responses
+
+Operation must have at least one `4XX` response.
+
+63 |       format: uuid
+64 |     style: simple
+65 | responses:
+66 |   '200':
+67 |     description: The set of responses for each content type.
+
+Warning was generated by the operation-4xx-response rule.
+
+
+[12] execution-broker-single.yaml:90:7 at #/paths/~1sessions~1{uuid}/get/responses
+
+Operation must have at least one `4XX` response.
+
+88 |       format: uuid
+89 |     style: simple
+90 | responses:
+91 |   '200':
+92 |     description: The set of responses for each content type.
+
+Warning was generated by the operation-4xx-response rule.
+
+
+[13] execution-broker-single.yaml:126:7 at #/paths/~1sessions~1{uuid}/post/responses
+
+Operation must have at least one `4XX` response.
+
+124 |       schema:
+125 |         $ref: '#/components/schemas/AbstractUpdate'
+126 | responses:
+127 |   '200':
+128 |     description: Required description ...
+
+Warning was generated by the operation-4xx-response rule.
+
+
+execution-broker-single.yaml: validated in 186ms
+
+❌ Validation failed with 8 errors and 5 warnings.
+run `redocly lint --generate-ignore-file` to add all problems to the ignore file.
+
+--END--
+
+    #
+    # It didn't flag anything about the data model structure itself.
+    # Although that may be because it skipped the bits it didn't understand.
+    #
+
+
+# -----------------------------------------------------
+# Run the build-docs command and see what we get.
+# https://redocly.com/docs/cli/commands/build-docs
+#[user@hemaris-dev]
+
+    pushd /hemaris-tmp
+
+        npx @redocly/cli@latest \
+            build-docs \
+                execution-broker-single.yaml
+
+--START--
+Prerendering docs
+
+🎉 bundled successfully in: redoc-static.html (258 KiB) [⏱ 4ms].
+--END--
+
+    #
+    # Looks nice, but in reality it is foobar.
+    # file:///home/Zarquan/hemaris-tmp/redoc-static.html
+    #
+    # It mixes some parts of the derived classes with other parts of the base classes.
+    # Basically, it can't handle polymorphism.
+    #
+
+
+
+
+
+
