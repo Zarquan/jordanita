@@ -1,0 +1,39 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes and transcript from the meeting.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    Waiting for permission to publish the transcript.
+
