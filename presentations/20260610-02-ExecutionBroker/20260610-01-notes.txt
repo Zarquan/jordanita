@@ -1,0 +1,608 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+
+progress
+    CANFAR execution only, no data yet
+    Docker exectution and data download
+    OpenAPI - java and Python client generated with wrappers
+    Using Python client to test the Java service.
+    Stress tests 1,000s requests in xx.
+    80ms per request
+    Bottle necks identified and fixes in progress.
+
+    OpenAPI
+    Client code automatically generated (*) need to publish the Python
+    Extensible data model evolving to meet requirements.
+    Small changes, core model is performing well.
+
+    AI developing a skill to enable AI to use the service.
+    Influencing how the client is designed **and documented**.
+
+Next steps
+    Saving data
+        Reading data (local and remote) is implemented
+        Writing data is todo.
+        Short term - mock/fake auth
+        Longer term - 3rd party data transfer
+
+Metrics
+    Describing the platform you need.
+    cpu, memory, gpu (with kind)
+    gets complicated, but still misses the point
+    can have wonderful cpu/gpu linked by a slow IO bus
+    benchmark the platform using a similar task
+    metrics
+      - kind: simple min/max metric
+        type: basic compute and IO metric
+        required: true/false
+        score:
+          min: ..
+          max: ..
+
+    Used by users to describe what they want
+    Used by platforms to describe what they offer
+
+Costs
+
+
+
+
+
+
+
+#1 -----------------------------------------------------
+
+TAP is a set of endpoints that perform operations on tables.
+
+* /sync
+* /async
+* /tables
+
+The simplest of which is /sync.
+POST an ADQL query to /sync the service will execute it.
+
+#2 -----------------------------------------------------
+
+ExecutionBroker is a set of endpoints that manage execution sessions.
+
+* /direct Direct execution (POST, redirect)
+* /requests Execution request (POST, redirect)
+* /offers/{uuid} Offers response (GET)
+* /sessions/{uuid} Session status (GET)
+
+The simplest of which is /direct.
+POST a task description and the service will will execute it.
+
+#3 -----------------------------------------------------
+
+The Execution Broker data model describes a re-usable set of components
+
+Executables :
+* Docker container
+* Jupyter notebook
+* etc
+
+Data resources :
+* Simple HTTP resource
+* Amazon S3 object
+* Rucio object
+* etc
+
+Storage resources :
+* Simple file system
+* etc
+
+Task description combines components to describe what you want to do.
+
+#4 -----------------------------------------------------
+
+A simple request to run a Docker container.
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+```
+
+POST this to the /direct endpoint and the platform will run the container.
+
+#5 -----------------------------------------------------
+
+A simple request to run a Jupyter notebook
+```
+executable:
+  kind: http://purl/jupyter-notebook
+  notebook:
+    location: "http://..../example.jpnb"
+```
+
+POST this to the /direct endpoint and the platform will run the notebook.
+
+#6 -----------------------------------------------------
+
+Posting a task with just the executable assumes that the data you want to
+work on is already available on the platform.
+
+If not, then we can add a description of the external data resource
+we want to use.
+
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+data:
+  - kind: http://purl/simple-data-resource
+    location: "http://..../example.dat"
+```
+
+#7 -----------------------------------------------------
+
+and we need to add a volume mount to make the data available in the right place
+
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+compute:
+  kind: : http://purl/simple-compute-resource
+  volumes:
+    - kind: http://purl/simple-volume-mount
+      path: /input
+      mode: READONLY
+      resource: example-data
+data:
+  - kind: http://purl/simple-data-resource
+    meta:
+      name: example-data
+    location: "http://..../example.dat"
+```
+
+#8 -----------------------------------------------------
+
+If this looks familar, it is because the underlying pattern is based on Openstack, Docker, and Kubernetes.
+
+* The kind identifier for types comes from Kubernetes.
+* The volume mount pattern comes from Openstack, Docker, and Kubernetes.
+
+but the model is abstracted away from the specific platforms to be able to manage
+tasks on a wide range of different platforms, including
+
+* Openstack,
+* Docker,
+* Kubernetes,
+* Slurm,
+* Dirac
+* Amazon AWS,
+* Digital Ocean
+* etc ...
+
+#9 -----------------------------------------------------
+
+We have a Python client that helps to create and send execution requests.
+```
+    return ExecutionRequest(
+        executable=DockerContainer(
+            image=DockerImageSpec(
+                locations=[ANDROCLES_IMAGE],
+                digest=ANDROCLES_DIGEST,
+            ),
+            command=["md5sum", "json"],
+        ),
+        data=[
+            SimpleDataResource(
+                meta=ComponentMetadata(name=f"{name}-data"),
+                location=file_url,
+            ),
+        ],
+        compute=SimpleComputeResource(
+            volumes=[
+                SimpleVolumeMount(
+                    resource=f"{name}-data",
+                    path="/input",
+                    mode="READONLY",
+                ),
+            ],
+        ),
+
+```
+
+#10 -----------------------------------------------------
+
+But in many cases, the end user would not need to create the execution description from scratch.
+
+The developers of the software can supply a template, ivoa-execution.yaml, in their git repository.
+
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+compute:
+  kind: : http://purl/simple-compute-resource
+  volumes:
+    - kind: http://purl/simple-volume-mount
+      path: /input
+      mode: READONLY
+      resource: example-data
+data:
+  - kind: http://purl/abstract-data-resource
+    meta:
+      name: example-data
+```
+
+#11 -----------------------------------------------------
+
+The template can be used to build an execution request by replacing the abstract data resource with a specific `simple-data-resource` that contains the URL to download the data from.
+
+Replacing this
+```
+data:
+  - kind: http://purl/abstract-data-resource
+    meta:
+      name: example-data
+```
+
+with this
+```
+data:
+  - kind: http://purl/simple-data-resource
+    meta:
+      name: example-data
+    location: "http://..../example.dat"
+```
+
+#12 -----------------------------------------------------
+
+Example ivoa-execution description for a container:
+https://github.com/Zarquan/Heliophorus-androcles/blob/main/ivoa-execution.yaml
+
+In this case, the execution description is provided by the container developer,
+but it could also be provided by a 3rd party.
+
+A software discovery service could return execution templates for the
+software that it finds.
+
+The user searches a Software Discovery service to find the thing they want to run,
+downloads the execution template, fills in the data references, and then passes it
+to an Execution Broker to run it.
+
+#13 -----------------------------------------------------
+
+To recap - ExecutionBroker is a set of endpoints that manage execution sessions.
+
+The simplest of which is /direct.
+
+POST the following task description to the /direct endpoint and the platform will run it.
+
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+```
+
+Add compute and data resources as required to build a more complex task.
+
+#14 -----------------------------------------------------
+
+Implementation progress
+
+OpenAPI schema - done
+* Java server components generated by GitHub workflow
+* Python client generated by GitHub workflow
+* Interoperable - Python client testing Java service
+
+Mock platform
+* Tests for the validation components - done
+
+CANFAR platform, developed as part of SRCNet
+* Execute docker containers - done
+* Remote data download - todo
+
+Docker platform, developed as part of UKSRC
+* Execute docker containers - done
+* Remote data download - done (*)
+* Local file data - done
+
+* Stress tests processing 1,000s of requests.
+* Bottle necks identified and performance fixes in progress.
+
+#15 -----------------------------------------------------
+
+TAP is a set of endpoints that perform operations on tables.
+* /sync
+* /async
+* /tables
+
+The /async endpoint provides asynchronous functionality
+to support long running queries.
+
+ExecutionBroker is a set of endpoints that manage execution sessions.
+
+* /direct Direct execution (POST, redirect)
+* /requests Execution request (POST, redirect)
+* /offers/{uuid} Offers response (GET)
+* /sessions/{uuid} Session status (GET)
+
+The /requests and /offers endpoints implement an asynchronous
+conversation.
+
+The request and offers interaction allows the user to specify the task they want,
+and the service to respond with an offer describing what it can provide.
+
+Q Can you do <this> ?
+A YES offers[]
+
+The client or agent displays the offers to the user and lets them
+select the one they want to use.
+
+
+#16 -----------------------------------------------------
+
+New features under development - metrics and costs.
+
+Metrics is a simple way to describe what kind of compute performance
+is needed to execute the task.
+
+For eaxmple, the user can use the following metric to request a compute resource
+that can reach at least 3.5 on compute-benchmark-21.
+
+```
+compute:
+  kind: "http://purl/simple-compute-resource"
+  metrics:
+    - kind: "http://purl/simple-min-max-metric"
+      type: "http://purl/compute-benchmark-21"
+      min: 3.5
+```
+
+The meaning of 3.5 on compute-benchmark-21 is specific to the type of benchmark.
+The Execution Broker protocol is merley acting as the messenger.
+
+Request :
+Can you provide '3.5 on compute-benchmark-21'
+
+Response :
+YES - offers[]
+or
+NO - "Unable to provide [compute-benchmark-21][3.5]"
+
+#17 -----------------------------------------------------
+
+Metrics are designed to augment the simple compute resource critera
+of number of cpu cores and size of memory.
+
+As soon as we start to add high performance GPUs to the mix,
+the requirements become complex to describe.
+What kind of GPU, how many cores, how much memory, and how is it connected, all influence the performance, but how much depends on the type of task.
+
+We can create benchmarks for specific types of tasks, e.g. cross matching,
+source extraction, image processing etc.
+
+If the user wants a better level of performance than their current platform.
+They can run the benchmark on their platform, and then set that as the minimum
+performance criteria in their request.
+
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  metrics:
+    - kind: http://purl/simple-min-max-metric
+      type: http://purl/compute-benchmark-21
+      min: 3.5
+```
+
+#18 -----------------------------------------------------
+
+If the services include a benchmark metric in their responses, then
+it gives the user a more meaningful value to compare offers from
+different platforms.
+
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  metrics:
+    - kind: http://purl/simple-min-max-metric
+      type: http://purl/compute-benchmark-21
+      min: 4.1
+```
+
+and
+
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  metrics:
+    - kind: http://purl/simple-min-max-metric
+      type: http://purl/compute-benchmark-21
+      min: 6.2
+```
+
+Is easier to understand the impact of this on their task
+than the size of the GPU and memory.
+
+#19 -----------------------------------------------------
+
+Costs.
+
+At least three different providers have mentioned that they have implemented,
+or are looking at implementing, some kind of cost for using compute resources.
+
+Not necesarily financial costs, but credits linked to a user account that provide
+a way to measure how much compute a user has used, and to encourage them
+to think about how many compute resources they request.
+
+Some of our colleagues at UCL are looking at estimating the energy costs of running HPC compute
+resources and how to estimate the carbon cost for executing tasks on different platforms.
+
+Adding a costs element to the request and response enables the user and the
+service to have a conversation about how much a task will cost, before it is executed.
+
+A user can specify a maximum cost they are willing to incurr to execute a task.
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  costs:
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/basic-energy-cost
+      max: 0.2
+```
+
+A service can declare the minimum and maximum cost that the task will incurr
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  costs:
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/basic-energy-cost
+      min: 0.05
+      max: 0.19
+```
+
+#20 -----------------------------------------------------
+
+The metrics and costs can be combined to have a conversation comparing
+the level of performance avaiable and costs involved in offers
+from different platforms.
+
+The user can describe the required performance and maximum cost they are
+willing to incurr.
+
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  metrics:
+    - kind: http://purl/simple-min-max-metric
+      type: http://purl/compute-benchmark-21
+      min: 3.5
+  costs:
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/basic-energy-cost
+      max: 0.2
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/nasa-compute-units
+      max: 5
+```
+
+The service can respond with the level of performance it can provide
+and the costs it will incurr.
+
+```
+compute:
+  kind: : http://purl/simple-compute-resource
+  metrics:
+    - kind: http://purl/simple-min-max-metric
+      type: http://purl/compute-benchmark-21
+      min: 4.1
+  costs:
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/basic-energy-cost
+      min: 0.01
+      max: 0.15
+    - kind: http://purl/simple-min-max-cost
+      type: http://purl/nasa-compute-units
+      min: 1
+      max: 5
+```
+
+#21 -----------------------------------------------------
+
+All of this is for the future.
+We are experimenting with the costs and metrics to see how useful they are.
+If you are interested in exploring this please join the discussion.
+
+
+#22 -----------------------------------------------------
+
+Back to basics:
+
+POST this to the /direct endpoint and the platform will run the container.
+
+```
+executable:
+  kind: http://purl/docker-container
+  image:
+    locations:
+      - "ghcr.io/zarquan/heliophorus-androcles"
+    digest: "sha256:0dfe....4df3"
+```
+
+Please join the discussion.
+We need your help to make it happen.
+
+#23 -----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
