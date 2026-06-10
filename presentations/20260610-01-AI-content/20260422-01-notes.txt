@@ -1,0 +1,88 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+AI citations
+
+    Email footer - curtesy to other recipients
+    Does it matter ?
+
+    Organising a meeting.
+    Emails to the participants are AI generated.
+    Does it matter ?
+
+    Wiki entries describing the meeting are AI generated.
+    Does it matter ?
+        Should I have replaced abstract with my own text ?
+        Should I add a AI declaration ?
+
+    Technical discussion on the mailing list.
+    Emails criticising a position are AI generated.
+    Emails proposing a position are AI generated.
+    Does it matter ?
+
+    Technical discussion on GitHub.
+    New issues are AI generated.
+    Does it matter ?
+
+    Code for services is AI generated.
+    Does it matter ?
+
+    Text for standard document is AI generated.
+    Does it matter ?
+
+
+AI use
+
+    100% vibe coded
+        It works, but I can't say more than that.
+        I can't describe what the code does.
+        Written and then abandoned.
+        No style.
+
+    Structured development
+        Building on established patterns.
+        We need to define the patterns.
+        Maintainable, verifiable software.
+        Software engineering - more than just code.
+
+    AI agents as the client interface
+        Natural language interpreter
+        Find images for <region> that contain <phenomenon>.
+        User <software> to perform <task> on <data>.
+
+        Developing skills agents to use our software.
+
+
+
