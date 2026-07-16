@@ -1,0 +1,362 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Fix the publishing from GitHub workflows.
+
+        Add steps to publish to the UKSRC Nexus service.
+
+        Based on examples from other UKSRC projects.
+        https://github.com/ivoa/TAPSchemaDM/blob/8acf91fdbdfc44af96237cacf2d8a1bfd8725477/.github/workflows/publish.yml#L31-L35
+        https://github.com/ivoa/TAPSchemaDM/blob/8acf91fdbdfc44af96237cacf2d8a1bfd8725477/build.gradle.kts#L132-L143
+
+        Using ChatGPT GPT-5.5.
+        https://chatgpt.com/share/6a5124bf-6a34-83eb-aedc-2f92d5fd7b70
+
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Two copies on laptop, my own fork and the UKSRC fork.
+#[user@laptop]
+
+    source "${HOME}/calycopis.env"
+    pushd  "${TREBULA_HOME:?}"
+
+        ls -al
+
+    >   drwxrwxr-x .... github-uksrc
+    >   drwxrwxr-x .... github-zrq
+
+
+
+# -----------------------------------------------------
+# Make the changes on my fork.
+#[user@laptop]
+
+    branchname=workflow-publishing
+    newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${TREBULA_CODE}"
+
+        git checkout main
+        git checkout -b "${newbranch:?}"
+
+    popd
+
+    #
+    # Used OpenAI ChatGPT to provide answers.
+    # https://chatgpt.com/share/6a4ff925-b594-83ed-a1ea-0231eaa44c18
+    #
+
+    #
+    # TODO
+    # Comit changes to my fork.
+    # Create a pull request to transfer them into the UKSRC fork.
+    # Create a pull request to transfer them into the IVOA repository.
+    # Check which actions are performed ...
+    #
+
+    build-packages.yml
+
+      ....
+      ....
+
+      - name: Publish the JAR to the UKSRC Nexus repository.
+        if: ${{ (github.repository == 'uksrc/Calycopis-openapi') && (github.event_name == 'push') }}
+        run: |
+          pushd codegen/java/client
+            ./mvnw --batch-mode \
+              deploy \
+                -Puksrc-profile \
+                -Dcalycopis.schema.file=/tmp/execution-broker-${{env.schemaversion}}.yaml
+          popd
+        env:
+          UKSRC_REPO_USERNAME: ${{ secrets.UKSRC_REPO_USERNAME }}
+          UKSRC_REPO_PASSWORD: ${{ secrets.UKSRC_REPO_PASSWORD }}
+
+      ....
+      ....
+
+    pom.xml
+
+        ....
+        ....
+
+        <profiles>
+            <profile>
+                <id>ivoa-profile</id>
+                <distributionManagement>
+                    <repository>
+                        <id>ivoa-github</id>
+                        <name>IVOA GitHub Packages</name>
+                        <url>https://maven.pkg.github.com/ivoa/Calycopis-openapi</url>
+                    </repository>
+                    <snapshotRepository>
+                        <id>ivoa-github</id>
+                        <name>IVOA GitHub Snapshots</name>
+                        <url>https://maven.pkg.github.com/ivoa/Calycopis-openapi</url>
+                    </snapshotRepository>
+                </distributionManagement>
+            </profile>
+
+            <profile>
+                <id>uksrc-profile</id>
+                <distributionManagement>
+                    <repository>
+                        <id>uksrc-nexus</id>
+                        <url>https://repo.dev.uksrc.org/repository/maven-releases/</url>
+                    </repository>
+                    <snapshotRepository>
+                        <id>uksrc-nexus</id>
+                        <url>https://repo.dev.uksrc.org/repository/maven-snapshots/</url>
+                    </snapshotRepository>
+                </distributionManagement>
+            </profile>
+        </profiles>
+
+
+    settings.xml
+
+        <settings
+            xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd"
+            >
+            <servers>
+                <server>
+                    <id>ivoa-github</id>
+                    <username>${env.GITHUB_USERNAME}</username>
+                    <password>${env.GITHUB_TOKEN}</password>
+                </server>
+
+                <server>
+                    <id>uksrc-nexus</id>
+                    <username>${env.UKSRC_REPO_USERNAME}</username>
+                    <password>${env.UKSRC_REPO_PASSWORD}</password>
+                </server>
+            </servers>
+        </settings>
+
+
+
+
+# -----------------------------------------------------
+
+    Calycopis builder #4: Pull request #4 opened by Zarquan
+    https://github.com/uksrc/Calycopis-openapi/pull/4
+
+    merged 1 commit
+    from
+    Zarquan:20260709-zrq-workflow-publishing
+    into
+    uksrc:TRD-112-Publish-Calycopis-openapi-jar-in-Nexus
+
+    triggers 2 workflow runs
+
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29090524321
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29090467881
+
+        both listed as on: pull_request
+        neither publish files to the repo
+
+    The UI is confused because we merged from my branch into the Jira branch twice.
+    Hence the duplicate listing.
+
+    In reality, it ran the workflow once per merge
+    and didn't trigger the publishing step
+
+
+# -----------------------------------------------------
+
+    https://github.com/uksrc/Calycopis-openapi/pull/5
+
+    merge 2 commits
+    from
+    TRD-112-Publish-Calycopis-openapi-jar-in-Nexus
+    into
+    main
+
+
+    triggers 2 workflow runs
+
+        one listed as on: pull_request
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29090819162
+        publish step skipped
+
+        one listed as on: push
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29090715061
+        publishes files to the repo
+        * before the merge has been accepted ?
+        * need to check the second one is AFTER the merge has been accepted
+
+# -----------------------------------------------------
+
+    #
+    # Changed the workflow to add a test for the branch name.
+    #
+
+      - name: Publish the JAR to the UKSRC Nexus repository.
+    -   if: ${{ (github.repository == 'uksrc/Calycopis-openapi') && (github.event_name == 'push') }}
+    +   if: ${{ (github.repository == 'uksrc/Calycopis-openapi') && (github.event_name == 'push') && (github.branch == 'main') }}
+        run: |
+
+# -----------------------------------------------------
+
+    Create a PullRequest from Zarquan:20260709-zrq-workflow-publishing to TRD-112-Publish-Calycopis-openapi-jar-in-Nexus
+    https://github.com/uksrc/Calycopis-openapi/compare/TRD-112-Publish-Calycopis-openapi-jar-in-Nexus...Zarquan:20260709-zrq-workflow-publishing?expand=1
+
+    Creates PR#6
+    https://github.com/uksrc/Calycopis-openapi/pull/6
+
+    One run, triggered by pull_request
+    https://github.com/uksrc/Calycopis-openapi/actions/runs/29094799973
+        Publishing step skipped - because this isn't a push.
+
+    Merge the pull request
+    One run, triggered by push
+    https://github.com/uksrc/Calycopis-openapi/actions/runs/29095025860
+        Publishing step skipped - because this isn't into main.
+        The whole run can be skipped, because it doesn't add anything.
+
+# -----------------------------------------------------
+
+    Create a pull request from TRD-112-Publish-Calycopis-openapi-jar into main.
+    https://github.com/uksrc/Calycopis-openapi/compare/main...uksrc:Calycopis-openapi:TRD-112-Publish-Calycopis-openapi-jar-in-Nexus?expand=1
+
+    Creates PR#7
+    https://github.com/uksrc/Calycopis-openapi/pull/7
+
+    The UI lists 8 checks
+    https://github.com/uksrc/Calycopis-openapi/pull/7/checks
+
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29095025860
+        This is an old run triggered by push from PR#6
+
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29095388092
+        This is a new run triggerd by pull_request from PR#7
+
+    Merge the PR
+
+        Didn't trigger the publish step ?
+        Using 'github.branch' was a guess ...
+        If all else failes, read the documentation.
+        https://docs.github.com/en/actions/reference/workflows-and-actions/variables
+
+# -----------------------------------------------------
+
+    Bug fix
+
+    -   if: ${{ (github.repository == 'uksrc/Calycopis-openapi') && (github.event_name == 'push') && (github.branch == 'main') }}
+    +   if: ${{ (github.repository == 'uksrc/Calycopis-openapi') && (github.event_name == 'push') && (github.ref == 'main') }}
+
+
+# -----------------------------------------------------
+
+    Create PR from Zarquan:20260709-zrq-workflow-publishing into TRD-112-Publish-Calycopis-openapi-jar
+    https://github.com/uksrc/Calycopis-openapi/compare/TRD-112-Publish-Calycopis-openapi-jar-in-Nexus...Zarquan:20260709-zrq-workflow-publishing?expand=1
+
+    Creates PR#8
+    https://github.com/uksrc/Calycopis-openapi/pull/8
+
+    The UI lists 4 checks
+    https://github.com/uksrc/Calycopis-openapi/pull/8/checks
+
+        Triggered on pull_request
+        Skipping the publish steps.
+
+    Merging PR#8
+
+        No actions triggered.
+
+# -----------------------------------------------------
+
+    Create PR from TRD-112-Publish-Calycopis-openapi-jar into main
+    https://github.com/uksrc/Calycopis-openapi/pull/9
+
+    One set of checks
+    https://github.com/uksrc/Calycopis-openapi/pull/9/checks
+
+    One run
+    https://github.com/uksrc/Calycopis-openapi/actions/runs/29098502791
+
+        Publish steps skipped
+
+    Merging PR#9
+
+        New run
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29098734093
+
+        Publish steps skipped :-(
+        because I got the variable name wrong
+
+        ChatGPT gave me the correct variable name, and suggested a better syntax.
+        https://chatgpt.com/c/6a4fe7ed-a5e8-83ed-8f92-7c26e830bcac
+
+
+# -----------------------------------------------------
+
+    Create PR from Zarquan:20260709-zrq-workflow-publishing into TRD-112-Publish-Calycopis-openapi-jar
+    https://github.com/uksrc/Calycopis-openapi/compare/TRD-112-Publish-Calycopis-openapi-jar-in-Nexus...Zarquan:20260709-zrq-workflow-publishing?expand=1
+
+    Creates PR#11
+    https://github.com/uksrc/Calycopis-openapi/pull/11
+
+    One set of checks
+    https://github.com/uksrc/Calycopis-openapi/pull/11/checks
+
+        Publish steps skipped
+
+    Merging PR#11
+
+        No new run
+
+# -----------------------------------------------------
+
+    Create PR from TRD-112-Publish-Calycopis-openapi-jar into main
+    https://github.com/uksrc/Calycopis-openapi/pull/12
+
+    One set of checks
+    https://github.com/uksrc/Calycopis-openapi/pull/12/checks
+
+        Publish steps skipped
+
+    Merging PR#12
+
+        New run
+        https://github.com/uksrc/Calycopis-openapi/actions/runs/29100642939
+
+        Publish steps done :-D
+
+# -----------------------------------------------------
+
+    Resources available in Nexus
+
+
+

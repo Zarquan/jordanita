@@ -1,0 +1,248 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Fixing problems ...
+
+
+    Result:
+
+        Work in progress ...
+
+        Use the wheel from Nexus
+        https://help.sonatype.com/en/configure-pypi-with-nexus.html
+
+# -----------------------------------------------------
+
+    The Python build doesn't use the same version as the Java build.
+
+    The Python package version is set separately in the GitHub build-packages.yaml
+
+    >   ....
+    >   env:
+    >     schemapath: 'v1.0'
+    >     schemaversion: '1.0.5'
+    >   ....
+
+    and in the buildscripts script
+
+    >   ....
+    >   schemapath="v1.0"
+    >   schemaversion="1.0.6"
+    >   ....
+
+    The Java version is set separately in each of the POMs.
+
+    >   <project
+    >       ....
+    >   	<version>1.0.6-SNAPSHOT</version>
+    >       ....
+
+    Four different places where the version is set.
+    None of them using the top level config file.
+
+    >   schemasource:  schema/v1.0/execution-broker.yaml
+    >   schemaversion: 1.0.6
+
+
+# -----------------------------------------------------
+
+    Can we set them from a central location ?
+    The Python version is set from an environment variable anyway.
+
+    >   ....
+    >   --additional-properties "packageVersion=${schemaversion:?}" \
+    >   ....
+
+    So we can set that using a call to yq.
+
+    >   ....
+    >   SCHEMA_VERSION=$(
+    >       yq '.schemaversion' config.yaml
+    >       )
+    >   ....
+
+# -----------------------------------------------------
+
+    The Java version is a little trickier.
+    By design Maven will object to a variable version value.
+
+    https://stackoverflow.com/questions/19123013/maven-version-with-a-property
+    https://stackoverflow.com/a/79839060
+
+    https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html
+
+    Done
+
+# -----------------------------------------------------
+
+    Refactor buildscripts.sh into separate files.
+
+    1) Tools to set the java and python versions.
+    2) Scripts to perform specific build steps.
+
+    Design the scripts to used both locally and via a GitHub action.
+
+        bin/buildschema.sh
+        bin/buildpythonclient.sh
+        bin/buildjavaclient.sh
+        bin/buildjavaspring.sh
+
+    Shared script that sets the versions and paths.
+
+        basepath=$(
+            dirname $(
+                realpath $(
+                    dirname "$0"
+                    )
+                )
+            )
+
+        source "${basepath}/bin/versions.sh"
+
+    OK, but would it work in a GitHub workflow ?
+
+# -----------------------------------------------------
+
+    Setting environment variables in a GitHub workflow.
+
+    $GITHUB_ENV
+    https://devactivity.com/insights/demystifying-github_env-a-key-to-productive-github-actions-workflows/
+
+        echo "FOO=BAR" >> "$GITHUB_ENV"
+
+    What is $GITHUB_ENV, really?
+    https://github.com/orgs/community/discussions/186509
+
+    Store information in variables
+    https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-variables
+
+
+# -----------------------------------------------------
+
+
+    #
+    # ChatGPT genrated Maven POM to generate Python client code.
+    https://chatgpt.com/share/6a578f08-5a10-83eb-8713-1710f7ae1598
+
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <project xmlns="http://maven.apache.org/POM/4.0.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="
+                     http://maven.apache.org/POM/4.0.0
+                     https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+            <modelVersion>4.0.0</modelVersion>
+
+            <groupId>org.example</groupId>
+            <artifactId>example-python-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+
+            <name>Example Python API Client</name>
+            <description>
+                Generates a Python API client from an OpenAPI specification.
+            </description>
+
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+                <openapi-generator.version>7.23.0</openapi-generator.version>
+
+                <openapi.input.file>
+                    ${project.basedir}/src/main/openapi/openapi.yaml
+                </openapi.input.file>
+
+                <openapi.output.directory>
+                    ${project.build.directory}/generated-sources/openapi/python
+                </openapi.output.directory>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <version>${openapi-generator.version}</version>
+
+                        <executions>
+                            <execution>
+                                <id>generate-python-client</id>
+
+                                <phase>generate-sources</phase>
+
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+
+                                <configuration>
+                                    <inputSpec>${openapi.input.file}</inputSpec>
+                                    <output>${openapi.output.directory}</output>
+
+                                    <!-- Generate a Python client rather than a server. -->
+                                    <generatorName>python</generatorName>
+
+                                    <!-- Python package containing the generated client. -->
+                                    <packageName>example_api_client</packageName>
+
+                                    <!-- Distribution metadata used in pyproject.toml/setup files. -->
+                                    <additionalProperties>
+                                        <packageName>example_api_client</packageName>
+                                        <projectName>example-api-client</projectName>
+                                        <packageVersion>${project.version}</packageVersion>
+                                        <generateSourceCodeOnly>false</generateSourceCodeOnly>
+                                    </additionalProperties>
+
+                                    <!-- Validate the OpenAPI document before generation. -->
+                                    <validateSpec>true</validateSpec>
+
+                                    <!-- Avoid generating tests when they are not required. -->
+                                    <generateApiTests>false</generateApiTests>
+                                    <generateModelTests>false</generateModelTests>
+
+                                    <!-- Prevent generated file timestamps causing noisy diffs. -->
+                                    <hideGenerationTimestamp>true</hideGenerationTimestamp>
+
+                                    <!-- Do not overwrite manually modified generated files. -->
+                                    <skipOverwrite>false</skipOverwrite>
+
+                                    <!-- Keep generation output out of the Maven source tree. -->
+                                    <cleanupOutput>true</cleanupOutput>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </project>
+
+
+# -----------------------------------------------------
+
+    Add Python build and twine to our dev-tools container image.
+
+

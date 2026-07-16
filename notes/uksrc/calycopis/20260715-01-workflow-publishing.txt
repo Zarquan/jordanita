@@ -1,0 +1,376 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Rebuild everything to check.
+
+    Result:
+
+        Work in progress ...
+
+        Still todo -
+            Build the service container.
+            New Maven tasks using buildpacks.
+            Using a volumes from container for the config.
+            Using local files for Postgresql config.
+
+
+# -----------------------------------------------------
+# Added Python tools to our developer tools container.
+#[user@laptop]
+
+   +    # Install Python build tools
+   +    RUN dnf install -y \
+   +        python3-build \
+   +        twine
+
+
+
+# -----------------------------------------------------
+# Build our developer tools container.
+#[user@laptop]
+
+    source "${HOME}/calycopis.env"
+
+    "${CALYCOPIS_CODE}/docker/bin/clean.sh"
+
+    "${CALYCOPIS_CODE}/docker/bin/build.sh"
+
+    >   ....
+    >   ....
+    >   COMMIT calycopis/developer-tools:latest
+    >   --> a57df701852
+    >   Successfully tagged localhost/calycopis/developer-tools:latest
+    >   Successfully tagged localhost/calycopis/developer-tools:2026.07.16
+    >   a57df701852bbe343a04592449981ff9cfea89cbd61d26f15e757a6e6ae300f9
+
+
+    podman images
+
+    >   REPOSITORY                           TAG         IMAGE ID      CREATED        SIZE
+    >   localhost/calycopis/developer-tools  latest      a57df701852b  3 minutes ago  2.03 GB
+    >   localhost/calycopis/developer-tools  2026.07.16  a57df701852b  3 minutes ago  2.03 GB
+    >   localhost/calycopis/fedora-base      latest      a4570131e9d1  6 minutes ago  671 MB
+    >   localhost/calycopis/fedora-base      2026.07.16  a4570131e9d1  6 minutes ago  671 MB
+    >   registry.fedoraproject.org/fedora    44          4faaefc880a4  7 hours ago    190 MB
+
+
+    "${CALYCOPIS_CODE}/docker/bin/push.sh"
+
+
+    >   ....
+    >   ....
+    >   Copying blob ecddfe310db0 skipped: already exists
+    >   Copying blob ec1f42bdb0e9 skipped: already exists
+    >   Copying config a57df70185 done
+    >   Writing manifest to image destination
+    >   Storing signatures
+
+
+# -----------------------------------------------------
+# Clear our local caches.
+#[user@laptop]
+
+    source "${HOME}/calycopis.env"
+
+    "${CALYCOPIS_CODE}/docker/bin/clean.sh"
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS         PORTS       NAMES
+    >   76a7f03e53b6  localhost/podman-pause:4.3.1-0                                 29 minutes ago  Up 26 minutes              9682e280cdf6-infra
+    >   490781b4928a  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        26 minutes ago  Up 26 minutes              calycopis-dev
+
+
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-openapi/github-zrq
+
+        bin/buildschema.sh
+
+        bin/buildpythonclient.sh
+
+        bin/buildjavaclient.sh
+
+        bin/buildjavaspring.sh
+
+    popd
+
+    >   ....
+    >   ....
+    >   Inlining from discriminator mapping: StringValueUpdate
+    >   Inlining from discriminator mapping: EnumValueUpdate
+    >   Inlining from discriminator mapping: IntegerValueUpdate
+    >   Inlining from discriminator mapping: IntegerDeltaUpdate
+    >   ✅ All references processed and saved.
+
+    >   ....
+    >   ....
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/METADATA'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/WHEEL'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/top_level.txt'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/RECORD'
+    >   removing build/bdist.linux-x86_64/wheel
+    >   Successfully built calycopis_schema_client-1.0.7.dev1.tar.gz and calycopis_schema_client-1.0.7.dev1-py3-none-any.whl
+
+
+    >   ....
+    >   ....
+    >   [INFO] --- install:3.1.2:install (default-install) @ calycopis-schema-client ---
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/client/pom.xml to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-client/1.0.7-SNAPSHOT/calycopis-schema-client-1.0.7-SNAPSHOT.pom
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/client/target/calycopis-schema-client-1.0.7-SNAPSHOT.jar to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-client/1.0.7-SNAPSHOT/calycopis-schema-client-1.0.7-SNAPSHOT.jar
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  4.689 s
+    >   [INFO] Finished at: 2026-07-16T15:20:39Z
+    >   [INFO] ------------------------------------------------------------------------
+
+
+    >   ....
+    >   ....
+    >   [INFO] --- install:3.1.4:install (default-install) @ calycopis-schema-spring ---
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/spring/pom.xml to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-spring/1.0.7-SNAPSHOT/calycopis-schema-spring-1.0.7-SNAPSHOT.pom
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/spring/target/calycopis-schema-spring-1.0.7-SNAPSHOT.jar to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-spring/1.0.7-SNAPSHOT/calycopis-schema-spring-1.0.7-SNAPSHOT.jar
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  4.259 s
+    >   [INFO] Finished at: 2026-07-16T15:21:52Z
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our platform configuration files.
+#[root@calycopis-dev]
+
+    mkdir /etc/calycopis
+
+    cat > /etc/calycopis/database.yaml << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > /etc/calycopis/admin.yaml << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[root@calycopis-dev]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER=$(yq '.spring.datasource.username' /etc/calycopis/database.yaml)" \
+        --env "POSTGRES_PASSWORD=$(yq '.spring.datasource.password' /etc/calycopis/database.yaml)" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and launch our service with the docker platform.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd java
+
+            ./mvnw clean spring-boot:run -D calycopis-platform=docker
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our test data **on the host.
+#[user@desktop]
+
+    TESTDATA=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+
+# -----------------------------------------------------
+# Start another terminal and run our Python tests.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --env "TESTDATA=${TESTDATA:?}" \
+        --env "TESTFILE=${TESTFILE:?}" \
+        --interactive \
+            calycopis-dev \
+                bash
+
+    pip install pytest
+    pip install docker
+
+#   pip install --edit /calycopis/Calycopis-openapi/github-zrq/codegen/python/client/target
+
+    pushd /calycopis/Calycopis-openapi/github-zrq/codegen/python/client/target/dist/
+        pip install *.whl
+    popd
+
+    >   ....
+    >   ....
+    >   Successfully installed
+    >       annotated-types-0.7.0
+    >       calycopis-schema-client-1.0.7.dev1
+    >       pydantic-2.13.4
+    >       pydantic-core-2.46.4
+    >       typing-extensions-4.16.0
+    >       typing-inspection-0.4.2
+
+
+    export CALYCOPIS_URL="http://localhost:8082"
+
+    export CALYCOPIS_ADMIN_USERNAME="$(
+        yq \
+            '.calycopis.admin.username' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    export CALYCOPIS_ADMIN_PASSWORD="$(
+        yq \
+            '.calycopis.admin.password' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    export BIND_MOUNT_TEST_FILE=${TESTFILE}
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd tests/python/
+
+                pytest -v docker
+
+            popd
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+    #
+    # Difficult to get a clean run, some of the tests are timing dependent and
+    # can produce spurious fails.
+    #
+    # Some of the tests are triggering a race condition in the official Docker
+    # client module.
+    #
+    #
+
+    >   ....
+    >   _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    >   docker/test_docker_androcles_md5.py:182: in _find_container_by_image
+    >       for container in docker_client.containers.list(all=True):
+    >                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    >   /usr/local/lib/python3.14/site-packages/docker/models/containers.py:1019: in list
+    >       containers.append(self.get(r['Id']))
+    >                         ^^^^^^^^^^^^^^^^^
+    >   /usr/local/lib/python3.14/site-packages/docker/models/containers.py:955: in get
+    >       resp = self.client.api.inspect_container(container_id)
+    >              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    >   /usr/local/lib/python3.14/site-packages/docker/utils/decorators.py:19: in wrapped
+    >       return f(self, resource_id, *args, **kwargs)
+    >              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    >   /usr/local/lib/python3.14/site-packages/docker/api/container.py:793: in inspect_container
+    >       return self._result(
+    >   /usr/local/lib/python3.14/site-packages/docker/api/client.py:281: in _result
+    >       self._raise_for_status(response)
+    >   /usr/local/lib/python3.14/site-packages/docker/api/client.py:277: in _raise_for_status
+    >       raise create_api_error_from_http_exception(e) from e
+    >             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    >   _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    >   
+    >   e = HTTPError('404 Client Error: Not Found for url: http+docker://localhost/v1.41/containers/920677a5fa2a49077d47c80d2a6c2c74be58f044a7afadccb73702e4e55a08bd/json')
+    >   ....
+
+
+
+

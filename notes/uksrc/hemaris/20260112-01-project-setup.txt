@@ -67,38 +67,30 @@ EOF
 
             git remote -v
 
---START--
-origin	git@github.com:ivoa/HemarisDM.git (fetch)
-origin	git@github.com:ivoa/HemarisDM.git (push)
---END--
+    >   origin	git@github.com:ivoa/HemarisDM.git (fetch)
+    >   origin	git@github.com:ivoa/HemarisDM.git (push)
 
 
             git branch
 
---START--
-* master
---END--
+    >   * master
 
 
             git branch -m master main
 
             git push -u origin main
 
---START--
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-....
-....
-To github.com:ivoa/HemarisDM.git
- * [new branch]      main -> main
-branch 'main' set up to track 'origin/main'.
---END--
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   ....
+    >   ....
+    >   To github.com:ivoa/HemarisDM.git
+    >    * [new branch]      main -> main
+    >   branch 'main' set up to track 'origin/main'.
 
 
             git branch
 
---START--
-* main
---END--
+    >   * main
 
         popd
     popd
@@ -137,19 +129,13 @@ branch 'main' set up to track 'origin/main'.
 
     popd
 
---START--
-On branch main
-Your branch is up to date with 'origin/main'.
---END--
+    >   On branch main
+    >   Your branch is up to date with 'origin/main'.
 
---START--
-* main
---END--
+    >   * main
 
---START--
-origin  git@github.com:Zarquan/HemarisDM.git (fetch)
-origin  git@github.com:Zarquan/HemarisDM.git (push)
---END--
+    >   origin  git@github.com:Zarquan/HemarisDM.git (fetch)
+    >   origin  git@github.com:Zarquan/HemarisDM.git (push)
 
 
 # -----------------------------------------------------
@@ -165,12 +151,10 @@ origin  git@github.com:Zarquan/HemarisDM.git (push)
 
     popd
 
---START--
-origin      git@github.com:Zarquan/HemarisDM.git (fetch)
-origin      git@github.com:Zarquan/HemarisDM.git (push)
-upstream    git@github.com:ivoa/HemarisDM.git (fetch)
-upstream    git@github.com:ivoa/HemarisDM.git (push)
---END--
+    >   origin      git@github.com:Zarquan/HemarisDM.git (fetch)
+    >   origin      git@github.com:Zarquan/HemarisDM.git (push)
+    >   upstream    git@github.com:ivoa/HemarisDM.git (fetch)
+    >   upstream    git@github.com:ivoa/HemarisDM.git (push)
 
 
 # -----------------------------------------------------
@@ -222,22 +206,20 @@ upstream    git@github.com:ivoa/HemarisDM.git (push)
 
     popd
 
---START--
-Enumerating objects: 6, done.
-Counting objects: 100% (6/6), done.
-Delta compression using up to 4 threads
-Compressing objects: 100% (5/5), done.
-Writing objects: 100% (5/5), 14.14 KiB | 7.07 MiB/s, done.
-Total 5 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
-remote: Resolving deltas: 100% (1/1), completed with 1 local object.
-remote:
-remote: Create a pull request for '20260112-zrq-project-setup' on GitHub by visiting:
-remote:      https://github.com/Zarquan/HemarisDM/pull/new/20260112-zrq-project-setup
-remote:
-To github.com:Zarquan/HemarisDM.git
- * [new branch]      20260112-zrq-project-setup -> 20260112-zrq-project-setup
-branch '20260112-zrq-project-setup' set up to track 'origin/20260112-zrq-project-setup'.
---END--
+    >   Enumerating objects: 6, done.
+    >   Counting objects: 100% (6/6), done.
+    >   Delta compression using up to 4 threads
+    >   Compressing objects: 100% (5/5), done.
+    >   Writing objects: 100% (5/5), 14.14 KiB | 7.07 MiB/s, done.
+    >   Total 5 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+    >   remote:
+    >   remote: Create a pull request for '20260112-zrq-project-setup' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/HemarisDM/pull/new/20260112-zrq-project-setup
+    >   remote:
+    >   To github.com:Zarquan/HemarisDM.git
+    >    * [new branch]      20260112-zrq-project-setup -> 20260112-zrq-project-setup
+    >   branch '20260112-zrq-project-setup' set up to track 'origin/20260112-zrq-project-setup'.
 
 
 
