@@ -1,0 +1,94 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Access to stdout and stderr
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Access to stdout and stderr is holding up the testing
+    and a releasable deployment.
+
+    Needs changes to the OpenAPI schema and the broker code.
+
+    Not difficult, the data is already stored in our database as a blob.
+
+        @Lob
+        @Column(name="containerstdout")
+        private String containerStdout;
+        @Override
+        public String getContainerStdout()
+            {
+            return this.containerStdout;
+            }
+
+        @Lob
+        @Column(name="containerstderr")
+        private String containerStderr;
+        @Override
+        public String getContainerStderr()
+            {
+            return this.containerStderr;
+            }
+
+    Not ideal to return it as a String in Java.
+    It would be better to handle it as a character stream,
+    but this is good enough for now.
+
+    Add the endpoint to our openapi schema.
+    Add the handler to our broker.
+    Add tests to verify the results.
+
+
+
+# -----------------------------------------------------
+# Create branches to work with.
+#[user@laptop]
+
+    Chnage the name of our fork to Calycopis-broker-ivoa
+
+    Create a new fork, Calycopis-broker-uksrc, based on the UKSRC repository.
+
+    Problem - what will the GitHub workflows do ?
+
+    Push to the GitHub Docker repo.
+    OK, until we diverge
+
+    Push to the UKSRC Maven repo is OK.
+    OK, until we diverge
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,128 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        CoPilot review of
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+
+    I asked GitHub CoPilot to review
+
+
+## Summary
+
+**Purpose**: Fix a race condition in `DockerSimpleComputeResourceEntity.getPrepareAction()` where bind mounts are resolved before the storage volume is ready (volume ident is `null`), causing compute containers to start without volume mounts.
+
+## Core Issues Fixed
+
+### 1. **Refactored Lifecycle Management** (`LifecycleComponentEntity`)
+- **Old**: Single `getPrepareAction()`, `getMonitorAction()`, `getReleaseAction()` methods that were platform-specific
+- **New**: Split into:
+  - `checkPrepareActionRules()` / `checkPrepareActionTiming()` - validate if transition is allowed
+  - `makePrepareAction()` - abstract; subclasses provide platform-specific implementation
+  - Similar pattern for monitor/release actions
+
+This separates **scheduling logic** (when to transition) from **action logic** (what to do).
+
+### 2. **Dependency-Aware Scheduling**
+Added explicit dependency checks in `checkPrepareActionRules()`:
+
+**`AbstractComputeResourceEntity`**:
+- Waits for executable to reach `AVAILABLE`
+- Waits for all linked data/storage resources to reach `AVAILABLE`
+
+**`AbstractDataResourceEntity`**:
+- Waits for storage resource to be `AVAILABLE`
+
+**`AbstractStorageResourceEntity`**:
+- Waits for compute resources and data resources to be `RELEASING` before releasing
+
+### 3. **Deprecated Old Mock Infrastructure**
+Moved and refactored:
+- `MockPrepareAction`, `MockMonitorAction`, `MockReleaseAction` → moved to `action/mock` package, marked `@Deprecated`
+- Created `MockActionBuilder` to build mock actions consistently
+- Created `SimpleSleepAction` for simple time-based transitions
+
+### 4. **Validator Result Tracking**
+Enhanced validators to return **Result objects** instead of enums:
+- `AbstractComputeResourceValidator.Result` now includes `getVolumeResults()`
+- `AbstractDataResourceValidator.Result` now includes `getStorageResult()`
+- `AbstractVolumeMountValidator.Result` now includes `getDataResult()` and `getStorageResult()`
+
+This allows time calculation to traverse the dependency chain.
+
+### 5. **Preparation Time Calculation**
+`calculateTotalPrepareTime()` now walks the dependency graph:
+- Executable + storage (parallel) time
+- + Compute + volume mount (parallel) time
+- = Total prepare time
+
+Previously oversimplified; now accounts for parallelizable operations.
+
+## Risky Changes
+
+⚠️ **Wide Constructor Changes**: Adding `owner` parameter to `ComponentEntity` affects every entity class (noted as Phase A work in planning files).
+
+⚠️ **Processing Loop Refactoring**: Changes to `PrepareComponentRequestEntity` / `MonitorComponentRequestEntity` / `ReleaseComponentRequestEntity` — the scheduling logic is significantly rewritten. This needs careful testing.
+
+⚠️ **Breaking API**: `getPrepareAction()` signature changed; all subclasses must implement `makePrepareAction()` instead.
+
+## Positive Aspects
+
+✅ **Fixes the Race Condition**: Compute resources now wait for storage availability before resolving bind mounts.
+
+✅ **Clear Separation of Concerns**: Rules/timing checks are separate from action execution.
+
+✅ **Better Observability**: Extensive debug logging throughout lifecycle transitions.
+
+✅ **Type-Safe Validators**: Results objects provide compile-time checks for available data.
+
+## Testing Recommendations
+
+1. **Integration test**: Submit a request with HTTP data resource → verify compute container gets volume mount
+2. **Lifecycle test**: Check that phase transitions respect dependency order
+3. **Mock tests**: Verify `SimpleSleepAction` counts work correctly
+4. **Performance**: Ensure calculation traversal doesn't create N+1 queries
+
+This PR is **ready to merge** with appropriate integration testing. The changes are well-scoped to the scheduling bug but touch many files due to constructor signature changes.
+
+# -----------------------------------------------------
+
+    TODO
+
+        Add new integration test that verifies the volume mount.
+
+        Establish a pattern for debug logging to make it easier to verify the behaviour.
+
+            Lifecycle test: Check that phase transitions respect dependency order
+            Mock tests: Verify SimpleSleepAction counts work correctly
+
+

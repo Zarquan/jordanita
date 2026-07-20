@@ -1,0 +1,93 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        RFC9457 error messages.
+
+        Evaluate the costs/benefits of using RFC9457 error messages
+        http://mail.ivoa.net/pipermail/dal/2026-June/008890.html
+
+        https://www.rfc-editor.org/info/rfc9457/
+        https://datatracker.ietf.org/doc/html/rfc9457
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Proposed standard
+    https://www.rfc-editor.org/info/rfc9457/
+
+    Java Spring
+    Error Responses :: Spring Framework
+    https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html
+
+    Java Quarkus
+    RFC 9457 Explained: The New Error Handling Standard for Java/Quarkus (vs
+    RFC 7807)
+    https://www.the-main-thread.com/p/quarkus-rfc9457-api-error-handling
+
+    Swagger OpenAPI
+    Problem Details (RFC 9457): Getting Hands-On with API Error Handling
+    https://swagger.io/blog/problem-details-rfc9457-api-error-handling/
+
+    Swagger OpenAPI
+    ProblemDetails | 1.0.0 | smartbear-public | Studio
+    https://app.swaggerhub.com/domains/smartbear-public/ProblemDetails/1.0.0
+
+
+
+
+    AI agents
+    Slashing agent token costs by 98% with RFC 9457-compliant error
+    responses
+    https://blog.cloudflare.com/rfc-9457-agent-error-pages/
+
+    Using accepts headers
+    https://github.com/PrefectHQ/prefect/discussions/20736
+
+    Cloudflare error pages - accepts headers
+    https://blog.cloudflare.com/rfc-9457-agent-error-pages/
+
+        Accept: text/markdown => Markdown
+        Accept: application/json => JSON
+        Accept: application/problem+json => RFC9457 JSON
+
+
+    Stop Returning {success:false}: RFC 9457 Problem Details for Modern APIs
+    https://www.learnhubly.com/blog/rfc-9457-problem-details-api-error-responses
+
+        Status codes are necessary. They are not sufficient.
+        A 422 Unprocessable Entity tells the client that validation failed.
+        It does not say which field failed, why it failed, or what to change.
+        A 409 Conflict signals a state collision − but not whether the conflict
+        is a duplicate email, an optimistic lock version mismatch, or a business
+        rule violation requiring a completely different resolution path.
+
+
+
+
