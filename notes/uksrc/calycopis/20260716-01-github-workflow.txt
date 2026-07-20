@@ -1,0 +1,240 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Bring changes together.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Two machines, two projects, three organizations,
+    four branches
+
+    laptop
+        Calycopis-openapi
+            20260606-zrq-docker-stdio
+            20260709-zrq-workflow-publishing
+                Thu Jul 16 19:01:47 2026 +0100
+                Refactored ..
+            main
+                Tue Jul 7 19:01:14 2026 +0100
+                Merge pull request #112
+
+        Calycopis-broker
+            20260611-zrq-scheduling-bugfix
+                Sun Jul 5 05:53:00 2026 +0100
+                Notes ..
+            main
+
+        Calycopis-broker-changed
+            20260611-zrq-scheduling-bugfix
+                Sun Jul 5 05:53:00 2026 +0100
+                Notes ..
+                ++ changes ++
+
+    desktop
+        Calycopis-openapi
+            20260709-zrq-workflow-publishing
+                Thu Jul 16 19:01:47 2026 +0100
+                Refactored ..
+            main
+                Tue Jul 7 19:01:14 2026 +0100
+                Merge pull request #112
+
+        Calycopis-broker
+            20260611-zrq-scheduling-bugfix
+                Sun Jul 5 05:53:00 2026 +0100
+                Notes ..
+            main
+                Thu Jun 11 15:34:30 2026 +0200
+                Merge pull request #399 from Zarquan/main
+
+
+    GitHub.ivoa
+        Calycopis-broker
+            main
+
+    GitHub.Zarquan
+        Calycopis-broker
+            main
+                up to date with ivoa:main
+            20260611-zrq-scheduling-bugfix
+                25 commits ahead of ivoa:main
+
+    GitHub.uksrc
+        Calycopis-broker
+            main
+
+# -----------------------------------------------------
+
+    Missing the context for all of this.
+
+    Original work on Spring isolation was done on Zarquan:
+    Work was done in a number of branches in Zarquan which and then merged into Zarquan:main.
+
+    Upto and including Zarquan PR#6, "Getting the demo to work #6"
+    https://github.com/Zarquan/Calycopis-broker/pull/6
+    Merging Zarquan:20260606-zrq-docker-stdio into Zarquan:main on June 10th.
+
+    This whole block of work was then merged into IVOA:main in PR#399, "Restructuring #399"
+    Merging Zarquan:main into IVOA:main on June 11th.
+    https://github.com/ivoa/Calycopis-broker/pull/399
+
+    As a result, Zarquan:main is upto date with IVOA:main.
+
+# -----------------------------------------------------
+
+    Since then new work has been done in Zarquan:20260611-zrq-scheduling-bugfix.
+    As far as I can tell, this branch hasn't been merged into anything else yet.
+    Zarquan:20260611-zrq-scheduling-bugfix is 25 commits ahead of IVOA:main.
+
+# -----------------------------------------------------
+
+    On July 7th Zarquan created uksrc:PR#1 to merge 115 commits from ivoa:main into uksrc:TRD-87-...
+    On July 7th GitHub CoPilot produced a summary of the pull request.
+
+        501 files changed | 33,177 additions | 9,224 deletions | 115 commits
+        Period: April 19 – June 11, 2026
+
+
+    On July 7th Zarquan created uksrc:PR#2 to merge uksrc:TRD-87-... into uksrc:main.
+    On July 7th Zarquan asked Paul to review uksrc:PR#2.
+
+        Discussion in Slack centered around getting the OpenAPI generated dependencies in place to enable
+        Paul to build and test uksrc:PR#2.
+
+    On July 7th Zarquan converted uksrc:PR#2 to draft status, pending work to make the OpenAPI generated dependencies
+    available via the UKSRC Nexus service.
+
+# -----------------------------------------------------
+
+    Confusingly, it now looks like UKSRC:main is up to date with IVOA:main.
+    Which suggests that the changes from IVOA:main have been merged into UKSRC:main via a different route.
+
+    Asking CoPilot
+
+        Can you confirm the following change history:
+        1. Pull request uksrc:PR#2 was created by Zarquan on the 7th July.
+        2. At that time uksrc:PR#2 contained changes to around 500 files, including commits from 19th April to the 11th June.
+        3. GitHub CoPilot was asked to generate a review that has been included in the [comment 4905635947](https://github.com/uksrc/Calycopis-broker/pull/2#issuecomment-4905635947)
+        4. Since then, it appears that the changes in uksrc:PR#2 have been merged into uksrc:main vai a different route.
+        5. uksrc:main is now uptodate with ivoa:main
+
+    CoPilot got wrapped up in circles trying to explain the history.
+
+    https://github.com/copilot/c/1f65e0ad-3860-4e90-b9cc-8d98949b800a
+
+    CoPilot doesn't store dates for the individual prompts, just the overall session.
+    So CoPilot can't tell when a request was made.
+    Picking an old conversation and asking CoPilot when it started moves the conversation into the current session.
+    So as far as CoPilot is concerned, the conversation started today.
+
+    CoPilot doesn't understand enough about how GitHub works to be able to understand what happened.
+    It finds something plausible and jumps to use it to explain the situation.
+
+# -----------------------------------------------------
+
+    https://github.com/copilot/c/6aec0054-9475-4640-a4e4-a14c907b9ee8
+    links to PR#1
+    https://github.com/uksrc/Calycopis-broker/pull/1
+
+    https://github.com/copilot/c/7bc9860d-69ed-4725-9046-46880092ecca
+    links to PR#1
+    https://github.com/uksrc/Calycopis-broker/pull/1
+
+    https://github.com/copilot/c/7f5855ec-5bbe-42b3-ae7d-e7239a27ee81
+    links to build-packages.yml
+    https://github.com/ivoa/Calycopis-openapi/blob/main/.github/workflows/build-packages.yml
+
+    https://github.com/copilot/c/1f65e0ad-3860-4e90-b9cc-8d98949b800a
+    links to PR#2
+    https://github.com/uksrc/Calycopis-broker/pull/2
+
+    https://github.com/copilot/c/7f2fdc4a-8cdf-437e-8d32-8c377bd2cf42
+    links to a set of changes
+    https://github.com/ivoa/Calycopis-broker/compare/main...Zarquan:Calycopis-broker:20260611-zrq-scheduling-bugfix
+
+# -----------------------------------------------------
+
+    Wasted half all morning trying to figure out where the changes went.
+
+    As I remember it ...
+
+    On July 7th Zarquan created uksrc:PR#1 to merge 115 commits from ivoa:main into uksrc:TRD-87-...
+    On July 7th Zarquan created uksrc:PR#2 to merge uksrc:TRD-87-... into uksrc:main.
+    On July 7th Zarquan asked GitHub CoPilot to review uksrc:PR#2.
+    On July 7th Zarquan asked Paul to review uksrc:PR#2.
+
+    Worked on Calycopis-openapi to publish the artefacts into UKSRC Nexus.
+    Now I need to update Calycopis-broker to use the new artefacts from Calycopis-openapi.
+
+    On July 17th uksrc:main appears to be up to date with ivoa:main.
+    So no need to merge anything, uksrc:PR#2 is empty.
+    Go figure.
+
+# -----------------------------------------------------
+
+    I asked CoPilot that someone could use the 'sync fork' button to fast-foward
+    the uksrc repository to match the ivoa repository without creating an event
+    in the repository history.
+
+    Answer - yes. Using the the 'sync fork' button would not create an event in
+    the repository history.
+
+    No record in the logs means we don't know who did it.
+    Could have been me by accident.
+    Ho hum.
+
+# -----------------------------------------------------
+
+    Looking at activity for the uksrc:main branch
+
+    https://github.com/uksrc/Calycopis-broker/activity?ref=main
+
+        Merge pull request ivoa#399 from Zarquan/main
+        pahjbopushed 115 commits • ac35802…f131a9d • 9 days ago (7th July)
+
+        See
+        /home/Zarquan/Pictures/screenshots/Screenshot at 2026-07-17 15-51-33.png
+
+    Looks like Paul clicked the sync fork button and merged the changes.
+
+    OK, it was a confusing situation.
+    The changes jumped over uksrc, from Zarquan:main to ivoa:main.
+    So ivoa:main ended up ahead of uksrc:main.
+
+# -----------------------------------------------------
+
+    So now we can delete the pull request and branch.
+    Done
+
+# -----------------------------------------------------
+
+
+
