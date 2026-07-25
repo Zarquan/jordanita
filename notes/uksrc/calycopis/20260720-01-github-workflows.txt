@@ -1,0 +1,137 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Use the same shell scripts for local and workflow builds.
+
+    Result:
+
+        Work in progress ...
+
+
+    https://stackoverflow.com/questions/47567982/publish-python-dev-version-of-package
+    https://packaging.python.org/en/latest/specifications/version-specifiers/#handling-of-pre-releases
+    https://stackoverflow.com/questions/78401612/handling-pre-release-development-local-version-of-python-packages-w-r-t-pep440
+    https://peps.python.org/pep-0459/
+
+    https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-an-environment-variable
+    https://stackoverflow.com/questions/71047777/how-to-run-two-commands-on-github-actions-instance-one-after-another
+    https://stackoverflow.com/questions/59529042/difference-between-run-and-multiple-runs-in-github-actions
+
+    https://github.com/orgs/community/discussions/26403
+
+    https://stackoverflow.com/questions/78600887/unable-to-create-a-file-with-curly-braces-using-heredoc-in-github-actions
+
+
+    Compare GitHub branches Zarquan:main => uksrc:TRD-112
+    https://github.com/uksrc/Calycopis-openapi/compare/TRD-112-Publish-Calycopis-openapi-jar-in-Nexus...Zarquan:Calycopis-openapi:20260709-zrq-workflow-publishing?expand=1
+
+    Compare GitHub branches uksrc:TRD-112 => uksrc:main
+    https://github.com/uksrc/Calycopis-openapi/compare/main...uksrc:Calycopis-openapi:TRD-112-Publish-Calycopis-openapi-jar-in-Nexus?expand=1
+
+# -----------------------------------------------------
+
+    Locally, we use bash shell scripts to run the build.
+
+    In GitHub workflow, we can use the same shell scripts,
+    but the environment is different.
+
+    We want to read the version numbers from the project config file.
+
+    versions.sh reads the config file and sets the values.
+
+    Caveat - potentially the Python version has a datestamp in it.
+    Which means the Python version is dynamic.
+
+    Python versions and Java version are created as shell functions
+    because they have conditional statements in them.
+
+    Potentially, Python version can have a datestamp.
+    So calling the shell function more than once gets a different result.
+
+    We only need to call it once, when we setup the Mavane build to generate
+    the Python code.
+    The resulting version number is built in to the metadata for the Python
+    distribution.
+
+    The only reason for accessing the versions again is if we want to push
+    things as GitHub artifacts.
+
+Local shell script
+
+    In a local shell, the environment variables are just there.
+    Particularly if we use export.
+
+    In a GitHub workflow ..
+
+        Passing values between runs within a step,
+        requires writing them to $GITHUB_ENV.
+
+        Passing values between steps within a workflow,
+        requires writing them to $GITHUB_OUTPUT.
+
+    In a GitHub workflow ..
+
+        Why are we splitting the build process into three steps ?
+        Because they can be run in parallel ?
+
+    In a GitHub workflow ..
+
+        Why are we splitting this into separate run statements ?
+        One single shell script would be a lot easier to manage.
+
+        Some of the conditionals depend on the GitHub status.
+        So we do need some separate steps.
+
+    The variables we need to share.
+
+        basepath
+        buildpath
+        schemapath
+        schemashort
+        schemaversion
+        inputschema
+
+        javaversion
+        pythonversion
+
+    The first set are generated from the configuration file, so they don't change.
+
+    In the GitHub actions, we can write all of these to GITHUB_ENV.
+
+    The javaversion and pythonversion should be calculated once and then saved.
+    But they only need to be saved for the duration of that job
+
+    For the Java result, we need the javaversion.
+    For the Python result, we need the pythonversion.
+
+    In shell script, we can just read them once the versions.sh has been run.
+    To make it safer, we can add aan if to prevent them being calculated twice.
+
+# -----------------------------------------------------
+
+    Simplfy - remove the date stamp from the Python version.
+

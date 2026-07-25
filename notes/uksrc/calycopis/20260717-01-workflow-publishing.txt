@@ -40,10 +40,8 @@
 
     "${CALYCOPIS_CODE}/docker/bin/clean.sh"
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
 # -----------------------------------------------------
@@ -80,11 +78,9 @@
 
             podman ps
 
---START--
-CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS         PORTS       NAMES
-bd4930634895  localhost/podman-pause:4.3.1-0                                 2 minutes ago   Up 10 seconds              79ee19823f48-infra
-1f7131f8498e  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        11 seconds ago  Up 10 seconds              calycopis-dev
---END--
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS         PORTS       NAMES
+    >   bd4930634895  localhost/podman-pause:4.3.1-0                                 2 minutes ago   Up 10 seconds              79ee19823f48-infra
+    >   1f7131f8498e  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        11 seconds ago  Up 10 seconds              calycopis-dev
 
 
 # -----------------------------------------------------
@@ -103,33 +99,25 @@ bd4930634895  localhost/podman-pause:4.3.1-0                                 2 m
 
     popd
 
---START--
-....
-....
-adding 'calycopis_schema_client-1.0.7.dev1.dist-info/METADATA'
-adding 'calycopis_schema_client-1.0.7.dev1.dist-info/WHEEL'
-adding 'calycopis_schema_client-1.0.7.dev1.dist-info/top_level.txt'
-adding 'calycopis_schema_client-1.0.7.dev1.dist-info/RECORD'
-removing build/bdist.linux-x86_64/wheel
-Successfully built calycopis_schema_client-1.0.7.dev1.tar.gz and calycopis_schema_client-1.0.7.dev1-py3-none-any.whl
---END--
+    >   ....
+    >   ....
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/METADATA'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/WHEEL'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/top_level.txt'
+    >   adding 'calycopis_schema_client-1.0.7.dev1.dist-info/RECORD'
+    >   removing build/bdist.linux-x86_64/wheel
+    >   Successfully built calycopis_schema_client-1.0.7.dev1.tar.gz and calycopis_schema_client-1.0.7.dev1-py3-none-any.whl
 
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 

@@ -1,0 +1,492 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: [
+#      {
+#      "timestamp": "2026-07-22",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a6144a4-3468-83eb-940e-8a3a1edb2787"
+#      "contribution": {
+#        "value": 5,
+#        "units": "%"
+#        },
+#      }
+#   ]
+#
+
+    Target:
+
+        Update the broker code to match changes in the OpenAPI generated packages.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Updated package names in the generated code.
+#[user@desktop]
+
+    -   calycopis-schema
+    +   calycopis-openapi
+
+    -   calycopis_schema
+    +   calycopis_openapi
+
+    -   calycopis.schema
+    +   calycopis.openapi
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Update our Java dependencies.
+# https://www.mojohaus.org/versions/versions-maven-plugin/examples/display-dependency-updates.html
+#[user@desktop]
+
+    mvn versions:display-dependency-updates
+
+
+# -----------------------------------------------------
+# Create a new branch to work in.
+#[user@desktop]
+
+    branchname=version-sync
+    newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        git checkout main
+        git checkout -b "${newbranch:?}"
+
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    >   ....
+    >   ....
+
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-openapi/github-zrq
+
+        bin/buildschema.sh
+
+    >   ....
+    >   ....
+
+
+        bin/buildpythonclient.sh
+
+    >   ....
+    >   ....
+
+
+        bin/buildjavaclient.sh
+
+    >   ....
+    >   ....
+
+
+        bin/buildjavaspring.sh
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our platform configuration files.
+#[root@calycopis-dev]
+
+    mkdir /etc/calycopis
+
+    cat > /etc/calycopis/database.yaml << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > /etc/calycopis/admin.yaml << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[root@calycopis-dev]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER=$(yq '.spring.datasource.username' /etc/calycopis/database.yaml)" \
+        --env "POSTGRES_PASSWORD=$(yq '.spring.datasource.password' /etc/calycopis/database.yaml)" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and launch our service with the docker platform.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd java
+
+            ./mvnw clean spring-boot:run -D calycopis-platform=docker
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+    #
+    # Lots of errors because the generated Java packages have changed.
+    # - net.ivoa.calycopis.schema.spring
+    # + net.ivoa.calycopis.openapi.spring
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Update the Java import statements.
+#[user@desktop]
+
+    for filename in $(
+        find . -name '*.java'
+        )
+    do
+        echo "Filename [${filename}]"
+        sed -i '
+            /^import net.ivoa.calycopis.schema.spring/ {
+                s/calycopis.schema.spring/calycopis.openapi.spring/
+                }
+            ' "${filename}"
+    done
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Spring EntityScan has moved to a new package.
+    #   -   import org.springframework.boot.autoconfigure.domain.EntityScan;
+    #   +   import org.springframework.boot.persistence.autoconfigure.EntityScan;
+    #
+    #
+
+
+# -----------------------------------------------------
+# Build and launch our service with the docker platform.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd java
+
+            ./mvnw clean spring-boot:run -D calycopis-platform=docker
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our test data on the host.
+#[user@desktop]
+
+    TESTDATA=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t ${TESTFILE}
+
+# -----------------------------------------------------
+# Start another terminal and run our Python tests.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --env "TESTDATA=${TESTDATA:?}" \
+        --env "TESTFILE=${TESTFILE:?}" \
+        --interactive \
+            calycopis-dev \
+                bash
+
+    #
+    # Install our local build of the Python client
+    pip install \
+        /calycopis/Calycopis-openapi/github-zrq/codegen/python/client/target/dist/*.whl
+
+    >   ....
+    >   ....
+    >   Installing collected packages:
+    >       typing-extensions,
+    >       annotated-types,
+    >       typing-inspection,
+    >       pydantic-core,
+    >       pydantic,
+    >       calycopis-openapi-client
+    >   Successfully installed
+    >       annotated-types-0.7.0
+    >       calycopis-openapi-client-1.0.7.dev4
+    >       pydantic-2.13.4
+    >       pydantic-core-2.46.4
+    >       typing-extensions-4.16.0
+    >       typing-inspection-0.4.2
+
+
+    #
+    # Install our test dependencies.
+    pip install \
+        -r  /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt
+
+    >   ....
+    >   ....
+    >   Installing collected packages:
+    >       pluggy,
+    >       iniconfig,
+    >       pytest,
+    >       docker
+    >   Successfully installed
+    >       docker-7.2.0
+    >       iniconfig-2.3.0
+    >       pluggy-1.6.0
+    >       pytest-9.1.1
+
+
+    #
+    # Update our tests with the new package name.
+    pushd /calycopis/Calycopis-broker/github-zrq/tests/python
+        for filename in $(
+            find . -name '*.py'
+            )
+        do
+            echo "Filename [${filename}]"
+            sed -i '
+                /^from calycopis_schema_client/ {
+                    s/calycopis_schema_client/calycopis_openapi_client/
+                    }
+                ' "${filename}"
+        done
+    popd
+
+
+# -----------------------------------------------------
+# Run our Docker tests.
+#[root@calycopis-pod]
+
+    export CALYCOPIS_URL="http://localhost:8082"
+
+    export CALYCOPIS_ADMIN_USERNAME="$(
+        yq \
+            '.calycopis.admin.username' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    export CALYCOPIS_ADMIN_PASSWORD="$(
+        yq \
+            '.calycopis.admin.password' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd tests/python/
+
+            pytest -v docker
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+    >   ImportError while loading conftest '/calycopis/Calycopis-broker/github-zrq/tests/python/conftest.py'.
+    >   conftest.py:54: in <module>
+    >       from calycopis_openapi_client.wrappers.execution_client import ExecutionBrokerClient
+    >   /usr/local/lib/python3.14/site-packages/calycopis_openapi_client/wrappers/__init__.py:4: in <module>
+    >       from calycopis_schema_client.wrappers.execution_client import ExecutionBrokerClient
+    >   E   ModuleNotFoundError: No module named 'calycopis_schema_client'
+    >   ....
+    >   ....
+
+    #
+    # Ouch.
+    # We didn't update the package name in our wrapper classes.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Fix the Python package name.
+    pushd /calycopis/Calycopis-openapi/github-zrq/codegen/python/client/wrappers/
+        for filename in $(
+            find . -name '*.py'
+            )
+        do
+            echo "Filename [${filename}]"
+            sed -i '
+                /^from calycopis_schema_client/ {
+                    s/calycopis_schema_client/calycopis_openapi_client/
+                    }
+                ' "${filename}"
+        done
+    popd
+
+    #
+    # Build the Python client
+    pushd /calycopis/Calycopis-openapi/github-zrq
+
+        bin/buildpythonclient.sh
+
+    popd
+
+    >   ....
+    >   ....
+    >   adding 'calycopis_openapi_client-1.0.7.dev4.dist-info/METADATA'
+    >   adding 'calycopis_openapi_client-1.0.7.dev4.dist-info/WHEEL'
+    >   adding 'calycopis_openapi_client-1.0.7.dev4.dist-info/top_level.txt'
+    >   adding 'calycopis_openapi_client-1.0.7.dev4.dist-info/RECORD'
+    >   removing build/bdist.linux-x86_64/wheel
+    >   Successfully built calycopis_openapi_client-1.0.7.dev4.tar.gz and calycopis_openapi_client-1.0.7.dev4-py3-none-any.whl
+
+
+    #
+    # Re-install our Python client
+    # * pip didn't like doing this - complained that it couldn't, but did in the end.
+
+    pip install \
+        --force-reinstall \
+        /calycopis/Calycopis-openapi/github-zrq/codegen/python/client/target/dist/*.whl
+
+    >   ....
+    >   ....
+    >   Successfully installed
+    >       annotated-types-0.7.0
+    >       calycopis-openapi-client-1.0.7.dev4
+    >       pydantic-2.13.4
+    >       pydantic-core-2.46.4
+    >       python-dateutil-2.9.0.post0
+    >       six-1.17.0
+    >       typing-extensions-4.16.0
+    >       typing-inspection-0.4.2
+    >       urllib3-2.7.0
+
+
+
+# -----------------------------------------------------
+# Run our Docker tests.
+#[root@calycopis-pod]
+
+    export CALYCOPIS_URL="http://localhost:8082"
+
+    export CALYCOPIS_ADMIN_USERNAME="$(
+        yq \
+            '.calycopis.admin.username' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    export CALYCOPIS_ADMIN_PASSWORD="$(
+        yq \
+            '.calycopis.admin.password' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd tests/python/
+
+            pytest -v docker
+
+        popd
+    popd
+
+
+    >   ....
+    >   ....
+    >   ================ 43 passed in 1399.40s (0:23:19) ================
+
+

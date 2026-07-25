@@ -1,0 +1,1409 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Maven configuration to package the broker in a container.
+
+        This ended up as an unexpected epic - finding two separate bugs in the Spring Boot Maven plugin.
+        https://chatgpt.com/share/6a63d570-bfe8-83eb-812a-27d27928923f
+
+    Resources
+
+        Spring Boot - Maven plugin - Packaging OCI Images
+        https://docs.spring.io/spring-boot/maven-plugin/build-image.html#build-image.examples.docker.podman
+
+        How to refer environment variable in POM.xml
+        https://stackoverflow.com/a/10463133
+
+        Spring Boot - Application Properties
+        https://docs.spring.io/spring-boot/appendix/application-properties/index.html
+
+        How to Build Java Apps with Paketo Buildpacks - Paketo Buildpacks
+        https://paketo.io/docs/howto/java/
+
+        Spring Boot - Endpoints
+        https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
+
+        Cloud Native Buildpacks :: Spring Boot
+        https://docs.spring.io/spring-boot/reference/packaging/container-images/cloud-native-buildpacks.html
+
+        How to Use Buildpacks with Java
+        https://bell-sw.com/blog/what-are-buildpacks-build-oci-images-without-dockerfiles/#mcetoc_1jseja4b99c
+
+        How to Use Buildpacks with Python
+        https://bell-sw.com/blog/what-are-buildpacks-build-oci-images-without-dockerfiles/#mcetoc_1jseja4b99d
+
+        A guide to using buildpacks with Spring Boot apps in 2026
+        https://bell-sw.com/blog/how-to-use-buildpacks-with-spring-boot/#mcetoc_1i991jvbb2r
+
+        How to Build Java Apps with Paketo Buildpacks - Paketo Buildpacks
+        https://paketo.io/docs/howto/java/
+
+        How to Build Python Apps with Paketo Buildpacks - Paketo Buildpacks
+        https://paketo.io/docs/howto/python/
+
+        paketo-buildpacks/maven: A Cloud Native Buildpack that builds Maven-based applications from source
+        https://github.com/paketo-buildpacks/maven
+
+        Docker Configuration for podman
+        https://docs.spring.io/spring-boot/maven-plugin/build-image.html#build-image.examples.docker.podman
+
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Try building the Docker image.
+#[root@calycopis-pod]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd java
+
+            ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO] ex-0000000001 recoverable I/O exception (java.net.SocketException) caught when sending request to docker://localhost:2376;request will be automatically re-executed in 0 MILLISECONDS (exec count 2)
+    >   [INFO] Warning: Failed to determine Docker API version: Connection to the Docker daemon at '/var/run/docker.sock' failed with error "No such file or directory"; ensure the Docker daemon is running and accessible
+    >   [INFO]  > Pulling builder image 'docker.io/paketobuildpacks/builder-noble-java-tiny:latest' 100%
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  12.900 s
+    >   [INFO] Finished at: 2026-07-24T00:42:45Z
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker: Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed: Connection to the Docker daemon at '/var/run/docker.sock' failed with error "No such file or directory"; ensure the Docker daemon is running and accessible -> [Help 1]
+
+    #
+    # Docker Configuration for podman
+    # https://docs.spring.io/spring-boot/maven-plugin/build-image.html#build-image.examples.docker.podman
+
+				<configuration>
+					<docker>
+						<host>${env.CONTAINER_HOST}</host>
+						<bindHostToBuilder>true</bindHostToBuilder>
+					</docker>
+				</configuration>
+
+    >   ....
+    >   ....
+    >   [INFO] --- spring-boot:4.1.0:build-image (default-cli) @ calycopis-broker ---
+    >   [INFO] Building image 'docker.io/library/calycopis-broker:1.0.7-SNAPSHOT'
+    >   [INFO]
+    >   [INFO]  > Pulling builder image 'docker.io/paketobuildpacks/builder-noble-java-tiny:latest' 0%
+    >   ....
+    >   ....
+    >   [INFO]  > Pulling builder image 'docker.io/paketobuildpacks/builder-noble-java-tiny:latest' 100%
+    >   [INFO]  > Pulled builder image 'docker.io/paketobuildpacks/builder-noble-java-tiny@sha256:d5c53c23538cbb53275e76e3a23f4b3d184904050d8ae8c73f6529db9793b0b3'
+    >   [INFO]  > Pulling run image 'docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.105' for platform 'linux/amd64' 14%
+    >   [INFO]  > Pulling run image 'docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.105' for platform 'linux/amd64' 100%
+    >   [INFO]  > Pulled run image 'docker.io/paketobuildpacks/ubuntu-noble-run-tiny@sha256:0cf96ce719096433ff2bfe53953f784f9619ee6a541f7b75bbfa6bebad07b04a'
+    >   [INFO]  > Executing lifecycle version v0.21.14
+    >   [INFO]  > Using build cache volume 'pack-cache-8b0f00497d0f.build'
+    >   [INFO]
+    >   [INFO]  > Running creator
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:20 min
+    >   [INFO] Finished at: 2026-07-24T01:04:03Z
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker:
+    >       Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed:
+    >       Docker API call to '/run/podman/podman.sockdocker:///run/podman/podman.sock/v1.41/containers/create'
+    >       failed with status code 500 "Internal Server Error" and message
+    >       "make cli opts(): making volume mountpoint for volume /run/podman/podman.sock: mkdir /run/podman/podman.sock: permission denied"
+
+    #
+    # Running the build inside a container, with a mounted Podman socket,
+    # is probably pushing the boundaries of what is possible.
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Try running the build on the host platform to see.
+#[user@desktop]
+
+    export CONTAINER_HOST=${XDG_RUNTIME_DIR}/podman/podman.sock
+    echo $CONTAINER_HOST
+
+    >   /run/user/1000/podman/podman.sock
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:compile (default-compile) on project calycopis-broker:
+    >       Fatal error compiling: error: release version 21 not supported -> [Help 1]
+
+    #
+    # We were using a container for the build because the desktop has an old version of Java.
+    #
+
+# -----------------------------------------------------
+# Try updating the Java version on desktop.
+#[user@desktop]
+
+    #
+    # Check which version of Java Maven is using.
+    ./mvnw --version
+
+    >   Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+    >   Maven home: /home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1
+    >   Java version: 21.0.7, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-21-openjdk
+    >   Default locale: en_GB, platform encoding: UTF-8
+    >   OS name: "linux", version: "6.14.5-100.fc40.x86_64", arch: "amd64", family: "unix"
+
+    #
+    # Check what options are available.
+    alternatives --display java
+
+    >   java - status is auto.
+    >    link currently points to /usr/lib/jvm/java-21-openjdk/bin/java
+    >   /usr/lib/jvm/java-21-openjdk/bin/java - priority 21000706
+    >   ....
+    >   ....
+    >   /usr/lib/jvm/java-24-openjdk/bin/java - priority 1
+    >   ....
+    >   ....
+    >   /usr/lib/jvm/java-11-openjdk/bin/java - priority 1
+    >   ....
+    >   ....
+    >   Current `best' version is /usr/lib/jvm/java-21-openjdk/bin/java.
+
+    #
+    # Change the setting to point to Java 24
+    sudo alternatives --config java
+
+    >   There is 3 program that provides 'java'.
+    >   
+    >     Selection    Command
+    >   -----------------------------------------------
+    >   *+ 1           /usr/lib/jvm/java-21-openjdk/bin/java
+    >      2           /usr/lib/jvm/java-24-openjdk/bin/java
+    >      3           /usr/lib/jvm/java-11-openjdk/bin/java
+    >   
+    >   Enter to keep the current selection[+], or type selection number: 2
+
+
+    java -version
+
+    >   openjdk version "24.0.1" 2025-04-15
+    >   OpenJDK Runtime Environment (Red_Hat-24.0.1.0.9-1) (build 24.0.1+9)
+    >   OpenJDK 64-Bit Server VM (Red_Hat-24.0.1.0.9-1) (build 24.0.1+9, mixed mode, sharing)
+
+
+    ./mvnw --version
+
+    >   Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+    >   Maven home: /home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1
+    >   Java version: 21.0.7, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-21-openjdk
+    >   Default locale: en_GB, platform encoding: UTF-8
+    >   OS name: "linux", version: "6.14.5-100.fc40.x86_64", arch: "amd64", family: "unix"
+
+    #
+    # Check our current JAVA_HOME setting
+    echo $JAVA_HOME
+
+    >   /usr/lib/jvm/java-21-openjdk
+
+    #
+    # Update our JAVA_HOME setting (using the command from ~/.bashrc)
+
+    export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::")
+
+    echo $JAVA_HOME
+
+    >   /usr/lib/jvm/java-24-openjdk
+
+    #
+    # Check which version Maven sees
+    ./mvnw --version
+
+    >   WARNING: A restricted method in java.lang.System has been called
+    >   WARNING: java.lang.System::load has been called by org.fusesource.jansi.internal.JansiLoader in an unnamed module (file:/home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1/lib/jansi-2.4.1.jar)
+    >   WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    >   WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    >   
+    >   Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+    >   Maven home: /home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1
+    >   Java version: 24.0.1, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-24-openjdk
+    >   Default locale: en_GB, platform encoding: UTF-8
+    >   OS name: "linux", version: "6.14.5-100.fc40.x86_64", arch: "amd64", family: "unix"
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Try running the build on the host platform to see.
+#[user@desktop]
+
+    export CONTAINER_HOST=${XDG_RUNTIME_DIR}/podman/podman.sock
+    echo $CONTAINER_HOST
+
+    >   /run/user/1000/podman/podman.sock
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO] --- spring-boot:4.1.0:build-image (default-cli) @ calycopis-broker ---
+    >   [INFO] Building image 'docker.io/library/calycopis-broker:1.0.7-SNAPSHOT'
+    >   [INFO]
+    >   ....
+    >   ....
+    >   [INFO]  > Running creator
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     ===> EXPORTING
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     Adding label 'org.opencontainers.image.version'
+    >   [INFO]     [creator]     Adding label 'org.springframework.boot.version'
+    >   [INFO]     [creator]     Setting default process type 'web'
+    >   [INFO]     [creator]     Saving docker.io/library/calycopis-broker:1.0.7-SNAPSHOT...
+    >   [INFO]     [creator]     ERROR: failed to export: saving image: failed to fetch base layers: saving image with ID "sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2" from the docker daemon: error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2": EOF
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:36 min
+    >   [INFO] Finished at: 2026-07-24T02:56:53+01:00
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker: Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed: Builder lifecycle 'creator' failed with status code 62 -> [Help 1]
+    >   [ERROR]
+
+    #
+    # Asked ChatGPT what the cause could be.
+    # It identified a problem with the CONTAINER_HOST environment variable.
+    #
+
+    >   Your environment variable is
+    >   
+    >   ```bash
+    >   CONTAINER_HOST=/run/user/1000/podman/podman.sock
+    >   ```
+    >   
+    >   However Docker clients normally expect
+    >   
+    >   ```bash
+    >   DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+    >   ```
+    >   
+    >   Notice the required `unix://` prefix.
+    >   
+    >   Likewise, the Maven plugin's `docker.host` property expects the Docker host URI, not just the socket filename.
+    >   
+    >   So try
+    >   
+    >   ```bash
+    >   export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock
+    >   ```
+
+    #
+    # Correct the CONTAINER_HOST environment variable and try again.
+
+    export CONTAINER_HOST=unix://${XDG_RUNTIME_DIR}/podman/podman.sock
+    echo $CONTAINER_HOST
+
+    >   unix:///run/user/1000/podman/podman.sock
+
+    #
+    # Alternative method, using Podman itself.
+    export CONTAINER_HOST=$(
+        podman info --format='{{.Host.RemoteSocket.Path}}'
+        )
+    echo $CONTAINER_HOST
+
+    >   unix:///run/user/1000/podman/podman.sock
+
+    #
+    # Try again ...
+    ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     Saving docker.io/library/calycopis-broker:1.0.7-SNAPSHOT...
+    >   [INFO]     [creator]     ERROR: failed to export:
+    >       saving image:
+    >       failed to fetch base layers:
+    >       saving image with ID "sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2" from the docker daemon:
+    >       error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2": EOF
+
+
+    #
+    # Check the available images.
+    podman images --all --digests
+
+    >   REPOSITORY                                          TAG               DIGEST                                                                   IMAGE ID      CREATED       SIZE
+    >   docker.io/paketobuildpacks/ubuntu-noble-run-tiny    0.0.105           sha256:0cf96ce719096433ff2bfe53953f784f9619ee6a541f7b75bbfa6bebad07b04a  9dcb892d7df4  25 hours ago  25.8 MB
+    >   ....
+    >   ....
+    >   docker.io/paketobuildpacks/builder-noble-java-tiny  latest            sha256:f96e4afa31f8ed4626d3eecc133ced78ff38b9429c18b010a66374920e72ff5e  01456cbf0bc4  46 years ago  855 MB
+
+    #
+    # The digest is different, but the image ID seems to match ?
+    #
+
+    podman inspect 9dcb892d7df4
+
+    >   [
+    >        {
+    >             "Id": "9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2",
+    >             "Digest": "sha256:0cf96ce719096433ff2bfe53953f784f9619ee6a541f7b75bbfa6bebad07b04a",
+    >             "RepoTags": [
+    >                  "docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.105"
+    >             ],
+    >             "RepoDigests": [
+    >                  "docker.io/paketobuildpacks/ubuntu-noble-run-tiny@sha256:0cf96ce719096433ff2bfe53953f784f9619ee6a541f7b75bbfa6bebad07b04a",
+    >                  "docker.io/paketobuildpacks/ubuntu-noble-run-tiny@sha256:f1278dbb7fd15b3c6aa18b95bd271a0a5cec2595a1cd6b847fa61fd191af6e29"
+    >             ],
+    >             "Parent": "",
+    >             "Comment": "",
+    >             "Created": "2026-07-23T01:07:26.217342518Z",
+    >             "Config": {
+    >                  "User": "1002:1001",
+    >                  "Env": [
+    >                       "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    >                  ],
+    >                  "WorkingDir": "/",
+    >                  "Labels": {
+    >                       "io.buildpacks.stack.description": "distroless-like noble",
+    >                       "io.buildpacks.stack.distro.name": "ubuntu",
+    >                       "io.buildpacks.stack.distro.version": "24.04",
+    >                       "io.buildpacks.stack.homepage": "https://github.com/paketo-buildpacks/noble-tiny-stack",
+    >                       "io.buildpacks.stack.id": "io.buildpacks.stacks.noble",
+    >                       "io.buildpacks.stack.maintainer": "Paketo Buildpacks",
+    >                       "io.buildpacks.stack.metadata": "{}",
+    >                       "io.buildpacks.stack.released": "2026-07-23T01:08:09Z"
+    >                  }
+    >             },
+    >             "Version": "",
+    >             "Author": "",
+    >             "Architecture": "amd64",
+    >             "Os": "linux",
+    >             "Size": 25790721,
+    >             "VirtualSize": 25790721,
+    >             "GraphDriver": {
+    >                  "Name": "overlay",
+    >                  "Data": {
+    >                       "LowerDir": "/home/Zarquan/.local/share/containers/storage/overlay/61f7fb166380da19de07bc72520b73839b38d6e067ac81777bfef615d64b8fd8/diff:/home/Zarquan/.local/share/containers/storage/overlay/b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf/diff",
+    >                       "UpperDir": "/home/Zarquan/.local/share/containers/storage/overlay/be01cd7c04078454b8b6069e0708f2071c6e5e3e9d655e74091da9e2b39ff078/diff",
+    >                       "WorkDir": "/home/Zarquan/.local/share/containers/storage/overlay/be01cd7c04078454b8b6069e0708f2071c6e5e3e9d655e74091da9e2b39ff078/work"
+    >                  }
+    >             },
+    >             "RootFS": {
+    >                  "Type": "layers",
+    >                  "Layers": [
+    >                       "sha256:b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf",
+    >                       "sha256:09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90",
+    >                       "sha256:ccf46a9ee1357881fdf0b7d929e21c355e6dfb56baaa3d5de276c13524ff7c1f"
+    >                  ]
+    >             },
+    >             "Labels": {
+    >                  "io.buildpacks.stack.description": "distroless-like noble",
+    >                  "io.buildpacks.stack.distro.name": "ubuntu",
+    >                  "io.buildpacks.stack.distro.version": "24.04",
+    >                  "io.buildpacks.stack.homepage": "https://github.com/paketo-buildpacks/noble-tiny-stack",
+    >                  "io.buildpacks.stack.id": "io.buildpacks.stacks.noble",
+    >                  "io.buildpacks.stack.maintainer": "Paketo Buildpacks",
+    >                  "io.buildpacks.stack.metadata": "{}",
+    >                  "io.buildpacks.stack.released": "2026-07-23T01:08:09Z"
+    >             },
+    >             "Annotations": {},
+    >             "ManifestType": "application/vnd.docker.distribution.manifest.v2+json",
+    >             "User": "1002:1001",
+    >             "History": [
+    >                  {
+    >                       "created": "2026-07-23T01:07:26.217342518Z",
+    >                       "created_by": "COPY /tiny/ / # buildkit",
+    >                       "comment": "buildkit.dockerfile.v0"
+    >                  },
+    >                  {
+    >                       "created": "0001-01-01T00:00:00Z"
+    >                  },
+    >                  {
+    >                       "created": "0001-01-01T00:00:00Z"
+    >                  }
+    >             ],
+    >             "NamesHistory": [
+    >                  "docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.105"
+    >             ]
+    >        }
+    >   ]
+
+
+    #
+    # The log message says "saving image with ID "sha256:9dcb892d...."
+
+    >   ....
+    >       saving image with ID "sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2" from the docker daemon:
+    >       error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2": EOF
+    >   ....
+
+    #
+    # I think we can ignore the 'http://' part of the error message.
+    # I've seen this in my own work.
+    # The Java Docker client adds 'http://' to it's error messages, even though it is using a unix socket to connect to Docker.
+    #
+
+    #
+    # So Podman says the ID is "9dcb892d..." and the digest is "sha256:0cf96ce7...."
+
+    >   ....
+    >   "Id": "9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2",
+    >   "Digest": "sha256:0cf96ce719096433ff2bfe53953f784f9619ee6a541f7b75bbfa6bebad07b04a",
+    >   ....
+
+    #
+    # From the error message, it looks like the maven-plugin is using the v1.41 API
+    # https://docs.docker.com/reference/api/engine/version/v1.41/#tag/Image/operation/ImageGetAll
+    #
+    # The API documentation says the name parameter should be the 'Image name or ID'.
+    # Not the digest.
+    #
+    # Why is the maven-plugin looking for ID "sha256:9dcb892d...."
+    # Is this a real problem, or a 'artefact' of the maven-plugin logging ?
+    #
+    #
+
+    #
+    # Nope - that's not the problem.
+    # ChatGPT checked the documentation.
+    #
+
+    #
+    # ChatGPT suggested testing access to Podman using curl.
+    #
+
+All three suggested curl requests produce the expected results.
+```
+curl --fail-with-body \
+    --unix-socket "${socket}" \
+    --output /tmp/run-image.tar \
+    --get \
+    --data-urlencode "names=${image_id}" \
+    http://localhost/v1.41/images/get
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 24.6M    0 24.6M    0     0  25.5M      0 --:--:-- --:--:-- --:--:-- 25.5M
+```
+
+```
+ls -lh /tmp/run-image.tar
+-rw-r--r--. 1 Zarquan Zarquan 25M Jul 24 04:01 /tmp/run-image.tar
+```
+
+```
+tar -tf /tmp/run-image.tar | head
+b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf.tar
+09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90.tar
+ccf46a9ee1357881fdf0b7d929e21c355e6dfb56baaa3d5de276c13524ff7c1f.tar
+9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2.json
+28f8d529d97a07ad7a1fe18d5de65c3238210c8aaf6a8d8b41c7983e40180c72/layer.tar
+28f8d529d97a07ad7a1fe18d5de65c3238210c8aaf6a8d8b41c7983e40180c72/VERSION
+28f8d529d97a07ad7a1fe18d5de65c3238210c8aaf6a8d8b41c7983e40180c72/json
+a0a9de344f54b1e4bedf3794017b8a0f58657d088528fbdfc0b3a2db61d1854b/layer.tar
+a0a9de344f54b1e4bedf3794017b8a0f58657d088528fbdfc0b3a2db61d1854b/VERSION
+a0a9de344f54b1e4bedf3794017b8a0f58657d088528fbdfc0b3a2db61d1854b/json
+```
+
+```
+curl --fail-with-body \
+    --unix-socket "${socket}" \
+    --output /tmp/run-image-unprefixed.tar \
+    --get \
+    --data-urlencode \
+        "names=9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2" \
+    http://localhost/v1.41/images/get
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 24.6M    0 24.6M    0     0  32.4M      0 --:--:-- --:--:-- --:--:-- 32.3M
+```
+
+```
+ls -lh /tmp/run-image-unprefixed.tar
+-rw-r--r--. 1 Zarquan Zarquan 25M Jul 24 04:06 /tmp/run-image-unprefixed.tar
+```
+
+```
+tar -tf /tmp/run-image-unprefixed.tar | head
+b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf.tar
+09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90.tar
+....
+....
+```
+
+```
+curl --fail-with-body \
+    --unix-socket "${socket}" \
+    --output /tmp/run-image-tag.tar \
+    --get \
+    --data-urlencode \
+        "names=docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.105" \
+    http://localhost/v1.41/images/get
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 24.6M    0 24.6M    0     0  35.0M      0 --:--:-- --:--:-- --:--:-- 35.0M
+```
+
+```
+ls -lh /tmp/run-image-tag.tar
+-rw-r--r--. 1 Zarquan Zarquan 25M Jul 24 04:08 /tmp/run-image-tag.tar
+```
+
+
+```
+tar -tf /tmp/run-image-tag.tar | head
+b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf.tar
+09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90.tar
+....
+....
+```
+
+As does the native Podman save
+```
+podman save \
+    --format docker-archive \
+    --output /tmp/native-podman-save.tar \
+    sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2
+
+tar -tf /tmp/native-podman-save.tar | head
+b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf.tar
+09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90.tar
+....
+....
+```
+
+
+On the host machine, the Podman socket is owned by me (uid 1000).
+```
+socket=/run/user/1000/podman/podman.sock
+stat -c 'mode=%A numeric=%a owner=%U:%G uid=%u gid=%g' "${socket}"
+
+mode=srw-rw---- numeric=660 owner=Zarquan:Zarquan uid=1000 gid=1000
+```
+
+The Paketo lifecycle commonly runs as a non-root CNB user (uid 1001)
+```
+podman image inspect \
+    docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+    --format 'user={{.Config.User}}'
+
+user=1001:1001
+```
+
+Make the same curl request from inside a container.
+```
+podman run --rm \
+    --security-opt label=disable \
+    --volume "${socket}:/var/run/docker.sock" \
+    docker.io/curlimages/curl:latest \
+    --fail-with-body \
+    --unix-socket /var/run/docker.sock \
+    --output /tmp/run-image.tar \
+    --get \
+    --data-urlencode \
+        'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+    http://localhost/v1.41/images/get
+
+Trying to pull docker.io/curlimages/curl:latest...
+Getting image source signatures
+Copying blob sha256:8015b0f4edbc4f526a91df485297bbd3d21c0a8118e8e144c4a842d45add83e7
+Copying config sha256:5c3599497451e27dda363f540b18969a5bc88baac6d1ba3d483187de85499b0a
+Writing manifest to image destination
+curl: (7) Failed to connect to localhost:80 over unix:///var/run/docker.sock after 0 ms: Could not connect to server
+```
+
+Copy the volmue line that I use for nmy own work
+```
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+```
+
+Add the SELinux 'Z' option to the mount.
+```
+podman run --rm \
+    --security-opt label=disable \
+    --volume "${socket}:/var/run/docker.sock:rw,Z" \
+    docker.io/curlimages/curl:latest \
+    --fail-with-body \
+    --unix-socket /var/run/docker.sock \
+    --output /tmp/run-image.tar \
+    --get \
+    --data-urlencode \
+        'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+    http://localhost/v1.41/images/get
+
+curl: (7) Failed to connect to localhost:80 over unix:///var/run/docker.sock after 2 ms: Could not connect to server
+```
+
+Note that SELinux is set to Permissive for the duration.
+```
+sudo getenforce
+Permissive
+```
+
+Try the same requests from inside my development container.
+
+```
+podman save \
+    --format docker-archive \
+    --output /tmp/native-podman-save.tar \
+    sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2
+
+tar -tf /tmp/native-podman-save.tar | head
+
+b0fdde20dec3c7ba7c619771d0d59926eda907c604555ee35ac99702e5fe60cf.tar
+09b2eae3f1fc23aac4d37737c22fe7e08aa0f74353bd1492917a3619646daa90.tar
+....
+....
+```
+
+```
+curl \
+    --fail-with-body \
+    --unix-socket '/run/podman/podman.sock' \
+    --output /tmp/run-image.tar \
+    --get \
+    --data-urlencode "names=${image_id}" \
+    http://localhost/v1.41/images/get
+
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+100 24.60M   0 24.60M   0      0 35.81M      0                              0
+```
+
+    ?   We use a general pupropse container image to run some of our development tools.
+    ?   Which is a Fedora 44 image with a basic set of development tools installed.
+    ?   https://github.com/ivoa/Calycopis-broker/blob/main/docker/fedora-base/Dockerfile
+    ?   https://github.com/ivoa/Calycopis-broker/blob/main/docker/developer-tools/Dockerfile
+    ?   
+    ?   As part of our normal development work we mount the Podman socket as a volume
+    ?   and use it to run Podman commands from inside our container.
+    ?   
+    ?   If we run the curl request from inside our development container, it works.
+    ?   ```
+    ?   podman run \
+    ?       --rm \
+    ?       --tty \
+    ?       --interactive \
+    ?       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+    ?       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+    ?           bash
+    ?   
+    ?           curl \
+    ?           --fail-with-body \
+    ?           --unix-socket /run/podman/podman.sock \
+    ?           --output /tmp/run-image.tar \
+    ?           --get \
+    ?           --data-urlencode \
+    ?               'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+    ?           http://localhost/v1.41/images/get
+    ?   
+    ?     % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+    ?                                    Dload  Upload  Total   Spent   Left   Speed
+    ?   100 24.60M   0 24.60M   0      0 42.97M      0                              0
+    ?   ```
+    ?   
+    ?   If we run the curl request in the curl container, it fails.
+    ?   ```
+    ?   podman run --rm \
+    ?       --security-opt label=disable \
+    ?       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+    ?       docker.io/curlimages/curl:latest \
+    ?       --fail-with-body \
+    ?       --unix-socket /run/podman/podman.sock \
+    ?       --output /tmp/run-image.tar \
+    ?       --get \
+    ?       --data-urlencode \
+    ?           'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+    ?       http://localhost/v1.41/images/get
+    ?   
+    ?   curl: (7) Failed to connect to localhost:80 over unix:///run/podman/podman.sock after 0 ms: Could not connect to server
+    ?   ```
+
+
+    >   ....
+    >   ....
+    >   This result strongly confirms a **Unix-socket permission/UID-mapping problem**, not an image export problem.
+    >   
+    >   Your development image apparently runs as container root by default, while `curlimages/curl` deliberately runs as an unprivileged user. With rootless Podman, the host user who owns the socket is mapped to UID `0` inside the container user namespace. Podman documents that the calling host user maps to container UID 0 in rootless containers. ([docs.podman.io][1])
+    >   
+    >   That produces this effective arrangement:
+    >   
+    >   ```text
+    >   Host:
+    >     socket owner = UID 1000
+    >     socket mode  = typically 0660
+    >   
+    >   Inside rootless container:
+    >     socket owner = UID 0
+    >     builder/curl user = non-root UID
+    >   ```
+    >   
+    >   The development container works because its process is probably UID 0. The curl image fails because its process is not UID 0. The Paketo lifecycle also runs as a non-root user, which explains the Maven failure: Spring Boot states explicitly that CNB images build as non-root users. ([Home][2])
+    >   
+    >   ## Confirm the difference
+    >   
+    >   Run:
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+    >       id
+    >   ```
+    >   
+    >   and:
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       docker.io/curlimages/curl:latest \
+    >       id
+    >   ```
+    >   
+    >   Then inspect the socket from each image:
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       --security-opt label=disable \
+    >       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+    >       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+    >       stat -c 'mode=%A uid=%u gid=%g' /run/podman/podman.sock
+    >   ```
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       --security-opt label=disable \
+    >       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+    >       --entrypoint /bin/sh \
+    >       docker.io/curlimages/curl:latest \
+    >       -c '
+    >           id
+    >           stat -c "mode=%A uid=%u gid=%g" /run/podman/podman.sock
+    >       '
+    >   ```
+    >   
+    >   I expect something resembling:
+    >   
+    >   ```text
+    >   mode=srw-rw---- uid=0 gid=0
+    >   ```
+    >   
+    >   while the curl process has a non-zero UID.
+    >   
+    >   ## Run the curl test as container root
+    >   
+    >   This should succeed:
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       --user 0:0 \
+    >       --security-opt label=disable \
+    >       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+    >       docker.io/curlimages/curl:latest \
+    >       --fail-with-body \
+    >       --unix-socket /run/podman/podman.sock \
+    >       --output /tmp/run-image.tar \
+    >       --get \
+    >       --data-urlencode \
+    >           'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+    >       http://localhost/v1.41/images/get
+    >   ```
+    >   
+    >   If that succeeds, the diagnosis is effectively conclusive.
+    >   
+    >   ## Test the actual builder identity
+    >   
+    >   Check the configured builder user:
+    >   
+    >   ```bash
+    >   podman image inspect \
+    >       docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+    >       --format 'User={{json .Config.User}}'
+    >   ```
+    >   
+    >   Then examine the socket from the builder container:
+    >   
+    >   ```bash
+    >   podman run --rm \
+    >       --security-opt label=disable \
+    >       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:rw" \
+    >       --entrypoint /bin/sh \
+    >       docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+    >       -c '
+    >           id
+    >           stat -c "mode=%A uid=%u gid=%g" /var/run/docker.sock
+    >           test -r /var/run/docker.sock && echo readable || echo not-readable
+    >           test -w /var/run/docker.sock && echo writable || echo not-writable
+    >       '
+    >   ```
+    >   
+    >   The builder may be sufficiently minimal that `stat` or `/bin/sh` is unavailable. In that case, the curl-container comparison is already representative because both execute as non-root users.
+    >   
+    >   ## Why Maven reports `EOF` rather than permission denied
+    >   
+    >   The curl test fails before connecting:
+    >   
+    >   ```text
+    >   Could not connect to server
+    >   ```
+    >   
+    >   The lifecycle’s Go Docker client reports:
+    >   
+    >   ```text
+    >   EOF
+    >   ```
+    >   
+    >   Those are different client-level representations of the same underlying inability to communicate through the mounted socket. The lifecycle error is therefore not evidence of a malformed archive or invalid image identifier.
+    >   
+    >   ## SELinux mount options
+    >   
+    >   You currently use both:
+    >   
+    >   ```text
+    >   --security-opt label=disable
+    >   ```
+    >   
+    >   and:
+    >   
+    >   ```text
+    >   :Z
+    >   ```
+    >   
+    >   These are alternative approaches rather than complementary ones. Podman’s own documentation recommends mounting the socket and running the container with `--security-opt label=disable`. ([docs.podman.io][3])
+    >   
+    >   Use:
+    >   
+    >   ```bash
+    >   --security-opt label=disable \
+    >   --volume "${socket}:/run/podman/podman.sock:rw"
+    >   ```
+    >   
+    >   without `:Z`.
+    >   
+    >   Relabelling a live user-service socket with `:Z` is unnecessary when container labelling is disabled and could interfere with other processes or containers using that socket.
+    >   
+    >   ## Diagnostic workaround
+    >   
+    >   Temporarily make the socket accessible to all container users:
+    >   
+    >   ```bash
+    >   socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
+    >   
+    >   chmod 666 "${socket}"
+    >   ./mvnw spring-boot:build-image
+    >   ```
+    >   
+    >   Then restore it:
+    >   
+    >   ```bash
+    >   chmod 660 "${socket}"
+    >   ```
+    >   
+    >   If the Maven build succeeds, that proves the non-root lifecycle user was blocked by the socket permissions.
+    >   
+    >   This is not a good general permanent configuration. Podman warns that access to its API socket gives effectively unrestricted control over the user’s Podman service and permits arbitrary code execution as that user. ([docs.podman.io][3])
+    >   
+    >   ## Practical permanent options
+    >   
+    >   The available solutions are constrained because Spring Boot creates the lifecycle container itself and does not expose general Podman options such as `--userns=keep-id`, `--user`, or supplemental groups.
+    >   
+    >   The practical choices are:
+    >   
+    >   1. **Use a controlled socket with broader permissions** on a dedicated development or CI account. This is straightforward but grants any process capable of opening the socket full Podman control.
+    >   
+    >   2. **Use a TCP Podman API endpoint protected by mutual TLS.** This avoids Unix UID mapping, but requires careful certificate configuration. Do not expose an unauthenticated Podman TCP endpoint.
+    >   
+    >   3. **Use `pack` or another CNB invocation where the container user namespace can be controlled**, rather than the Spring Boot plugin’s embedded lifecycle orchestration.
+    >   
+    >   4. **Use a custom wrapper or builder workflow** that performs the build in a container context where the lifecycle UID has access to the API socket.
+    >   
+    >   The Spring Boot configuration itself matches its documented Podman example exactly: a rootless Unix socket plus `bindHostToBuilder=true`. ([Home][2]) The failure appears to be a gap between that documented arrangement and rootless Podman’s ownership mapping when the CNB lifecycle runs as a non-root UID.
+    >   
+    >   The immediate next test should be the curl container with `--user 0:0`, followed by the temporary `chmod 666` Maven run. Together, those will establish whether this is entirely socket permission-related.
+    >   
+    >   [1]: https://docs.podman.io/en/latest/markdown/podman-run.1.html?utm_source=chatgpt.com "podman-run"
+    >   [2]: https://docs.spring.io/spring-boot/maven-plugin/build-image.html "Packaging OCI Images :: Spring Boot"
+    >   [3]: https://docs.podman.io/en/latest/markdown/podman-system-service.1.html "podman-system-service — Podman  documentation"
+    >   
+
+    #
+    # Run the suggested tests ..
+    #
+
+    podman run --rm \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+        id
+
+    >   uid=0(root) gid=0(root) groups=0(root)
+
+    podman run --rm \
+        docker.io/curlimages/curl:latest \
+        id
+
+    >   uid=100(curl_user) gid=101(curl_group) groups=101(curl_group)
+
+Then inspect the socket from each image:
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+        --entrypoint /bin/sh \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+        -c '
+            id
+            stat -c "mode=%A uid=%u gid=%g" /run/podman/podman.sock
+        '
+
+    >   uid=0(root) gid=0(root) groups=0(root)
+    >   mode=srw-rw-rw- uid=0 gid=0
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+        --entrypoint /bin/sh \
+        docker.io/curlimages/curl:latest \
+        -c '
+            id
+            stat -c "mode=%A uid=%u gid=%g" /run/podman/podman.sock
+        '
+
+    >   uid=100(curl_user) gid=101(curl_group) groups=101(curl_group)
+    >   mode=srw-rw-rw- uid=0 gid=0
+
+    #
+    # Run the curl test as the container user.
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+        docker.io/curlimages/curl:latest \
+        --fail-with-body \
+        --unix-socket /run/podman/podman.sock \
+        --output /tmp/run-image.tar \
+        --get \
+        --data-urlencode \
+            'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+        http://localhost/v1.41/images/get
+
+    >   curl: (7) Failed to connect to localhost:80 over unix:///run/podman/podman.sock after 0 ms: Could not connect to server
+
+    #
+    # Run the curl test as container root
+
+    podman run --rm \
+        --user 0:0 \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+        docker.io/curlimages/curl:latest \
+        --fail-with-body \
+        --unix-socket /run/podman/podman.sock \
+        --output /tmp/run-image.tar \
+        --get \
+        --data-urlencode \
+            'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+        http://localhost/v1.41/images/get
+
+    >     % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+    >                                    Dload  Upload  Total   Spent   Left   Speed
+    >   100 24.60M   0 24.60M   0      0 19.62M      0           00:01         19.63M
+
+    #
+    # Check the builder user id
+
+    podman image inspect \
+        docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+        --format 'User={{json .Config.User}}'
+
+    >   User="1001:1001"
+
+    #
+    # Examine the socket from the builder container:
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:rw" \
+        --entrypoint /bin/sh \
+        docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+        -c '
+            id
+            stat -c "mode=%A uid=%u gid=%g" /var/run/docker.sock
+            test -r /var/run/docker.sock && echo readable || echo not-readable
+            test -w /var/run/docker.sock && echo writable || echo not-writable
+        '
+
+    >   uid=1001(cnb) gid=1001(cnb) groups=1001(cnb)
+    >   mode=srw-rw---- uid=0 gid=0
+    >   not-readable
+    >   not-writable
+
+    #
+    # Temporarily make the socket accessible to all container users:
+    #
+
+    socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
+
+    chmod 666 "${socket}"
+    stat -c "mode=%A uid=%u gid=%g" "${socket}"
+
+    >   mode=srw-rw-rw- uid=1000 gid=1000
+
+
+    #
+    # Run the curl test as the container user.
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw" \
+        docker.io/curlimages/curl:latest \
+        --fail-with-body \
+        --unix-socket /run/podman/podman.sock \
+        --output /tmp/run-image.tar \
+        --get \
+        --data-urlencode \
+            'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
+        http://localhost/v1.41/images/get
+
+    >     % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+    >                                    Dload  Upload  Total   Spent   Left   Speed
+    >   100 24.60M   0 24.60M   0      0 25.06M      0                              0
+
+
+    #
+    # Examine the socket from the builder container:
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:rw" \
+        --entrypoint /bin/sh \
+        docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+        -c '
+            id
+            stat -c "mode=%A uid=%u gid=%g" /var/run/docker.sock
+            test -r /var/run/docker.sock && echo readable || echo not-readable
+            test -w /var/run/docker.sock && echo writable || echo not-writable
+        '
+
+    >   uid=1001(cnb) gid=1001(cnb) groups=1001(cnb)
+    >   mode=srw-rw-rw- uid=0 gid=0
+    >   readable
+    >   writable
+
+
+    #
+    # Try the Maven build - still fails
+    ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     ERROR:
+    >       failed to export: saving image: failed to fetch base layers:
+    >       saving image with ID "sha256:9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356" from the docker daemon:
+    >       error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356":
+    >       http: server closed idle connection
+
+
+    #
+    # Following instructions in buildpacks documentation.
+    # https://buildpacks.io/docs/for-app-developers/how-to/special-cases/build-on-podman/
+
+    export DOCKER_HOST="$(podman info -f "{{.Host.RemoteSocket.Path}}")"
+    echo $DOCKER_HOST
+
+    >   unix:///run/user/1000/podman/podman.sock
+
+
+  systemctl --user status podman.socket
+
+    >   ● podman.socket - Podman API Socket
+    >        Loaded: loaded (/usr/lib/systemd/user/podman.socket; enabled; preset: disabled)
+    >        Active: active (listening) since Mon 2026-07-20 16:27:07 BST; 4 days ago
+    >      Triggers: ● podman.service
+    >          Docs: man:podman-system-service(1)
+    >        Listen: /run/user/1000/podman/podman.sock (Stream)
+    >        CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/podman.socket
+    >   
+    >   Jul 20 16:27:07 fedora systemd[1559]: Listening on podman.socket - Podman API Socket.
+
+
+    # Try the Maven build again
+    ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     Saving docker.io/library/calycopis-broker:1.0.7-SNAPSHOT...
+    >   [INFO]     [creator]     ERROR: failed to export: saving image: failed to fetch base layers:
+    >       saving image with ID "sha256:9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356"
+    >       from the docker daemon:
+    >       error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356":
+    >       EOF
+
+    #
+    # I only just noticed - the http URL is %2Fvar%2Frun%2Fdocker.sock, not %2Fvar%2Frun%2Fpodman.sock.
+    # So this part of the build process is ignoring $CONTAINER_HOST and $DOCKER_HOST and reverting to /var/run/docker.sock
+
+    #
+    # Can we create a link to mount our Podman socket as the default Docker socket.
+
+ls -al /var/run/docker.sock
+
+    >   ls: cannot access '/var/run/docker.sock': No such file or directory
+
+
+ls -al /run/user/1000/podman/podman.sock
+
+    >   srw-rw-rw-. 1 Zarquan Zarquan 0 Jul 20 16:27 /run/user/1000/podman/podman.sock
+
+
+sudo ln /run/user/1000/podman/podman.sock /var/run/docker.sock
+
+    >   ln: failed to create hard link '/var/run/docker.sock' => '/run/user/1000/podman/podman.sock': Invalid cross-device link
+
+
+sudo ln -s /run/user/1000/podman/podman.sock /var/run/docker.sock
+
+ls -al /var/run/docker.sock
+
+    >   lrwxrwxrwx. 1 root root 33 Jul 24 17:50 /var/run/docker.sock -> /run/user/1000/podman/podman.sock
+
+
+    # Try the Maven build => still fails
+    ./mvnw spring-boot:build-image
+
+
+# -----------------------------------------------------
+
+    #
+    # Recomended settings from ChatGPT.
+    #
+
+    #
+    # Maven POM - done
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <docker>
+                        <host>${env.CONTAINER_HOST}</host>
+                        <bindHostToBuilder>true</bindHostToBuilder>
+                    </docker>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    #
+    # CONTAINER_HOST environment variable - done
+
+    export CONTAINER_HOST="$(
+        podman info --format '{{.Host.RemoteSocket.Path}}'
+    )"
+
+    echo "CONTAINER_HOST [${CONTAINER_HOST}]"
+
+    >   CONTAINER_HOST [unix:///run/user/1000/podman/podman.sock]
+
+    #
+    # Podman configuration - done
+
+    mkdir --parents ~/.config/containers/containers.conf.d
+cat > ~/.config/containers/containers.conf.d/90-service-timeout.conf << EOF
+[engine]
+service_timeout = 0
+EOF
+
+    #
+    # User socket override
+
+    systemctl --user edit podman.socket
+
+[Socket]
+SocketMode=0666
+
+    >   Successfully installed edited file '/home/Zarquan/.config/systemd/user/podman.socket.d/override.conf'.
+
+    #
+    # Reload the system config
+    systemctl --user daemon-reload
+
+    #
+    # Restart the Podman service
+    systemctl --user restart podman.socket
+
+    #
+    # Try the Maven build again.
+    ./mvnw spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO] Successfully built image 'docker.io/library/calycopis-broker:1.0.7-SNAPSHOT'
+    >   [INFO]
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:35 min
+    >   [INFO] Finished at: 2026-07-24T18:56:48+01:00
+    >   [INFO] ------------------------------------------------------------------------
+
+    #
+    # Yay - we got a build to work.
+    #
+
+# -----------------------------------------------------
+
+    podman images
+
+    >   REPOSITORY                                          TAG               IMAGE ID      CREATED       SIZE
+    >   docker.io/paketobuildpacks/ubuntu-noble-run-tiny    0.0.106           9a99246b6ddf  22 hours ago  25.8 MB
+    >   docker.io/paketobuildpacks/ubuntu-noble-run-tiny    0.0.105           9dcb892d7df4  46 hours ago  25.8 MB
+    >   ....
+    >   ....
+    >   <none>                                              <none>            01456cbf0bc4  46 years ago  855 MB
+    >   docker.io/paketobuildpacks/builder-noble-java-tiny  latest            ce32fd30d84f  46 years ago  857 MB
+    >   docker.io/library/calycopis-broker                  1.0.7-SNAPSHOT    12c8a418e784  46 years ago  419 MB
+
+
+    >   ....
+    >   ....
+    >   podman inspect 12c8a418e784
+    >   [
+    >        {
+    >             "Id": "12c8a418e784d543b2443c351750c64f0844219f8f84b9d302b1e0ce9e36c804",
+    >             "Digest": "sha256:4897382c97aaf9d224c199f400881a96ffb9a3bc4f9305bdaa30107ad9f6349d",
+    >             "RepoTags": [
+    >                  "docker.io/library/calycopis-broker:1.0.7-SNAPSHOT"
+    >             ],
+    >             "RepoDigests": [
+    >                  "docker.io/library/calycopis-broker@sha256:4897382c97aaf9d224c199f400881a96ffb9a3bc4f9305bdaa30107ad9f6349d"
+    >             ],
+    >             "Parent": "",
+    >             "Comment": "",
+    >             "Created": "1980-01-01T00:00:01Z",
+    >             "Config": {
+    >                  "User": "1002:1001",
+    >                  "Env": [
+    >                       "PATH=/cnb/process:/cnb/lifecycle:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    >                       "CNB_LAYERS_DIR=/layers",
+    >                       "CNB_APP_DIR=/workspace",
+    >                       "CNB_PLATFORM_API=0.14",
+    >                       "CNB_DEPRECATION_MODE=quiet"
+    >                  ],
+    >                  "Entrypoint": [
+    >                       "/cnb/process/web"
+    >                  ],
+    >                  "WorkingDir": "/workspace",
+    >                  "Labels": {
+    >                       "io.buildpacks.build.metadata": "{\"buildpacks\":[{\"id\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.12.5\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\"},{\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.7.6\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\"},{\"id\":\"paketo-buildpacks/syft\",\"version\":\"2.37.1\",\"homepage\":\"https://github.com/paketo-buildpacks/syft\"},{\"id\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.15.5\",\"homepage\":\"https://github.com/paketo-buildpacks/executable-jar\"},{\"id\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.12.5\",\"homepage\":\"https://github.com/paketo-buildpacks/dist-zip\"},{\"id\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.36.5\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\"}],\"launcher\":{\"version\":\"0.21.14\",\"source\":{\"git\":{\"repository\":\"github.com/buildpacks/lifecycle\",\"commit\":\"57de6463\"}}},\"processes\":[{\"type\":\"executable-jar\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"task\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"web\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"}],\"buildpack-default-process-type\":\"web\"}",
+    >                       "io.buildpacks.lifecycle.metadata": "{\"app\":[{\"sha\":\"sha256:dd23b1a4dc7af73e2f94694f4fcba3a9fad3d36c9edc7d1fc3034bf648859e03\"},{\"sha\":\"sha256:87ae3128820e449623dbe288e7b70e7ea8bd09a344ee8e5ee4d80fc4412120d9\"},{\"sha\":\"sha256:bad9e7b92f38f2f12a2df542f0c4b575369fa3c4309f23d7f50386854c142847\"},{\"sha\":\"sha256:ea1f9c01f7ab15e04b12cb17003f513676e829e1f3f4001539146f8544ddb075\"},{\"sha\":\"sha256:01cb4e964946e4c9ba59840bf37b63d24132b4794a652130e2f4fd07e3e736a9\"}],\"sbom\":{\"sha\":\"sha256:6bf8bb052a95fdc2460748ac4c4804625b4f1b03d6034984c3acfde5909b3890\"},\"buildpacks\":[{\"key\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.12.5\",\"layers\":{\"helper\":{\"sha\":\"sha256:fb58a32980db1423f1ff65dad202569521bd42c39df0c4225bba7a1d3ec8122f\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that adds custom CA certificates to a build and a created image\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\",\"id\":\"paketo-buildpacks/ca-certificates\",\"keywords\":[\"ca-certificates\",\"trust\",\"certificates\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/ca-certificates/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for CA Certificates\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"3.12.5\"},\"helperNames\":[\"ca-certificates-helper\"]},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.7.6\",\"layers\":{\"helper\":{\"sha\":\"sha256:87c038a3783a9a21fd30dcb7be167c4fc78e4887498dafdd09757eeb077c65fa\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.7.6\"},\"helperNames\":[\"java-opts\",\"jvm-heap\",\"link-local-dns\",\"memory-calculator\",\"security-providers-configurer\",\"jmx\",\"jfr\",\"openssl-certificate-loader\",\"security-providers-classpath-9\",\"debug-9\",\"nmt\"]},\"build\":false,\"launch\":true,\"cache\":false},\"java-security-properties\":{\"sha\":\"sha256:181b18e8a948c63e2626d945df975fae575a30aa1196000c325094c8a5a68c8b\",\"data\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.7.6\"},\"build\":false,\"launch\":true,\"cache\":false},\"jre\":{\"sha\":\"sha256:b1d00f0a2964f8ec9714ec7639393ea969cc02543ff6163d3bb50559f29e074b\",\"data\":{\"cert-file\":\"9481fcd95f41b221f02f14d896535fe500bec539bc563c4cdca1acee483a8bdd\",\"dependency\":{\"cpes\":[\"cpe:2.3:a:oracle:jre:25.0.3:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"jre\",\"licenses\":[{\"type\":\"GPL-2.0 WITH Classpath-exception-2.0\",\"uri\":\"https://openjdk.java.net/legal/gplv2+ce.html\"}],\"name\":\"BellSoft Liberica JRE\",\"purl\":\"pkg:generic/bellsoft-jre@25.0.3?arch=amd64\",\"sha256\":\"14d10374e82e8d45c6be46369c6ab9fc3cb0b71fd31ecef4f248ec5d8202e685\",\"stacks\":[\"*\"],\"uri\":\"https://github.com/bell-sw/Liberica/releases/download/25.0.3+11/bellsoft-jre25.0.3+11-linux-amd64.tar.gz\",\"version\":\"25.0.3\"}},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/syft\",\"version\":\"2.37.1\",\"layers\":{}},{\"key\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.15.5\",\"layers\":{\"classpath\":{\"sha\":\"sha256:5062fa39cbaa40caba6339b4ba2e9fe8a0f21a3afc51b7c6beceace01be8fcab\",\"data\":{\"classpath\":[\"/workspace\"],\"launch\":true},\"build\":true,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.12.5\",\"layers\":{}},{\"key\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.36.5\",\"layers\":{\"helper\":{\"sha\":\"sha256:829d6a1b961a7da0bcd629c5dbeb52a38d7c709ffe7d9f85a7fdc0f2801a3c76\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that contributes Spring Boot dependency information and slices an application into multiple layers\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\",\"id\":\"paketo-buildpacks/spring-boot\",\"keywords\":[\"java\",\"spring\",\"spring-boot\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/spring-boot/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for Spring Boot\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"5.36.5\"},\"helperNames\":[\"spring-cloud-bindings\"]},\"build\":false,\"launch\":true,\"cache\":false},\"spring-cloud-bindings\":{\"sha\":\"sha256:fa07dcdcdfd05d47f4dbb3e0995bb427e3658665fbcec80e6801e215fec4cd02\",\"data\":{\"cpes\":[\"cpe:2.3:a:vmware:spring_cloud_bindings:2.0.0:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"spring-cloud-bindings\",\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/spring-cloud/spring-cloud-bindings/blob/main/LICENSE\"}],\"name\":\"Spring Cloud Bindings\",\"purl\":\"pkg:generic/springframework/spring-cloud-bindings@2.0.0\",\"sha256\":\"32e47c2139d6379836910f0d1cc253a019ac282f3aeea12237069f00046279ad\",\"stacks\":[\"io.buildpacks.stacks.bionic\",\"io.paketo.stacks.tiny\",\"*\"],\"uri\":\"https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-bindings/2.0.4/spring-cloud-bindings-2.0.4.jar\",\"version\":\"2.0.4\"},\"build\":false,\"launch\":true,\"cache\":true},\"web-application-type\":{\"sha\":\"sha256:47edbc81cc29a6e62f1591181aed97d6fb46f1923a54a76789d97e602ce962fc\",\"data\":{\"files\":\"563342c1490c450ceea8ded648485b1ddd1329a45d42a5d1b9c6b9369d753a88\"},\"build\":false,\"launch\":true,\"cache\":false}}}],\"config\":{\"sha\":\"sha256:cdcc6d85d56df777b5c1c3ce42a73081aafd7b5d99bc473f13774a14270e4e43\"},\"launcher\":{\"sha\":\"sha256:41717bd374e0df1ef2ae11b633b61a15c5a4bf387e68efb52d6f469269f649f7\"},\"process-types\":{\"sha\":\"sha256:1dc94a70dbaa2171fb086500a5d27797f779219b126b0a1eebb9180c2792e80e\"},\"runImage\":{\"topLayer\":\"sha256:35c887b245816194e39ce80dad8d784b9b02f83e81dce992e97439cc94063f8b\",\"reference\":\"9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356\",\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.106\"},\"stack\":{\"runImage\":{\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.106\"}}}",
+    >                       "io.buildpacks.project.metadata": "{}",
+    >                       "io.buildpacks.stack.description": "distroless-like noble",
+    >                       "io.buildpacks.stack.distro.name": "ubuntu",
+    >                       "io.buildpacks.stack.distro.version": "24.04",
+    >                       "io.buildpacks.stack.homepage": "https://github.com/paketo-buildpacks/noble-tiny-stack",
+    >                       "io.buildpacks.stack.id": "io.buildpacks.stacks.noble",
+    >                       "io.buildpacks.stack.maintainer": "Paketo Buildpacks",
+    >                       "io.buildpacks.stack.metadata": "{}",
+    >                       "io.buildpacks.stack.released": "2026-07-24T01:07:00Z",
+    >                       "org.opencontainers.image.title": "Calycopis broker webapp",
+    >                       "org.opencontainers.image.version": "1.0.7-SNAPSHOT",
+    >                       "org.springframework.boot.version": "4.1.0"
+    >                  }
+    >             },
+    >             "Version": "",
+    >             "Author": "",
+    >             "Architecture": "amd64",
+    >             "Os": "linux",
+    >             "Size": 418558799,
+    >             "VirtualSize": 418558799,
+    >             "GraphDriver": {
+    >                  "Name": "overlay",
+    >                  "Data": {
+    >                       "LowerDir": "/home/Zarquan/.local/share/containers/storage/overlay/065b1eeb22ac0a62e2b823b32409ab937a23e1d30a538a87a32dff33b0d20c85/diff:/home/Zarquan/.local/share/containers/storage/overlay/575e25ea264023465e0e1befe018eb7a339c5337c734ce1a9574c27123315a03/diff:/home/Zarquan/.local/share/containers/storage/overlay/9751571fd19083be160097207ede41be42ed081ab8a83771eedd5488cf1ea535/diff:/home/Zarquan/.local/share/containers/storage/overlay/2963a89b7c5f660275630c59125719d4dc13657e6b33cd670d5ce8bce170956d/diff:/home/Zarquan/.local/share/containers/storage/overlay/5f02817f4f0ee8853aa762aa494569794f2f6fa6dc67b0387f56bd90dad42110/diff:/home/Zarquan/.local/share/containers/storage/overlay/f39c604268fbffeeab0476152c02565663c6534d42008ebc0f416ee2e00b192c/diff:/home/Zarquan/.local/share/containers/storage/overlay/f921c44972e41b8449581ae8081d8dba44e47a47843756e14220a68b8d63c1fc/diff:/home/Zarquan/.local/share/containers/storage/overlay/3b5112ec2aa55509674b26dba0a31a516744d9e3750986ce34b5f16f939f45c3/diff:/home/Zarquan/.local/share/containers/storage/overlay/152898101fe88ea7371a86bc1914b8c6c898a8eb03fbdf15823f3cbe7c509744/diff:/home/Zarquan/.local/share/containers/storage/overlay/6a18138dfabe561a72db430e039fc36d32e75ef9777f9a73fe4d082b18f4d8da/diff:/home/Zarquan/.local/share/containers/storage/overlay/fc9b2836d89cbeab7a28d6a5253385997a8279ab95bbd83ba5c00bc80be8357d/diff:/home/Zarquan/.local/share/containers/storage/overlay/cf272969e7038743efcaf49c5575d4ac4935284aadb563e9b595fda768dd28be/diff:/home/Zarquan/.local/share/containers/storage/overlay/493bf291b0c59c942d8d5a032c889f2ea4783c0b071246209d73b87f586bad62/diff:/home/Zarquan/.local/share/containers/storage/overlay/46af0bb4427595280ffd52d5344922639d26ef60071505acdb328a87477ca262/diff:/home/Zarquan/.local/share/containers/storage/overlay/b18a92894c1cb2caf7b1f3a4b49cdbdebd1a10ad71c9bbceba3efd660ed19bb9/diff:/home/Zarquan/.local/share/containers/storage/overlay/ff5708d0296d8d9a733fd02c69cbb30f59455dfc5ff88852ca17c361f01d5b4a/diff:/home/Zarquan/.local/share/containers/storage/overlay/2ed4b87ea4ad4ba4f1b3847ae43320a955e36d4f160f9b11ae47269f1e317cd9/diff:/home/Zarquan/.local/share/containers/storage/overlay/3b5aadc2d737a61f945b9e308b0c53c9b20b0ce09e13de3de354d80818bbaee2/diff:/home/Zarquan/.local/share/containers/storage/overlay/a81aa089220d95b21180ca74993c82e5189094ba014e85674918f64c0684b97a/diff",
+    >                       "UpperDir": "/home/Zarquan/.local/share/containers/storage/overlay/535e05e935777ed2992c2257b2ff4177672fbe6edd9cfaf382cb6914153f8aee/diff",
+    >                       "WorkDir": "/home/Zarquan/.local/share/containers/storage/overlay/535e05e935777ed2992c2257b2ff4177672fbe6edd9cfaf382cb6914153f8aee/work"
+    >                  }
+    >             },
+    >             "RootFS": {
+    >                  "Type": "layers",
+    >                  "Layers": [
+    >                       "sha256:a81aa089220d95b21180ca74993c82e5189094ba014e85674918f64c0684b97a",
+    >                       "sha256:41720a857cef5a3a049b19e465b288767d95d581be759e93d9a6fcb25f705e3a",
+    >                       ....
+    >                       ....
+    >                       "sha256:cdcc6d85d56df777b5c1c3ce42a73081aafd7b5d99bc473f13774a14270e4e43",
+    >                       "sha256:1dc94a70dbaa2171fb086500a5d27797f779219b126b0a1eebb9180c2792e80e"
+    >                  ]
+    >             },
+    >             "Labels": {
+    >                  "io.buildpacks.build.metadata": "{\"buildpacks\":[{\"id\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.12.5\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\"},{\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.7.6\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\"},{\"id\":\"paketo-buildpacks/syft\",\"version\":\"2.37.1\",\"homepage\":\"https://github.com/paketo-buildpacks/syft\"},{\"id\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.15.5\",\"homepage\":\"https://github.com/paketo-buildpacks/executable-jar\"},{\"id\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.12.5\",\"homepage\":\"https://github.com/paketo-buildpacks/dist-zip\"},{\"id\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.36.5\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\"}],\"launcher\":{\"version\":\"0.21.14\",\"source\":{\"git\":{\"repository\":\"github.com/buildpacks/lifecycle\",\"commit\":\"57de6463\"}}},\"processes\":[{\"type\":\"executable-jar\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"task\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"},{\"type\":\"web\",\"command\":[\"java\"],\"args\":[\"org.springframework.boot.loader.launch.JarLauncher\"],\"direct\":true,\"buildpackID\":\"paketo-buildpacks/executable-jar\"}],\"buildpack-default-process-type\":\"web\"}",
+    >                  "io.buildpacks.lifecycle.metadata": "{\"app\":[{\"sha\":\"sha256:dd23b1a4dc7af73e2f94694f4fcba3a9fad3d36c9edc7d1fc3034bf648859e03\"},{\"sha\":\"sha256:87ae3128820e449623dbe288e7b70e7ea8bd09a344ee8e5ee4d80fc4412120d9\"},{\"sha\":\"sha256:bad9e7b92f38f2f12a2df542f0c4b575369fa3c4309f23d7f50386854c142847\"},{\"sha\":\"sha256:ea1f9c01f7ab15e04b12cb17003f513676e829e1f3f4001539146f8544ddb075\"},{\"sha\":\"sha256:01cb4e964946e4c9ba59840bf37b63d24132b4794a652130e2f4fd07e3e736a9\"}],\"sbom\":{\"sha\":\"sha256:6bf8bb052a95fdc2460748ac4c4804625b4f1b03d6034984c3acfde5909b3890\"},\"buildpacks\":[{\"key\":\"paketo-buildpacks/ca-certificates\",\"version\":\"3.12.5\",\"layers\":{\"helper\":{\"sha\":\"sha256:fb58a32980db1423f1ff65dad202569521bd42c39df0c4225bba7a1d3ec8122f\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that adds custom CA certificates to a build and a created image\",\"homepage\":\"https://github.com/paketo-buildpacks/ca-certificates\",\"id\":\"paketo-buildpacks/ca-certificates\",\"keywords\":[\"ca-certificates\",\"trust\",\"certificates\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/ca-certificates/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for CA Certificates\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"3.12.5\"},\"helperNames\":[\"ca-certificates-helper\"]},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/bellsoft-liberica\",\"version\":\"11.7.6\",\"layers\":{\"helper\":{\"sha\":\"sha256:87c038a3783a9a21fd30dcb7be167c4fc78e4887498dafdd09757eeb077c65fa\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.7.6\"},\"helperNames\":[\"java-opts\",\"jvm-heap\",\"link-local-dns\",\"memory-calculator\",\"security-providers-configurer\",\"jmx\",\"jfr\",\"openssl-certificate-loader\",\"security-providers-classpath-9\",\"debug-9\",\"nmt\"]},\"build\":false,\"launch\":true,\"cache\":false},\"java-security-properties\":{\"sha\":\"sha256:181b18e8a948c63e2626d945df975fae575a30aa1196000c325094c8a5a68c8b\",\"data\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that provides the Bellsoft Liberica implementations of JREs and JDKs\",\"homepage\":\"https://github.com/paketo-buildpacks/bellsoft-liberica\",\"id\":\"paketo-buildpacks/bellsoft-liberica\",\"keywords\":[\"java\",\"jvm\",\"jre\",\"jdk\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/bellsoft-liberica/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for BellSoft Liberica\",\"sbom-formats\":[\"application/vnd.syft+json\",\"application/vnd.cyclonedx+json\"],\"version\":\"11.7.6\"},\"build\":false,\"launch\":true,\"cache\":false},\"jre\":{\"sha\":\"sha256:b1d00f0a2964f8ec9714ec7639393ea969cc02543ff6163d3bb50559f29e074b\",\"data\":{\"cert-file\":\"9481fcd95f41b221f02f14d896535fe500bec539bc563c4cdca1acee483a8bdd\",\"dependency\":{\"cpes\":[\"cpe:2.3:a:oracle:jre:25.0.3:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"jre\",\"licenses\":[{\"type\":\"GPL-2.0 WITH Classpath-exception-2.0\",\"uri\":\"https://openjdk.java.net/legal/gplv2+ce.html\"}],\"name\":\"BellSoft Liberica JRE\",\"purl\":\"pkg:generic/bellsoft-jre@25.0.3?arch=amd64\",\"sha256\":\"14d10374e82e8d45c6be46369c6ab9fc3cb0b71fd31ecef4f248ec5d8202e685\",\"stacks\":[\"*\"],\"uri\":\"https://github.com/bell-sw/Liberica/releases/download/25.0.3+11/bellsoft-jre25.0.3+11-linux-amd64.tar.gz\",\"version\":\"25.0.3\"}},\"build\":false,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/syft\",\"version\":\"2.37.1\",\"layers\":{}},{\"key\":\"paketo-buildpacks/executable-jar\",\"version\":\"6.15.5\",\"layers\":{\"classpath\":{\"sha\":\"sha256:5062fa39cbaa40caba6339b4ba2e9fe8a0f21a3afc51b7c6beceace01be8fcab\",\"data\":{\"classpath\":[\"/workspace\"],\"launch\":true},\"build\":true,\"launch\":true,\"cache\":false}}},{\"key\":\"paketo-buildpacks/dist-zip\",\"version\":\"5.12.5\",\"layers\":{}},{\"key\":\"paketo-buildpacks/spring-boot\",\"version\":\"5.36.5\",\"layers\":{\"helper\":{\"sha\":\"sha256:829d6a1b961a7da0bcd629c5dbeb52a38d7c709ffe7d9f85a7fdc0f2801a3c76\",\"data\":{\"buildpackInfo\":{\"clear-env\":false,\"description\":\"A Cloud Native Buildpack that contributes Spring Boot dependency information and slices an application into multiple layers\",\"homepage\":\"https://github.com/paketo-buildpacks/spring-boot\",\"id\":\"paketo-buildpacks/spring-boot\",\"keywords\":[\"java\",\"spring\",\"spring-boot\"],\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/paketo-buildpacks/spring-boot/blob/main/LICENSE\"}],\"name\":\"Paketo Buildpack for Spring Boot\",\"sbom-formats\":[\"application/vnd.cyclonedx+json\",\"application/vnd.syft+json\"],\"version\":\"5.36.5\"},\"helperNames\":[\"spring-cloud-bindings\"]},\"build\":false,\"launch\":true,\"cache\":false},\"spring-cloud-bindings\":{\"sha\":\"sha256:fa07dcdcdfd05d47f4dbb3e0995bb427e3658665fbcec80e6801e215fec4cd02\",\"data\":{\"cpes\":[\"cpe:2.3:a:vmware:spring_cloud_bindings:2.0.0:*:*:*:*:*:*:*\"],\"deprecation_date\":\"0001-01-01T00:00:00Z\",\"id\":\"spring-cloud-bindings\",\"licenses\":[{\"type\":\"Apache-2.0\",\"uri\":\"https://github.com/spring-cloud/spring-cloud-bindings/blob/main/LICENSE\"}],\"name\":\"Spring Cloud Bindings\",\"purl\":\"pkg:generic/springframework/spring-cloud-bindings@2.0.0\",\"sha256\":\"32e47c2139d6379836910f0d1cc253a019ac282f3aeea12237069f00046279ad\",\"stacks\":[\"io.buildpacks.stacks.bionic\",\"io.paketo.stacks.tiny\",\"*\"],\"uri\":\"https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-bindings/2.0.4/spring-cloud-bindings-2.0.4.jar\",\"version\":\"2.0.4\"},\"build\":false,\"launch\":true,\"cache\":true},\"web-application-type\":{\"sha\":\"sha256:47edbc81cc29a6e62f1591181aed97d6fb46f1923a54a76789d97e602ce962fc\",\"data\":{\"files\":\"563342c1490c450ceea8ded648485b1ddd1329a45d42a5d1b9c6b9369d753a88\"},\"build\":false,\"launch\":true,\"cache\":false}}}],\"config\":{\"sha\":\"sha256:cdcc6d85d56df777b5c1c3ce42a73081aafd7b5d99bc473f13774a14270e4e43\"},\"launcher\":{\"sha\":\"sha256:41717bd374e0df1ef2ae11b633b61a15c5a4bf387e68efb52d6f469269f649f7\"},\"process-types\":{\"sha\":\"sha256:1dc94a70dbaa2171fb086500a5d27797f779219b126b0a1eebb9180c2792e80e\"},\"runImage\":{\"topLayer\":\"sha256:35c887b245816194e39ce80dad8d784b9b02f83e81dce992e97439cc94063f8b\",\"reference\":\"9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356\",\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.106\"},\"stack\":{\"runImage\":{\"image\":\"docker.io/paketobuildpacks/ubuntu-noble-run-tiny:0.0.106\"}}}",
+    >                  "io.buildpacks.project.metadata": "{}",
+    >                  "io.buildpacks.stack.description": "distroless-like noble",
+    >                  "io.buildpacks.stack.distro.name": "ubuntu",
+    >                  "io.buildpacks.stack.distro.version": "24.04",
+    >                  "io.buildpacks.stack.homepage": "https://github.com/paketo-buildpacks/noble-tiny-stack",
+    >                  "io.buildpacks.stack.id": "io.buildpacks.stacks.noble",
+    >                  "io.buildpacks.stack.maintainer": "Paketo Buildpacks",
+    >                  "io.buildpacks.stack.metadata": "{}",
+    >                  "io.buildpacks.stack.released": "2026-07-24T01:07:00Z",
+    >                  "org.opencontainers.image.title": "Calycopis broker webapp",
+    >                  "org.opencontainers.image.version": "1.0.7-SNAPSHOT",
+    >                  "org.springframework.boot.version": "4.1.0"
+    >             },
+    >             "Annotations": {},
+    >             "ManifestType": "application/vnd.docker.distribution.manifest.v2+json",
+    >             "User": "1002:1001",
+    >             "History": [
+    >                  {
+    >                       "created": "1980-01-01T00:00:01Z",
+    >                       "created_by": "COPY /tiny/ / # buildkit",
+    >                       "comment": "buildkit.dockerfile.v0"
+    >                  },
+    >                  ....
+    >                  ....
+    >                  ....
+    >                  ....
+    >                  {
+    >                       "created": "1980-01-01T00:00:01Z",
+    >                       "created_by": "Buildpacks Process Types"
+    >                  }
+    >             ],
+    >             "NamesHistory": [
+    >                  "docker.io/library/calycopis-broker:1.0.7-SNAPSHOT"
+    >             ]
+    >        }
+    >   ]
+
+

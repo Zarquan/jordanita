@@ -236,5 +236,24 @@
 
 # -----------------------------------------------------
 
+    Calycopis-openapi
+
+    Zarquan working branch
+    https://github.com/Zarquan/Calycopis-openapi/tree/20260709-zrq-workflow-publishing
+
+    UKSRC Jira branch
+    https://github.com/uksrc/Calycopis-openapi/tree/TRD-112-Publish-Calycopis-openapi-jar-in-Nexus
+
+
+    PR#13 merged Zarquan:20260709 into uksrc:TRD-112
+    https://github.com/uksrc/Calycopis-openapi/pull/13
+    https://github.com/Zarquan/Calycopis-openapi/tree/20260709-zrq-workflow-publishing
+
+    PR#14 merged uksrc:TRD-112 into uksrc:main
+    https://github.com/uksrc/Calycopis-openapi/pull/14
+
+
+
+
 
 

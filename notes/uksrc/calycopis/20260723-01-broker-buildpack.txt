@@ -1,0 +1,451 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Maven configuration to package the broker in a container.
+
+    Resources:
+
+        Cloud native BuildPacks
+        https://buildpacks.io/
+
+        Cloud Native Buildpacks :: Spring Boot
+        https://docs.spring.io/spring-boot/reference/packaging/container-images/cloud-native-buildpacks.html
+
+
+        What Are Buildpacks? Buildpacks vs Dockerfiles Explained
+        https://bell-sw.com/blog/what-are-buildpacks-build-oci-images-without-dockerfiles/
+
+        A guide to using buildpacks with Spring Boot apps in 2026
+        https://bell-sw.com/blog/how-to-use-buildpacks-with-spring-boot/
+
+        How to Build Python Apps with Paketo Buildpacks - Paketo Buildpacks
+        https://paketo.io/docs/howto/python/
+
+        paketo-buildpacks/maven: A Cloud Native Buildpack that builds Maven-based applications from source
+        https://github.com/paketo-buildpacks/maven
+
+        How to Use Podman in GitHub Actions
+        https://oneuptime.com/blog/post/2026-03-18-use-podman-github-actions/view
+
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    ?   I want to package a Java Spring Boot application in a Docker container
+    ?   using the Spring Boot buildpack tools.
+    ?   The application stores its data in a Postgresql database, which is run in a
+    ?   separate container.
+    ?   The application needs a YAML configuration file, provided at runtime,
+    ?   to tell it how to connect to the database.
+    ?   What is the best way to implement this runtime configuration step.
+
+    >   ## Recommended approach
+    >   
+    >   Build the image once, then provide configuration at **container runtime** by mounting an external `application.yaml` into `/config/application.yaml`.
+    >   
+    >   Spring Boot automatically searches external configuration locations including `./config/`, and external values override configuration packaged inside the application. This means you normally do not need to change the buildpack-generated entrypoint or pass additional JVM arguments. ([Home][1])
+    >   
+    >   The resulting separation is:
+    >   
+    >   * Docker image: application code and non-sensitive defaults
+    >   * Mounted YAML: environment-specific configuration
+    >   * Docker secret or environment variable: database password
+    >   
+    >   Spring Boot buildpack images run as a non-root user, so the mounted file must be readable by the container user. ([Home][2])
+    >   
+    >   ## Application configuration
+    >   
+    >   Keep a minimal `application.yaml` inside `src/main/resources` for defaults that are safe in every environment:
+    >   
+    >   ```yaml
+    >   spring:
+    >     application:
+    >       name: my-application
+    >   
+    >   server:
+    >     port: 8080
+    >   ```
+    >   
+    >   Create the runtime configuration outside the project image, for example:
+    >   
+    >   ```yaml
+    >   # config/application.yaml
+    >   
+    >   spring:
+    >     datasource:
+    >       url: jdbc:postgresql://postgres:5432/mydatabase
+    >       username: myapplication
+    >       password: ${DATABASE_PASSWORD}
+    >   
+    >     jpa:
+    >       hibernate:
+    >         ddl-auto: validate
+    >   ```
+    >   
+    >   Two details matter:
+    >   
+    >   1. Use the PostgreSQL **service/container name**, such as `postgres`, not `localhost`.
+    >   2. Leave the password as a placeholder and inject it separately.
+    >   
+    >   Inside the application container, `localhost` refers to the application container itself, not the PostgreSQL container.
+    >   
+    >   ## Building the image
+    >   
+    >   With Maven:
+    >   
+    >   ```bash
+    >   ./mvnw spring-boot:build-image \
+    >       -Dspring-boot.build-image.imageName=my-application:latest
+    >   ```
+    >   
+    >   The Spring Boot Maven plugin creates an OCI image using Cloud Native Buildpacks. ([Home][2])
+    >   
+    >   ## Running directly with Docker
+    >   
+    >   Create a shared Docker network:
+    >   
+    >   ```bash
+    >   docker network create my-application-network
+    >   ```
+    >   
+    >   Start PostgreSQL:
+    >   
+    >   ```bash
+    >   docker run --detach \
+    >       --name postgres \
+    >       --network my-application-network \
+    >       --env POSTGRES_DB=mydatabase \
+    >       --env POSTGRES_USER=myapplication \
+    >       --env POSTGRES_PASSWORD=change-me \
+    >       postgres:17
+    >   ```
+    >   
+    >   Start the application:
+    >   
+    >   ```bash
+    >   docker run --detach \
+    >       --name my-application \
+    >       --network my-application-network \
+    >       --publish 8080:8080 \
+    >       --env DATABASE_PASSWORD=change-me \
+    >       --mount type=bind,source="$PWD/config/application.yaml",target=/config/application.yaml,readonly \
+    >       my-application:latest
+    >   ```
+    >   
+    >   Because the file is mounted at `/config/application.yaml`, Spring Boot finds it through its normal external configuration search path.
+    >   
+    >   ## Docker Compose implementation
+    >   
+    >   For this use case, Docker Compose is usually the cleanest implementation:
+    >   
+    >   ```yaml
+    >   services:
+    >     postgres:
+    >       image: postgres:17
+    >   
+    >       environment:
+    >         POSTGRES_DB: mydatabase
+    >         POSTGRES_USER: myapplication
+    >         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    >   
+    >       volumes:
+    >         - postgres-data:/var/lib/postgresql/data
+    >   
+    >       healthcheck:
+    >         test:
+    >           [
+    >             "CMD-SHELL",
+    >             "pg_isready --username=myapplication --dbname=mydatabase"
+    >           ]
+    >         interval: 5s
+    >         timeout: 5s
+    >         retries: 10
+    >   
+    >     application:
+    >       image: my-application:latest
+    >   
+    >       ports:
+    >         - "8080:8080"
+    >   
+    >       environment:
+    >         DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    >   
+    >       volumes:
+    >         - type: bind
+    >           source: ./config/application.yaml
+    >           target: /config/application.yaml
+    >           read_only: true
+    >   
+    >       depends_on:
+    >         postgres:
+    >           condition: service_healthy
+    >   
+    >   volumes:
+    >     postgres-data:
+    >   ```
+    >   
+    >   Place the password in a `.env` file:
+    >   
+    >   ```dotenv
+    >   POSTGRES_PASSWORD=change-me
+    >   ```
+    >   
+    >   Then protect that file:
+    >   
+    >   ```bash
+    >   chmod 600 .env
+    >   ```
+    >   
+    >   and ensure it is ignored by Git:
+    >   
+    >   ```gitignore
+    >   .env
+    >   ```
+    >   
+    >   Start the services with:
+    >   
+    >   ```bash
+    >   docker compose up --detach
+    >   ```
+    >   
+    >   ## Making the configuration file mandatory
+    >   
+    >   By default, Spring Boot will use the packaged configuration if the mounted file is absent. If the external YAML is required and the application must fail rather than start incorrectly, explicitly set its location:
+    >   
+    >   ```yaml
+    >   environment:
+    >     SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/application.yaml
+    >   ```
+    >   
+    >   Do **not** add the `optional:` prefix. Spring Boot throws `ConfigDataLocationNotFoundException` when a specified non-optional location is missing. `spring.config.additional-location` augments the normal locations, whereas `spring.config.location` replaces them. ([Home][1])
+    >   
+    >   The application service would then contain:
+    >   
+    >   ```yaml
+    >   application:
+    >     image: my-application:latest
+    >   
+    >     environment:
+    >       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/application.yaml
+    >       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    >   
+    >     volumes:
+    >       - ./config/application.yaml:/config/application.yaml:ro
+    >   ```
+    >   
+    >   I recommend `SPRING_CONFIG_ADDITIONAL_LOCATION` rather than `SPRING_CONFIG_LOCATION`, because it retains the defaults packaged in the application and overlays the runtime file on top.
+    >   
+    >   ## Better handling for the password
+    >   
+    >   For local development, substituting `${DATABASE_PASSWORD}` from an environment variable is adequate. For production, use a Docker secret and Spring Boot’s configuration-tree support.
+    >   
+    >   Spring Boot can map individual files in a mounted directory into configuration properties using `configtree:`; its documentation specifically describes this pattern for Docker secrets. ([Home][1])
+    >   
+    >   For example, configure:
+    >   
+    >   ```yaml
+    >   spring:
+    >     config:
+    >       import: "configtree:/run/secrets/"
+    >   
+    >     datasource:
+    >       url: jdbc:postgresql://postgres:5432/mydatabase
+    >       username: myapplication
+    >       password: ${database-password}
+    >   ```
+    >   
+    >   Your secret would be exposed as:
+    >   
+    >   ```text
+    >   /run/secrets/database-password
+    >   ```
+    >   
+    >   This keeps the password out of:
+    >   
+    >   * the image
+    >   * the YAML file
+    >   * the Compose environment section
+    >   * normal environment-variable inspection
+    >   
+    >   ## Practical recommendation
+    >   
+    >   Use this pattern:
+    >   
+    >   ```text
+    >   /config/application.yaml
+    >   ```
+    >   
+    >   mounted read-only, with:
+    >   
+    >   ```yaml
+    >   SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/application.yaml
+    >   ```
+    >   
+    >   when the file is mandatory.
+    >   
+    >   Put ordinary connection settings in YAML:
+    >   
+    >   ```yaml
+    >   spring.datasource.url
+    >   spring.datasource.username
+    >   ```
+    >   
+    >   but provide the password through a secret or, for development, an environment variable. There is no need to modify the buildpack-generated command or create a custom Dockerfile.
+    >   
+    >   [1]: https://docs.spring.io/spring-boot/reference/features/external-config.html "Externalized Configuration :: Spring Boot"
+    >   [2]: https://docs.spring.io/spring-boot/maven-plugin/build-image.html "Packaging OCI Images :: Spring Boot"
+
+
+# -----------------------------------------------------
+# Putting it together ...
+
+    application.yaml in the source code provides the default settings
+    including naming the additional configuration files needed.
+
+```
+spring:
+    application:
+        name: Calycopis-broker
+
+    config:
+        import:
+          - file:/etc/calycopis/database.yaml
+          - file:/etc/calycopis/admin.yaml
+          - optional:file:/etc/calycopis/platform.yaml
+
+```
+
+    Additional configuration files mounted inside the container at runtime
+
+    * /etc/calycopis/database.yaml
+    * /etc/calycopis/admin.yaml
+
+    Use a separate container to create the configuration files.
+
+    #
+    # Create a configuration volume 'calycopis-config'
+    create volume calycopis-config
+
+    #
+    # Mount the volume in a config container
+    run
+        --rm
+        ...
+        --volume calycopis-config:/etc/calycopis/config:rw,z
+        fedora \
+            bash
+
+            #
+            # Create the config files
+            cat > /etc/calycopis/config/database.yaml << 'EOF'
+        spring:
+            config:
+                import: configtree:/etc/calycopis/secrets/
+
+            datasource:
+                url: jdbc:postgresql://postgres:5432/${postgres-database}
+                username: ${postgres-username}
+                password: ${postgres-password}
+                driverClassName: org.postgresql.Driver
+                initialize: true
+        EOF
+
+            cat > /etc/calycopis/config/admin.yaml << 'EOF'
+        calycopis:
+            admin:
+                username: ${admin-username}
+                password: ${admin-password}
+        EOF
+
+    #
+    # Create a secrets volume 'calycopis-secrets'
+    create volume calycopis-secrets
+
+    #
+    # Mount the volume in a configuration container
+    run
+        --rm
+        ...
+        --volume calycopis-secrets:/etc/calycopis/secrets:rw,z
+        fedora \
+            bash
+
+        #
+        # Create the secrets
+        echo "calycopis" > /etc/calycopis/secrets/postgres-database
+        pwgen 32 1 > /etc/calycopis/secrets/postgres-username
+        pwgen 32 1 > /etc/calycopis/secrets/postgres-password
+        pwgen 32 1 > /etc/calycopis/secrets/admin-username
+        pwgen 32 1 > /etc/calycopis/secrets/admin-password
+
+    #
+    # Run our postgresql database.
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB_FILE=/etc/calycopis/secrets/postgres-database" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/secrets/postgres-username" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/secrets/postgres-password" \
+        --volume calycopis-secrets:/etc/calycopis/secrets:rw,z
+        docker.io/library/postgres:latest
+
+    #
+    # Run our broker container.
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --pod calycopis-pod \
+        --name calycopis-broker \
+        --expose 8082 \
+        --volume calycopis-config:/etc/calycopis/config:ro,z \
+        --volume calycopis-secrets:/etc/calycopis/secrets:ro,z \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ....
+
+    #
+    # Run our client container.
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --pod calycopis-pod \
+        --name calycopis-client \
+        --expose 8082 \
+        --volume calycopis-secrets:/etc/calycopis/secrets:ro,z \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ....
+
+
+

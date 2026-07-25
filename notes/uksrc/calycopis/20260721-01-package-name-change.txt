@@ -1,0 +1,441 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: [
+#      {
+#      "timestamp": "2026-07-21",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a6144e7-a844-83eb-a319-cc4957951bdd"
+#      "contribution": {
+#        "value": 1,
+#        "units": "%"
+#        }
+#      },
+#      {
+#      "timestamp": "2026-07-21",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a61452a-78d4-83ed-a36c-88968f26d22f"
+#      "contribution": {
+#        "value": 1,
+#        "units": "%"
+#        }
+#      }
+#   ]
+#
+
+    Target:
+
+        Getting the local build to work.
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    >   abee1f02f3fbd77ea8fbcd98a053af10182dea6b913826a667f44294aff46eda
+
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS        PORTS       NAMES
+    >   946684a84aff  localhost/podman-pause:5.4.2-1743552000                        About a minute ago  Up 8 seconds              abee1f02f3fb-infra
+    >   663d5a407894  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        8 seconds ago       Up 5 seconds              calycopis-dev
+
+
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-openapi/github-zrq
+
+        bin/buildschema.sh
+
+    >   ....
+    >   ....
+    >   Inlining from discriminator mapping: StringValueUpdate
+    >   Inlining from discriminator mapping: EnumValueUpdate
+    >   Inlining from discriminator mapping: IntegerValueUpdate
+    >   Inlining from discriminator mapping: IntegerDeltaUpdate
+    >   ✅ All references processed and saved.
+
+
+        bin/buildpythonclient.sh
+
+    >   ....
+    >   ....
+    >   adding 'calycopis_schema_client-1.0.7.dev2.dist-info/METADATA'
+    >   adding 'calycopis_schema_client-1.0.7.dev2.dist-info/WHEEL'
+    >   adding 'calycopis_schema_client-1.0.7.dev2.dist-info/top_level.txt'
+    >   adding 'calycopis_schema_client-1.0.7.dev2.dist-info/RECORD'
+    >   removing build/bdist.linux-x86_64/wheel
+    >   Successfully built calycopis_schema_client-1.0.7.dev2.tar.gz and calycopis_schema_client-1.0.7.dev2-py3-none-any.whl
+
+
+        bin/buildjavaclient.sh
+
+    >   ....
+    >   ....
+    >   [INFO] --- install:3.1.2:install (default-install) @ calycopis-schema-client ---
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/client/pom.xml to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-client/1.0.7-SNAPSHOT/calycopis-schema-client-1.0.7-SNAPSHOT.pom
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/client/target/calycopis-schema-client-1.0.7-SNAPSHOT.jar to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-client/1.0.7-SNAPSHOT/calycopis-schema-client-1.0.7-SNAPSHOT.jar
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  45.373 s
+    >   [INFO] Finished at: 2026-07-21T11:50:27Z
+    >   [INFO] ------------------------------------------------------------------------
+
+
+        bin/buildjavaspring.sh
+
+    >   ....
+    >   ....
+    >   [INFO] --- install:3.1.4:install (default-install) @ calycopis-schema-spring ---
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/spring/pom.xml to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-spring/1.0.7-SNAPSHOT/calycopis-schema-spring-1.0.7-SNAPSHOT.pom
+    >   [INFO] Installing /calycopis/Calycopis-openapi/github-zrq/codegen/java/spring/target/calycopis-schema-spring-1.0.7-SNAPSHOT.jar to /root/.m2/repository/net/ivoa/calycopis/calycopis-schema-spring/1.0.7-SNAPSHOT/calycopis-schema-spring-1.0.7-SNAPSHOT.jar
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  45.136 s
+    >   [INFO] Finished at: 2026-07-21T11:51:47Z
+    >   [INFO] ------------------------------------------------------------------------
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our platform configuration files.
+#[root@calycopis-dev]
+
+    mkdir /etc/calycopis
+
+    cat > /etc/calycopis/database.yaml << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > /etc/calycopis/admin.yaml << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[root@calycopis-dev]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER=$(yq '.spring.datasource.username' /etc/calycopis/database.yaml)" \
+        --env "POSTGRES_PASSWORD=$(yq '.spring.datasource.password' /etc/calycopis/database.yaml)" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and launch our service with the docker platform.
+#[root@calycopis-dev]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd java
+
+            ./mvnw clean spring-boot:run -D calycopis-platform=docker
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our test data on the host.
+#[user@desktop]
+
+    TESTDATA=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t ${TESTFILE}
+
+
+# -----------------------------------------------------
+# Start another terminal and run our Python tests.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --env "TESTDATA=${TESTDATA:?}" \
+        --env "TESTFILE=${TESTFILE:?}" \
+        --interactive \
+            calycopis-dev \
+                bash
+
+# -----------------------------------------------------
+# Install our Python client and its dependencies.
+#[root@calycopis-pod]
+
+    #
+    # Check the versions in the UKSRC repository
+    pip index versions \
+        --pre \
+        calycopis_schema_client \
+        --index-url https://repo.dev.uksrc.org/repository/localpypi/simple
+
+    >   calycopis_schema_client (1.0.7.dev1)
+    >   Available versions: 1.0.7.dev1, 1.0.5
+
+    #
+    # Check what pip would install
+    pip install \
+        --dry-run \
+        -r  /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt
+
+    >   Looking in indexes: https://pypi.org/simple, https://repo.dev.uksrc.org/repository/localpypi/simple
+    >   Collecting pytest (from -r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 23))
+    >     Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+    >   Collecting docker (from -r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24))
+    >     Using cached docker-7.2.0-py3-none-any.whl.metadata (3.8 kB)
+    >   Collecting calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1 (from -r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached https://repo.dev.uksrc.org/repository/localpypi/packages/calycopis-schema-client/1.0.7.dev1/calycopis_schema_client-1.0.7.dev1-py3-none-any.whl (137 kB)
+    >   Requirement already satisfied: urllib3<3.0.0,>=2.1.0 in ./usr/lib/python3.14/site-packages (from calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26)) (2.7.0)
+    >   Requirement already satisfied: python-dateutil>=2.8.2 in ./usr/lib/python3.14/site-packages (from calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26)) (2.9.0.post0)
+    >   Collecting pydantic>=2.11 (from calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached pydantic-2.14.0a1-py3-none-any.whl.metadata (111 kB)
+    >   Collecting typing-extensions>=4.7.1 (from calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+    >   Collecting iniconfig>=1.0.1 (from pytest->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 23))
+    >     Using cached iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+    >   Requirement already satisfied: packaging>=22 in ./usr/lib/python3.14/site-packages (from pytest->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 23)) (25.0)
+    >   Collecting pluggy<2,>=1.5 (from pytest->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 23))
+    >     Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+    >   Requirement already satisfied: pygments>=2.7.2 in ./usr/lib/python3.14/site-packages (from pytest->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 23)) (2.19.1)
+    >   Requirement already satisfied: requests>=2.26.0 in ./usr/lib/python3.14/site-packages (from docker->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24)) (2.33.1)
+    >   Collecting annotated-types>=0.6.0 (from pydantic>=2.11->calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+    >   Collecting pydantic-core==2.47.0 (from pydantic>=2.11->calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached pydantic_core-2.47.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.5 kB)
+    >   Collecting typing-inspection>=0.4.2 (from pydantic>=2.11->calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26))
+    >     Using cached typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+    >   Requirement already satisfied: six>=1.5 in ./usr/lib/python3.14/site-packages (from python-dateutil>=2.8.2->calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26)) (1.17.0)
+    >   Requirement already satisfied: charset_normalizer<4,>=2 in ./usr/lib/python3.14/site-packages (from requests>=2.26.0->docker->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24)) (3.4.4)
+    >   Requirement already satisfied: idna<4,>=2.5 in ./usr/lib/python3.14/site-packages (from requests>=2.26.0->docker->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24)) (3.18)
+    >   Would install annotated-types-0.7.0 calycopis_schema_client-1.0.7.dev1 docker-7.2.0 iniconfig-2.3.0 pluggy-1.6.0 pydantic-2.14.0a1 pydantic_core-2.47.0 pytest-9.1.1 typing-inspection-0.4.2 typing_extensions-4.16.0
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Bump the version of our Python library to dev2,
+    # create a pull request and merge it into UKSRC:main.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+#[root@calycopis-pod]
+
+    #
+    # Check the versions in the UKSRC repository
+    pip index versions \
+        --pre \
+        calycopis_schema_client \
+        --index-url https://repo.dev.uksrc.org/repository/localpypi/simple
+
+    >   WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fd98cba2cf0>, 'Connection to repo.dev.uksrc.org timed out. (connect timeout=15)')': /repository/localpypi/simple/calycopis-schema-client/
+    >   WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fd98cbd5bd0>, 'Connection to repo.dev.uksrc.org timed out. (connect timeout=15)')': /repository/localpypi/simple/calycopis-schema-client/
+    >   WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fd98cbd5d10>, 'Connection to repo.dev.uksrc.org timed out. (connect timeout=15)')': /repository/localpypi/simple/calycopis-schema-client/
+    >   WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fd98cbd5e50>, 'Connection to repo.dev.uksrc.org timed out. (connect timeout=15)')': /repository/localpypi/simple/calycopis-schema-client/
+    >   WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fd98cbd5f90>, 'Connection to repo.dev.uksrc.org timed out. (connect timeout=15)')': /repository/localpypi/simple/calycopis-schema-client/
+    >   ERROR: No matching distribution found for calycopis_schema_client
+
+    >   calycopis_schema_client (1.0.7.dev2)
+    >   Available versions: 1.0.7.dev2, 1.0.7.dev1, 1.0.5
+
+
+    #
+    # Check what pip would install
+    pip install \
+        --dry-run \
+        -r  /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt
+
+    >   ....
+    >   ....
+    >   Requirement already satisfied: six>=1.5 in ./usr/lib/python3.14/site-packages (from python-dateutil>=2.8.2->calycopis_schema_client<=1.0.7.dev99,>=1.0.7.dev1->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 26)) (1.17.0)
+    >   Requirement already satisfied: charset_normalizer<4,>=2 in ./usr/lib/python3.14/site-packages (from requests>=2.26.0->docker->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24)) (3.4.4)
+    >   Requirement already satisfied: idna<4,>=2.5 in ./usr/lib/python3.14/site-packages (from requests>=2.26.0->docker->-r /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt (line 24)) (3.18)
+    >   Would install annotated-types-0.7.0 calycopis_schema_client-1.0.7.dev2 docker-7.2.0 iniconfig-2.3.0 pluggy-1.6.0 pydantic-2.14.0a1 pydantic_core-2.47.0 pytest-9.1.1 typing-inspection-0.4.2 typing_extensions-4.16.0
+
+
+    #
+    # Install our Python client and its dependencies.
+    pip install \
+        -r  /calycopis/Calycopis-broker/github-zrq/tests/python/test-requirements.txt
+
+    >   ....
+    >   ....
+    >   Successfully installed
+    >       annotated-types-0.7.0
+    >       calycopis_schema_client-1.0.7.dev2
+    >       docker-7.2.0
+    >       iniconfig-2.3.0
+    >       pluggy-1.6.0
+    >       pydantic-2.14.0a1
+    >       pydantic-core-2.47.0
+    >       pytest-9.1.1
+    >       typing-extensions-4.16.0
+    >       typing-inspection-0.4.2
+
+
+# -----------------------------------------------------
+# Run our Docker tests.
+#[root@calycopis-pod]
+
+    export CALYCOPIS_URL="http://localhost:8082"
+
+    export CALYCOPIS_ADMIN_USERNAME="$(
+        yq \
+            '.calycopis.admin.username' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    export CALYCOPIS_ADMIN_PASSWORD="$(
+        yq \
+            '.calycopis.admin.password' \
+            /etc/calycopis/admin.yaml
+        )"
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd tests/python/
+
+            pytest -v docker
+
+        popd
+    popd
+
+    >   ImportError while loading conftest '/calycopis/Calycopis-broker/github-zrq/tests/python/conftest.py'.
+    >   conftest.py:54: in <module>
+    >       from calycopis_schema_client.wrappers.execution_client import ExecutionBrokerClient
+    >   E   ModuleNotFoundError: No module named 'calycopis_schema_client.wrappers'
+
+    #
+    # Looks like we didn't include our wrapper classes in the build.
+    # Dumb mistakes ...
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Update the build workflow and re-deploy a new version.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Upgrade to the new version.
+#[root@calycopis-pod]
+
+    pip install \
+        --pre \
+        --upgrade \
+        --index-url https://repo.dev.uksrc.org/repository/localpypi/simple \
+        calycopis_schema_client
+
+    >   ....
+    >   ....
+    >   Installing collected packages: calycopis_schema_client
+    >     Attempting uninstall: calycopis_schema_client
+    >       Found existing installation: calycopis_schema_client 1.0.7.dev2
+    >       Uninstalling calycopis_schema_client-1.0.7.dev2:
+    >         Successfully uninstalled calycopis_schema_client-1.0.7.dev2
+    >   Successfully installed calycopis_schema_client-1.0.7.dev3
+
+
+# -----------------------------------------------------
+# Run our Docker tests.
+#[root@calycopis-pod]
+
+    pushd /calycopis/Calycopis-broker/github-zrq
+        pushd tests/python/
+
+            pytest -v docker
+
+        popd
+    popd
+
+
