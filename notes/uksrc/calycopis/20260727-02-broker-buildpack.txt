@@ -1,0 +1,294 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Create Jita ticket
+    https://uksrc.atlassian.net/browse/TRD-125
+
+    Create UKSRC branch
+    https://github.com/uksrc/Calycopis-broker/tree/TRD-125-Create-Calycopis-broker-Docker-image
+
+
+# -----------------------------------------------------
+# Create our local branch
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        branchname=broker-buildpack
+        newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        git checkout main
+        git checkout -b "${newbranch:?}"
+
+        git push --set-upstream origin "${newbranch:?}"
+
+    popd
+
+
+# -----------------------------------------------------
+# Add the changes we did last week.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_HOME}"
+
+        meld attic/github-zrq-20260724 Calycopis-broker-uksrc-zrq &
+
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+    +               <configuration>
+    +                   <docker>
+    +                       <host>${env.CONTAINER_HOST}</host>
+    +                       <bindHostToBuilder>true</bindHostToBuilder>
+    +                   </docker>
+    +                   <image>
+    +                       <name>ghcr.io/uksrc/calycopis/${project.artifactId}:${project.version}</name>
+    +                       <createdDate>${maven.build.timestamp}</createdDate>
+    +                   </image>
+    +               </configuration>
+    +               <executions>
+    +                   <execution>
+    +                       <goals>
+    +                           <goal>build-image-no-fork</goal>
+    +                       </goals>
+    +                   </execution>
+    +               </executions>
+                </plugin>
+            </plugins>
+        </build>
+
+# -----------------------------------------------------
+# Check the system settings.
+#[user@desktop]
+
+    systemctl --user cat podman.socket
+
+    >   ....
+    >   ....
+    >   # /home/Zarquan/.config/systemd/user/podman.socket.d/override.conf
+    >   #[Socket]
+    >   #SocketMode=0666
+
+
+    systemctl --user show podman.socket | grep 'SocketMode'
+
+    >   SocketMode=0660
+
+
+# -----------------------------------------------------
+# Remove the container socket timeout tweak recomended by ChatGPT.
+# https://chatgpt.com/share/6a63d570-bfe8-83eb-812a-27d27928923f
+#[user@desktop]
+
+    sudo cat ~/.config/containers/containers.conf.d/90-service-timeout.conf
+
+[engine]
+service_timeout = 0
+
+
+    sudo mv ~/.config/containers/containers.conf.d/90-service-timeout.conf /tmp/
+
+
+# -----------------------------------------------------
+# Reload the system config and restart the podman.socket service
+#[user@desktop]
+
+    systemctl --user daemon-reload
+
+    systemctl --user restart podman.socket
+
+
+# -----------------------------------------------------
+# Set the CONTAINER_HOST environment variable used by the build.
+#[user@desktop]
+
+    unset CONTAINER_HOST
+    unset CONTAINER_PATH
+
+    CONTAINER_PATH=$(
+        podman info --format '{{.Host.RemoteSocket.Path}}'
+        )
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+
+    >   CONTAINER_PATH [/run/user/1000/podman/podman.sock]
+
+
+    if [[ ${CONTAINER_PATH} == unix://* ]]
+    then
+        CONTAINER_HOST=${CONTAINER_PATH}
+        CONTAINER_PATH=${CONTAINER_PATH#unix://}
+    else
+        CONTAINER_HOST=unix://${CONTAINER_PATH}
+    fi
+
+    export CONTAINER_HOST
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+    echo "CONTAINER_HOST [${CONTAINER_HOST}]"
+
+    >   CONTAINER_PATH [/run/user/1000/podman/podman.sock]
+    >   CONTAINER_HOST [unix:///run/user/1000/podman/podman.sock]
+
+
+# -----------------------------------------------------
+# Examine the socket from the desktop.
+#[user@desktop]
+
+    id
+    stat -c "mode=%A uid=%u gid=%g" "${CONTAINER_PATH}"
+    test -r "${CONTAINER_PATH}" && echo readable || echo not-readable
+    test -w "${CONTAINER_PATH}" && echo writable || echo not-writable
+
+    >   uid=1000(Zarquan) gid=1000(Zarquan) groups=1000(Zarquan) ....
+    >   mode=srw-rw---- uid=1000 gid=1000
+    >   readable
+    >   writable
+
+
+# -----------------------------------------------------
+# Examine the socket from inside the builder container.
+#[user@desktop]
+
+    podman run --rm \
+        --security-opt label=disable \
+        --volume "${CONTAINER_PATH}:/var/run/docker.sock:rw" \
+        --entrypoint /bin/sh \
+        docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
+        -c '
+            id
+            stat -c "mode=%A uid=%u gid=%g" /var/run/docker.sock
+            test -r /var/run/docker.sock && echo readable || echo not-readable
+            test -w /var/run/docker.sock && echo writable || echo not-writable
+        '
+
+    >   uid=1001(cnb) gid=1001(cnb) groups=1001(cnb)
+    >   mode=srw-rw---- uid=0 gid=0
+    >   not-readable
+    >   not-writable
+
+    #
+    # That suggests it shouldn't work ?
+    #
+
+
+# -----------------------------------------------------
+# Check if the local build works.
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw clean spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     Setting default process type 'web'
+    >   [INFO]     [creator]     Saving ghcr.io/uksrc/calycopis/calycopis-broker:1.0.7-SNAPSHOT...
+    >   [INFO]     [creator]     ERROR: failed to export: saving image: failed to fetch base layers: saving image with ID "sha256:9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356" from the docker daemon: error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3A9a99246b6ddf1fe4070b29bdec54a78e7fbe9097b7d376efdaf245601c6b0356": EOF
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  50.014 s
+    >   [INFO] Finished at: 2026-07-27T14:55:36+01:00
+    >   [INFO] ------------------------------------------------------------------------
+    >   [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image-no-fork (default) on project calycopis-broker: Execution default of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image-no-fork failed: Builder lifecycle 'creator' failed with status code 62 -> [Help 1]
+
+    #
+    # So 'clean' settings cause the EOF issue.
+    #
+
+# -----------------------------------------------------
+# Increase the socket timeout.
+#[user@desktop]
+
+    sudo cat > ~/.config/containers/containers.conf.d/90-service-timeout.conf << EOF
+[engine]
+service_timeout = 0
+EOF
+
+    sudo cat ~/.config/containers/containers.conf.d/90-service-timeout.conf
+
+    >   [engine]
+    >   service_timeout = 0
+
+
+# -----------------------------------------------------
+# Reload the system config and restart the podman.socket service
+#[user@desktop]
+
+    systemctl --user daemon-reload
+
+    systemctl --user restart podman.socket
+
+
+# -----------------------------------------------------
+# Check if the local build works.
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw clean spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO] Successfully built image 'ghcr.io/uksrc/calycopis/calycopis-broker:1.0.7-SNAPSHOT'
+    >   [INFO]
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  03:38 min
+    >   [INFO] Finished at: 2026-07-27T15:36:38+01:00
+    >   [INFO] ------------------------------------------------------------------------
+
+    #
+    # So the socket permissions is not a problem, but the socket timeout is.
+    #
+
+
+# -----------------------------------------------------
+# Do the same on a new clean VM in Digital Ocean.
+#[user@desktop]
+
+
+

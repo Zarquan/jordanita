@@ -1,0 +1,277 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Create an Ubuntu VM on Digital Ocean.
+    #
+
+    ssh root@142.93.115.123
+
+
+# -----------------------------------------------------
+# Install required tools.
+#[root@digital-ocean]
+
+    apt install -y git
+
+    >   ....
+    >   ....
+    >   git is already the newest version (1:2.43.0-1ubuntu7.3).
+
+    apt install -y \
+        openjdk-25-jdk
+
+    >   ....
+    >   ....
+    >   Setting up openjdk-25-jdk:amd64 (25.0.3+9-2~24.04.2) ...
+    >   ....
+
+
+    apt install -y \
+        podman
+
+    >   ....
+    >   ....
+    >   Setting up podman (4.9.3+ds1-1ubuntu0.2) ...
+    >   ....
+
+
+# -----------------------------------------------------
+# Create new user and add our authorized_keys file.
+#[root@digital-ocean]
+
+    useradd -m Omnicron
+
+    mkdir /home/Omnicron/.ssh
+
+    cp \
+        ${HOME}/.ssh/authorized_keys \
+        /home/Omnicron/.ssh/
+
+    chmod u=rwx,g=,o= /home/Omnicron/.ssh
+    chown Omnicron:Omnicron /home/Omnicron/.ssh
+
+    chmod u=rw,g=,o= /home/Omnicron/.ssh/authorized_keys
+    chown Omnicron:Omnicron /home/Omnicron/.ssh/authorized_keys
+
+
+# -----------------------------------------------------
+# Login as normal user.
+#
+
+    ssh Omnicron@142.93.115.123
+
+
+# -----------------------------------------------------
+# Start our Podman socket service .
+#[user@digital-ocean]
+
+    systemctl --user status podman.socket
+
+    >   ○ podman.socket - Podman API Socket
+    >        Loaded: loaded (/usr/lib/systemd/user/podman.socket; disabled; preset: enabled)
+    >        Active: inactive (dead)
+    >      Triggers: ● podman.service
+    >          Docs: man:podman-system-service(1)
+    >        Listen: /run/user/1000/podman/podman.sock (Stream)
+
+
+    systemctl --user enable podman.socket
+    systemctl --user start podman.socket
+
+    >   Created symlink /home/Omnicron/.config/systemd/user/sockets.target.wants/podman.socket → /usr/lib/systemd/user/podman.socket.
+
+
+    systemctl --user status podman.socket
+
+    >   ● podman.socket - Podman API Socket
+    >        Loaded: loaded (/usr/lib/systemd/user/podman.socket; enabled; preset: enabled)
+    >        Active: active (listening) since Tue 2026-07-28 01:08:41 UTC; 13s ago
+    >      Triggers: ● podman.service
+    >          Docs: man:podman-system-service(1)
+    >        Listen: /run/user/1000/podman/podman.sock (Stream)
+    >        CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/podman.socket
+    >   
+    >   Jul 28 01:08:41 ubuntu-s-2vcpu-2gb-nyc1 systemd[9665]: Listening on podman.socket - Podman API Socket.
+
+
+# -----------------------------------------------------
+# Clone our repository.
+#[user@digital-ocean]
+
+    mkdir "${HOME}/projects"
+
+    cd "${HOME}/projects"
+
+        git clone "git@github.com:Zarquan/Calycopis-broker-uksrc.git"
+
+        cd Calycopis-broker-uksrc
+
+            git fetch
+
+            git branch -v -a
+
+            git switch 20260727-zrq-broker-buildpack
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+    >   Receiving objects: 100% (19583/19583), 14.56 MiB | 14.30 MiB/s, done.
+    >   Resolving deltas: 100% (11903/11903), done.
+
+    >   ....
+    >   ....
+    >   * main                                         e6cad97c Merge pull request #4 from uksrc/TRD-124-Update-client-packages-in-broker
+    >     remotes/origin/20260727-zrq-broker-buildpack 36f73124 Added UKSRC repo URL
+    >     remotes/origin/HEAD                          -> origin/main
+    >     remotes/origin/main                          e6cad97c Merge pull request #4 from uksrc/TRD-124-Update-client-packages-in-broker
+
+    >   branch '20260727-zrq-broker-buildpack' set up to track 'origin/20260727-zrq-broker-buildpack'.
+    >   Switched to a new branch '20260727-zrq-broker-buildpack'
+
+
+# -----------------------------------------------------
+# Set the CONTAINER_HOST environment variable used by the build.
+#[user@desktop]
+
+    unset CONTAINER_HOST
+    unset CONTAINER_PATH
+
+    CONTAINER_PATH=$(
+        podman info --format '{{.Host.RemoteSocket.Path}}'
+        )
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+
+    >   CONTAINER_PATH [/run/user/1000/podman/podman.sock]
+
+
+    if [[ ${CONTAINER_PATH} == unix://* ]]
+    then
+        CONTAINER_HOST=${CONTAINER_PATH}
+        CONTAINER_PATH=${CONTAINER_PATH#unix://}
+    else
+        CONTAINER_HOST=unix://${CONTAINER_PATH}
+    fi
+
+    export CONTAINER_HOST
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+    echo "CONTAINER_HOST [${CONTAINER_HOST}]"
+
+    >   CONTAINER_PATH [/run/user/1000/podman/podman.sock]
+    >   CONTAINER_HOST [unix:///run/user/1000/podman/podman.sock]
+
+
+# -----------------------------------------------------
+# Run the build.
+#[user@digital-ocean]
+
+    cd "${HOME}/projects/Calycopis-broker-uksrc"
+        cd java
+
+            ./mvnw clean spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]     [creator]     Adding label 'org.opencontainers.image.version'
+    >   [INFO]     [creator]     Adding label 'org.springframework.boot.version'
+    >   [INFO]     [creator]     Setting default process type 'web'
+    >   [INFO]     [creator]     Saving ghcr.io/uksrc/calycopis/calycopis-broker:1.0.7-SNAPSHOT...
+    >   [INFO]     [creator]     ERROR: failed to export: saving image: failed to fetch base layers:
+    >       saving image with ID "sha256:a4d87c60b87a42cfb033ca3ad39778b400839097de658010b9df6ab9d6781447" from the docker daemon:
+    >           error during connect: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.41/images/get?names=sha256%3Aa4d87c60b87a42cfb033ca3ad39778b400839097de658010b9df6ab9d6781447":
+    >               EOF
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD FAILURE
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  02:22 min
+    >   [INFO] Finished at: 2026-07-28T01:14:15Z
+    >   [INFO] ------------------------------------------------------------------------
+
+        #
+        # Looks like the EOF socket timeout issue.
+        #
+
+# -----------------------------------------------------
+# Increase our socket timeout.
+#[user@digital-ocean]
+
+    mkdir --parents ${HOME}/.config/containers/containers.conf.d
+
+    cat > ${HOME}/.config/containers/containers.conf.d/90-service-timeout.conf << EOF
+[engine]
+service_timeout = 0
+EOF
+
+# -----------------------------------------------------
+# Reload the system config and restart the podman.socket service
+#[user@digital-ocean]
+
+    systemctl --user daemon-reload
+
+    systemctl --user restart podman.socket
+
+
+# -----------------------------------------------------
+# Run the build.
+#[user@digital-ocean]
+
+    cd "${HOME}/projects/Calycopis-broker-uksrc"
+        cd java
+
+            ./mvnw clean spring-boot:build-image
+
+    >   ....
+    >   ....
+    >   [INFO]
+    >   [INFO] Successfully built image 'ghcr.io/uksrc/calycopis/calycopis-broker:1.0.7-SNAPSHOT'
+    >   [INFO]
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:28 min
+    >   [INFO] Finished at: 2026-07-28T01:18:41Z
+    >   [INFO] ------------------------------------------------------------------------
+
+    #
+    # Yay - build works.
+    # But it needs the socket timeout tweaked to get it to complete.
+    # So it is not Fedora specific.
+    #
+

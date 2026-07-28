@@ -1,0 +1,65 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    unset CONTAINER_HOST
+    unset CONTAINER_PATH
+
+    CONTAINER_PATH=$(
+        podman info --format '{{.Host.RemoteSocket.Path}}'
+        )
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+
+    if [[ ${CONTAINER_PATH} == unix://* ]]
+    then
+        CONTAINER_HOST=${CONTAINER_PATH}
+        CONTAINER_PATH=${CONTAINER_PATH#unix://}
+    else
+        CONTAINER_HOST=unix://${CONTAINER_PATH}
+    fi
+
+    echo "CONTAINER_PATH [${CONTAINER_PATH}]"
+    echo "CONTAINER_HOST [${CONTAINER_HOST}]"
+    export CONTAINER_HOST
+
+    ls -al "${CONTAINER_PATH}"
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw spring-boot:build-image
+
+

@@ -1,0 +1,66 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Problems with running the Spring Boot Maven plugin buildpack image builder
+    using Podman on a Fedora system.
+
+    * Podman creates rootless containers - which is secure.
+    * Client applications connect to Podman via a unix socket
+    * On the host system the Podman unix socket is owned by the user running Podman.
+
+    * The Spring Boot Maven plugin runs the Paketo builder inside a container
+    * Inside the container the Paketo builder runs as (uid=1001(cnb) gid=1001(cnb) groups=1001(cnb))
+
+    * The maven-plugin mounts the Podman unix socket from the hust system as a volume in the Paketo builder's container
+    * Inside the container, the socket is owned by root (uid=0,gid=0)
+
+    * The problem is that the Paketo builder (uid=1001(cnb),gid=1001(cnb))
+      is not allowed to read or write to the socket owned by root (uid=0,gid=0)
+
+    * Changing the permissions on the unix socket from 660 to 666 allows the Paketo builder
+      to access the socket. But this introduces a security risk, because it allows *anyone*
+      to control the user's Podman service via the unix socket.
+
+    * To allow Spring Boot Maven plugin to use Paketo builder on a Podman system,
+      it needs to run Paketo builder as root inside the container.
+
+      Running Paketo builder as root inside the container is safer than allowing anyone
+      to use the unix socket to control the user's Podman service.
+
+      Running Paketo builder as root lasts for the duration of the build.
+      Setting the permissions to 666 potentially leaves the door permanently open.
+
+
+

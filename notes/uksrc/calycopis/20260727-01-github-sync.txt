@@ -1,0 +1,167 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Merge branches and bring things up to date.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+        https://github.com/ivoa/Calycopis-openapi
+        https://github.com/uksrc/Calycopis-openapi
+      - https://github.com/Zarquan/Calycopis-openapi
+      + https://github.com/Zarquan/Calycopis-openapi-uksrc
+
+        https://github.com/ivoa/Calycopis-broker
+        https://github.com/uksrc/Calycopis-broker
+      - https://github.com/Zarquan/Calycopis-broker
+      + https://github.com/Zarquan/Calycopis-broker-uksrc
+
+# -----------------------------------------------------
+
+    Create ticket in Jira
+    https://uksrc.atlassian.net/browse/TRD-124
+
+    Create branch in GitHub
+    https://github.com/uksrc/Calycopis-broker/tree/TRD-124-Update-client-packages-in-broker
+
+    Merge changes from Zarquan into the UKSRC branch.
+    https://github.com/uksrc/Calycopis-broker/pull/3
+
+    Merge changes from UKSRC branch into UKSRC main.
+    https://github.com/uksrc/Calycopis-broker/compare/main...uksrc:Calycopis-broker:TRD-124-Update-client-packages-in-broker
+    https://github.com/uksrc/Calycopis-broker/pull/4
+
+# -----------------------------------------------------
+
+    Rename our fork of the IVOA repo.
+
+        https://github.com/Zarquan/Calycopis-broker
+        https://github.com/Zarquan/Calycopis-broker-ivoa
+
+    Create a new fork of the UKRSC repo.
+
+        We can't for the UKRSC repo into Zarquan because we already have a fork.
+        Try deleting our fork of the IVOA repo.
+
+        OK, that worked.
+      - https://github.com/Zarquan/Calycopis-broker
+      + https://github.com/Zarquan/Calycopis-broker-uksrc
+
+    Do the same for the openapi project.
+
+      - https://github.com/Zarquan/Calycopis-openapi
+      + https://github.com/Zarquan/Calycopis-openapi-uksrc
+
+
+    That should make managing branches, pull requests, and merges easier.
+
+# -----------------------------------------------------
+
+    Replace our local copies.
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_HOME}"
+
+        mv github-zrq attic/github-zrq
+
+        git clone git@github.com:Zarquan/Calycopis-broker-uksrc.git Calycopis-broker-uksrc-zrq
+
+    popd
+
+    pluma "${HOME}/calycopis.env"
+
+        -   CALYCOPIS_REPO='git@github.com:Zarquan/Calycopis-broker.git'
+        +   CALYCOPIS_REPO='git@github.com:Zarquan/Calycopis-broker-uksrc.git'
+            CALYCOPIS_HOME="${CALYCOPIS_ROOT}/Calycopis-broker"
+        -   CALYCOPIS_CODE="${CALYCOPIS_HOME:?}/github-zrq"
+        +   CALYCOPIS_CODE="${CALYCOPIS_HOME:?}/Calycopis-broker-uksrc-zrq"
+
+
+    source "${HOME}/calycopis.env"
+    pushd "${TREBULA_HOME}"
+
+        mv github-zrq attic/github-zrq
+
+        git clone git@github.com:Zarquan/Calycopis-openapi-uksrc.git Calycopis-openapi-uksrc-zrq
+
+    popd
+
+    pluma "${HOME}/calycopis.env"
+
+        -   TREBULA_REPO='git@github.com:Zarquan/Calycopis-openapi.git'
+        +   TREBULA_REPO='git@github.com:Zarquan/Calycopis-openapi-uksrc.git'
+            TREBULA_HOME="${CALYCOPIS_ROOT}/Calycopis-openapi"
+        -   TREBULA_CODE="${TREBULA_HOME:?}/github-zrq"
+        +   TREBULA_CODE="${TREBULA_HOME:?}/Calycopis-openapi-uksrc-zrq"
+
+# -----------------------------------------------------
+
+    Update our upstream references.
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        git remote -v
+
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
+
+
+        git remote add uksrc git@github.com:uksrc/Calycopis-broker.git
+        git remote -v
+
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (fetch)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (push)
+
+
+    popd
+
+    source "${HOME}/calycopis.env"
+    pushd "${TREBULA_CODE}"
+
+        git remote -v
+
+    >   origin	git@github.com:Zarquan/Calycopis-openapi-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-openapi-uksrc.git (push)
+
+
+        git remote add uksrc git@github.com:uksrc/Calycopis-openapi.git
+        git remote -v
+
+    >   origin	git@github.com:Zarquan/Calycopis-openapi-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-openapi-uksrc.git (push)
+    >   uksrc	git@github.com:uksrc/Calycopis-openapi.git (fetch)
+    >   uksrc	git@github.com:uksrc/Calycopis-openapi.git (push)
+
+    popd
+
+
