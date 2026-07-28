@@ -1,0 +1,76 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Create a GitHub workflow for the Calycopis broker.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Compare Zarquan:20260727 to uksrc:TRD-125
+    https://github.com/uksrc/Calycopis-broker/compare/TRD-125-Create-Calycopis-broker-Docker-image...Zarquan:Calycopis-broker-uksrc:20260727-zrq-broker-buildpack
+
+    Compare uksrc:TRD-125 to uksrc:main
+    https://github.com/uksrc/Calycopis-broker/compare/main...TRD-125-Create-Calycopis-broker-Docker-image
+
+# -----------------------------------------------------
+
+    Initial workflow is working.
+
+    The workflow produces the Java jar and the OCI container image.
+
+    Next steps are to publish the container image somewhere.
+
+    RedHat provides what looks like a useful set of GitHub actions.
+
+    https://github.com/redhat-actions/podman-install
+    https://github.com/redhat-actions/podman-login
+    https://github.com/redhat-actions/push-to-registry
+
+    Socket activated containers look interesting.
+    eriksjolund/user-systemd-service-actions-workflow:
+    GitHub Actions workflow that runs a socket-activated echo server with Podman in a user systemd service
+    https://github.com/eriksjolund/user-systemd-service-actions-workflow/tree/main
+    https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/socket_activation.md#socket-activation-of-containers
+
+
+    Publishing to the UKSRC repository.
+    https://github.com/uksrc/archive-service/blob/8ce2fa1851e75b641eac552363351273c6f33b4f/.github/workflows/release-image.yml#L31-L62
+    Actions secrets · uksrc/archive-service
+    https://github.com/uksrc/archive-service/settings/secrets/actions
+
+    Publishing to the GitHub repository.
+    https://github.com/redhat-actions/push-to-registry/blob/main/.github/workflows/ghcr-push.yaml
+    Working with the Container registry - GitHub Docs
+    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#pushing-container-images
+
+
+
+
+
