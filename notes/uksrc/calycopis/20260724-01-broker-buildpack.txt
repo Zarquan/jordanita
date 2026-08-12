@@ -20,7 +20,30 @@
 #
 #zrq-notes-indent
 #
-# AIMetrics: []
+# AIMetrics: [
+#      {
+#      "timestamp": "2026-07-24T02:45",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a69fe9a-08b8-83eb-b804-c5134f844f3f"
+#      "contribution": {
+#        "value": 1,
+#        "units": "%"
+#        },
+#      },
+#      {
+#      "timestamp": "2026-07-24T03:05",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a63d570-bfe8-83eb-812a-27d27928923f"
+#      "contribution": {
+#        "value": 50,
+#        "units": "%"
+#        },
+#      }
+#   ]
 #
 
     Target:
@@ -203,13 +226,13 @@
     sudo alternatives --config java
 
     >   There is 3 program that provides 'java'.
-    >   
+    >
     >     Selection    Command
     >   -----------------------------------------------
     >   *+ 1           /usr/lib/jvm/java-21-openjdk/bin/java
     >      2           /usr/lib/jvm/java-24-openjdk/bin/java
     >      3           /usr/lib/jvm/java-11-openjdk/bin/java
-    >   
+    >
     >   Enter to keep the current selection[+], or type selection number: 2
 
 
@@ -251,7 +274,7 @@
     >   WARNING: java.lang.System::load has been called by org.fusesource.jansi.internal.JansiLoader in an unnamed module (file:/home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1/lib/jansi-2.4.1.jar)
     >   WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     >   WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    >   
+    >
     >   Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
     >   Maven home: /home/Zarquan/.m2/wrapper/dists/apache-maven-3.9.9/3477a4f1
     >   Java version: 24.0.1, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-24-openjdk
@@ -308,23 +331,23 @@
     #
 
     >   Your environment variable is
-    >   
+    >
     >   ```bash
     >   CONTAINER_HOST=/run/user/1000/podman/podman.sock
     >   ```
-    >   
+    >
     >   However Docker clients normally expect
-    >   
+    >
     >   ```bash
     >   DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
     >   ```
-    >   
+    >
     >   Notice the required `unix://` prefix.
-    >   
+    >
     >   Likewise, the Maven plugin's `docker.host` property expects the Docker host URI, not just the socket filename.
-    >   
+    >
     >   So try
-    >   
+    >
     >   ```bash
     >   export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock
     >   ```
@@ -706,10 +729,10 @@ curl \
     ?   Which is a Fedora 44 image with a basic set of development tools installed.
     ?   https://github.com/ivoa/Calycopis-broker/blob/main/docker/fedora-base/Dockerfile
     ?   https://github.com/ivoa/Calycopis-broker/blob/main/docker/developer-tools/Dockerfile
-    ?   
+    ?
     ?   As part of our normal development work we mount the Podman socket as a volume
     ?   and use it to run Podman commands from inside our container.
-    ?   
+    ?
     ?   If we run the curl request from inside our development container, it works.
     ?   ```
     ?   podman run \
@@ -719,7 +742,7 @@ curl \
     ?       --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
     ?       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
     ?           bash
-    ?   
+    ?
     ?           curl \
     ?           --fail-with-body \
     ?           --unix-socket /run/podman/podman.sock \
@@ -728,12 +751,12 @@ curl \
     ?           --data-urlencode \
     ?               'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
     ?           http://localhost/v1.41/images/get
-    ?   
+    ?
     ?     % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
     ?                                    Dload  Upload  Total   Spent   Left   Speed
     ?   100 24.60M   0 24.60M   0      0 42.97M      0                              0
     ?   ```
-    ?   
+    ?
     ?   If we run the curl request in the curl container, it fails.
     ?   ```
     ?   podman run --rm \
@@ -747,7 +770,7 @@ curl \
     ?       --data-urlencode \
     ?           'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
     ?       http://localhost/v1.41/images/get
-    ?   
+    ?
     ?   curl: (7) Failed to connect to localhost:80 over unix:///run/podman/podman.sock after 0 ms: Could not connect to server
     ?   ```
 
@@ -755,43 +778,43 @@ curl \
     >   ....
     >   ....
     >   This result strongly confirms a **Unix-socket permission/UID-mapping problem**, not an image export problem.
-    >   
+    >
     >   Your development image apparently runs as container root by default, while `curlimages/curl` deliberately runs as an unprivileged user. With rootless Podman, the host user who owns the socket is mapped to UID `0` inside the container user namespace. Podman documents that the calling host user maps to container UID 0 in rootless containers. ([docs.podman.io][1])
-    >   
+    >
     >   That produces this effective arrangement:
-    >   
+    >
     >   ```text
     >   Host:
     >     socket owner = UID 1000
     >     socket mode  = typically 0660
-    >   
+    >
     >   Inside rootless container:
     >     socket owner = UID 0
     >     builder/curl user = non-root UID
     >   ```
-    >   
+    >
     >   The development container works because its process is probably UID 0. The curl image fails because its process is not UID 0. The Paketo lifecycle also runs as a non-root user, which explains the Maven failure: Spring Boot states explicitly that CNB images build as non-root users. ([Home][2])
-    >   
+    >
     >   ## Confirm the difference
-    >   
+    >
     >   Run:
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
     >       id
     >   ```
-    >   
+    >
     >   and:
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       docker.io/curlimages/curl:latest \
     >       id
     >   ```
-    >   
+    >
     >   Then inspect the socket from each image:
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       --security-opt label=disable \
@@ -799,7 +822,7 @@ curl \
     >       ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
     >       stat -c 'mode=%A uid=%u gid=%g' /run/podman/podman.sock
     >   ```
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       --security-opt label=disable \
@@ -811,19 +834,19 @@ curl \
     >           stat -c "mode=%A uid=%u gid=%g" /run/podman/podman.sock
     >       '
     >   ```
-    >   
+    >
     >   I expect something resembling:
-    >   
+    >
     >   ```text
     >   mode=srw-rw---- uid=0 gid=0
     >   ```
-    >   
+    >
     >   while the curl process has a non-zero UID.
-    >   
+    >
     >   ## Run the curl test as container root
-    >   
+    >
     >   This should succeed:
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       --user 0:0 \
@@ -838,21 +861,21 @@ curl \
     >           'names=sha256:9dcb892d7df4697b588dba6487a0494feb766531247055709e3e0e4df8edb8a2' \
     >       http://localhost/v1.41/images/get
     >   ```
-    >   
+    >
     >   If that succeeds, the diagnosis is effectively conclusive.
-    >   
+    >
     >   ## Test the actual builder identity
-    >   
+    >
     >   Check the configured builder user:
-    >   
+    >
     >   ```bash
     >   podman image inspect \
     >       docker.io/paketobuildpacks/builder-noble-java-tiny:latest \
     >       --format 'User={{json .Config.User}}'
     >   ```
-    >   
+    >
     >   Then examine the socket from the builder container:
-    >   
+    >
     >   ```bash
     >   podman run --rm \
     >       --security-opt label=disable \
@@ -866,95 +889,95 @@ curl \
     >           test -w /var/run/docker.sock && echo writable || echo not-writable
     >       '
     >   ```
-    >   
+    >
     >   The builder may be sufficiently minimal that `stat` or `/bin/sh` is unavailable. In that case, the curl-container comparison is already representative because both execute as non-root users.
-    >   
+    >
     >   ## Why Maven reports `EOF` rather than permission denied
-    >   
+    >
     >   The curl test fails before connecting:
-    >   
+    >
     >   ```text
     >   Could not connect to server
     >   ```
-    >   
+    >
     >   The lifecycle’s Go Docker client reports:
-    >   
+    >
     >   ```text
     >   EOF
     >   ```
-    >   
+    >
     >   Those are different client-level representations of the same underlying inability to communicate through the mounted socket. The lifecycle error is therefore not evidence of a malformed archive or invalid image identifier.
-    >   
+    >
     >   ## SELinux mount options
-    >   
+    >
     >   You currently use both:
-    >   
+    >
     >   ```text
     >   --security-opt label=disable
     >   ```
-    >   
+    >
     >   and:
-    >   
+    >
     >   ```text
     >   :Z
     >   ```
-    >   
+    >
     >   These are alternative approaches rather than complementary ones. Podman’s own documentation recommends mounting the socket and running the container with `--security-opt label=disable`. ([docs.podman.io][3])
-    >   
+    >
     >   Use:
-    >   
+    >
     >   ```bash
     >   --security-opt label=disable \
     >   --volume "${socket}:/run/podman/podman.sock:rw"
     >   ```
-    >   
+    >
     >   without `:Z`.
-    >   
+    >
     >   Relabelling a live user-service socket with `:Z` is unnecessary when container labelling is disabled and could interfere with other processes or containers using that socket.
-    >   
+    >
     >   ## Diagnostic workaround
-    >   
+    >
     >   Temporarily make the socket accessible to all container users:
-    >   
+    >
     >   ```bash
     >   socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
-    >   
+    >
     >   chmod 666 "${socket}"
     >   ./mvnw spring-boot:build-image
     >   ```
-    >   
+    >
     >   Then restore it:
-    >   
+    >
     >   ```bash
     >   chmod 660 "${socket}"
     >   ```
-    >   
+    >
     >   If the Maven build succeeds, that proves the non-root lifecycle user was blocked by the socket permissions.
-    >   
+    >
     >   This is not a good general permanent configuration. Podman warns that access to its API socket gives effectively unrestricted control over the user’s Podman service and permits arbitrary code execution as that user. ([docs.podman.io][3])
-    >   
+    >
     >   ## Practical permanent options
-    >   
+    >
     >   The available solutions are constrained because Spring Boot creates the lifecycle container itself and does not expose general Podman options such as `--userns=keep-id`, `--user`, or supplemental groups.
-    >   
+    >
     >   The practical choices are:
-    >   
+    >
     >   1. **Use a controlled socket with broader permissions** on a dedicated development or CI account. This is straightforward but grants any process capable of opening the socket full Podman control.
-    >   
+    >
     >   2. **Use a TCP Podman API endpoint protected by mutual TLS.** This avoids Unix UID mapping, but requires careful certificate configuration. Do not expose an unauthenticated Podman TCP endpoint.
-    >   
+    >
     >   3. **Use `pack` or another CNB invocation where the container user namespace can be controlled**, rather than the Spring Boot plugin’s embedded lifecycle orchestration.
-    >   
+    >
     >   4. **Use a custom wrapper or builder workflow** that performs the build in a container context where the lifecycle UID has access to the API socket.
-    >   
+    >
     >   The Spring Boot configuration itself matches its documented Podman example exactly: a rootless Unix socket plus `bindHostToBuilder=true`. ([Home][2]) The failure appears to be a gap between that documented arrangement and rootless Podman’s ownership mapping when the CNB lifecycle runs as a non-root UID.
-    >   
+    >
     >   The immediate next test should be the curl container with `--user 0:0`, followed by the temporary `chmod 666` Maven run. Together, those will establish whether this is entirely socket permission-related.
-    >   
+    >
     >   [1]: https://docs.podman.io/en/latest/markdown/podman-run.1.html?utm_source=chatgpt.com "podman-run"
     >   [2]: https://docs.spring.io/spring-boot/maven-plugin/build-image.html "Packaging OCI Images :: Spring Boot"
     >   [3]: https://docs.podman.io/en/latest/markdown/podman-system-service.1.html "podman-system-service — Podman  documentation"
-    >   
+    >
 
     #
     # Run the suggested tests ..
@@ -1151,7 +1174,7 @@ Then inspect the socket from each image:
     >          Docs: man:podman-system-service(1)
     >        Listen: /run/user/1000/podman/podman.sock (Stream)
     >        CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/podman.socket
-    >   
+    >
     >   Jul 20 16:27:07 fedora systemd[1559]: Listening on podman.socket - Podman API Socket.
 
 

@@ -1,0 +1,272 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Emd to end script to run the Python tests.
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Change the permissions on our socket.
+#[user@desktop]
+
+    systemctl --user edit podman.socket
+
+    +   [Socket]
+    +   SocketMode=0666
+
+    systemctl --user daemon-reload
+
+    systemctl --user restart podman.socket
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+# -----------------------------------------------------
+# Create our log directory.
+#[user@desktop]
+
+    LOG_DIR=$(mktemp -d)
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[user@desktop]
+
+    TESTDATA=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    chmod a+r "${TESTFILE}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0588937 s, 170 MB/s
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Start our broker service.
+#[user@desktop]
+
+    # Needed because our webapp doesn't run as root.
+    chmod a+rwx "${LOG_DIR}"
+    chmod a+rx  "${CONFIG_DIR}"
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --expose 8082 \
+        --name calycopis-broker \
+        --pod calycopis-pod \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        images.dev.uksrc.org/calycopis/calycopis-broker:1.0.7-SNAPSHOT
+
+    >   ....
+    >   ....
+
+
+    podman ps
+
+    >   CONTAINER ID  IMAGE                                                           COMMAND     CREATED             STATUS         PORTS       NAMES
+    >   7ba80b636aba  localhost/podman-pause:5.4.2-1743552000                                     About a minute ago  Up 21 seconds              6e63d265a06f-infra
+    >   a35bd07d2186  docker.io/library/postgres:latest                               postgres    20 seconds ago      Up 21 seconds  5432/tcp    postgres
+    >   2fb508b79f7c  images.dev.uksrc.org/calycopis/calycopis-broker:1.0.7-SNAPSHOT              4 seconds ago       Up 4 seconds   8082/tcp    calycopis-broker
+
+
+# -----------------------------------------------------
+# Create our test container.
+#[user@desktop]
+
+    buildtag=$(date '+%Y.%m.%d')
+    buildtime=$(date '+%Y-%m-%dT%H:%M:%S')
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        podman build \
+            --build-arg "buildtag=${buildtag:?}" \
+            --build-arg "buildtime=${buildtime:?}" \
+            --tag "calycopis/python-tester:latest" \
+            --tag "calycopis/python-tester:${buildtag:?}" \
+            tests/python
+
+    popd
+
+    >   ....
+    >   ....
+    >   Successfully tagged localhost/calycopis/python-tester:2026.08.11
+    >   Successfully tagged localhost/calycopis/python-tester:latest
+    >   9e41a2b1e2d8458aef45035b8217a4f83a669fdc8efcdc400fdc135d266c9b68
+
+
+# -----------------------------------------------------
+# Run our test container.
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-tester \
+        --env "TESTDATA=${TESTDATA:?}" \
+        --env "TESTFILE=${TESTFILE:?}" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/python-tester:latest
+
+    >   ....
+    >   ....
+    >   ================ 43 passed in 1260.32s (0:21:00) ================
+
+
+    podman ps
+
+    >   CONTAINER ID  IMAGE                                                           COMMAND     CREATED         STATUS         PORTS       NAMES
+    >   7ba80b636aba  localhost/podman-pause:5.4.2-1743552000                                     28 minutes ago  Up 27 minutes              6e63d265a06f-infra
+    >   a35bd07d2186  docker.io/library/postgres:latest                               postgres    27 minutes ago  Up 27 minutes  5432/tcp    postgres
+    >   2fb508b79f7c  images.dev.uksrc.org/calycopis/calycopis-broker:1.0.7-SNAPSHOT              27 minutes ago  Up 27 minutes  8082/tcp    calycopis-broker
+
+
+    podman pod ls
+
+    >   POD ID        NAME           STATUS      CREATED         INFRA ID      # OF CONTAINERS
+    >   6e63d265a06f  calycopis-pod  Running     29 minutes ago  7ba80b636aba  3
+
+
+    podman pod stop calycopis-pod
+
+    podman pod rm calycopis-pod
+
+    podman ps
+
+    >   CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+
+
+    ls "${LOG_DIR}"
+
+    >   broker.log
+
+
+    tail "${LOG_DIR}/broker.log"
+
+    >   ....
+    >   ....
+    >   2026-08-11 16:56:35 INFO SpringApplicationShutdownHook GracefulShutdown shutDownGracefully() Commencing graceful shutdown. Waiting for active requests to complete
+    >   2026-08-11 16:56:35 INFO tomcat-shutdown GracefulShutdown doShutdown() Graceful shutdown complete
+    >   2026-08-11 16:56:35 INFO SpringApplicationShutdownHook LocalContainerEntityManagerFactoryBean destroy() Closing JPA EntityManagerFactory for persistence unit 'default'
+
+    #
+    # TODO can we add a datestamp to the log file ?
+    # TODO can we add logrotate ?
+    #
+

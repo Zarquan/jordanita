@@ -72,5 +72,20 @@
 
 
 
+# -----------------------------------------------------
+
+    UKSRC Harbor repository
+    https://images.dev.uksrc.org/harbor/projects/8/repositories
+
+    Broker settings
+    https://github.com/uksrc/Calycopis-broker/settings/secrets/actions
+
+    Broker package
+    https://github.com/ivoa/Calycopis-broker/pkgs/container/calycopis%2Fcalycopis-broker
+
+    Broker package
+    images.dev.uksrc.org/calycopis/calycopis-broker@sha256:b1be5a929d0ab894b27db2f20b6133a8a0ce47046d2d5df5fcc5b93382c05074
+
+
 
 

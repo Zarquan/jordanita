@@ -1,0 +1,554 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Adding health check to the broker webapp.
+
+        Health (health) :: Spring Boot
+        https://docs.spring.io/spring-boot/api/rest/actuator/health.html
+
+        How to enable health in Spring Boot Actuator
+        https://stackoverflow.com/questions/70652906/how-to-enable-health-in-spring-boot-actuator
+
+        Custom Health Checks in Spring Boot with Indicators
+        https://medium.com/@AlexanderObregon/adding-health-checks-to-spring-boot-with-custom-indicators-953f0220f463
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Poke the actuator endpoints to see which ones are available.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        fedora \
+            bash
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/health'
+
+    >   timestamp: "2026-08-11T14:12:04.632+00:00"
+    >   status: 404
+    >   error: "Not Found"
+    >   path: "/health"
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/health'
+
+    >   {"groups":["liveness","readiness"],"status":"UP"}
+
+        dnf install -y jq
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/health' \
+            | jq '.'
+
+    >   {
+    >     "groups": [
+    >       "liveness",
+    >       "readiness"
+    >     ],
+    >     "status": "UP"
+    >   }
+
+
+    actuators=(
+        'auditevents'
+        'beans'
+        'caches'
+        'conditions'
+        'configprops'
+        'env'
+        'flyway'
+        'health'
+        'heapdump'
+        'httpexchanges'
+        'info'
+        'integrationgraph'
+        'liquibase'
+        'logfile'
+        'loggers'
+        'mappings'
+        'metrics'
+        'prometheus'
+        'quartz'
+        'sbom'
+        'scheduledtasks'
+        'sessions'
+        'shutdown'
+        'startup'
+        'threaddump'
+        )
+
+    for actuator in ${actuators[@]}
+    do
+        echo ""
+        echo "Actuator [${actuator}]"
+        curl \
+            --head \
+            --silent \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            "http://calycopis-broker:8082/actuator/${actuator}"
+        echo ""
+    done
+
+    >   Actuator [auditevents]
+    >   404
+    >   
+    >   Actuator [beans]
+    >   404
+    >   
+    >   Actuator [caches]
+    >   404
+    >   
+    >   Actuator [conditions]
+    >   404
+    >   
+    >   Actuator [configprops]
+    >   404
+    >   
+    >   Actuator [env]
+    >   404
+    >   
+    >   Actuator [flyway]
+    >   404
+    >   
+    >   Actuator [health]
+    >   200
+    >   
+    >   Actuator [heapdump]
+    >   404
+    >   
+    >   Actuator [httpexchanges]
+    >   404
+    >   
+    >   Actuator [info]
+    >   404
+    >   
+    >   Actuator [integrationgraph]
+    >   404
+    >   
+    >   Actuator [liquibase]
+    >   404
+    >   
+    >   Actuator [logfile]
+    >   404
+    >   
+    >   Actuator [loggers]
+    >   404
+    >   
+    >   Actuator [mappings]
+    >   404
+    >   
+    >   Actuator [metrics]
+    >   404
+    >   
+    >   Actuator [prometheus]
+    >   404
+    >   
+    >   Actuator [quartz]
+    >   404
+    >   
+    >   Actuator [sbom]
+    >   404
+    >   
+    >   Actuator [scheduledtasks]
+    >   404
+    >   
+    >   Actuator [sessions]
+    >   404
+    >   
+    >   Actuator [shutdown]
+    >   404
+    >   
+    >   Actuator [startup]
+    >   404
+    >   
+    >   Actuator [threaddump]
+    >   404
+
+
+# -----------------------------------------------------
+# Edit the application config and re-build the webapp.
+# https://chatgpt.com/share/6a7b3963-bf58-83eb-9ee0-9d183971eac3
+# https://stackoverflow.com/a/72491091
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    gedit "${CALYCOPIS_CODE}/java/src/main/resources/application.yaml"
+
+    +   # Enable the actuator endpoints
+    +   management:
+    +     endpoints:
+    +       web:
+    +         exposure:
+    +           include:
+    +             - health
+    +             - info
+    +             - metrics
+
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+        pushd java
+
+            ./mvnw clean spring-boot:build-image
+
+        popd
+    popd
+
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --expose 8082 \
+        --name calycopis-broker \
+        --pod calycopis-pod \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        images.dev.uksrc.org/calycopis/calycopis-broker:1.0.7-SNAPSHOT
+
+
+
+
+    >   Actuator [auditevents]
+    >   404
+    >   
+    >   Actuator [beans]
+    >   404
+    >   
+    >   Actuator [caches]
+    >   404
+    >   
+    >   Actuator [conditions]
+    >   404
+    >   
+    >   Actuator [configprops]
+    >   404
+    >   
+    >   Actuator [env]
+    >   404
+    >   
+    >   Actuator [flyway]
+    >   404
+    >   
+    >   Actuator [health]
+    >   200
+    >   
+    >   Actuator [heapdump]
+    >   404
+    >   
+    >   Actuator [httpexchanges]
+    >   404
+    >   
+    >   Actuator [info]
+    >   200
+    >   
+    >   Actuator [integrationgraph]
+    >   404
+    >   
+    >   Actuator [liquibase]
+    >   404
+    >   
+    >   Actuator [logfile]
+    >   404
+    >   
+    >   Actuator [loggers]
+    >   404
+    >   
+    >   Actuator [mappings]
+    >   404
+    >   
+    >   Actuator [metrics]
+    >   200
+    >   
+    >   Actuator [prometheus]
+    >   404
+    >   
+    >   Actuator [quartz]
+    >   404
+    >   
+    >   Actuator [sbom]
+    >   404
+    >   
+    >   Actuator [scheduledtasks]
+    >   404
+    >   
+    >   Actuator [sessions]
+    >   404
+    >   
+    >   Actuator [shutdown]
+    >   404
+    >   
+    >   Actuator [startup]
+    >   404
+    >   
+    >   Actuator [threaddump]
+    >   404
+
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/health' \
+            | jq '.'
+
+    >   {
+    >     "groups": [
+    >       "liveness",
+    >       "readiness"
+    >     ],
+    >     "status": "UP"
+    >   }
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/info' \
+            | jq '.'
+
+    >   {}
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/metrics' \
+            | jq '.'
+
+    >   {
+    >     "names": [
+    >       "application.ready.time",
+    >       "application.started.time",
+    >       "disk.free",
+    >       "disk.total",
+    >       "executor.active",
+    >       "executor.completed",
+    >       "executor.pool.core",
+    >       "executor.pool.max",
+    >       "executor.pool.size",
+    >       "executor.queue.remaining",
+    >       "executor.queued",
+    >       "hikaricp.connections",
+    >       "hikaricp.connections.acquire",
+    >       "hikaricp.connections.active",
+    >       "hikaricp.connections.creation",
+    >       "hikaricp.connections.idle",
+    >       "hikaricp.connections.max",
+    >       "hikaricp.connections.min",
+    >       "hikaricp.connections.pending",
+    >       "hikaricp.connections.timeout",
+    >       "hikaricp.connections.usage",
+    >       "http.server.requests",
+    >       "http.server.requests.active",
+    >       "jdbc.connections.active",
+    >       "jdbc.connections.idle",
+    >       "jdbc.connections.max",
+    >       "jdbc.connections.min",
+    >       "jvm.buffer.count",
+    >       "jvm.buffer.memory.used",
+    >       "jvm.buffer.total.capacity",
+    >       "jvm.classes.loaded",
+    >       "jvm.classes.loaded.count",
+    >       "jvm.classes.unloaded",
+    >       "jvm.compilation.time",
+    >       "jvm.gc.live.data.size",
+    >       "jvm.gc.max.data.size",
+    >       "jvm.gc.memory.allocated",
+    >       "jvm.gc.memory.promoted",
+    >       "jvm.gc.overhead",
+    >       "jvm.gc.pause",
+    >       "jvm.info",
+    >       "jvm.memory.committed",
+    >       "jvm.memory.max",
+    >       "jvm.memory.usage.after.gc",
+    >       "jvm.memory.used",
+    >       "jvm.threads.daemon",
+    >       "jvm.threads.live",
+    >       "jvm.threads.peak",
+    >       "jvm.threads.started",
+    >       "jvm.threads.states",
+    >       "log4j2.events",
+    >       "process.cpu.time",
+    >       "process.cpu.usage",
+    >       "process.files.max",
+    >       "process.files.open",
+    >       "process.start.time",
+    >       "process.uptime",
+    >       "spring.data.repository.invocations",
+    >       "spring.security.authorizations",
+    >       "spring.security.authorizations.active",
+    >       "spring.security.filterchains",
+    >       "spring.security.filterchains.access.exceptions.after",
+    >       "spring.security.filterchains.access.exceptions.before",
+    >       "spring.security.filterchains.active",
+    >       "spring.security.filterchains.authentication.anonymous.after",
+    >       "spring.security.filterchains.authentication.anonymous.before",
+    >       "spring.security.filterchains.authentication.basic.after",
+    >       "spring.security.filterchains.authentication.basic.before",
+    >       "spring.security.filterchains.authorization.after",
+    >       "spring.security.filterchains.authorization.before",
+    >       "spring.security.filterchains.context.async.after",
+    >       "spring.security.filterchains.context.async.before",
+    >       "spring.security.filterchains.context.holder.after",
+    >       "spring.security.filterchains.context.holder.before",
+    >       "spring.security.filterchains.context.servlet.after",
+    >       "spring.security.filterchains.context.servlet.before",
+    >       "spring.security.filterchains.header.after",
+    >       "spring.security.filterchains.header.before",
+    >       "spring.security.filterchains.logout.after",
+    >       "spring.security.filterchains.logout.before",
+    >       "spring.security.filterchains.requestcache.after",
+    >       "spring.security.filterchains.requestcache.before",
+    >       "spring.security.filterchains.session.management.after",
+    >       "spring.security.filterchains.session.management.before",
+    >       "spring.security.filterchains.session.urlencoding.after",
+    >       "spring.security.filterchains.session.urlencoding.before",
+    >       "spring.security.http.secured.requests",
+    >       "spring.security.http.secured.requests.active",
+    >       "system.cpu.count",
+    >       "system.cpu.usage",
+    >       "system.load.average.1m",
+    >       "tasks.scheduled.execution",
+    >       "tasks.scheduled.execution.active",
+    >       "tomcat.sessions.active.current",
+    >       "tomcat.sessions.active.max",
+    >       "tomcat.sessions.alive.max",
+    >       "tomcat.sessions.created",
+    >       "tomcat.sessions.expired",
+    >       "tomcat.sessions.rejected"
+    >     ]
+    >   }
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/metrics/tomcat.sessions.created' \
+            | jq '.'
+
+    >   {
+    >     "availableTags": [],
+    >     "baseUnit": "sessions",
+    >     "measurements": [
+    >       {
+    >         "statistic": "COUNT",
+    >         "value": 0.0
+    >       }
+    >     ],
+    >     "name": "tomcat.sessions.created"
+    >   }
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/metrics/jvm.memory.used' \
+            | jq '.'
+
+    >   {
+    >     "availableTags": [
+    >       {
+    >         "tag": "area",
+    >         "values": [
+    >           "heap",
+    >           "nonheap"
+    >         ]
+    >       },
+    >       {
+    >         "tag": "id",
+    >         "values": [
+    >           "CodeHeap 'profiled nmethods'",
+    >           "G1 Old Gen",
+    >           "CodeHeap 'non-profiled nmethods'",
+    >           "G1 Survivor Space",
+    >           "Compressed Class Space",
+    >           "Metaspace",
+    >           "G1 Eden Space",
+    >           "CodeHeap 'non-nmethods'"
+    >         ]
+    >       }
+    >     ],
+    >     "baseUnit": "bytes",
+    >     "description": "The amount of used memory",
+    >     "measurements": [
+    >       {
+    >         "statistic": "VALUE",
+    >         "value": 266468056
+    >       }
+    >     ],
+    >     "name": "jvm.memory.used"
+    >   }
+
+
+        curl \
+            --silent \
+            --show-error \
+            'http://calycopis-broker:8082/actuator/metrics/jvm.memory.used?tag=area:heap' \
+            | jq '.'
+
+
+    >   {
+    >     "availableTags": [
+    >       {
+    >         "tag": "id",
+    >         "values": [
+    >           "G1 Survivor Space",
+    >           "G1 Old Gen",
+    >           "G1 Eden Space"
+    >         ]
+    >       }
+    >     ],
+    >     "baseUnit": "bytes",
+    >     "description": "The amount of used memory",
+    >     "measurements": [
+    >       {
+    >         "statistic": "VALUE",
+    >         "value": 70922608
+    >       }
+    >     ],
+    >     "name": "jvm.memory.used"
+    >   }
+

@@ -22,7 +22,18 @@
 #
 # AIMetrics: [
 #      {
-#      "timestamp": "2026-07-22",
+#      "timestamp": "2026-07-22T18:45",
+#      "name": "ChatGPT",
+#      "version": "GPT-5.5",
+#      "model": "GPT-5.5",
+#      "log": "https://chatgpt.com/share/6a6144e7-a844-83eb-a319-cc4957951bdd"
+#      "contribution": {
+#        "value": 5,
+#        "units": "%"
+#        },
+#      },
+#      {
+#      "timestamp": "2026-07-22T19:31",
 #      "name": "ChatGPT",
 #      "version": "GPT-5.5",
 #      "model": "GPT-5.5",

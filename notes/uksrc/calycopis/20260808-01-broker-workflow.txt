@@ -1,0 +1,158 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    UKSRC Harbor repository
+    https://images.dev.uksrc.org/harbor/projects/8/repositories
+
+    Calycopis broker package
+    https://images.dev.uksrc.org/harbor/projects/8/repositories/calycopis-broker/artifacts-tab
+    images.dev.uksrc.org/calycopis/calycopis-broker@sha256:b1be5a929d0ab894b27db2f20b6133a8a0ce47046d2d5df5fcc5b93382c05074
+
+    Podman compose
+    https://docs.podman.io/en/v5.0.0/markdown/podman-compose.1.html
+    https://oneuptime.com/blog/post/2026-01-27-podman-compose/view
+    https://github.com/containers/podman-compose
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    >   ....
+    >   ....
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Start our broker service.
+#[user@desktop]
+
+        --detach \
+        --replace \
+        -Dcalycopis-platform=docker
+
+    LOG_DIR=$(mktemp -d)
+    chmod a+rwx ${LOG_DIR}
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --expose 8082 \
+        --name calycopis-broker \
+        --pod calycopis-pod \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONFIG_DIR}:/etc/calycopis/config:ro,Z" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        images.dev.uksrc.org/calycopis/calycopis-broker@sha256:b1be5a929d0ab894b27db2f20b6133a8a0ce47046d2d5df5fcc5b93382c05074 \
+
+
+    >   Failed to bind properties under 'spring.profiles.active' to java.util.Set<java.lang.String>:
+    >   
+    >       Property: spring.profiles.active
+    >       Value: "@calycopis-platform@"
+    >       Origin: class path resource [application.yaml] - 93:17
+    >       Reason: java.lang.IllegalStateException: Profile '@calycopis-platform@' must start and end with a letter or digit
+
+    TODO Change /etc/calycopis/config to just /etc/calycopis
+    TODO Add a default value for the profile.
+
+
+
+    >   ....
+    >   ....
+
+
+
