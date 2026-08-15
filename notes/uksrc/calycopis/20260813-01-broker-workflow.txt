@@ -45,13 +45,11 @@
 
     "${CALYCOPIS_CODE:?}/tests/python/bin/run-tests.sh"
 
---START--
-....
-....
-docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_session_completes PASSED [ 97%]
-docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches PASSED [100%]
-======================= 43 passed in 1313.25s (0:21:53) ========================
---END--
+    >   ....
+    >   ....
+    >   docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_session_completes PASSED [ 97%]
+    >   docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches PASSED [100%]
+    >   ======================= 43 passed in 1313.25s (0:21:53) ========================
 
 
 # -----------------------------------------------------
@@ -66,15 +64,13 @@ docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches PASS
     https://github.com/uksrc/Calycopis-broker/compare/main...TRD-125-Create-Calycopis-broker-Docker-image
 
 
---START--
-....
-....
-=========================== short test summary info ============================
-FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
-FAILED docker/test_docker_bind_mount.py::TestBindMountContainerInspection::test_container_has_bind_mount
-FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
-================== 3 failed, 40 passed in 1035.34s (0:17:15) ===================
---END--
+    >   ....
+    >   ....
+    >   =========================== short test summary info ============================
+    >   FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+    >   FAILED docker/test_docker_bind_mount.py::TestBindMountContainerInspection::test_container_has_bind_mount
+    >   FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
+    >   ================== 3 failed, 40 passed in 1035.34s (0:17:15) ===================
 
 
 # -----------------------------------------------------
@@ -82,13 +78,11 @@ FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_match
 #[user@desktop]
 
 
---START--
-....
-....
-docker/test_docker_stress.py::TestStress::test_concurrent_sessions PASSED [ 97%]
-docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_session_completes PASSED [100%]
-======================= 40 passed in 1046.06s (0:17:26) ========================
---END--
+    >   ....
+    >   ....
+    >   docker/test_docker_stress.py::TestStress::test_concurrent_sessions PASSED [ 97%]
+    >   docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_session_completes PASSED [100%]
+    >   ======================= 40 passed in 1046.06s (0:17:26) ========================
 
 
 
