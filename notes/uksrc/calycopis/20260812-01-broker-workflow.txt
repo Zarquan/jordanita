@@ -1,0 +1,71 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        End to end script to build and run the Python tests.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Run the integration test workflow ..
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+
+    "${CALYCOPIS_CODE:?}/tests/python/bin/workflow.sh"
+
+--START--
+....
+....
+================ 43 passed in 1220.38s (0:20:20) ================
+--END--
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    A suggestion from ChatGPT.
+    Split the workflow into stages.
+
+    1) create the OCI image
+       save tar.gz
+
+    1) create pytest image
+       save tar.gz
+
+    2) integration tests
+       load tar.gz
+
+    3) upload the OCI image to the registry
+       load tar.gz
+
+
+
+
+
+
+

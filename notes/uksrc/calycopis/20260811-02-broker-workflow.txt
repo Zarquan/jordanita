@@ -25,7 +25,7 @@
 
     Target:
 
-        Emd to end script to run the Python tests.
+        End to end script to build and run the Python tests.
 
     Result:
 
