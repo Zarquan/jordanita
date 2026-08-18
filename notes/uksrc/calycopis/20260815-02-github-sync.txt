@@ -1,0 +1,61 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Merge the development branch.
+        Delete the development branch.
+
+        Create a new openapi branch.
+        Update the version config to match the broker.
+        Merge the openapi development branch.
+
+        Create a new development branch.
+        Recover changes from an earlier fork.
+        Restore the skipped tests.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+        Merge Zarquan:20260727-zrq-broker-buildpack into uksrc:TRD-125-Create-Calycopis-broker-Docker-image
+        Done
+
+        Delete Zarquan:20260727-zrq-broker-buildpack on GitHub
+        Done
+
+        Merge uksrc:TRD-125-Create-Calycopis-broker-Docker-image into main.
+
+
+        Close TRD-125 in Jira.
+
+
+
+
+
+        Delete Zarquan:20260727-zrq-broker-buildpack on desktop
+

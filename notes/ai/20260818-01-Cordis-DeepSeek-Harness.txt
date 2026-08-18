@@ -1,0 +1,80 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (C) 2026 by Wizzard Solutions Ltd, wizzard@metagrid.co.uk
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        What is DSH? | DSH
+        https://dshai.org/what-is-dsh
+
+        The next generation of self-modifying agents ?
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    Froth on the Daydream
+    Turing Post's weekly AI digest. Curated analysis of the most important AI research,
+    models, and industry developments from the past week.
+    https://www.turingpost.com/t/froth-on-the-daydream
+
+    FOD#163: DeepSeek is having its second DeepSeek moment
+    https://www.turingpost.com/p/deepseek-harness-explained
+
+    What is DSH? | DSH
+    https://dshai.org/what-is-dsh
+
+    deepseek-harness
+    https://github.com/deepseek-ai/deepseek-harness
+
+
+    Cordis - A Meta-Framework of Spatiotemporal Composability.
+    https://github.com/cordiverse/cordis/tree/main
+
+    A Programming Paradigm for Spatiotemporal Composability
+    https://github.com/cordiverse/paper/blob/main/paper.pdf
+
+    Cordis Explained: The Plugin Framework Behind DeepSeek-Harness
+    https://findharness.com/blog/cordis-framework-explained
+
+
+    Koishi - Cross-platform Chatbot Framework Made With Love
+    https://koishi.chat/en-US/
+
+    @koishijs/plugin-adapter-mail | Koishi
+    https://koishi.chat/en-US/plugins/adapter/mail.html
+
+
+
+    @koishijs/plugin-adapter-zulip | Koishi
+    https://koishi.chat/zh-CN/plugins/adapter/zulip
+
+    Zulip — organized team chat
+    https://zulip.com/
+
+
+

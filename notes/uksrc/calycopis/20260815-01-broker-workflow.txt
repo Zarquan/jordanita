@@ -25,12 +25,63 @@
 
     Target:
 
-        End to end build the broker and then build and run the tests.
+        End to end build on the desktop.
 
     Result:
 
-        Work in progress ...
+        Works on the desktop - fails if we try to launch it from inside a container.
 
+        Building the schema components works on both desktop and container.
+        Building the Java code for the broker works on both.
+        Building the OCI image for the broker works desktop, fails in a container.
+            The buildpack builder launches a container, which doesn't work from inside a container.
+            The buildpack builder makes too many assumptions about the docker socket.
+
+        Building the integration test container works on both.
+            The build-tests script only works on desktop.
+
+        Running the integration tests only works on desktop.
+            Setting up the tests creates files on the host filesystem.
+            In theory we could do this from inside a container
+                We would need to allocate test space as a volume
+                and use it to replace calls to mktemp
+                and juggle the paths for inside and outside
+
+
+        We can run end to end on desktop, and on GitHub workflow.
+        However, the development container no longer works.
+        If we want to isolate the build scripts we will need to create a virtual machine.
+
+        Good enough for now.
+        We can come back to look at other options later.
+        Merge the branch.
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Remove/extend the Podman socket timeout.
+#[user@desktop]
+
+    mkdir --parents ~/.config/containers/containers.conf.d
+cat > ~/.config/containers/containers.conf.d/90-service-timeout.conf << EOF
+[engine]
+service_timeout = 0
+EOF
+
+
+# -----------------------------------------------------
+# Open up access to our Podman service.
+# ** not required **
+#[user@desktop]
+
+#   systemctl --user edit podman.socket
+#
+#   +   [Socket]
+#   +   SocketMode=0666
+#
+#   systemctl --user daemon-reload
+#
+#   systemctl --user restart podman.socket
 
 # -----------------------------------------------------
 # -----------------------------------------------------
@@ -83,34 +134,120 @@
 
         bin/buildschema.sh
 
-    >   ....
-    >   ....
-
-
         bin/buildpythonclient.sh
-
-    >   ....
-    >   ....
-
 
         bin/buildjavaclient.sh
 
-    >   ....
-    >   ....
-
-
         bin/buildjavaspring.sh
 
-    >   ....
-    >   ....
-
+    popd
 
 
 # -----------------------------------------------------
+# Build our broker container.
+#[root@calycopis-dev]
 
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
 
-    pushd "${HOME}/projects/Calycopis-broker-uksrc"
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
         pushd java
 
             ./mvnw clean spring-boot:build-image
+
+        popd
+    popd
+
+--START--
+....
+....
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker:
+    Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed:
+        Docker API call to '/run/podman/podman.sockdocker:///run/podman/podman.sock/v1.41/containers/create' failed
+        with status code 500 "Internal Server Error"
+        and message "
+            make cli opts():
+            making volume mountpoint for volume /var/run/docker.sock:
+            mkdir /var/run/docker.sock: permission denied
+            "
+--END--
+
+    #
+    # Same s##t again.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${TREBULA_CODE}"
+
+        bin/buildschema.sh
+
+        bin/buildpythonclient.sh
+
+        bin/buildjavaclient.sh
+
+        bin/buildjavaspring.sh
+
+    popd
+
+
+# -----------------------------------------------------
+# Build our broker container on the desktop.
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw clean spring-boot:build-image
+
+        popd
+    popd
+
+
+--START--
+....
+....
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:18 min
+[INFO] Finished at: 2026-08-15T13:39:37+01:00
+[INFO] ------------------------------------------------------------------------
+--END--
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run our integration tests on the desktop.
+#[user@desktop]
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        tests/python/bin/build-tests.sh
+
+        tests/python/bin/run-tests.sh
+
+    popd
+
+--START--
+....
+....
+--END--
+
+
 
