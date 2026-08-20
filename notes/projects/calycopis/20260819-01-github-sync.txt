@@ -1,0 +1,365 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Merge changes to the state machine from Zarquan-ivoa fork.
+
+        Run the tests to verify changes worked.
+
+    Result:
+
+        Work in progress ...
+
+        Tried using volumes for the test data - didn't work.
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Delete existing Pods and volumes.
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Create our volumes.
+#[user@desktop]
+
+    podman volume create \
+        calycopis-logs
+
+    podman volume create \
+        calycopis-conf
+
+    podman volume create \
+        calycopis-temp
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume calycopis-conf:/etc/calycopis \
+        --volume calycopis-temp:/tmp/calycopis \
+        --volume calycopis-logs:/var/log/calycopis \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+--START--
+CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS        PORTS       NAMES
+f4f21fe203f7  localhost/podman-pause:5.4.2-1743552000                        20 seconds ago  Up 5 seconds              85fbcc4842de-infra
+33c5bd0ffc40  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        5 seconds ago   Up 4 seconds              calycopis-dev
+--END--
+
+
+# -----------------------------------------------------
+# Create our configuration files.
+#[root@calycopis-dev]
+
+    CONFIG_DIR=/etc/calycopis
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[root@calycopis-dev]
+
+    TESTDATA=/tmp/calycopis
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    # chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    # chmod a+r "${TESTFILE}"
+
+--START--
+10+0 records in
+10+0 records out
+10000000 bytes (10 MB, 9.5 MiB) copied, 0.054886 s, 182 MB/s
+--END--
+
+
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq
+
+        bin/buildschema.sh
+
+        bin/buildpythonclient.sh
+
+        bin/buildjavaclient.sh
+
+        bin/buildjavaspring.sh
+
+    popd
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[root@calycopis-dev]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume calycopis-conf:/etc/calycopis \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw clean spring-boot:run
+
+        popd
+    popd
+
+    #
+    # Lots of compile errors
+
+--START--
+....
+....
+[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/component/LifecycleComponentEntity.java:[66,67]
+    package net.ivoa.calycopis.broker.engine.functional.processing.mock does not exist
+
+[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/storage/AbstractStorageResourceEntity.java:[201,15]
+    cannot find symbol
+[ERROR]   symbol:   class IvoaLifecyclePhase
+[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.storage.AbstractStorageResourceEntity
+
+[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/data/AbstractDataResourceEntity.java:[194,15]
+    cannot find symbol
+[ERROR]   symbol:   class IvoaLifecyclePhase
+[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.data.AbstractDataResourceEntity#
+
+[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/compute/AbstractComputeResourceEntity.java:[181,15]
+    cannot find symbol
+[ERROR]   symbol:   class IvoaLifecyclePhase
+[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.compute.AbstractComputeResourceEntity
+....
+....
+--END--
+
+    #
+    # Loaded the project into Eclipse and resolved the errors.
+    # All the errors were caused by package name changes in the openapi.spring and broker projects.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Login via another terminal.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --interactive \
+        calycopis-dev \
+            bash
+
+
+# -----------------------------------------------------
+# Build our test container.
+#[root@calycopis-dev]
+
+    buildtag=$(date '+%Y.%m.%d')
+    buildtime=$(date '+%Y-%m-%dT%H:%M:%S')
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        podman build \
+            --build-arg "buildtag=${buildtag:?}" \
+            --build-arg "buildtime=${buildtime:?}" \
+            --build-arg "CALYCOPIS_BROKER_VERSION=${CALYCOPIS_BROKER_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_SCHEMA_VERSION=${CALYCOPIS_OPENAPI_SCHEMA_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_SPRING_VERSION=${CALYCOPIS_OPENAPI_SPRING_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_PYTHON_VERSION=${CALYCOPIS_OPENAPI_PYTHON_VERSION:?}" \
+            --tag "calycopis/python-tester:latest" \
+            --tag "calycopis/python-tester:${buildtag:?}" \
+            tests/python
+
+    popd
+
+--START--
+....
+....
+--END--
+
+
+# -----------------------------------------------------
+# Run our test container.
+#[root@calycopis-dev]
+
+    #
+    # Need to use the host path to mount the Podman socket,
+    # but we don't know what it is because we are inside
+    # the calycopis-dev container.
+    #
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-tester \
+        --env "TESTDATA=/tmp/calycopis" \
+        --env "TESTFILE=/tmp/calycopis/random.dat" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume calycopis-conf:/etc/calycopis \
+        --volume calycopis-temp:/tmp/calycopis \
+        --volume "/run/user/1000/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/python-tester:latest
+
+
+    #
+    # Errors in the broker logs.
+
+--START--
+....
+....
+2026-08-19 16:35:59 WARN scheduling-1 DockerSimpleComputeResourceEntity createAndStartContainer()
+    Failed to create/start Docker container for [4004a2fc-379c-4f63-a47b-d83a3a3ab766]:
+    Status 500: {"cause":"host directory cannot be empty","message":"fill out specgen: host directory cannot be empty","response":500}
+....
+....
+--END--
+
+    #
+    # This is because .. these environment variables refer to locations inside the test container.
+
+        --env "TESTDATA=/tmp/calycopis" \
+        --env "TESTFILE=/tmp/calycopis/random.dat" \
+
+    #
+    # but when they are passed to the borker, and then the broker tries to use them
+    # as parameters for the task .. which get passed to Podman on the host
+    # they no longer make sense.
+    #
+    # Should the broker recognise and catch these and report a better error message ?
+    # Logged an issue in GitHub.
+    # https://github.com/uksrc/Calycopis-broker/issues/28
+    #
+
+    #
+    # Re-test using a host filesystem location for the test data.
+    #
+
+

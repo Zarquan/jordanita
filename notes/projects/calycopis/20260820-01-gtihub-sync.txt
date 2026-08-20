@@ -1,0 +1,342 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Merge changes to the state machine from Zarquan-ivoa fork.
+        Run the tests to verify changes worked.
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Delete existing Pods and volumes.
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+# -----------------------------------------------------
+# Create our log directory.
+#[user@desktop]
+
+    LOG_DIR=$(mktemp -d)
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[user@desktop]
+
+    TESTDATA=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TESTDATA}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    chmod a+r "${TESTFILE}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0588937 s, 170 MB/s
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+--START--
+CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS         PORTS       NAMES
+4a262badd745  localhost/podman-pause:5.4.2-1743552000                        About a minute ago  Up 43 seconds              2a0ff504a938-infra
+5290619d7da0  docker.io/library/postgres:latest                  postgres    43 seconds ago      Up 43 seconds  5432/tcp    postgres
+11ad1dbf07c3  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        10 seconds ago      Up 6 seconds               calycopis-dev
+--END--
+
+
+# -----------------------------------------------------
+# Build our schema generated components.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq
+
+        bin/buildschema.sh
+
+        bin/buildpythonclient.sh
+
+        bin/buildjavaclient.sh
+
+        bin/buildjavaspring.sh
+
+    popd
+
+--START--
+....
+....
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  24.022 s
+[INFO] Finished at: 2026-08-20T02:00:39Z
+[INFO] ------------------------------------------------------------------------
+--END--
+
+--START--
+....
+....
+adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/top_level.txt'
+adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built calycopis_openapi_client-1.0.7.dev5.tar.gz and calycopis_openapi_client-1.0.7.dev5-py3-none-any.whl
+--END--
+
+--START--
+....
+....
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  50.246 s
+[INFO] Finished at: 2026-08-20T02:06:17Z
+[INFO] ------------------------------------------------------------------------
+--END--
+
+--START--
+....
+....
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  53.681 s
+[INFO] Finished at: 2026-08-20T02:07:39Z
+[INFO] ------------------------------------------------------------------------
+--END--
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw clean spring-boot:run
+
+        popd
+    popd
+
+--START--
+....
+....
+--END--
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our test container.
+#[user@desktop]
+
+    buildtime=$(date '+%Y-%m-%dT%H:%M:%S')
+
+    source "${HOME:?}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+
+        podman build \
+            --build-arg "buildtime=${buildtime:?}" \
+            --build-arg "CALYCOPIS_BROKER_VERSION=${CALYCOPIS_BROKER_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_SCHEMA_VERSION=${CALYCOPIS_OPENAPI_SCHEMA_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_SPRING_VERSION=${CALYCOPIS_OPENAPI_SPRING_VERSION:?}" \
+            --build-arg "CALYCOPIS_OPENAPI_PYTHON_VERSION=${CALYCOPIS_OPENAPI_PYTHON_VERSION:?}" \
+            --tag "calycopis/python-tester:latest" \
+            --tag "calycopis/python-tester:${buildtag:?}" \
+            tests/python
+
+    popd
+
+--START--
+....
+....
+Successfully tagged localhost/calycopis/python-tester:2026.08.20
+Successfully tagged localhost/calycopis/python-tester:latest
+fd31364a7d7d109af36cf55d940c4ae40337407c8ce7bf1b2e9376b04ec5d405
+--END--
+
+
+# -----------------------------------------------------
+# Run our test container.
+#[user@desktop]
+
+    #
+    # Inherit values from the first terminal.
+    CONFIG_DIR=/tmp/tmp.fug1P63r5n
+    TESTDATA=/tmp/tmp.2cNgJ98MwL
+    TESTFILE=${TESTDATA}/random.dat
+
+    source "${HOME:?}/calycopis.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-tester \
+        --env "TEST_DATA_FILE=${TESTFILE}" \
+        --env "CALYCOPIS_URL=http://calycopis-dev:8082" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/python-tester:latest
+
+--START--
+....
+....
+================ 42 passed in 1388.15s (0:23:08) ================
+--END--
+
+--START--
+....
+....
+================ 43 passed in 1398.39s (0:23:18) ================
+--END--
+
+    #
+    # Still 2 tests that need to be skipped.
+    # Both involve peeking at stdout to compare the task result with the test's own result.
+    # Leaving them skipped because peeking at stdout is unreliable and will be fixed in the next block of work.
+    #
+
+
+
