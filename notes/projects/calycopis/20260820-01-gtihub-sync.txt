@@ -174,12 +174,10 @@ EOF
 
             podman ps
 
---START--
-CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS         PORTS       NAMES
-4a262badd745  localhost/podman-pause:5.4.2-1743552000                        About a minute ago  Up 43 seconds              2a0ff504a938-infra
-5290619d7da0  docker.io/library/postgres:latest                  postgres    43 seconds ago      Up 43 seconds  5432/tcp    postgres
-11ad1dbf07c3  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        10 seconds ago      Up 6 seconds               calycopis-dev
---END--
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS         PORTS       NAMES
+    >   4a262badd745  localhost/podman-pause:5.4.2-1743552000                        About a minute ago  Up 43 seconds              2a0ff504a938-infra
+    >   5290619d7da0  docker.io/library/postgres:latest                  postgres    43 seconds ago      Up 43 seconds  5432/tcp    postgres
+    >   11ad1dbf07c3  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        10 seconds ago      Up 6 seconds               calycopis-dev
 
 
 # -----------------------------------------------------
@@ -198,47 +196,39 @@ CONTAINER ID  IMAGE                                              COMMAND     CRE
 
     popd
 
---START--
-....
-....
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  24.022 s
-[INFO] Finished at: 2026-08-20T02:00:39Z
-[INFO] ------------------------------------------------------------------------
---END--
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  24.022 s
+    >   [INFO] Finished at: 2026-08-20T02:00:39Z
+    >   [INFO] ------------------------------------------------------------------------
 
---START--
-....
-....
-adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/top_level.txt'
-adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/RECORD'
-removing build/bdist.linux-x86_64/wheel
-Successfully built calycopis_openapi_client-1.0.7.dev5.tar.gz and calycopis_openapi_client-1.0.7.dev5-py3-none-any.whl
---END--
+    >   ....
+    >   ....
+    >   adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/top_level.txt'
+    >   adding 'calycopis_openapi_client-1.0.7.dev5.dist-info/RECORD'
+    >   removing build/bdist.linux-x86_64/wheel
+    >   Successfully built calycopis_openapi_client-1.0.7.dev5.tar.gz and calycopis_openapi_client-1.0.7.dev5-py3-none-any.whl
 
---START--
-....
-....
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  50.246 s
-[INFO] Finished at: 2026-08-20T02:06:17Z
-[INFO] ------------------------------------------------------------------------
---END--
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  50.246 s
+    >   [INFO] Finished at: 2026-08-20T02:06:17Z
+    >   [INFO] ------------------------------------------------------------------------
 
---START--
-....
-....
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  53.681 s
-[INFO] Finished at: 2026-08-20T02:07:39Z
-[INFO] ------------------------------------------------------------------------
---END--
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  53.681 s
+    >   [INFO] Finished at: 2026-08-20T02:07:39Z
+    >   [INFO] ------------------------------------------------------------------------
 
 
 # -----------------------------------------------------
@@ -257,10 +247,8 @@ Successfully built calycopis_openapi_client-1.0.7.dev5.tar.gz and calycopis_open
         popd
     popd
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
 # -----------------------------------------------------
@@ -287,13 +275,11 @@ Successfully built calycopis_openapi_client-1.0.7.dev5.tar.gz and calycopis_open
 
     popd
 
---START--
-....
-....
-Successfully tagged localhost/calycopis/python-tester:2026.08.20
-Successfully tagged localhost/calycopis/python-tester:latest
-fd31364a7d7d109af36cf55d940c4ae40337407c8ce7bf1b2e9376b04ec5d405
---END--
+    >   ....
+    >   ....
+    >   Successfully tagged localhost/calycopis/python-tester:2026.08.20
+    >   Successfully tagged localhost/calycopis/python-tester:latest
+    >   fd31364a7d7d109af36cf55d940c4ae40337407c8ce7bf1b2e9376b04ec5d405
 
 
 # -----------------------------------------------------
@@ -320,23 +306,31 @@ fd31364a7d7d109af36cf55d940c4ae40337407c8ce7bf1b2e9376b04ec5d405
         --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
         localhost/calycopis/python-tester:latest
 
---START--
-....
-....
-================ 42 passed in 1388.15s (0:23:08) ================
---END--
+    >   ....
+    >   ....
+    >   ================ 42 passed in 1388.15s (0:23:08) ================
 
---START--
-....
-....
-================ 43 passed in 1398.39s (0:23:18) ================
---END--
+    >   ....
+    >   ....
+    >   ================ 43 passed in 1398.39s (0:23:18) ================
 
     #
     # Still 2 tests that need to be skipped.
     # Both involve peeking at stdout to compare the task result with the test's own result.
     # Leaving them skipped because peeking at stdout is unreliable and will be fixed in the next block of work.
     #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Tried merging the branch - 3 tests failed in GitHub workflow.
+
+    >   FAILED docker/test_docker_androcles_md5.py::TestAndroclesSha256Http::test_sha256_matches
+    >   FAILED docker/test_docker_bind_mount.py::TestBindMountContainerInspection::test_container_has_bind_mount
+    >   FAILED docker/test_docker_platform.py::TestDockerPlatformNonZeroExitCode::test_nonzero_exit_code_with_large_code
+
+
 
 
 

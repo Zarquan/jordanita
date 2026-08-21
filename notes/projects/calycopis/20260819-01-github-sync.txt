@@ -107,11 +107,9 @@
 
             podman ps
 
---START--
-CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS        PORTS       NAMES
-f4f21fe203f7  localhost/podman-pause:5.4.2-1743552000                        20 seconds ago  Up 5 seconds              85fbcc4842de-infra
-33c5bd0ffc40  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        5 seconds ago   Up 4 seconds              calycopis-dev
---END--
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS        PORTS       NAMES
+    >   f4f21fe203f7  localhost/podman-pause:5.4.2-1743552000                        20 seconds ago  Up 5 seconds              85fbcc4842de-infra
+    >   33c5bd0ffc40  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        5 seconds ago   Up 4 seconds              calycopis-dev
 
 
 # -----------------------------------------------------
@@ -167,11 +165,9 @@ EOF
     # chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
     # chmod a+r "${TESTFILE}"
 
---START--
-10+0 records in
-10+0 records out
-10000000 bytes (10 MB, 9.5 MiB) copied, 0.054886 s, 182 MB/s
---END--
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.054886 s, 182 MB/s
 
 
 # -----------------------------------------------------
@@ -231,29 +227,27 @@ EOF
     #
     # Lots of compile errors
 
---START--
-....
-....
-[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/component/LifecycleComponentEntity.java:[66,67]
-    package net.ivoa.calycopis.broker.engine.functional.processing.mock does not exist
-
-[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/storage/AbstractStorageResourceEntity.java:[201,15]
-    cannot find symbol
-[ERROR]   symbol:   class IvoaLifecyclePhase
-[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.storage.AbstractStorageResourceEntity
-
-[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/data/AbstractDataResourceEntity.java:[194,15]
-    cannot find symbol
-[ERROR]   symbol:   class IvoaLifecyclePhase
-[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.data.AbstractDataResourceEntity#
-
-[ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/compute/AbstractComputeResourceEntity.java:[181,15]
-    cannot find symbol
-[ERROR]   symbol:   class IvoaLifecyclePhase
-[ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.compute.AbstractComputeResourceEntity
-....
-....
---END--
+    >   ....
+    >   ....
+    >   [ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/component/LifecycleComponentEntity.java:[66,67]
+    >       package net.ivoa.calycopis.broker.engine.functional.processing.mock does not exist
+    >   
+    >   [ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/storage/AbstractStorageResourceEntity.java:[201,15]
+    >       cannot find symbol
+    >   [ERROR]   symbol:   class IvoaLifecyclePhase
+    >   [ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.storage.AbstractStorageResourceEntity
+    >   
+    >   [ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/data/AbstractDataResourceEntity.java:[194,15]
+    >       cannot find symbol
+    >   [ERROR]   symbol:   class IvoaLifecyclePhase
+    >   [ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.data.AbstractDataResourceEntity#
+    >   
+    >   [ERROR] /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/java/src/main/java/net/ivoa/calycopis/broker/engine/entities/compute/AbstractComputeResourceEntity.java:[181,15]
+    >       cannot find symbol
+    >   [ERROR]   symbol:   class IvoaLifecyclePhase
+    >   [ERROR]   location: class net.ivoa.calycopis.broker.engine.entities.compute.AbstractComputeResourceEntity
+    >   ....
+    >   ....
 
     #
     # Loaded the project into Eclipse and resolved the errors.
@@ -298,10 +292,8 @@ EOF
 
     popd
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
 # -----------------------------------------------------
@@ -332,15 +324,13 @@ EOF
     #
     # Errors in the broker logs.
 
---START--
-....
-....
-2026-08-19 16:35:59 WARN scheduling-1 DockerSimpleComputeResourceEntity createAndStartContainer()
-    Failed to create/start Docker container for [4004a2fc-379c-4f63-a47b-d83a3a3ab766]:
-    Status 500: {"cause":"host directory cannot be empty","message":"fill out specgen: host directory cannot be empty","response":500}
-....
-....
---END--
+    >   ....
+    >   ....
+    >   2026-08-19 16:35:59 WARN scheduling-1 DockerSimpleComputeResourceEntity createAndStartContainer()
+    >       Failed to create/start Docker container for [4004a2fc-379c-4f63-a47b-d83a3a3ab766]:
+    >       Status 500: {"cause":"host directory cannot be empty","message":"fill out specgen: host directory cannot be empty","response":500}
+    >   ....
+    >   ....
 
     #
     # This is because .. these environment variables refer to locations inside the test container.

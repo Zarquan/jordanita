@@ -159,19 +159,17 @@ EOF
         popd
     popd
 
---START--
-....
-....
-[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker:
-    Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed:
-        Docker API call to '/run/podman/podman.sockdocker:///run/podman/podman.sock/v1.41/containers/create' failed
-        with status code 500 "Internal Server Error"
-        and message "
-            make cli opts():
-            making volume mountpoint for volume /var/run/docker.sock:
-            mkdir /var/run/docker.sock: permission denied
-            "
---END--
+    >   ....
+    >   ....
+    >   [ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image (default-cli) on project calycopis-broker:
+    >       Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:build-image failed:
+    >           Docker API call to '/run/podman/podman.sockdocker:///run/podman/podman.sock/v1.41/containers/create' failed
+    >           with status code 500 "Internal Server Error"
+    >           and message "
+    >               make cli opts():
+    >               making volume mountpoint for volume /var/run/docker.sock:
+    >               mkdir /var/run/docker.sock: permission denied
+    >               "
 
     #
     # Same s##t again.
@@ -215,16 +213,14 @@ EOF
     popd
 
 
---START--
-....
-....
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:18 min
-[INFO] Finished at: 2026-08-15T13:39:37+01:00
-[INFO] ------------------------------------------------------------------------
---END--
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:18 min
+    >   [INFO] Finished at: 2026-08-15T13:39:37+01:00
+    >   [INFO] ------------------------------------------------------------------------
 
 
 # -----------------------------------------------------
@@ -244,10 +240,8 @@ EOF
 
     popd
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
 

@@ -86,22 +86,18 @@
         popd
 
 
---START--
-commit d5f13f6d9542c098fa40633999a0f03fd99cc272 (HEAD -> 20260611-zrq-scheduling-bugfix, origin/20260611-zrq-scheduling-bugfix)
-Author: Dave Morris <dave.morris@manchester.ac.uk>
-Date:   Sun Jul 5 05:53:00 2026 +0100
-....
-....
---END--
+    >   commit d5f13f6d9542c098fa40633999a0f03fd99cc272 (HEAD -> 20260611-zrq-scheduling-bugfix, origin/20260611-zrq-scheduling-bugfix)
+    >   Author: Dave Morris <dave.morris@manchester.ac.uk>
+    >   Date:   Sun Jul 5 05:53:00 2026 +0100
+    >   ....
+    >   ....
 
---START--
-....
-....
-commit cfe41311088626f1e52c0ba015735161c96e4f10 (HEAD -> main, uksrc/main, uksrc/HEAD, origin/main, origin/HEAD)
-Merge: 398797ac cb1506b7
-Author: Zarquan <Zarquan@users.noreply.github.com>
-Date:   Sat Aug 15 15:57:02 2026 +0100
---END--
+    >   ....
+    >   ....
+    >   commit cfe41311088626f1e52c0ba015735161c96e4f10 (HEAD -> main, uksrc/main, uksrc/HEAD, origin/main, origin/HEAD)
+    >   Merge: 398797ac cb1506b7
+    >   Author: Zarquan <Zarquan@users.noreply.github.com>
+    >   Date:   Sat Aug 15 15:57:02 2026 +0100
 
 
         meld \
@@ -120,20 +116,16 @@ Date:   Sat Aug 15 15:57:02 2026 +0100
 # See what ChatGPT advises
 # https://chatgpt.com/share/6a84b1cb-717c-83ed-bba2-be6e4dc876c2
 
-==START==
-I have two git clones of a git repository.
-Each clone one is based on a different fork of the same root repository.
-Both clones have had changes applied to them.
-What is the best way to combine the commits from one clone into the other.
-==END==
+    ?   I have two git clones of a git repository.
+    ?   Each clone one is based on a different fork of the same root repository.
+    ?   Both clones have had changes applied to them.
+    ?   What is the best way to combine the commits from one clone into the other.
 
---START--
-The cleanest approach is usually to treat one clone as the destination,
-add the other fork as an additional remote, fetch its commits, and then merge,
-rebase, or cherry-pick them.
-....
-....
---END--
+    >   The cleanest approach is usually to treat one clone as the destination,
+    >   add the other fork as an additional remote, fetch its commits, and then merge,
+    >   rebase, or cherry-pick them.
+    >   ....
+    >   ....
 
 
 # -----------------------------------------------------
@@ -168,14 +160,12 @@ rebase, or cherry-pick them.
 
         git remote -v
 
---START--
-old-fork    ../attic/github-zrq-20260724 (fetch)
-old-fork    ../attic/github-zrq-20260724 (push)
-origin      git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
-origin      git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
-uksrc       git@github.com:uksrc/Calycopis-broker.git (fetch)
-uksrc       git@github.com:uksrc/Calycopis-broker.git (push)
---END--
+    >   old-fork    ../attic/github-zrq-20260724 (fetch)
+    >   old-fork    ../attic/github-zrq-20260724 (push)
+    >   origin      git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
+    >   origin      git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
+    >   uksrc       git@github.com:uksrc/Calycopis-broker.git (fetch)
+    >   uksrc       git@github.com:uksrc/Calycopis-broker.git (push)
 
 
         #
@@ -184,13 +174,11 @@ uksrc       git@github.com:uksrc/Calycopis-broker.git (push)
             git branch
         popd
 
---START--
-....
-....
-* 20260611-zrq-scheduling-bugfix
-  20260722-zrq-version-sync
-  main
---END--
+    >   ....
+    >   ....
+    >   * 20260611-zrq-scheduling-bugfix
+    >     20260722-zrq-version-sync
+    >     main
 
         #
         # Fetch the remote changes.
@@ -199,30 +187,26 @@ uksrc       git@github.com:uksrc/Calycopis-broker.git (push)
             old-fork \
             20260611-zrq-scheduling-bugfix:refs/remotes/old-fork/20260611-zrq-scheduling-bugfix
 
---START--
-....
-....
-Receiving objects: 100% (569/569), 161.02 KiB | 828.00 KiB/s, done.
-Resolving deltas: 100% (383/383), completed with 77 local objects.
-From ../attic/github-zrq-20260724
- * [new branch]        20260611-zrq-scheduling-bugfix -> old-fork/20260611-zrq-scheduling-bugfix
- * [new tag]           0.0.1-SNAPSHOT-20250515        -> 0.0.1-SNAPSHOT-20250515
- * [new tag]           0.0.1-SNAPSHOT-20250522        -> 0.0.1-SNAPSHOT-20250522
---END--
+    >   ....
+    >   ....
+    >   Receiving objects: 100% (569/569), 161.02 KiB | 828.00 KiB/s, done.
+    >   Resolving deltas: 100% (383/383), completed with 77 local objects.
+    >   From ../attic/github-zrq-20260724
+    >    * [new branch]        20260611-zrq-scheduling-bugfix -> old-fork/20260611-zrq-scheduling-bugfix
+    >    * [new tag]           0.0.1-SNAPSHOT-20250515        -> 0.0.1-SNAPSHOT-20250515
+    >    * [new tag]           0.0.1-SNAPSHOT-20250522        -> 0.0.1-SNAPSHOT-20250522
 
 
         git branch --remotes
 
---START--
-  old-fork/20260611-zrq-scheduling-bugfix
-  old-fork/HEAD -> old-fork/20260611-zrq-scheduling-bugfix
-  origin/20260727-zrq-broker-buildpack
-  origin/20260818-zrq-github-sync
-  origin/HEAD -> origin/main
-  origin/main
-  uksrc/HEAD -> uksrc/main
-  uksrc/main
---END--
+    >     old-fork/20260611-zrq-scheduling-bugfix
+    >     old-fork/HEAD -> old-fork/20260611-zrq-scheduling-bugfix
+    >     origin/20260727-zrq-broker-buildpack
+    >     origin/20260818-zrq-github-sync
+    >     origin/HEAD -> origin/main
+    >     origin/main
+    >     uksrc/HEAD -> uksrc/main
+    >     uksrc/main
 
 
         #
@@ -230,18 +214,16 @@ From ../attic/github-zrq-20260724
 
         git merge old-fork/20260611-zrq-scheduling-bugfix
 
---START--
-....
-....
-Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/platform/mock/MockPlatformSettingsImpl.java
-Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/OffersetsApiDelegateImpl.java
-CONFLICT (content): Merge conflict in java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/OffersetsApiDelegateImpl.java
-Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/SessionsApiDelegateImpl.java
-CONFLICT (content): Merge conflict in java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/SessionsApiDelegateImpl.java
-Auto-merging tests/python/docker/test_docker_androcles_md5.py
-Auto-merging tests/python/docker/test_docker_platform.py
-Automatic merge failed; fix conflicts and then commit the result.
---END--
+    >   ....
+    >   ....
+    >   Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/platform/mock/MockPlatformSettingsImpl.java
+    >   Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/OffersetsApiDelegateImpl.java
+    >   CONFLICT (content): Merge conflict in java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/OffersetsApiDelegateImpl.java
+    >   Auto-merging java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/SessionsApiDelegateImpl.java
+    >   CONFLICT (content): Merge conflict in java/src/main/java/net/ivoa/calycopis/broker/spring/webapp/SessionsApiDelegateImpl.java
+    >   Auto-merging tests/python/docker/test_docker_androcles_md5.py
+    >   Auto-merging tests/python/docker/test_docker_platform.py
+    >   Automatic merge failed; fix conflicts and then commit the result.
 
     #
     # Conflicts were all due to the package name change of the generated code.
@@ -250,39 +232,33 @@ Automatic merge failed; fix conflicts and then commit the result.
 
         git status
 
---START--
-On branch 20260818-zrq-github-sync
-Your branch is up to date with 'origin/20260818-zrq-github-sync'.
-
-All conflicts fixed but you are still merging.
-  (use "git commit" to conclude merge)
-
-Changes to be committed:
-	new file:   agents/plans/Androcles sha256 race test-8e26684a.plan.md
-	new file:   agents/plans/Auth identity implementation-e0232013.plan.md
-    ....
-    ....
-    ....
-    ....
-	modified:   tests/python/docker/test_docker_androcles_md5.py
-	modified:   tests/python/docker/test_docker_platform.py
---END--
+    >   On branch 20260818-zrq-github-sync
+    >   Your branch is up to date with 'origin/20260818-zrq-github-sync'.
+    >   
+    >   All conflicts fixed but you are still merging.
+    >     (use "git commit" to conclude merge)
+    >   
+    >   Changes to be committed:
+    >   	new file:   agents/plans/Androcles sha256 race test-8e26684a.plan.md
+    >   	new file:   agents/plans/Auth identity implementation-e0232013.plan.md
+    >       ....
+    >       ....
+    >       ....
+    >       ....
+    >   	modified:   tests/python/docker/test_docker_androcles_md5.py
+    >   	modified:   tests/python/docker/test_docker_platform.py
 
 
         git commit -m "Merged changes from Zarquan-ivoa fork"
 
---START--
-[20260818-zrq-github-sync 87f0379c] Merged changes from Zarquan-ivoa fork
---END--
+    >   [20260818-zrq-github-sync 87f0379c] Merged changes from Zarquan-ivoa fork
 
 
         git status
 
---START--
-On branch 20260818-zrq-github-sync
-Your branch is ahead of 'origin/20260818-zrq-github-sync' by 26 commits.
-  (use "git push" to publish your local commits)
---END--
+    >   On branch 20260818-zrq-github-sync
+    >   Your branch is ahead of 'origin/20260818-zrq-github-sync' by 26 commits.
+    >     (use "git push" to publish your local commits)
 
 
 
