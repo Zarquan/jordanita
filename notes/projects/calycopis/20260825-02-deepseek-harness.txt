@@ -1,0 +1,345 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Evaluate DeepSeek harness.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+        I don't want to give it full access to my desktop.
+        Try to run it in a container.
+
+        I thought that would be simple ... but it isn't.
+
+        Google search for "running DeepSeek harness in a Docker container"
+
+
+        Methods to Deploy DeepSeek Harness Locally - Method 4: Docker / Container Deployment
+        https://www.cometapi.com/how-to-install-and-deploy-deepseek-harness-locally/#method-4-docker--container-deployment
+
+            Community Docker images and compose files exist for running the Web UI inside a container,
+            often with HTTPS termination via nginx and support for arbitrary OpenAI-compatible gateways.
+
+            - That's it. Nothing more. They exist apparently.
+              No help at all.
+
+
+        smanx/deepseek-harness
+        https://hub.docker.com/r/smanx/deepseek-harness
+
+            An out-of-the-box DeepSeek Harness (DSH) Docker image with a built-in Node reverse proxy.
+            It solves the issue that DSH officially forbids --host 0.0.0.0 (loopback-only listening)
+            and makes DSH safely accessible over your LAN.
+
+            - OK, but no source code, anywhere.
+              Published in DockerHub and GitHub Container Registry, but no source code.
+
+            DSH: Installs the official npm package @deepseek-ai/dsh (deepseek-harness) inside the container,
+            listening on 127.0.0.1:3079 (source port) by default;
+            Node proxy: 0.0.0.0:3080 (proxy port) → 127.0.0.1:3079, providing HTTP + WebSocket forwarding to the outside;
+
+            Why a proxy is needed:
+
+                DSH officially forbids --host 0.0.0.0 (security restriction) and can only listen on the loopback address;
+                Pages loaded over a LAN IP are in a browser non-secure context, where the crypto.randomUUID used by the DSH
+                frontend is unavailable.
+                The proxy automatically injects a getRandomValues-based polyfill into served HTML; without it the realtime
+                channel (WS) stays pending forever;
+                The proxy also provides optional HTTP Basic Auth to protect LAN access.
+
+            This sounds ideal. BUT, why go to all the bother of finding an open source harness,
+            only to launch it in a closed source container !?
+
+            Also, I'd like to install it in my own container, with my own development tools in place.
+            Looks like I'll need to go the long way.
+
+
+
+        Looks like this is what they are using.
+        https://github.com/smanx/dsh-proxy
+
+            An HTTP + WebSocket reverse proxy that forwards a LAN port to the local DSH service 127.0.0.1:3080.
+            Supports Basic Auth, LAN access, and crypto.randomUUID polyfill injection.
+
+            Install as a DSH plugin
+            dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+
+        Install and run the harness itself
+        https://github.com/deepseek-ai/deepseek-harness/blob/master/README.md#run
+
+            Start the Web UI at http://127.0.0.1:3080 by default and opens it in the default browser for a local launch
+
+                npx @deepseek-ai/dsh web
+
+            Use --no-open to run the server without opening a browser.
+
+        Command line
+        https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/cli/README.md
+
+            dsh --profile web --port 8080       # --port belongs to the web app
+            dsh --profile tui --resume <id>     # example, assuming the tui profile is installed; --resume belongs to the terminal app
+            dsh --profile headless "run the tests"
+            dsh --profile web --help            # the web app's flags, not the launcher's
+            dsh --help                          # the launcher's own help
+
+        So we should be able to install DSH, then use the command line tool to install the plugin, then launch the web UI in our container.
+        We have a plan ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Delete existing Pods and volumes.
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS         PORTS       NAMES
+    >   6ce5444ce2e4  localhost/podman-pause:5.4.2-1743552000                        About a minute ago  Up 12 seconds              91986f01235a-infra
+    >   400df6e24349  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        11 seconds ago      Up 9 seconds               calycopis-dev
+
+
+# -----------------------------------------------------
+# Build DSH from source.
+# https://github.com/deepseek-ai/deepseek-harness/blob/master/README.md#run-from-source
+#[root@calycopis-dev]
+
+    dnf install -y pnpm
+
+    git clone https://github.com/deepseek-ai/deepseek-harness.git /opt/dsh
+    cd /opt/dsh
+
+    pnpm install
+
+
+    >   ....
+    >   Progress: resolved 935, reused 0, downloaded 929, added 935, done
+    >   ....
+    >   Done in 1m 30.7s using pnpm v11.7.0
+
+    pnpm run build
+
+
+    >   ....
+    >   > @deepseek-ai/dsh-root@0.1.1-rc.2 build:lib:host
+    >   > tsc -b tsconfig.host.json && tsdown --env.DSH_BUILD_FACE host
+    >   ....
+
+    #
+    # 100% cpu for a long time ... what is it doing !?
+    #
+
+    >   ....
+    >   ....
+    >   (!) Some chunks are larger than 500 kB after minification. Consider:
+    >   - Using dynamic import() to code-split the application
+    >   - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+    >   - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+    >   ✓ built in 8.53s
+    >   build: recorded 200 client artifact(s) with 1 public value(s)
+
+
+# -----------------------------------------------------
+# Install the web proxy plugin
+# https://github.com/smanx/dsh-proxy
+#[root@calycopis-dev]
+
+    pnpm dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   $ node --import tsx/esm apps/cli/src/bin.ts plugin --profile web add 'github:smanx/dsh-proxy#master'
+    >   dsh: initialized profile web at /root/.dsh/profiles/web
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /root/.local/share/pnpm/store/v11
+    >     Virtual store is at:             node_modules/.pnpm
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
+    >   
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   Done in 3.9s using pnpm v11.7.0
+
+
+# -----------------------------------------------------
+# Run the service
+#[root@calycopis-dev]
+
+    pnpm dsh web --no-open
+
+    #
+    # DUH - remember to open the port on the container.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # As above, but with port 3080 open.
+    #
+
+    podman pod create \
+        --replace \
+        --publish 3080 \
+        --name calycopis-pod
+
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  calycopis-pod \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+
+    dnf install -y nodejs
+
+    npm install @deepseek-ai/dsh
+
+    >   npm error code EUNSUPPORTEDPROTOCOL
+    >   npm error Unsupported URL Type "workspace:": workspace:^
+    >   npm error A complete log of this run can be found in: /root/.npm/_logs/2026-08-25T18_05_50_388Z-debug-0.log
+
+    #
+    # Add the -g flag ?
+
+    npm install -g @deepseek-ai/dsh
+
+    >   npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+    >   
+    >   added 454 packages in 4m
+    >   
+    >   66 packages are looking for funding
+    >     run `npm fund` for details
+    >   npm warn allow-scripts 5 packages have install scripts not yet covered by allowScripts:
+    >   npm warn allow-scripts   @deepseek-ai/dsh-subprocess-local@0.1.1-rc.2 (postinstall: node scripts/ensure-spawn-helper.mjs)
+    >   npm warn allow-scripts   koffi@3.1.6 (install: node ./cnoke.cjs -P . -D src/koffi --prebuild --release)
+    >   npm warn allow-scripts   node-pty@1.2.0-beta.15 (install: node scripts/prebuild.js || node-gyp rebuild; postinstall: node scripts/post-install.js)
+    >   npm warn allow-scripts   @google/genai@1.52.0 (preinstall: echo 'preinstall: no-op')
+    >   npm warn allow-scripts   protobufjs@7.6.5 (postinstall: node scripts/postinstall)
+    >   npm warn allow-scripts
+    >   npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   dsh: initialized profile web at /root/.dsh/profiles/web
+    >   
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.24.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.24.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /root/.local/share/pnpm/store/v10
+    >     Virtual store is at:             node_modules/.pnpm
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
+    >   
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   Done in 3.8s using pnpm v10.33.0
+
+
+    dsh web --no-open
+
+
+    #
+    # In theory we have a running service, but we can't get at it.
+    # Nothing to do with DSH.
+    #
+    # Podman networking is getting in the way.
+    # Rootless containers don't get IP addresses.
+    # https://oneuptime.com/blog/post/2026-03-16-get-container-ip-address-podman/view
+    #
+
+
+

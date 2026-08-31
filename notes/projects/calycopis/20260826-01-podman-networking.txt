@@ -1,0 +1,908 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: [
+#     {
+#     "timestamp": "2026-08-26T12:56:44",
+#     "name": "ChatGPT",
+#     "model": "GPT-5.6 Sol",
+#     "log": "https://chatgpt.com/share/6a8ed398-2260-83eb-b234-09fb13314840",
+#     "contribution": {
+#       "value": 25,
+#       "units": "%"
+#       }
+#     }
+#   ]
+#
+
+    Target:
+
+        Evaluate DeepSeek harness, running it in a container
+        and accessing it from the desktop.
+
+    Result:
+
+        Work in progress ...
+
+        ChatGPT to the rescue
+        https://chatgpt.com/share/6a8ed398-2260-83eb-b234-09fb13314840
+
+# -----------------------------------------------------
+
+    #
+    # First - learn how to access a service running in a container or pod.
+    #
+
+# -----------------------------------------------------
+# Delete existing Pods and volumes.
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment - with no pod.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED        STATUS        PORTS       NAMES
+    >   ae17918baa3f  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        2 minutes ago  Up 2 minutes              calycopis-dev
+
+
+            dnf install -y ifconfig
+
+    >   ....
+    >   ....
+
+
+            ifconfig
+
+    >   enp3s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 65520
+    >           inet 10.12.0.6  netmask 255.0.0.0  broadcast 10.255.255.255
+    >           inet6 fe80::2495:c3ff:fe14:468b  prefixlen 64  scopeid 0x20<link>
+    >           inet6 2001:8b0:be72:d4eb:be6e:ad44:f2e8:ecdc  prefixlen 64  scopeid 0x0<global>
+    >           ether 26:95:c3:14:46:8b  txqueuelen 1000  (Ethernet)
+    >           RX packets 2346  bytes 5992973 (5.7 MiB)
+    >           RX errors 0  dropped 0  overruns 0  frame 0
+    >           TX packets 878  bytes 90072 (87.9 KiB)
+    >           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    >   
+    >   lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+    >           inet 127.0.0.1  netmask 255.0.0.0
+    >           inet6 ::1  prefixlen 128  scopeid 0x10<host>
+    >           loop  txqueuelen 1000  (Local Loopback)
+    >           RX packets 0  bytes 0 (0.0 B)
+    >           RX errors 0  dropped 0  overruns 0  frame 0
+    >           TX packets 0  bytes 0 (0.0 B)
+    >           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+        #
+        # 10.12.0.6 is the same IP address as the host system.
+        # 2001:8b0:be72:d4eb:be6e:ad44:f2e8:ecdc is the same as the host system.
+        #
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+# -----------------------------------------------------
+# Create our log directory.
+#[user@desktop]
+
+    LOG_DIR=$(mktemp -d)
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[user@desktop]
+
+    TEST_DIR=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TEST_DIR}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    chmod a+r "${TESTFILE}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0588937 s, 170 MB/s
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database (no pod).
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --expose 5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Run an instance of our development environment (no pod, writable config).
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --name calycopis-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:rw,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED             STATUS             PORTS       NAMES
+    >   0d9e9121149c  docker.io/library/postgres:latest                  postgres    About a minute ago  Up About a minute  5432/tcp    postgres
+    >   287596a8e8b6  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        9 seconds ago       Up 6 seconds                   calycopis-dev
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw spring-boot:run
+
+        #
+        # FAIL - We need to run a database service.
+        # FAIL - We need to create configuration files.
+        # FAIL - Can't find the database service using hostname 'postgres'.
+        #
+
+    >   ....
+    >   2026-08-26 05:37:53 WARN main jdbc getJdbcEnvironmentUsingJdbcMetadata() HHH100046:
+    >       Could not obtain connection to query JDBC database metadata
+    >       org.hibernate.exception.JDBCConnectionException:
+    >           Unable to obtain isolated JDBC connection [
+    >               Connection to 127.0.0.1:5432 refused.
+    >               Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+    >               ]
+    >   ....
+
+    #
+    # Change how we run postgresql - use 'publish' rather than 'expose'.
+    #
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database (no pod).
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --publish 5432:5432 \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw spring-boot:run
+
+        #
+        # FAIL - We need to run a database service.
+        # FAIL - We need to create configuration files.
+        # FAIL - Can't find the database service using hostname 'postgres'.
+        # FAIL - Can't connect to the database on 127.0.0.1.
+        # FAIL - Can't connect to the database on 10.12.0.6.
+        #
+
+2026-08-26 05:45:47 WARN main jdbc getJdbcEnvironmentUsingJdbcMetadata() HHH100046: Could not obtain connection to query JDBC database metadata
+org.hibernate.exception.JDBCConnectionException: Unable to obtain isolated JDBC connection [Connection to 10.12.0.6:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.] [n/a]
+
+
+# -----------------------------------------------------
+# Check our PostgreSQL service is available.
+#[user@desktop]
+
+    #
+    # Check from inside the Postgresql container.
+
+    podman exec \
+        -it \
+        postgres \
+            bash
+
+    pg_isready
+
+    >   /var/run/postgresql:5432 - accepting connections
+
+    pg_isready --host 127.0.0.1
+
+    >   127.0.0.1:5432 - accepting connections
+
+
+    pg_isready --host 10.12.0.6
+
+    >   10.12.0.6:5432 - accepting connections
+
+
+    #
+    # Check from the host system.
+
+    sudo dnf provides pg_isready
+
+    sudo dnf install -y postgresql
+
+    pg_isready --host 127.0.0.1
+
+    >   127.0.0.1:5432 - accepting connections
+
+    pg_isready --host 10.12.0.6
+
+    >   10.12.0.6:5432 - accepting connections
+
+
+    #
+    # Check from the dev container.
+
+    dnf install -y postgresql
+
+    pg_isready --host 127.0.0.1
+
+    >   127.0.0.1:5432 - no response
+
+    pg_isready --host 10.12.0.6
+
+    >   10.12.0.6:5432 - no response
+
+    #
+    # SO - if we run inside a pod, containers can connect to each other using container names.
+    # BUT we can't access the services from outside ?
+    #
+    # If we run the containers without a pod, we can access the services from the host.
+    # BUT the containers can't access each other ?
+    #
+
+# -----------------------------------------------------
+# Stop and remove everything ..
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman stop $(podman ps -aq)
+
+    podman rm $(podman ps -aq)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# Create our configuration files, test data and log directory.
+#[user@desktop]
+
+    ....
+    ....
+
+
+# -----------------------------------------------------
+# Create our Pod.
+#[user@desktop]
+
+    podman pod create \
+        --replace \
+        --name calycopis-pod
+
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database (in pod).
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --expose 5432 \
+        --pod calycopis-pod \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+    #
+    # Check from the host system.
+    pg_isready --host 127.0.0.1
+
+    >   127.0.0.1:5432 - no response
+
+    pg_isready --host 10.12.0.6
+
+    >   10.12.0.6:5432 - no response
+
+
+# -----------------------------------------------------
+# Ask ChatGPT for help ..
+# https://chatgpt.com/share/6a8ed398-2260-83eb-b234-09fb13314840
+
+    ?   I want to run two services in separate Podman pods, configured so that they can connect to each other from inside their pods, and are both accessible from the host system.
+    ?   If I run the service containers inside a pod, they can connect to each other using their container names as host names, but they are not accessible from outside the pod.
+    ?   If I run the service containers without a pod, they are both accessible from the host system using the loop back address and the host's IP address, but the services cannot reach eah other from inside their containers.
+
+    >   Yes. The missing piece is a user-defined Podman network shared by the two pods, combined with port publishing on each pod.
+    >   
+    >   A useful topology is:
+    >   
+    >                            host
+    >                             |
+    >                 +-----------+-----------+
+    >                 |                       |
+    >            localhost:8080           localhost:5432
+    >                 |                       |
+    >           +-----+-----+           +-----+-----+
+    >           |   pod-a   |           |   pod-b   |
+    >           | service-a |           | service-b |
+    >           +-----+-----+           +-----+-----+
+    >                 |                       |
+    >                 +---- app-network ------+
+    >                       Podman DNS
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Create a shared network, then create two pods on that network.
+#[user@desktop]
+
+    podman network create calycopis-net
+
+    >   Error: could not find free subnet from subnet pools
+
+    ?   The `podman network create` command returns an error message `could not find free subnet from subnet pools`
+
+
+    TEST_NETWORK="calycopis-test"
+    TEST_SUBNET="172.30.100.0/24"
+
+    podman network create \
+        --subnet "${TEST_SUBNET}" \
+        "${TEST_NETWORK}"
+
+    ip -4 route
+
+    >   default via 10.0.0.28 dev enp3s0 proto dhcp src 10.12.0.6 metric 100
+    >   10.0.0.0/8 dev enp3s0 proto kernel scope link src 10.12.0.6 metric 100
+
+    podman network ls
+
+    >   NETWORK ID    NAME            DRIVER
+    >   41d1ae90bdb0  calycopis-demo  bridge
+    >   93ab224412bc  calycopis-test  bridge
+    >   2f259bab93aa  podman          bridge
+
+    podman network inspect podman
+
+    >   [
+    >        {
+    >             "name": "podman",
+    >             "id": "2f259bab93aaaaa2542ba43ef33eb990d0999ee1b9924b557b7be53c0b7a1bb9",
+    >             "driver": "bridge",
+    >             "network_interface": "podman0",
+    >             "created": "2026-08-26T07:27:47.492889614+01:00",
+    >             "subnets": [
+    >                  {
+    >                       "subnet": "10.88.0.0/16",
+    >                       "gateway": "10.88.0.1"
+    >                  }
+    >             ],
+    >             "ipv6_enabled": false,
+    >             "internal": false,
+    >             "dns_enabled": false,
+    >             "ipam_options": {
+    >                  "driver": "host-local"
+    >             },
+    >             "containers": {}
+    >        }
+    >   ]
+
+
+    ip -4 route
+
+    >   default via 10.0.0.28 dev enp3s0 proto dhcp src 10.12.0.6 metric 100
+    >   10.0.0.0/8 dev enp3s0 proto kernel scope link src 10.12.0.6 metric 100
+
+
+    podman network ls
+
+    >   NETWORK ID    NAME            DRIVER
+    >   41d1ae90bdb0  calycopis-demo  bridge
+    >   93ab224412bc  calycopis-test  bridge
+    >   2f259bab93aa  podman          bridge
+
+
+    podman network inspect podman
+
+    >   [
+    >        {
+    >             "name": "podman",
+    >             "id": "2f259bab93aaaaa2542ba43ef33eb990d0999ee1b9924b557b7be53c0b7a1bb9",
+    >             "driver": "bridge",
+    >             "network_interface": "podman0",
+    >             "created": "2026-08-26T07:27:47.492889614+01:00",
+    >             "subnets": [
+    >                  {
+    >                       "subnet": "10.88.0.0/16",
+    >                       "gateway": "10.88.0.1"
+    >                  }
+    >             ],
+    >             "ipv6_enabled": false,
+    >             "internal": false,
+    >             "dns_enabled": false,
+    >             "ipam_options": {
+    >                  "driver": "host-local"
+    >             },
+    >             "containers": {}
+    >        }
+    >   ]
+
+
+    ip -4 route
+
+    >   default via 10.0.0.28 dev enp3s0 proto dhcp src 10.12.0.6 metric 100
+    >   10.0.0.0/8 dev enp3s0 proto kernel scope link src 10.12.0.6 metric 10
+
+
+    ip -4 addr
+
+    >   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    >       inet 127.0.0.1/8 scope host lo
+    >          valid_lft forever preferred_lft forever
+    >   2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    >       inet 10.12.0.6/8 brd 10.255.255.255 scope global dynamic noprefixroute enp3s0
+    >          valid_lft 1760sec preferred_lft 1760sec
+
+
+    >   ....
+    >   ....
+    >   Your host claims the entire 10.0.0.0/8 network on enp3s0:
+    >   
+    >       10.0.0.0/8 dev enp3s0
+    >   
+    >   and the interface itself is configured as:
+    >   
+    >       10.12.0.6/8
+    >   
+    >   So Podman cannot safely auto-allocate any of its usual 10.89.0.0/24-style networks because they all fall inside the host’s directly connected /8.
+    >   
+    >   For this machine, I would avoid 10.0.0.0/8 entirely for Podman user-defined networks and use part of 172.16.0.0/12 instead, provided you do not
+    >   have a VPN or other network using it.
+    >   
+    >   For example:
+    >   
+    >       podman network create \
+    >           --subnet 172.30.100.0/24 \
+    >           calycopis-services
+    >   
+    >   Given the routing table you showed, that subnet does not currently overlap any host route.
+    >   
+    >   You can then create the pods on that network:
+    >   
+    >       podman pod create \
+    >           --name service-a-pod \
+    >           --network calycopis-services \
+    >           --network-alias service-a \
+    >           --publish 8080:8080
+    >   
+    >       podman pod create \
+    >           --name service-b-pod \
+    >           --network calycopis-services \
+    >           --network-alias service-b \
+    >           --publish 5432:5432
+    >   
+    >   The resulting access pattern is:
+    >   
+    >       Host -> service A:
+    >           localhost:8080
+    >   
+    >       Host -> service B:
+    >           localhost:5432
+    >   
+    >       Pod A -> service B:
+    >           service-b:5432
+    >   
+    >       Pod B -> service A:
+    >           service-a:8080
+    >   
+    >   
+    >   One thing I would change longer-term is Podman’s automatic subnet pool, because with a /8 LAN route you
+    >   will otherwise keep hitting this whenever you run:
+    >   
+    >       podman network create some-network
+    >   
+    >   without specifying --subnet.
+    >   
+    >   For rootless Podman, you can configure this in:
+    >   
+    >       ~/.config/containers/containers.conf
+    >   
+    >   using a pool somewhere in 172.16.0.0/12, for example allocating /24s from a larger reserved block such as 172.30.0.0/16.
+    >   The exact default_subnet_pools syntax varies slightly by containers-common/Podman version,
+    >   so if you want, I can give you the correct containers.conf entry for your installed Podman version.
+
+    #
+    # I think I'll leave this as-is for now.
+    # If I specifically configure this machine then in time I'll forget and be suprised when the scripts don't work on another machine.
+    # TODO - one day, re-configure the networking to use a more specific subnet.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Stop and remove everything ..
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman stop $(podman ps -aq)
+
+    podman rm $(podman ps -aq)
+
+    podman volume rm $(podman volume ls -q)
+
+
+# -----------------------------------------------------
+# Create our configuration files, test data and log directory.
+#[user@desktop]
+
+    LOG_DIR=$(
+        mktemp -d
+        )
+
+    TEST_DIR=$(
+        mktemp -d
+        )
+
+    CONFIG_DIR=$(
+        mktemp -d
+        )
+
+    ....
+    ....
+
+# -----------------------------------------------------
+# Create a shared network, then create three pods on that network.
+#[user@desktop]
+
+    podman network create \
+        --subnet 172.30.100.0/24 \
+        calycopis-network
+
+    podman pod create \
+        --name postgres-pod \
+        --network calycopis-network \
+        --network-alias postgres \
+        --publish 5432:5432
+
+    podman pod create \
+        --name broker-pod \
+        --network calycopis-network \
+        --network-alias broker \
+        --publish 8082:8082 \
+        --publish 3080:3080 \
+        --publish 3081:3081
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database in it's pod.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod postgres-pod \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+# -----------------------------------------------------
+# Check we can see our database from the host system.
+#[user@desktop]
+
+    pg_isready --host 127.0.0.1
+
+    >   127.0.0.1:5432 - accepting connections
+
+
+# -----------------------------------------------------
+# Run our development environment in it's pod, with writable config.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod broker-pod \
+        --name broker-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${TEST_DIR}:/tmp/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:rw,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.cursor:/root/.cursor:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        ghcr.io/ivoa/calycopis/developer-tools:2026.07.16 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                              COMMAND     CREATED         STATUS         PORTS                                           NAMES
+    >   2c0de95c26a2  localhost/podman-pause:5.4.2-1743552000                        30 seconds ago  Up 23 seconds  0.0.0.0:5432->5432/tcp                          41290d90cc58-infra
+    >   228653953d69  localhost/podman-pause:5.4.2-1743552000                        30 seconds ago  Up 6 seconds   0.0.0.0:3080->3080/tcp, 0.0.0.0:8082->8082/tcp  39a1e5a4a1b2-infra
+    >   24e1ee14ffac  docker.io/library/postgres:latest                  postgres    22 seconds ago  Up 22 seconds  0.0.0.0:5432->5432/tcp                          postgres
+    >   0db39b86096d  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        6 seconds ago   Up 5 seconds   0.0.0.0:3080->3080/tcp, 0.0.0.0:8082->8082/tcp  broker-dev
+
+# -----------------------------------------------------
+# Install the PostgreDQL client and check if we can see our database.
+#[root@calycopis-dev]
+
+    dnf install -y postgresql
+
+    pg_isready --host postgres
+
+    >   postgres:5432 - accepting connections
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw spring-boot:run
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Check we can see the broker from the host system.
+#[user@desktop]
+
+    curl --head http://127.0.0.1:8082/actuator/health
+
+    >   HTTP/1.1 200
+    >   X-Content-Type-Options: nosniff
+    >   X-XSS-Protection: 0
+    >   Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+    >   Pragma: no-cache
+    >   Expires: 0
+    >   X-Frame-Options: DENY
+    >   Content-Type: application/vnd.spring-boot.actuator.v3+json
+    >   Date: Wed, 26 Aug 2026 10:27:39 GMT
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Connect a second terminal to the broker container.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --interactive \
+        broker-dev \
+            bash
+
+    >   ....
+    >   ....
+
+# -----------------------------------------------------
+# Install and run the DeepSeek harness with http proxy.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+    npm install -g @deepseek-ai/dsh
+
+    >   ....
+    >   added 456 packages in 2m
+    >   ....
+
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   ....
+    >   ....
+    >   dependencies:
+    >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
+    >   
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   Done in 4.7s using pnpm v10.33.0
+
+
+    dsh web --no-open
+
+    >   http://127.0.0.1:3080
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Try login to the harness from the desktop.
+#[user@desktop]
+
+    firefox \
+        'http://127.0.0.1:3080'
+
+    >   The connection to the server was reset while the page was loading.
+
+    #
+    # Do it all again adding port 3081 for the proxy.
+    #
+
+    firefox \
+        'http://127.0.0.1:3081'
+
+    >   Add an API key to get started
+
+    #
+    # YAY - harness is working.
+    #
+
+
+

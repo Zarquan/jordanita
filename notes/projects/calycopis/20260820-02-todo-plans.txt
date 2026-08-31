@@ -34,13 +34,246 @@
 # -----------------------------------------------------
 
 
-    Adjust booking start to now-1, allow longer blocks.
-    https://github.com/uksrc/Calycopis-broker/issues/30
+    AI agents
+    https://github.com/uksrc/Calycopis-broker/issues/64
 
-    Add inverse bookings to allocate resources.
-    https://github.com/uksrc/Calycopis-broker/issues/32
-    type resource-allocation
-        start, end, size
+        Evaluate Cursor
+        https://github.com/uksrc/Calycopis-broker/issues/65
+
+        Evaluate DeepSeek harness
+        https://github.com/uksrc/Calycopis-broker/issues/62
+
+        Evaluate Claude code
+        https://github.com/uksrc/Calycopis-broker/issues/63
+
+        Evaluate Cursor
+        https://github.com/uksrc/Calycopis-broker/issues/65
+            Done
+
+        Develop agent skill to drive the broker API
+        https://github.com/uksrc/Calycopis-broker/issues/88
+
+
+    Small steps
+    https://github.com/uksrc/Calycopis-broker/issues/66
+
+        Access to saved Docker stdout and stderr
+        https://github.com/uksrc/Calycopis-broker/issues/80
+
+        Available resources DEBUG messages
+        https://github.com/uksrc/Calycopis-broker/issues/31
+
+        Consistent debug messages
+        https://github.com/uksrc/Calycopis-broker/issues/59
+
+        Change DOCKER_SOCKET to CONTAINER_HOST in tests
+        https://github.com/uksrc/Calycopis-broker/issues/21
+
+        Improve the reliability of the tests
+        https://github.com/uksrc/Calycopis-broker/issues/36
+            Add checks for monitor ACCEPTED -> PREPARING -> AVAILABLE
+
+        Replace deprecated Jackson message converter
+        https://github.com/uksrc/Calycopis-broker/issues/24
+
+        Add labels to our containers
+        https://github.com/uksrc/Calycopis-broker/issues/25
+        Update our tests to use labels to find running containers
+
+        Consistent TEST parameter names
+        https://github.com/uksrc/Calycopis-broker/issues/29
+
+        Available resources DEBUG messages
+        https://github.com/uksrc/Calycopis-broker/issues/31
+
+        Strings limited to VARCHAR(256)
+        https://github.com/uksrc/Calycopis-broker/issues/57
+
+        Components should start at OFFERED
+        https://github.com/uksrc/Calycopis-broker/issues/55
+
+        Background deletion of expired components
+        https://github.com/uksrc/Calycopis-broker/issues/54
+
+        MessageEntity ignores values
+        https://github.com/uksrc/Calycopis-broker/issues/53
+
+    Development features
+    https://github.com/uksrc/Calycopis-broker/issues/67
+
+        Split dev-tools into separate repo
+        https://github.com/uksrc/Calycopis-broker/issues/52
+
+        Add Junit tests to broker
+        https://github.com/uksrc/Calycopis-broker/issues/87
+
+    Securing features
+    https://github.com/uksrc/Calycopis-broker/issues/68
+
+        Limit volume mount paths
+        https://github.com/uksrc/Calycopis-broker/issues/39
+
+        Container image white list
+        https://github.com/uksrc/Calycopis-broker/issues/41
+
+        Default per account quotas
+        https://github.com/uksrc/Calycopis-broker/issues/40
+
+
+    Authentication features
+    https://github.com/uksrc/Calycopis-broker/issues/69
+
+        Add JWT token authentication
+        https://github.com/uksrc/Calycopis-broker/issues/47
+
+        Test JWT token authentication
+        https://github.com/uksrc/Calycopis-broker/issues/48
+
+    Concurrent processing
+    https://github.com/uksrc/Calycopis-broker/issues/70
+
+        Concurrent processing
+        https://github.com/uksrc/Calycopis-broker/issues/60
+
+        Implement Spring concurrent threads
+        https://github.com/uksrc/Calycopis-broker/issues/61
+
+        Configurable processing threads
+        https://github.com/uksrc/Calycopis-broker/issues/45
+
+        Adaptive processing threads
+        https://github.com/uksrc/Calycopis-broker/issues/46
+
+    Resource booking service
+    https://github.com/uksrc/Calycopis-broker/issues/71
+
+        Zero delay starting blocks
+        https://github.com/uksrc/Calycopis-broker/issues/30
+
+        Add inverse bookings to allocate resources.
+        https://github.com/uksrc/Calycopis-broker/issues/32
+
+        Re-usable booking component
+        https://github.com/uksrc/Calycopis-broker/issues/72
+
+
+    Docker resources
+    https://github.com/uksrc/Calycopis-broker/issues/79
+
+        Access to live Docker stdout and stderr
+        https://github.com/uksrc/Calycopis-broker/issues/81
+
+        Access to live Docker stdin
+        https://github.com/uksrc/Calycopis-broker/issues/82
+
+        Shared pool for DockerContainerImages
+        https://github.com/uksrc/Calycopis-broker/issues/49
+
+        Validate bind mount paths #28
+        https://github.com/uksrc/Calycopis-broker/issues/28
+            White list of allowed paths - per storage pool
+
+
+    Networking resources
+    https://github.com/uksrc/Calycopis-broker/issues/83
+
+        Exposing external network ports
+        https://github.com/uksrc/Calycopis-broker/issues/84
+
+        Requesting external network access
+        https://github.com/uksrc/Calycopis-broker/issues/85
+
+
+    Storage resources
+    https://github.com/uksrc/Calycopis-broker/issues/73
+
+        Storage resource reservations
+        https://github.com/uksrc/Calycopis-broker/issues/74
+
+        Storage lifetime after session
+        https://github.com/uksrc/Calycopis-broker/issues/75
+
+        Access to storage resources
+        https://github.com/uksrc/Calycopis-broker/issues/76
+
+        Storage resource pools
+        https://github.com/uksrc/Calycopis-broker/issues/78
+
+        Write to remote resources
+        https://github.com/uksrc/Calycopis-broker/issues/86
+
+    IVOA tasks
+    https://github.com/uksrc/Calycopis-broker/issues/89
+
+        Evaluate RFC9457 error responses
+        https://github.com/uksrc/Calycopis-broker/issues/90
+
+        IVOA AI interest group
+        https://github.com/uksrc/Calycopis-broker/issues/91
+
+
+
+    Misc features
+
+        Component endpoints
+        https://github.com/uksrc/Calycopis-broker/issues/58
+
+        Storage resource services
+
+            Simple HTTP storage access
+            S3 storage resources
+            VOSpace storage resources
+            WebDAV storage resources
+
+
+
+    Later
+
+        Add support for SElinx to volume mounts
+        https://github.com/uksrc/Calycopis-broker/issues/23
+            Small use case
+
+
+
+
+
+        Walk through the user cases with details in the steps.
+
+        UI that displays the task queue for a user
+
+        UI that displays the system state
+
+        UI that displays the available resources
+
+        Slurm based implementation
+        What storage ?
+
+        K8S based implementation
+        What storage ?
+        How to test
+
+        Openstack based implementation
+        Ceph/Manila storage.
+        How to test
+
+        DigitalOcean based implementation
+
+        Amazon based implementation
+
+        Google based implementation
+
+        Astronomy use cases
+            Marcus's STARS tests
+            Bob's SRCNet containers
+            eMerlin tasks ?
+
+
+
+
+
+
+
+
 
 
 

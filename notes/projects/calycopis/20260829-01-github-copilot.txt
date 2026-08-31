@@ -1,0 +1,399 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Using GitHub CoPilot to diagnose issues with GitHub workflow.
+
+        Source branch
+        https://github.com/Zarquan/Calycopis-broker-uksrc/tree/20260826-zrq-catchup
+
+        Pull request
+        https://github.com/uksrc/Calycopis-broker/pull/96
+
+        Workflow run
+        https://github.com/uksrc/Calycopis-broker/actions/runs/33264366595/job/99131692693?pr=96
+
+        CoPilot space
+        https://github.com/copilot/c/aec47c7f-3dbc-4309-9f6c-3288ac6c22c3
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+    ?   Can you add some debug to the Python test to help to diagnose why this test fails.
+    ?   https://github.com/uksrc/Calycopis-broker/actions/runs/33173617230/job/98900907281?pr=96#step:19:221
+
+    >   ....
+    >   test_md5_matches_local - This test is currently skipped (line 321 has skip_md5_matches_local instead of test_md5_matches_local),
+    >   so the failure must be from a different issue
+    >   .....
+
+
+    ?   test_md5_matches_local is not skipped in the branch that I am trying to merge in the PR.
+    ?   https://github.com/uksrc/Calycopis-broker/blob/dda296d37a4cfda6343b8fce3a2a4bed5e100c20/tests/python/docker/test_docker_androcles_md5.py
+
+    >   You're right! Looking at the current version in the branch, the test has been refactored to use _get_session_stdout()
+    >   to read captured stdout from the session connector API instead of polling Docker directly.
+    >   Let me add comprehensive debug logging to help diagnose why the test_md5_matches_local test is failing
+    >   ....
+    >   ....
+
+
+    >   ....
+    >   ....
+    >   Perfect! I've successfully added comprehensive debug logging to the _compute_expected_md5 method in the
+    >   20260826-zrq-catchup branch of your Zarquan fork.
+    >   The changes have been committed with commit hash 09d24034596c8c3dda6478c9f94b65c2ac9e1ebb.
+    >   What was added:
+    >   
+    >   The updated _compute_expected_md5 method now includes detailed logging at each step:
+    >   
+    >       Input validation - Logs the file path value (with repr) and validates it's not None/empty
+    >       File existence check - Attempts to verify the file exists on the host and logs file size
+    >       Docker client diagnostics - Logs the docker client object and DOCKER_SOCKET being used
+    >       Container execution details - Logs the exact volume mount configuration before running
+    >       Output type and size - Logs the output type and raw bytes count
+    >       Decoding diagnostics - Logs each step of UTF-8 decoding with error handling
+    >       Output parsing - Logs the split parts and extracted MD5 hash
+    >       Exception handling - Comprehensive try-except blocks with full tracebacks at each step
+    >   
+    >   This will help identify exactly where the exception is occurring when the test runs, whether it's:
+    >   
+    >       File path being None
+    >       Docker socket connectivity issues
+    >       Container execution failures
+    >       Output decoding problems
+    >       Output parsing errors
+    >   
+    >   The changes are now in your PR branch and ready for testing!
+
+
+
+
+
+
+    >   ....
+    >   ....
+    >   ----------------------------- Captured stdout call -----------------------------
+    >   
+    >   >>> _compute_expected_md5 START: filepath='/home/runner/work/_temp/data/random.dat'
+    >   
+    >   
+    >   >>> Running diagnostic container to check mount
+    >   
+    >   >>> Diagnostic output: b'-rw-r--r--    1 root     root      10000000 Aug 29 17:00 /input\n'
+    >   
+    >   
+    >   >>> Running head diagnostic
+    >   
+    >   >>> Head output length: 100
+    >   
+    >   
+    >   >>> Running actual md5sum container
+    >   
+    >   >>> Container output: b''
+    >   
+    >   >>> Container output (with stderr redirected): b''
+    >   
+    >   ------------------------------ Captured log call -------------------------------
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:169 _compute_expected_md5 START: filepath='/home/runner/work/_temp/data/random.dat'
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:175 File path provided: '/home/runner/work/_temp/data/random.dat'
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:176 File path type: <class 'str'>
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:185 File DOES NOT EXIST on host: /home/runner/work/_temp/data/random.dat
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:189 About to run container
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:194 Running diagnostic: ls -la /input
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:204 Diagnostic output: b'-rw-r--r--    1 root     root      10000000 Aug 29 17:00 /input\n'
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:208 Running diagnostic: head -c 100 /input
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:218 Head output length: 100
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:222 Running command: md5sum /input
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:232 Container output (raw): b''
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:233 Container output length: 0
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:237 stdout is empty, trying with sh -c to redirect stderr
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:248 Container output with stderr: b''
+    >   ERROR    test_docker_androcles_md5:test_docker_androcles_md5.py:252 Still getting empty output even with stderr redirection!
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:260 Decoding output
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:262 Decoded output: ''
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:263 Output length: 0 characters
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:271 Splitting output by whitespace
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:273 Split result: []
+    >   WARNING  test_docker_androcles_md5:test_docker_androcles_md5.py:274 Number of parts: 0
+    >   ERROR    test_docker_androcles_md5:test_docker_androcles_md5.py:277 Output split resulted in no parts!
+    >   ERROR    test_docker_androcles_md5:test_docker_androcles_md5.py:284 Exception extracting MD5 from output: ValueError: Invalid md5sum output: ''
+    >   ERROR    test_docker_androcles_md5:test_docker_androcles_md5.py:285 Original output: ''
+    >   =========================== short test summary info ============================
+    >   FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+    >   =================== 1 failed, 3 passed in 169.26s (0:02:49) ====================
+    >   Error: Process completed with exit code 1.
+
+
+    >   You have exceeded your monthly quota
+    >   You've run out of your included usage with the free plan. Limit resets on Sep 1.
+    >   [Upgrade plan]
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Add some debug of my own.
+    Running on local desktop
+
+    podman images --format "{{.Id}}"  docker.io/library/alpine
+
+    >   d529dd0c6e5597ac7e4a3e2dea65c3fcc6173f4cae713c409265c1dd9914a11b
+
+
+    podman images --format "{{.ID}}"  docker.io/library/alpine
+
+    >   d529dd0c6e55
+
+
+    podman inspect $(
+        podman images --format "{{.ID}}"  docker.io/library/alpine
+        )
+
+    >   [
+    >        {
+    >             "Id": "d529dd0c6e5597ac7e4a3e2dea65c3fcc6173f4cae713c409265c1dd9914a11b",
+    >             "Digest": "sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+    >             "RepoTags": [
+    >                  "docker.io/library/alpine:3"
+    >             ],
+    >             "RepoDigests": [
+    >                  "docker.io/library/alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+    >                  "docker.io/library/alpine@sha256:79ff19e9084a00eece421b2523fb93e22d730e2c0e525905de047e848e56d95f"
+    >             ],
+    >             "Parent": "",
+    >             "Comment": "buildkit.dockerfile.v0",
+    >             "Created": "2026-06-16T00:01:29.967161902Z",
+    >             "Config": {
+    >                  "Env": [
+    >                       "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    >                  ],
+    >                  "Cmd": [
+    >                       "/bin/sh"
+    >                  ],
+    >                  "WorkingDir": "/"
+    >             },
+    >             "Version": "",
+    >             "Author": "",
+    >             "Architecture": "amd64",
+    >             "Os": "linux",
+    >             "Size": 8709729,
+    >             "VirtualSize": 8709729,
+    >             "GraphDriver": {
+    >                  "Name": "overlay",
+    >                  "Data": {
+    >                       "UpperDir": "/home/Zarquan/.local/share/containers/storage/overlay/34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c/diff",
+    >                       "WorkDir": "/home/Zarquan/.local/share/containers/storage/overlay/34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c/work"
+    >                  }
+    >             },
+    >             "RootFS": {
+    >                  "Type": "layers",
+    >                  "Layers": [
+    >                       "sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c"
+    >                  ]
+    >             },
+    >             "Labels": null,
+    >             "Annotations": {
+    >                  "com.docker.official-images.bashbrew.arch": "amd64",
+    >                  "org.opencontainers.image.base.name": "scratch",
+    >                  "org.opencontainers.image.created": "2026-06-16T00:01:04Z",
+    >                  "org.opencontainers.image.revision": "398ff0c866d27e9f46f53e48184fe36c674b8897",
+    >                  "org.opencontainers.image.source": "https://github.com/alpinelinux/docker-alpine.git#398ff0c866d27e9f46f53e48184fe36c674b8897:x86_64",
+    >                  "org.opencontainers.image.url": "https://hub.docker.com/_/alpine",
+    >                  "org.opencontainers.image.version": "3.24.1"
+    >             },
+    >             "ManifestType": "application/vnd.oci.image.manifest.v1+json",
+    >             "User": "",
+    >             "History": [
+    >                  {
+    >                       "created": "2026-06-16T00:01:29.967161902Z",
+    >                       "created_by": "ADD alpine-minirootfs-3.24.1-x86_64.tar.gz / # buildkit",
+    >                       "comment": "buildkit.dockerfile.v0"
+    >                  },
+    >                  {
+    >                       "created": "2026-06-16T00:01:29.967161902Z",
+    >                       "created_by": "CMD [\"/bin/sh\"]",
+    >                       "comment": "buildkit.dockerfile.v0",
+    >                       "empty_layer": true
+    >                  }
+    >             ],
+    >             "NamesHistory": [
+    >                  "docker.io/library/alpine:3"
+    >             ]
+    >        }
+    >   ]
+
+
+    podman run \
+        --rm \
+        -it \
+        alpine:3 sh -c '
+            cat /etc/alpine-release
+            md5sum /etc/alpine-release
+            which md5sum
+            md5sum $(which md5sum)
+            '
+    >   3.24.1
+    >   ea32738decc5ac714aac2a3beb36e0fc  /etc/alpine-release
+    >   /usr/bin/md5sum
+    >   cf4d6f8e4f2874490fa1132f80d002c8  /usr/bin/md5sum
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Running in GitHub workflow
+
+
+      - name: Test the Alpine image in our Podman cache
+        run: |
+            podman run \
+                --rm \
+                alpine:3 sh -c '
+                    cat /etc/alpine-release
+                    md5sum /etc/alpine-release
+                    which md5sum
+                    md5sum $(which md5sum)
+                    '
+
+    >   Resolved "alpine" as an alias (/etc/containers/registries.conf.d/shortnames.conf)
+    >   Trying to pull docker.io/library/alpine:3...
+    >   Getting image source signatures
+    >   Copying blob sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4
+    >   Copying config sha256:d529dd0c6e5597ac7e4a3e2dea65c3fcc6173f4cae713c409265c1dd9914a11b
+    >   Writing manifest to image destination
+    >   3.24.1
+    >   ea32738decc5ac714aac2a3beb36e0fc  /etc/alpine-release
+    >   /usr/bin/md5sum
+    >   cf4d6f8e4f2874490fa1132f80d002c8  /usr/bin/md5sum
+
+
+      - name: Inspect the Alpine image in our Podman cache
+        run: |
+            podman inspect $(
+                podman images --format "{{.ID}}"  docker.io/library/alpine
+                )
+
+    >   [
+    >        {
+    >             "Id": "d529dd0c6e5597ac7e4a3e2dea65c3fcc6173f4cae713c409265c1dd9914a11b",
+    >             "Digest": "sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+    >             "RepoTags": [
+    >                  "docker.io/library/alpine:3"
+    >             ],
+    >             "RepoDigests": [
+    >                  "docker.io/library/alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+    >                  "docker.io/library/alpine@sha256:79ff19e9084a00eece421b2523fb93e22d730e2c0e525905de047e848e56d95f"
+    >             ],
+    >             "Parent": "",
+    >             "Comment": "buildkit.dockerfile.v0",
+    >             "Created": "2026-06-16T00:01:29.967161902Z",
+    >             "Config": {
+    >                  "Env": [
+    >                       "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    >                  ],
+    >                  "Cmd": [
+    >                       "/bin/sh"
+    >                  ],
+    >                  "WorkingDir": "/"
+    >             },
+    >             "Version": "",
+    >             "Author": "",
+    >             "Architecture": "amd64",
+    >             "Os": "linux",
+    >             "Size": 8709729,
+    >             "VirtualSize": 8709729,
+    >             "GraphDriver": {
+    >                  "Name": "overlay",
+    >                  "Data": {
+    >                       "UpperDir": "/home/runner/.local/share/containers/storage/overlay/34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c/diff",
+    >                       "WorkDir": "/home/runner/.local/share/containers/storage/overlay/34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c/work"
+    >                  }
+    >             },
+    >             "RootFS": {
+    >                  "Type": "layers",
+    >                  "Layers": [
+    >                       "sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c"
+    >                  ]
+    >             },
+    >             "Labels": null,
+    >             "Annotations": {
+    >                  "com.docker.official-images.bashbrew.arch": "amd64",
+    >                  "org.opencontainers.image.base.name": "scratch",
+    >                  "org.opencontainers.image.created": "2026-06-16T00:01:04Z",
+    >                  "org.opencontainers.image.revision": "398ff0c866d27e9f46f53e48184fe36c674b8897",
+    >                  "org.opencontainers.image.source": "https://github.com/alpinelinux/docker-alpine.git#398ff0c866d27e9f46f53e48184fe36c674b8897:x86_64",
+    >                  "org.opencontainers.image.url": "https://hub.docker.com/_/alpine",
+    >                  "org.opencontainers.image.version": "3.24.1"
+    >             },
+    >             "ManifestType": "application/vnd.oci.image.manifest.v1+json",
+    >             "User": "",
+    >             "History": [
+    >                  {
+    >                       "created": "2026-06-16T00:01:29.967161902Z",
+    >                       "created_by": "ADD alpine-minirootfs-3.24.1-x86_64.tar.gz / # buildkit",
+    >                       "comment": "buildkit.dockerfile.v0"
+    >                  },
+    >                  {
+    >                       "created": "2026-06-16T00:01:29.967161902Z",
+    >                       "created_by": "CMD [\"/bin/sh\"]",
+    >                       "comment": "buildkit.dockerfile.v0",
+    >                       "empty_layer": true
+    >                  }
+    >             ],
+    >             "NamesHistory": [
+    >                  "docker.io/library/alpine:3"
+    >             ]
+    >        }
+    >   ]
+
+
+
+    podman run \
+        --rm \
+        --volume "${TEST_DATA_FILE}:/input" \
+        alpine:3 sh -c '
+            cat /etc/alpine-release
+            md5sum /etc/alpine-release
+            which md5sum
+            md5sum $(which md5sum)
+            md5sum /input
+            '
+
+    >   Testing Alpine container
+    >   3.24.1
+    >   ea32738decc5ac714aac2a3beb36e0fc  /etc/alpine-release
+    >   /usr/bin/md5sum
+    >   cf4d6f8e4f2874490fa1132f80d002c8  /usr/bin/md5sum
+    >   0309b577fa7f107a42a326f58e59d983  /input
+
+
+
+

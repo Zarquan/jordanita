@@ -1,0 +1,118 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Running to catch up.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    k3d
+    https://k3d.io/stable/
+
+    k3s-io/k3s: Lightweight Kubernetes
+    https://github.com/k3s-io/k3s
+
+# -----------------------------------------------------
+
+    OpenRouter
+    https://openrouter.ai/
+        The Unified Interface For Every Model
+
+    Get started with OpenRouter
+    https://openrouter.ai/docs/quickstart
+
+# -----------------------------------------------------
+
+    Z.ai
+    https://en.wikipedia.org/wiki/Z.ai
+
+        Chinese artificial intelligence company specializing
+        in open weights large language models.
+
+    Z.ai - Advanced AI Chatbot & Agent powered by GLM-5.2
+    https://chat.z.ai/
+
+        What can I build for you ?
+
+    GLM-5.2: Built for Long-Horizon Tasks
+    https://z.ai/blog/glm-5.2
+
+        Introducing GLM-5.2, our latest flagship model for long-horizon tasks.
+        It marks a substantial leap in long-horizon task capability over its
+        predecessor GLM-5.1 and, for the first time, delivers that capability
+        on a solid 1M-token context.
+
+# -----------------------------------------------------
+
+    Ox Alpha That Turned Us Into the Benchmark - YouTube
+    https://www.youtube.com/watch?v=tN8xiPoareo
+
+# -----------------------------------------------------
+
+    [2608.17271] ASI-Bench: At the Dawn of Artificial Superintelligence
+    https://arxiv.org/abs/2608.17271
+
+        ASI-Bench, the first benchmark to jointly evaluate AI systems' capabilities
+        of innovative exploration and autonomous scientific execution across general
+        research domains, and the first to progressively withdraw human methodological
+        guidance within the same research project to test how far AI can proceed
+        on its own.
+
+# -----------------------------------------------------
+
+    Why DeepSeek Harness Is The End Of Coding Agents as We Know Them
+    https://www.youtube.com/watch?v=jtyV7O4Pt0s
+
+    deepseek-ai/deepseek-harness
+    DeepSeek Harness: Everything is a Plugin
+    https://github.com/deepseek-ai/deepseek-harness
+
+    cordiverse/cordis:
+    Meta-Framework of Spatiotemporal Composability
+    https://github.com/cordiverse/cordis
+
+    What I Learned From DeepSeek's Harness - YouTube
+    https://www.youtube.com/watch?v=5vEEBhbfUWw
+
+        What travels with you ?
+        What is (vendor) locked in ?
+
+        Anthropic - the moat
+        closed harness wired to a subscription
+        the harness protects the model
+
+        DeepSeek - the funnel
+        harness given away, reads rival's formats
+        everything funnels to what they sell: tokens
+
+    DeepSeek Harness: The End of Claude Code? - YouTube
+    https://www.youtube.com/watch?v=qg9EyGOZd9U
+
+

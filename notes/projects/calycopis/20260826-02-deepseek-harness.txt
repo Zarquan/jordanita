@@ -1,0 +1,757 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: [
+#     {
+#     "timestamp": "2026-08-26T13:00:00",
+#     "name": "DeepSeek harness",
+#     "model": "deepseek-v4-flash",
+#     "contribution": {
+#       "value": 100,
+#       "units": "%"
+#       }
+#     }
+#   ]
+#
+
+    Target:
+
+        Evaluate DeepSeek harness, running it in a container
+        and accessing it from the desktop.
+
+        https://deepseek.com/harness/en/
+        https://deepseek-code.com/
+        https://github.com/deepseek-ai/deepseek-harness
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Registered with DeepSeek.
+# https://platform.deepseek.com/
+
+    mail: deepseek@dm92.uk
+    pass: onepass
+
+    paid $20 via HxCC
+
+    APIkeys:
+      name: calycopis-harness
+      id:   e063a751 ....
+      key:  sk-3cf2a....
+
+# -----------------------------------------------------
+# Set the workspace and review the project.
+# http://127.0.0.1:3081/
+
+    workspace: /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/
+
+    ?   Please review the project and produce a summary.
+
+    >   ....
+    >   ....
+    >   I've completed a review of the project. Here's the summary.
+    >   
+    >   # Calycopis — IVOA Execution Broker Prototype: Project Summary
+    >   
+    >   ## What it is
+    >   
+    >   Calycopis (named after a genus of butterflies) is a **prototype implementation of the IVOA Execution Broker service** — an abstract API that lets clients submit an *execution request* (what to run + required resources) and receive *offers* for execution sessions, then accept an offer and have the broker prepare, execute, and monitor the task through a common interface. The design goal is one API over heterogeneous platforms (OpenStack, Docker, Kubernetes, Slurm, Panda, etc.). Early work began as "CIRASA-planner" (INAF); current development is part of the **SKA SRCNet program**. Licensed GPL-3.0, maintained under `uksrc/Calycopis-broker` (with a `Zarquan` fork as `origin` and an old fork kept in `attic/`).
+    >   
+    >   ## Current status
+    >   
+    >   - **Version 1.0.7-SNAPSHOT** (`config.yaml` drives all versions via `bin/versions.sh`): schema `1.0.7`, Spring OpenAPI `1.0.7-SNAPSHOT`, Python client `1.0.7.dev5`.
+    >   - **349 main-source Java files** — 304 in `engine/`, 42 in `spring/` — Spring Boot 4.1.0 parent, **Java 21**.
+    >   - Depends on generated schema classes (`net.ivoa.calycopis:calycopis-openapi-spring`) pulled from the UKSRC Nexus; PostgreSQL (H2 unsupported — relies on `GENERATE_SERIES`); `docker-java` for container control; Spring Security + OAuth2 resource server.
+    >   - Recent commits (Aug 2026) show active work: TRD-129/TRD-125 merges, Docker buildpack image, resource-increase and utility-container preloading, test timeouts/fixes.
+    >   
+    >   ## Architecture
+    >   
+    >   The defining design decision is a **strict two-tree split**:
+    >   
+    >   - **`engine/`** — framework-neutral domain logic (interfaces, JPA entities via `jakarta.persistence.*`, factories, validators, processing). **Zero Spring imports**; the intent is that this layer could be ported to a different DI/web framework.
+    >   - **`spring/`** — all Spring wiring: web delegates, `@Repository` interfaces (centralised in `spring/jpa/`), `@Component` platform impls, `@Scheduled` processing loop, security.
+    >   
+    >   Every domain concept follows a **three-tier Entity/Factory/Validator/Repository pattern**: abstract base (`engine/entities/<concept>/`) → schema type (`.../simple/`) → platform implementation (`.../simple/<platform>/`), with validators using exact class matching (`getClass() ==`) in a chain-of-responsibility `ValidatorFactory`. The two platforms are **mock** and **docker**, selected by Spring profile (`@Profile("mock")` / `@Profile("docker")`); each platform impl registers its own validators/factories at startup.
+    >   
+    >   ## API surface (current)
+    >   
+    >   Server runs on port **8082**; models are now `Ivoa*`-prefixed (e.g. `IvoaExecutionRequest`, `IvoaOfferSetResponse`, `IvoaAbstractExecutionSession`). Delegates implement the generated `*ApiDelegate` interfaces:
+    >   
+    >   | Delegate | Method | Endpoint |
+    >   |---|---|---|
+    >   | `OffersetsApiDelegateImpl` | `offerSetSelect(uuid)` | `GET /offersets/{uuid}` |
+    >   | `SessionsApiDelegateImpl` | `sessionSelect(uuid)` / `sessionUpdate(...)` | `GET` / `POST /sessions/{uuid}` |
+    >   | `RequestsApiDelegateImpl` | `executionRequest(...)` | `POST /requests` |
+    >   | `DirectApiDelegateImpl` | `directExecution(...)` | `POST /direct` (direct execution path) |
+    >   | `AdminIdentityController` | `createIdentity(...)` | `POST /admin/identities` (local, not in schema) |
+    >   
+    >   Content negotiation covers JSON/YAML/XML via `YamlConverter`; actuator exposes health/info/metrics.
+    >   
+    >   ## Security & identity (newer than AGENTS.md)
+    >   
+    >   - `spring/security/`: `SecurityConfig` — **GET is public, POST requires auth** (HTTP Basic or Bearer JWT via `spring-security-oauth2-resource-server`); `/admin/**` requires the `ADMIN` authority; stateless sessions; BCrypt passwords.
+    >   - **Identity model** in `engine/entities/identity/` — local accounts (username + password) and OIDC identities (issuer + subject). `AdminAuthenticationProvider` / `LocalAuthenticationProvider` handle auth; `IdentityResolver` links the authenticated principal to `IdentityEntity` so sessions are attributed per user. The Python test suite seeds users through the admin endpoint.
+    >   
+    >   ## Processing lifecycle
+    >   
+    >   - `ProcessingServiceImpl` (engine) + `SpringProcessingServiceImpl` (`@Scheduled(fixedDelay = 1000)`) drive a queue of `ProcessingRequestEntity`s through `preProcess`/`postProcess` with a `ProcessingTransactionHandler`.
+    >   - Per-component actions (`Prepare/Monitor/Release/Cancel/Fail` request entities) and per-session actions (`PrepareSession/ReleaseSession/CancelSession/UpdateSession`), plus an `AbstractResourceOffer`/`SimpleComputeResourceOffer` booking/query framework (`engine/query`, `spring/query`).
+    >   - Mock entities simulate work with configurable delays/loop counts (`mock-entities.actions` in `application.yaml`); the docker platform runs real containers via the Podman socket.
+    >   
+    >   ## Costs & metrics
+    >   
+    >   `engine/entities/cost/` and `engine/entities/metric/` (`AbstractCostItem`, `SimpleMinMaxFloatCost`, `MetricItemBean`, …) provide min/max ranges advertised per session/compute — monetary, energy, and carbon costs plus compute/IO benchmarks, configured in `application.yaml`. A `demo/` deploys **three brokers with different cost profiles** (alpha = green HPC, beta = cloud, gamma = budget) to show offer comparison.
+    >   
+    >   ## Testing
+    >   
+    >   - **Python pytest suite** (`tests/python/`, ~116 tests): split into `mock/` (validators, direct execution, stress), `docker/` (real container runs: bind mounts, volume mounts, androcles md5, stress), and platform-agnostic `any/` (resource registration, costs & metrics, identity auth). Uses the generated Python client; `conftest.py` seeds identities and creates authenticated clients.
+    >   - **curl examples** in `tests/curl/` are acknowledged as largely outdated reference material.
+    >   - Java tests are minimal (a skaha client placeholder `.txt`).
+    >   - CI: `.github/workflows/build-packages.yml` builds/publishes broker packages and a container image (Paketo buildpacks).
+    >   
+    >   ## Infrastructure & conventions
+    >   
+    >   - `docker/`: `developer-tools` (Fedora dev container), `fedora-base`, `java-runtime`, `python-tester`, `docker/compose/calycopis-compose.yml` (broker + postgres + client), and build/clean/push scripts. Credentials live outside the repo in `/etc/calycopis/{database,admin,spring}.yaml`.
+    >   - Notable quirk (documented in AGENTS.md): the broker talks to **host Podman via a bind-mounted socket**, so bind-mount paths resolve against the *host* filesystem — files created inside the dev container are not visible to application containers, and tests must compute reference checksums in-container rather than via local file I/O.
+    >   - House rules: no binary files in the tree, no suppressed errors, GPL licence headers + `AIMetrics` blocks on modified files, no ternary operators, and a ban on fragile DI patterns (`@Transient` helpers, static singletons, `ApplicationContextAware`).
+    >   
+    >   ## Areas worth flagging
+    >   
+    >   1. **AGENTS.md lags the code** (describes 1.0.3, `OfferSetRequest`/`OfferSetResponse` naming, no security) — the doc should be refreshed to match the current `Ivoa*` models, identity/security layer, costs-and-metrics, and the `/requests` + `/direct` endpoints.
+    >   2. `engine/entities/data/` has grown platform/backend-specific subtrees (amazon, ivoa, docker `file`/`http`/`link`/`stop`, mock) that go beyond the schema's abstract kinds — worth confirming which are experimental.
+    >   3. Recent history includes several "Skipping broken tests" commits, so the passing-test count understates coverage.
+    >   
+    >   Overall: a well-structured, actively developed broker prototype whose clean engine/spring separation and consistent three-tier entity pattern make it genuinely portable, with real container execution, authentication, and a meaningful cross-language test suite.
+
+
+# -----------------------------------------------------
+# OK, give it a try ...
+
+    ?   Following the pattern of branch names used in the Zarquan fork, `YYYYMMDD-prefix-name`,
+    ?   e.g. 20260818-zrq-github-sync, what would the full name be for a `catchup` branch ?
+
+    >   ....
+    >   ....
+    >   20260826-zrq-catchup
+    >   
+    >   Breaking it down:
+    >   
+    >       20260826 — the date (today, per this environment)
+    >       zrq — the fork-owner prefix used in all Zarquan branch names
+    >       catchup — the descriptive name
+    >   
+    >   If you intend to create it with a different date (e.g. the date you plan to push it), just swap in that YYYYMMDD.
+
+
+    ?   Please create the catchup branch in the local repository.
+
+    >   Created. The branch 20260826-zrq-catchup now exists locally and is checked out:
+    >   
+    >       Base: main at commit f38f6c70 ("Merge pull request #34 from uksrc/TRD-129 into main") — the working tree was clean and in sync with origin/main.
+    >       Current branch: 20260826-zrq-catchup (no upstream tracking set yet).
+    >   
+    >   It's a local branch only so far — nothing has been pushed. Let me know if you'd like to push it to origin (git push -u origin 20260826-zrq-catchup) or set up tracking to a specific remote.
+
+
+# -----------------------------------------------------
+# Add a second workspace.
+
+    workspace: /Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq/
+
+    ?   Please review the project and produce a summary.
+
+    >   I have a complete picture of the repository. Here's the summary.
+    >   
+    >   # Calycopis-openapi (Calycopis-schema) — Project Review Summary
+    >   
+    >   ## What this project is
+    >   
+    >   This repository defines the **OpenAPI 3.1.0 schema for the IVOA ExecutionBroker web service** and generates client/server packages from it. It's developed under the SKA SRCNet / UKSRC programs by the University of Manchester (project contact: Dave Morris / Zarquan). Schema YAML files are licensed **CC-BY-SA-4.0**; generated code is **GPL-3.0-or-later**.
+    >   
+    >   Note: the repo is named `Calycopis-openapi` on GitHub (remotes `Zarquan/Calycopis-openapi-uksrc` and `uksrc/Calycopis-openapi`), though it's still branded "Calycopis-schema" in the README and AGENTS.md. The working tree is clean on `main`, latest commit being a merge of PR #29 (workflow test, "work in progress", Jul 30 2026).
+    >   
+    >   ## Structure
+    >   
+    >   | Path | Purpose |
+    >   |---|---|
+    >   | `schema/v1.0/` | Source OpenAPI 3.1.0 schema files |
+    >   | `schema/v1.0/execution-broker.yaml` | Top-level entry: 5 endpoints (see below) |
+    >   | `schema/v1.0/components.yaml` | ~49 shared component schemas |
+    >   | `schema/v1.0/kinds/` | Concrete resource kinds (compute, costs, data, executable, metrics, storage, volume — 16 files) |
+    >   | `schema/v1.0/messages.yaml`, `utils.yaml` | Messages (`MessageItem`, `MessageList`) and utility types (`NameValueMap`, `ISO8601*`, `MinMax*`, `ComputeUnitsEnum`) |
+    >   | `isobeon/` | **Git submodule** (pinned `f9c380b`, ivOA/Calycopis-Isobeon) — Python pre-processor that resolves `$ref`s and merges the multi-file schema into one YAML |
+    >   | `codegen/java/spring/` | Maven project → Spring Boot server jar (`calycopis-openapi-spring`) |
+    >   | `codegen/java/client/` | Maven project → Java client jar (`calycopis-openapi-client`) |
+    >   | `codegen/python/client/` | Maven project → generated Python client (`calycopis_openapi_client`) plus hand-written `wrappers/` |
+    >   | `bin/` | Build scripts (`buildschema.sh`, `buildjavaspring.sh`, `buildjavaclient.sh`, `buildpythonclient.sh`, `versions.sh`) |
+    >   | `.github/workflows/` | `build-packages.yml` (full CI/CD) and `test-workflow.yml` (env-var experiment) |
+    >   | `.cursor/rules/` | AIMetrics / licence-header / copyright-year enforcement rules |
+    >   | `notes/zrq/` | Session notes from 2025-07 → 2026-02 |
+    >   
+    >   ## The API surface (schema/v1.0/execution-broker.yaml)
+    >   
+    >   All endpoints accept/return **JSON, XML, and YAML**:
+    >   - `POST /requests` — submit an offer-set execution request (303 → `/offersets/{uuid}` or 200 `OfferSetResponse`)
+    >   - `POST /direct` — execute directly without the offer flow (303/200 `AbstractExecutionSession`)
+    >   - `GET /offersets/{uuid}` — retrieve an offer-set
+    >   - `GET /sessions/{uuid}` — retrieve an execution session
+    >   - `POST /sessions/{uuid}` — update a session (e.g. phase changes via `AbstractUpdate`)
+    >   
+    >   ## Code generation
+    >   
+    >   - **Generator**: `openapi-generator-maven-plugin` **7.23.0** embedded in all three POMs (no standalone CLI jar — AGENTS.md's "OpenAPI Generator CLI 7.22.0" description is stale).
+    >   - **Model prefix `Ivoa`** everywhere (e.g. `IvoaSimpleComputeResource`).
+    >   - **Java Spring** (`net.ivoa.calycopis.openapi.spring`, Spring Boot 4.1.0 parent, Java 21): `delegatePattern`, XML support, `DateTime→java.time.Instant` / `Date→java.util.Date`.
+    >   - **Java client** (`net.ivoa.calycopis.openapi.client`): `native` library, `tools.jackson` 3.x.
+    >   - **Python client** (`calycopis_openapi_client`): generated by the same Maven plugin into `target/` (not `build/` as AGENTS.md says), then `buildpythonclient.sh` copies in the wrappers, patches the license to GPL-3.0, and runs `python -m build target`.
+    >   - **Wrapper layer** (`codegen/python/client/wrappers/`): `ExecutionBrokerClient` (submit_execution, direct_execute, get_session, set_session_phase, wait_for_phase, wait_until_terminal) and `models.py` subclasses adding convenience APIs on top of generated models.
+    >   
+    >   ## Build & versioning
+    >   
+    >   - Versions are driven by **`config.yaml`** (currently schema `1.0.7`): `bin/versions.sh` computes `javaversion=1.0.7-SNAPSHOT` and `pythonversion=1.0.7.dev5`, and exports to `GITHUB_ENV` when present. There is **no `project.properties`** file (AGENTS.md references one that no longer exists).
+    >   - `buildschema.sh` runs the isobeon processor, writing the combined schema to **`/tmp/execution-broker-1.0.7.yaml`** (AGENTS.md's `schema/build/` output location is stale).
+    >   - Each Maven build gets the schema via `-Dcalycopis.schema.file=/tmp/...` and version via `-Drevision=...`.
+    >   
+    >   ## CI/CD (`.github/workflows/build-packages.yml`)
+    >   
+    >   Four jobs: `build-combined-schema` → then in parallel `build-python-client`, `build-java-client`, `build-java-spring`. Artifacts are uploaded; on push to `main` they're **published to the UKSRC Nexus** (localpypi + Maven releases/snapshots) when the repo is `uksrc/Calycopis-openapi`, or to **IVOA GitHub Packages** (`maven.pkg.github.com/ivoa/Calycopis-openapi`) when the repo is `ivoa/Calycopis-openapi`. Java 25 / Python 3.14 runners, Maven dependency caching, credentials from secrets via `codegen/java/settings.xml`.
+    >   
+    >   ## Notable observations
+    >   
+    >   1. **AGENTS.md is substantially out of date** — it describes `bin/buildscripts.sh` sourced functions, `schema/build/` output, `components/`+`types/` directories, `calycopis-schema-*` artifact names, and a standalone OpenAPI CLI; the current repo uses individual `bin/*.sh` scripts, `/tmp` output, `kinds/` layout, `calycopis-openapi-*` artifacts, and Maven-plugin generation throughout.
+    >   2. **`bin/experiment.sh` references undefined variables** (`schemapath`, `inputschema`), suggesting leftover/debug code.
+    >   3. The Python wrapper's docstring still mentions `calycopis_schema_client` while the package is now `calycopis_openapi_client`.
+    >   4. Recent commits are mostly "work in progress" — the workflow-testing PR (#29) is the tip of `main`, and there are no release tags.
+    >   5. `test-workflow.yml` is a small experiment checking `GITHUB_ENV` / env-var propagation through workflow steps.
+    >   
+    >   Overall: a clean, working schema-first codegen pipeline for the IVOA ExecutionBroker, with CI publishing to UKSRC Nexus and IVOA GitHub Packages — but the project's own documentation (AGENTS.md, README) lags behind the actual, renamed `Calycopis-openapi` implementation.
+
+    ?   Following the pattern of branch names used in the Calycopis-broker workspace,
+    ?   what would the full name be for a `catchup` branch ?
+
+    >   The full branch name is 20260826-zrq-catchup — and it already exists in the Calycopis-broker workspace: it's the currently checked-out branch there.
+    >   
+    >   The branch-naming pattern in the Calycopis-broker workspace is:
+    >   
+    >   YYYYMMDD-zrq-<topic>
+    >   
+    >   Evidence from that workspace's branches (all Zarquan/* feature branches):
+    >   
+    >       20260611-zrq-scheduling-bugfix
+    >       20260727-zrq-broker-buildpack
+    >       20260818-zrq-github-sync
+    >       20260826-zrq-catchup ← current branch
+    >   
+    >   The same convention is used in this Calycopis-openapi workspace too (e.g. 20260709-zrq-workflow-publishing, 20260730-zrq-workflow-test). The YYYYMMDD is the branch-creation date and zrq is the author prefix (Zarquan); the uksrc/* counterpart pattern uses Jira-style names like TRD-112-Publish-Calycopis-openapi-jar-in-Nexus instead.
+
+
+    ?   Following the same pattern for branch names in the Zarquan fork of Calycopis-broker,
+    ?   please create a matching branch in the local copy of Calycopis-openapi.
+
+    >   ....
+    >   ....
+    >   Done. Created and switched to the branch 20260826-zrq-catchup in the local Calycopis-openapi workspace, following the Zarquan fork's YYYYMMDD-zrq-<topic> convention (today is 2026-08-26, matching the broker's 20260826-zrq-catchup branch name).
+    >   
+    >       Branch: 20260826-zrq-catchup
+    >       Pointed at: c2a10df (main, clean working tree) — same commit as origin/main
+    >   
+    >   The repo is now on this branch and ready for catchup work.
+
+
+    ?   Please create a plan to update the AGENTS.md file to match the current state of the project.
+
+    >   ....
+    >   ....
+
+
+    ?   Yes, please go ahead and implement the plan, including the README.md file and the Python docstrings.
+    ?   Please delete bin/experiment.sh.
+
+    >   ....
+    >   ....
+    >   All done. Summary of the changes made on branch `20260826-zrq-catchup`:
+    >   
+    >   ## Files changed
+    >   
+    >   **`AGENTS.md`** — fully rewritten to match the current state:
+    >   - Retitled to **Calycopis-openapi** (noting it's formerly Calycopis-schema); corrected all three artifact names (`calycopis-openapi-spring`, `calycopis-openapi-client`, `calycopis_openapi_client`)
+    >   - Directory layout now reflects reality: `kinds/` (not `components/`+`types/`), `messages.yaml`/`utils.yaml`, `bin/*.sh` scripts (not `buildscripts.sh`), isobeon as a git submodule, `target/` (not `build/`), no `project.properties`
+    >   - Build process rewritten around the actual scripts: `bin/versions.sh config.yaml` (version 1.0.7 → Java `1.0.7-SNAPSHOT`, Python `1.0.7.dev5`), combined schema written to `/tmp/execution-broker-1.0.7.yaml`, Maven-plugin generation (7.23.0) for all three targets including Python
+    >   - Removed the obsolete `installgenerator`/OpenAPI CLI jar step; corrected package names to `net.ivoa.calycopis.openapi.spring.*` / `.client.*`
+    >   - Added two new sections: **API surface** (the 5 endpoints) and **CI/CD** (build-packages.yml jobs + publish targets)
+    >   
+    >   **`README.md`** — retitled to Calycopis-openapi, kept the butterfly image and SKA/UKSRC line, added a "What this project provides" section describing the schema, isobeon, and the three generated packages, with a pointer to AGENTS.md.
+    >   
+    >   **`codegen/python/client/wrappers/execution_client.py`** and **`models.py`** — fixed the stale `calycopis_schema_client` docstring references to `calycopis_openapi_client`; added AIMetrics entries to both headers per the repo's `.cursor/rules` (copyright year already current).
+    >   
+    >   **`bin/experiment.sh`** — deleted (it referenced undefined variables).
+    >   
+    >   ## Verification
+    >   
+    >   - Stale-token scan across tracked files: no hits for `calycopis_schema_client`, `calycopis-schema-spring/client`, `schema/build`, `buildscripts.sh`, `installgenerator`, `/opt/openapi-generator`, `1.0.6`, or `project.properties` — the only remaining occurrences are in `notes/zrq/*.txt`, which are historical session logs I deliberately left untouched
+    >   - `python3 -m py_compile` passes on both edited wrapper files
+    >   - `git status`: 5 modified files + 1 deletion, exactly as planned
+    >   
+    >   One note: the `.cursor/rules` (AIMetrics, licence headers) were applied to the two Markdown files by adding HTML-comment header blocks, matching the repo's documented convention — let me know if you'd prefer those headers omitted from docs.
+
+
+# -----------------------------------------------------
+# Same prompt for the broker workspace.
+
+    workspace: /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/
+
+    ?   Please create a plan to update the AGENTS.md file in the Calycopis-broker
+    ?   project to match the current state of the project.
+
+    >   ....
+    >   ....
+
+
+    ?   Please go ahead and implement the plan with the following caveats:
+    ?   * Please update the README.md file at the same time.
+    ?   * The java/src/main/resources/schema.sql resource is no longer user and can be deleted.
+    ?   * The default for the Spring platform profile is set in application.yaml, but it should still be possible to override it from the command line.
+
+
+    >   ....
+    >   The write to the Calycopis-broker workspace (outside my session workspace) was denied by the file sandbox.
+    >   I'll retry with the wider permission, as this is exactly the sanctioned escalation case — the user asked me to edit files in the broker repo:....
+
+    >   escalate sandbox to danger-full-access: Writing the updated AGENTS.md into the Calycopis-broker workspace,
+    >   outside my session workspace — the user asked me to update it.
+    >   [Reject][Allow once]
+
+
+    >   ....
+    >   ....
+    >   All done. Summary of changes in the Calycopis-broker workspace (branch `20260826-zrq-catchup`):
+    >   
+    >   ## Files changed
+    >   
+    >   **`AGENTS.md`** — fully rewritten (~830 lines) to match the current state:
+    >   - **Header**: added the repo-standard GPL `<meta:licence>` + AIMetrics HTML-comment header per `agents/rules/`
+    >   - **API surface**: corrected to the current 5 schema endpoints (`POST /requests`, `POST /direct`, `GET /offersets/{uuid}`, `GET /sessions/{uuid}` GET+POST) plus the new `POST /admin/identities`; removed the stale `OfferSetPost`/`ExecutionSessionResponseFour` names
+    >   - **Security**: replaced "no securitySchemes, plan includes OAuth2" with the implemented local/admin auth (`spring/security/`, `spring/identity/`, `engine/entities/identity/`)
+    >   - **OpenAPI schema**: updated all references to the renamed `Calycopis-openapi` project at `/Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq`, artifact `calycopis-openapi-spring` (version from `config.yaml` → `1.0.7-SNAPSHOT` via `CALYCOPIS_OPENAPI_SPRING_VERSION`), Python client in `codegen/python/client/target/`
+    >   - **Package architecture**: removed the non-existent `engine/webapp/`; expanded `spring/webapp/` (incl. `AmbleckApplication`, all five delegate controllers); added `engine/entities/{cost,metric,identity}/`, `engine/query/`, `spring/query/`, `spring/security/`, processing `action/component/session` sub-packages; corrected the repository story (centralised `spring/jpa/`, tier-3 = 6 files, no platform-local repo)
+    >   - **New sections**: Costs & Metrics, Security, Version management (`config.yaml` + `bin/versions.sh`), Building the container image, CI/CD (build-packages.yml)
+    >   - **Corrected facts**: mock delays (configurable, default **5 seconds** — verified in `MockPlatformSettingsImpl`), port 8082, `application.yaml` config-import chain (admin.yaml + database.yaml + optional spring.yaml), `config/` templates, developer-tools = fedora-base + developer-tools layer, current Python test inventory (`any/`/`mock/`/`docker/` incl. 5 new test files), dropped the stale `tests/java` and "30-second delays" claims
+    >   - **Platform profile**: documented that the default (`docker`) is set in `application.yaml` and can be overridden from the command line via `SPRING_PROFILES_ACTIVE=mock` or `-Dspring-boot.run.arguments="--spring.profiles.active=mock"`
+    >   
+    >   **`README.md`** — updated: retitled to "Calycopis - Execution Broker" (Spring Boot implementation), added the schema link, `mock`/`docker` platform note, and a pointer to AGENTS.md.
+    >   
+    >   **`java/src/main/resources/schema.sql`** — deleted (confirmed no references anywhere; `java/src/main/resources/` now contains only `application.yaml` and `log4j2.xml`).
+    >   
+    >   ## Verification
+    >   
+    >   - Stale-token scan of AGENTS.md/README.md: zero hits for `Calycopis-schema/github-zrq`, `calycopis-schema-spring`, `1.0.3-SNAPSHOT`, `tests/java`, `engine/webapp`, `OfferSetPost`, `ExecutionSessionResponseFour`, `codegen/python/client/build`, `calycopis-platform`, `30-second`, stale pip path
+    >   - Mock-delay claim cross-checked against `MockPlatformSettingsImpl` (values in seconds, default 5)
+    >   - `git status`: exactly 3 expected changes (`M AGENTS.md`, `M README.md`, `D schema.sql`); all section anchors present
+    >   
+    >   One note: the header/licence convention follows the broker repo's own `agents/rules/` (GPL headers). Let me know if you'd prefer the docs without those header blocks, or if you'd like the openapi-side sibling docs aligned differently.
+
+# -----------------------------------------------------
+# Create a suitable commit message.
+
+    ?   Please create a commit message to summarise the changes to the Calycopis-openapi project.
+
+    >   Here's a commit message for the Calycopis-openapi changes:
+    >   
+    >   ---
+    >   
+    >   **Subject:**
+    >   ```
+    >   Update project documentation to match the current state
+    >   ```
+    >   
+    >   **Body:**
+    >   ```
+    >   Rewrite AGENTS.md to reflect the current project:
+    >   
+    >   - Rename the project to Calycopis-openapi (formerly Calycopis-schema)
+    >   - Document the config.yaml-driven versioning (schema 1.0.7,
+    >     Java 1.0.7-SNAPSHOT, Python 1.0.7.dev5) and bin/versions.sh
+    >   - Update the directory layout (kinds/, bin/ scripts, config.yaml,
+    >     workflows) and the combined-schema output location (/tmp)
+    >   - Document the API surface and CI/CD workflows
+    >   - Correct the code generation details: openapi-generator-maven-plugin
+    >     7.23.0 in all POMs, openapi.* package names, Python client generated
+    >     into target/ with the calycopis_openapi_client package
+    >   
+    >   Update README.md to match the renamed project.
+    >   
+    >   Fix Python wrapper docstrings referencing the old
+    >   calycopis_schema_client package name.
+    >   
+    >   Remove the unused bin/experiment.sh script (referenced undefined
+    >   variables).
+    >   ```
+    >   ---
+    >   
+    >   Notes:
+    >   - The subject follows the repo's short summary-line style; the body is a conventional imperative-listed summary.
+    >   - The untracked `codegen/python/client/wrappers/__pycache__/` is build output and should **not** be committed — it's already excluded from the message above.
+    >   - I haven't committed anything — say the word and I'll run `git add` + `git commit` with this message on `20260826-zrq-catchup`.
+
+    ?   Before you commit the changes can you add the `__pycache__` directory to a gitignore file.
+
+    >   ....
+    >   ....
+
+    >   ....
+    >   ....
+    >   Committed successfully.
+    >   
+    >   **Commit:** `633decc` — "Update project documentation to match the current state" on branch `20260826-zrq-catchup`
+    >   
+    >   - 6 files changed, 232 insertions(+), 155 deletions(-)
+    >   - Includes the deletion of `bin/experiment.sh`
+    >   - Working tree is clean (the `__pycache__` directory is now ignored via `codegen/python/client/.gitignore`)
+    >   - The commit is local only — not pushed to `origin` (use `git push -u origin 20260826-zrq-catchup` when you're ready to publish it)
+
+# -----------------------------------------------------
+# Same prompt for the broker workspace.
+
+    ?   Please create a commit message to summarise the changes to the Calycopis-broker project.
+
+    >   The user wants me to create a commit message to summarise the changes to the Calycopis-broker project.
+    >   
+    >   First, I need to understand what "the changes" are. The user just created a catchup branch `20260826-zrq-catchup` from main. The working tree was clean at branch creation. So "the changes to the Calycopis-broker project" likely refers to the changes represented by this catchup branch — i.e., the changes since the last sync point, or changes that will be committed on this branch.
+    >   
+    >   Wait — the branch was created from main with a clean tree. There are no uncommitted changes. So a commit message would summarise... hmm. Let me think about what the user wants.
+    >   
+    >   Possibly:
+    >   1. The user wants a commit message for changes that will be made (perhaps they're about to commit the "catchup" — syncing the Zarquan fork with uksrc main).
+    >   2. The user wants a commit message summarising the branch's purpose/diff — i.e., a message to use when committing the catchup changes.
+    >   
+    >   A "catchup" branch in this context (based on the pattern `20260818-zrq-github-sync` which was a "github sync" branch) is likely about bringing the local fork up to date with the upstream repository — "catchup" meaning catching up with uksrc main.
+    >   
+    >   The best approach: check what's actually different. Let me look at:
+    >   - git status (uncommitted changes?)
+    >   - The diff between this branch and uksrc/main or origin/main
+    >   - What commits are in main but not in origin (Zarquan fork), etc.
+    >   
+    >   Since the branch was just created from main at f38f6c70 which is the same as origin/main (the status showed "## main...origin/main" in sync), there are no changes yet on this branch. The commit message would therefore describe the intended changes for the catchup branch — but I can't know what changes the user plans.
+    >   
+    >   Alternatively, "the changes to the Calycopis-broker project" could refer to the overall state of the project as summarised earlier — but a commit message summarising the entire project doesn't make sense.
+    >   
+    >   Most likely interpretation: The user wants a commit message that summarises the changes on the catchup branch — i.e., the diff between the Zarquan fork and uksrc main. Let me check what differs between remotes:
+    >   - `uksrc/main` vs `origin/main` (Zarquan fork main)
+    >   - The current main vs uksrc/main
+    >   
+    >   Let me check the git log differences to see what a "catchup" would bring in. Let me compare origin/main (Zarquan fork) with uksrc/main.
+    >   
+    >   Actually, let me first check the current state: is the working tree clean? Is there anything staged? The branch was created from main which was in sync with origin/main. Let me verify and also compare with uksrc/main to understand what "catchup" means here.
+    >   
+    >   Let me run a few git commands to understand the state:
+    >   1. git status
+    >   2. git log origin/main..uksrc/main (what's in uksrc but not in the fork's main)
+    >   3. git log uksrc/main..origin/main (what's in the fork but not in uksrc)
+    >   
+    >   That will tell me the scope of a "catchup" — the changes to summarise.
+
+    >   Bash
+    >   git status --short --branch && echo "---DIFF vs uksrc/main (commits in uksrc not in origin fork main)---" && git log --oneline origin/main..uksrc/main | head -30 && echo "---DIFF other way (commits in fork main not in uksrc)---" && git log --oneline uksrc/main..origin/main | head -30
+    >   ## 20260826-zrq-catchup
+    >    M AGENTS.md
+    >    M README.md
+    >    D java/src/main/resources/schema.sql
+    >   ---DIFF vs uksrc/main (commits in uksrc not in origin fork main)---
+    >   ---DIFF other way (commits in fork main not in uksrc)---
+
+    >   Think
+    >   Interesting! The working tree on the catchup branch is NOT clean — there are modifications:
+    >   - M AGENTS.md
+    >   - M README.md
+    >   - D java/src/main/resources/schema.sql
+    >   
+    >   Wait, earlier when I created the branch, `git status` showed clean ("## main...origin/main" with no changes). Now there are modifications. The AGENTS.md was updated (the system reminder says "This file changed after it was loaded" — the AGENTS.md content was updated with new content). So the environment/harness updated AGENTS.md, and apparently README.md and schema.sql deletion too? Hmm, actually the system reminder shows AGENTS.md changed. Let me look at the actual diffs of these three files.
+    >   
+    >   The user asks: "Please create a commit message to summarise the changes to the Calycopis-broker project."
+    >   
+    >   So the changes are these working-tree modifications on the catchup branch:
+    >   1. AGENTS.md — updated (new version with updated content)
+    >   2. README.md — modified
+    >   3. java/src/main/resources/schema.sql — deleted
+    >   
+    >   Let me examine the diffs to write an accurate commit message.
+
+    >   ....
+    >   ....
+
+    >   ....
+    >   ....
+    >   Here is the commit message summarising the changes on the `20260826-zrq-catchup` branch (3 files: `AGENTS.md` rewritten, `README.md` updated, `schema.sql` deleted):
+    >   
+    >   ```
+    >   Updated project documentation and removed obsolete schema script
+    >   
+    >   * Rewrote AGENTS.md to match the current state of the project:
+    >     - Added the GPL licence header and AIMetrics block.
+    >     - Updated the API surface for the current endpoints
+    >       (POST /requests, POST /direct, GET /offersets/{uuid},
+    >       GET/POST /sessions/{uuid}, POST /admin/identities).
+    >     - Added sections for security and identity, costs and metrics,
+    >       version management, and CI/CD.
+    >     - Renamed Calycopis-schema references to Calycopis-openapi and
+    >       updated the local paths and version numbers.
+    >     - Rewrote the testing section: organised the Python tests by
+    >       platform (any/mock/docker), documented the containerised test
+    >       runner, and removed the outdated Java tests section.
+    >     - Updated the build/run instructions (profile selection,
+    >       spring-boot:build-image, container-host.sh).
+    >   
+    >   * Updated README.md with a GPL licence header, a description of the
+    >     Spring Boot implementation, and links to the Calycopis-openapi
+    >     project and AGENTS.md.
+    >   
+    >   * Removed the obsolete java/src/main/resources/schema.sql, which is no
+    >     longer referenced by the code (it created the TransferTimes table
+    >     used by the old replica time-estimate query).
+    >   ```
+    >   
+    >   A few notes:
+    >   - The subject follows the project's existing plain sentence-style convention (e.g. "Updated version config", "Merged changes from Zarquan-ivoa fork") rather than conventional-commit prefixes.
+    >   - I have **not** committed anything — the changes are still uncommitted on `20260826-zrq-catchup`. If you'd like, I can commit them with this message via `git commit -F -` (or write it to a file first for review).
+
+    ?   Please add and commit the changes to the local branch.
+
+    >   ....
+    >   ....
+    >   Committed successfully. The changes are now on the local branch:
+    >   
+    >   - **Commit**: `799e0cb3` — "Updated project documentation and removed obsolete schema script"
+    >   - **Files**: 3 changed, +330/−223 — `AGENTS.md` (modified), `README.md` (modified), `java/src/main/resources/schema.sql` (deleted)
+    >   - **Branch**: `20260826-zrq-catchup`, now one commit ahead of `main` (`f38f6c70`), working tree clean
+    >   
+    >   The commit was created as **Dave Morris** (`dave.morris@manchester.ac.uk`), the configured git identity.
+    >   The branch still has no upstream tracking — let me know if you'd like me to push it to `origin` (`git push -u origin 20260826-zrq-catchup`).
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # Lesson learned
+    # The workspaces control what file the agent/harness is allowed to modify,
+    # but the user can specifically instruct the agent to modify a file outside the current workspace.
+    # The session history is stored per workspace.
+    # The agent/harness was confused when I had made changes to the broker code from the openapi workspace,
+    # and then swapped back to the broker workspace and asked it to summarise the changes 'what changes ?'.
+    # It recovered by doing a diff of the broker workspace to identify the changed files,
+    # but it didn't remember that it was the same agent/harness that modified the files a few seconds before.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Usage stats
+    https://platform.deepseek.com/usage
+
+        cost: $0.17
+        api requests : 109
+        tokens: 9,202,102
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Check where the harness is saving it's state.
+#[root@calycopis-dev]
+
+    ls -al /root/.dsh/
+
+    >   total 12
+    >   drwxr-xr-x. 1 root root 144 Aug 26 11:25 .
+    >   dr-xr-x---. 1 root root  60 Aug 26 11:08 ..
+    >   -rw-r--r--. 1 root root  37 Aug 26 11:25 .anonymous-user-id
+    >   -rw-------. 1 root root  73 Aug 26 11:19 .credentials.yaml
+    >   drwxr-xr-x. 1 root root  30 Aug 26 11:09 profiles
+    >   drwx------. 1 root root 232 Aug 26 12:04 sessions
+    >   -rw-------. 1 root root  52 Aug 26 11:09 settings.yaml
+    >   drwx------. 1 root root 114 Aug 26 13:22 storages
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# See if we can save that to our desktop.
+
+    ?   New session
+    ?   I want to copy the contents from a container running in podman to a directory on the host platform.
+
+    >   ....
+    >   ....
+
+    #
+    # The agent/harness realises that IT is in a container (in the AGENTS.md file),
+    # diagnoses which container it is in and what filesystem mounts it can see ...
+    # and then (with user consent) it proceeds to break out of the workspace
+    # constraints and launch one-time containers with specific volume mounts
+    # to give it access files on the host system ...
+    # WOW
+    #
+
+
+    >   ....
+    >   ....
+
+    ?   
+
+    >   Which directory on the host should the contents be copied into? Note: only paths under /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq (the workspace) are reachable from here; that corresponds to /home/Zarquan/Projects/IVOA/ivoa/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq on the host.
+
+    ?   /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp
+
+
+
+
+    >   ....
+    >   ....
+    >   Done — the copy is complete and verified on the host.
+    >   
+    >   ## What was copied
+    >   
+    >   **Source:** `broker-dev` container → `/root/.dsh` (the DeepSeek Harness runtime directory, 4.4 MB)
+    >   **Destination (in container):** `temp/.dsh` under the workspace
+    >   **Destination (on host):** `/home/Zarquan/Projects/IVOA/ivoa/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh`
+    >   
+    >   The host-side check container listed the exact same tree (`.anonymous-user-id`, `.credentials.yaml`, `profiles/`, `sessions/`, `settings.yaml`, `storages/`), so the files are genuinely on the host platform. I used `cp -a` (archive mode), preserving permissions, timestamps, and symlinks.
+    >   
+    >   ## Key facts I verified along the way
+    >   
+    >   1. **Podman here is a remote client to the host's service** (`CONTAINER_HOST=unix:///run/podman/podman.sock`), so containers like `postgres` and `broker-dev` run on the host.
+    >   2. **`podman cp` with a destination outside the workspace writes only into this container's filesystem.** I proved this by copying to `/tmp/cp-test` — the host Podman service couldn't see that path at all (`statfs ... no such file or directory`).
+    >   3. **Only paths under `/Calycapis` reach the host**, because that's a bind mount of the host's `/home/Zarquan/Projects/IVOA/ivoa/Calycopis` (per the host's authoritative mount table from `podman inspect broker-dev`). Note the host path is `/home/Zarquan/...`, not `/Zarquan/...` — the latter is just the btrfs device subpath shown by `findmnt`.
+    >   
+    >   ## Recipe for future copies
+    >   
+    >   Since we're inside `broker-dev` itself, a plain copy works and lands on the host:
+    >   ```bash
+    >   cp -a /root/.dsh /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/
+    >   ```
+    >   For *other* containers (e.g. `postgres` or an app container the broker launches), use `podman cp` but keep the destination under the workspace bind mount:
+    >   ```bash
+    >   podman cp postgres:/some/path /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/
+    >   ```
+    >   One caveat: host-side containers may need `--security-opt label=disable` (or `:Z` on the volume) to read those files, since they carry SELinux labels from the container environment — that's what the verification check container required.
+
+
+    ?   What command can I use to update the copy with any changes in the source directory ?
+
+    >   ....
+    >   ....
+    >   Done — the copy is now updated. The command that did it:
+    >   
+    >   ```bash
+    >   rsync -av /root/.dsh/ /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh/
+    >   ```
+    >   
+    >   It transferred only the changed files (the live session log `session.jsonl.zstd` and the project cache `session_projcache.json`), and the sizes now match (4.4 MB each).
+    >   
+    >   ## How to use it
+    >   
+    >   **The trailing slash on the source is important.** `/root/.dsh/` means "the *contents* of this directory" — it syncs into the existing `temp/.dsh` and keeps that directory name. Without it (`rsync -a /root/.dsh dest/`), rsync would nest a second `.dsh` directory inside the destination.
+    >   
+    >   - `-a` = archive mode: recursive, preserves permissions, timestamps, and symlinks (same fidelity as the `cp -a` used initially).
+    >   - `-v` = verbose, so you can see what changed; drop it for silent operation.
+    >   
+    >   ## Optional variations
+    >   
+    >   - **Mirror (delete removed files):** add `--delete` so files deleted from `/root/.dsh` are also removed from the copy:
+    >     ```bash
+    >     rsync -av --delete /root/.dsh/ /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh/
+    >     ```
+    >     I left it off by default since it's safer for a backup-style mirror, but it's the right choice if you want the copy to exactly match the source.
+    >   
+    >   - **Plain `cp` equivalent** (works, but copies everything every time and never deletes):
+    >     ```bash
+    >     cp -a /root/.dsh/. /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh/
+    >     ```
+    >   
+    >   This works directly because the source is `broker-dev` itself — the container we're inside. For a *different* container (e.g. `postgres`), you can't rsync straight from its filesystem; you'd pull with `podman cp` per file, or `podman cp <container>:/path /Calycopis/.../temp/` for a fresh full copy.
+
+
+# -----------------------------------------------------
+# Check where the harness is saving it's state.
+#[root@calycopis-dev]
+
+    #
+    # Stop the dsh service and then run the rsync command to update the copy.
+    #
+
+    rsync \
+        -av \
+        --delete \
+        /root/.dsh/ \
+        /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh/
+
+    >   sending incremental file list
+    >   sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-cea55dc4-5c4f-481a-835d-986d0107b00f/session.jsonl.zstd
+    >   storages/
+    >   storages/session_projcache.json
+    >   
+    >   sent 490,135 bytes  received 109 bytes  980,488.00 bytes/sec
+    >   total size is 2,731,174  speedup is 5.57
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Move the copied files to our home directory on the host.
+#[user@desktop]
+
+    ls -al /home/Zarquan/Projects/IVOA/ivoa/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/
+
+    >   total 0
+    >   drwxr-xr-x. 1 Zarquan Zarquan   8 Aug 26 14:59 .
+    >   drwxr-xr-x. 1 Zarquan Zarquan 304 Aug 26 14:59 ..
+    >   drwxr-xr-x. 1 Zarquan Zarquan 144 Aug 26 12:25 .dsh
+
+    mv /home/Zarquan/Projects/IVOA/ivoa/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/.dsh \
+       /home/Zarquan/.dsh
+
+
+    ls -al /home/Zarquan/Projects/IVOA/ivoa/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/temp/
+
+    >   total 0
+    >   drwxr-xr-x. 1 Zarquan Zarquan   0 Aug 26 15:10 .
+    >   drwxr-xr-x. 1 Zarquan Zarquan 304 Aug 26 14:59 ..
+
+
+   ls -al /home/Zarquan/.dsh
+
+    >   total 12
+    >   drwxr-xr-x. 1 Zarquan Zarquan  144 Aug 26 12:25 .
+    >   drwx------. 1 Zarquan Zarquan 2054 Aug 26 15:10 ..
+    >   -rw-r--r--. 1 Zarquan Zarquan   37 Aug 26 12:25 .anonymous-user-id
+    >   -rw-------. 1 Zarquan Zarquan   73 Aug 26 12:19 .credentials.yaml
+    >   drwxr-xr-x. 1 Zarquan Zarquan   30 Aug 26 12:09 profiles
+    >   drwx------. 1 Zarquan Zarquan  232 Aug 26 13:04 sessions
+    >   -rw-------. 1 Zarquan Zarquan   52 Aug 26 12:09 settings.yaml
+    >   drwx------. 1 Zarquan Zarquan  114 Aug 26 15:04 storages
+
+
+    #
+    # Next time we launch the developer tools container, include the .dsh directory as a volume.
+    # --volume "${HOME}/.dsh:/root/.dsh:rw,Z" \
+    #
+
+

@@ -1,0 +1,172 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Debugging the github workflow.
+        Tests work on local system, fail on github.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Delete existing Pods, networks, and volumes.
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman rm $(podman ps -aq)
+
+    podman volume rm $(podman volume ls -q)
+
+    podman network rm $(podman network ls -q)
+
+
+# -----------------------------------------------------
+# Build our broker image.
+#[root@calycopis-dev]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw clean spring-boot:build-image
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] BUILD SUCCESS
+    >   [INFO] ------------------------------------------------------------------------
+    >   [INFO] Total time:  01:19 min
+    >   [INFO] Finished at: 2026-08-28T11:51:14+01:00
+    >   [INFO] ------------------------------------------------------------------------
+
+
+    podman images
+
+    >   REPOSITORY                                       TAG               IMAGE ID      CREATED        SIZE
+    >   localhost/calycopis/calycopis-broker             latest            74fd93f4f5e3  2 minutes ago  524 MB
+    >   localhost/calycopis/calycopis-broker             1.0.7-SNAPSHOT    74fd93f4f5e3  2 minutes ago  524 MB
+    >   images.dev.uksrc.org/calycopis/calycopis-broker  latest            74fd93f4f5e3  2 minutes ago  524 MB
+    >   images.dev.uksrc.org/calycopis/calycopis-broker  1.0.7-SNAPSHOT    74fd93f4f5e3  2 minutes ago  524 MB
+    >   ....
+    >   ....
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build our tests.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd tests/python
+
+            bin/build-tests.sh
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Run our tests.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd tests/python
+
+            bin/run-tests.sh
+
+        popd
+    popd
+
+    >   ....
+    >   ....
+    >   docker/test_docker_stress.py::TestStress::test_concurrent_sessions PASSED [ 96%]
+    >   docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_session_completes PASSED [ 98%]
+    >   docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches PASSED [100%]
+    >   
+    >   ======================= 51 passed in 1527.73s (0:25:27) ========================
+
+    So ALL the tests pass when run on local machine (directly on the host not in a container).
+    Looks like there are issues with using /tmp in GitHub workflows.
+
+    GitHub Actions: Using the Temporary Directory
+    https://nesin.io/blog/temp-directory-path-github-actions
+
+        Use $RUNNER_TEMP in shell scripts.
+        Use ${{runner.temp}} in yaml workflows.
+
+    Update run-tests.sh to use $RUNNER_TEMP
+
+    TEMP_DIR=${RUNNER_TEMP:-$(mktemp -d)}
+    echo $TEMP_DIR
+
+
+# -----------------------------------------------------
+# Run our tests on GitHub.
+#[user@desktop]
+
+    >   ....
+    >   ....
+    >   =========================== short test summary info ============================
+    >   FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+    >   ================== 1 failed, 50 passed in 1505.38s (0:25:05) ===================
+
+    #
+    # One fails
+    # docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+    # One passes
+    # docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
+    #
+
+    #
+    # Re-run the same workflow again ...
+    #
+

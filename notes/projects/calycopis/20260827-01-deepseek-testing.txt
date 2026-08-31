@@ -1,0 +1,552 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: [
+#     {
+#     "timestamp": "2026-08-27T05:30:00",
+#     "name": "DeepSeek harness",
+#     "model": "deepseek-v4-flash",
+#     "contribution": {
+#       "value": 100,
+#       "units": "%"
+#       }
+#     }
+#   ]
+#
+
+    Target:
+
+        Evaluate DeepSeek harness, running it in a container
+        and accessing it from the desktop.
+
+        https://deepseek.com/harness/en/
+        https://deepseek-code.com/
+        https://github.com/deepseek-ai/deepseek-harness
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Workspace: /Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq
+
+    ?   The broker project at /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+    ?   has a simpler process for setting the version numbers.
+    ?   Create a plan to update the openapi project at /Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq
+    ?   to use a similar config file and set of environment variables.
+
+    >   ....
+    >   ....
+    >   I'm not in plan mode, so here is the plan directly.
+    >   
+    >   ---
+    >   
+    >   # Plan: Align Calycopis-openapi versioning with Calycopis-broker
+    >   
+    >   ## Background
+    >   
+    >   The **broker** project (`/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq`) has a simpler version process: `config.yaml` stores explicit, full version strings under an `openapi:` namespace, and `bin/versions.sh` reads them with `yq`, `export`s them as `CALYCOPIS_*` environment variables, and appends them to `GITHUB_ENV`:
+    >   
+    >   | `config.yaml` key | env var | value |
+    >   |---|---|---|
+    >   | `openapi.schema.version` | `CALYCOPIS_OPENAPI_SCHEMA_VERSION` | `1.0.7` |
+    >   | `openapi.spring.version` | `CALYCOPIS_OPENAPI_SPRING_VERSION` | `1.0.7-SNAPSHOT` |
+    >   | `openapi.python.version` | `CALYCOPIS_OPENAPI_PYTHON_VERSION` | `1.0.7.dev5` |
+    >   
+    >   The **openapi** project currently derives versions instead: `config.yaml` holds components (`schema.version: 1.0.7`, `python.build: dev5`, `java.build: SNAPSHOT`), and `bin/versions.sh` concatenates them into local shell variables (`schemashort`, `schemaversion`, `combinedschema`, `javaversion`, `pythonversion`) that are **not even exported** for the calling shell — they only reach CI via `GITHUB_ENV`.
+    >   
+    >   ## Changes (all in `/Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq`)
+    >   
+    >   ### 1. `config.yaml` — restructure to explicit versions (broker style)
+    >   
+    >   Replace the current `schema:`/`python:`/`java:` blocks with:
+    >   
+    >   ```yaml
+    >   openapi:
+    >     schema:
+    >       path: "v1.0"
+    >       version: "1.0.7"
+    >     python:
+    >       version: "1.0.7.dev5"
+    >     spring:
+    >       version: "1.0.7-SNAPSHOT"
+    >   ```
+    >   
+    >   - Full explicit version strings — no derivation logic.
+    >   - `openapi.schema.path` is kept (an openapi-only extension the broker doesn't need) because this project must locate `schema/v1.0/execution-broker.yaml`.
+    >   - Note: the Java **client** and Java **spring** artifacts share one version today (`1.0.7-SNAPSHOT`), so both use `openapi.spring.version`. A separate `openapi.client.version` can be added later if ever needed.
+    >   
+    >   ### 2. `bin/versions.sh` — rewrite in the broker's style
+    >   
+    >   - Read with `yq`: `openapi.schema.version` → `CALYCOPIS_OPENAPI_SCHEMA_VERSION`, `openapi.spring.version` → `CALYCOPIS_OPENAPI_SPRING_VERSION`, `openapi.python.version` → `CALYCOPIS_OPENAPI_PYTHON_VERSION`, `openapi.schema.path` → `CALYCOPIS_OPENAPI_SCHEMA_PATH`.
+    >   - Derive (still needed for the merged filename): `CALYCOPIS_OPENAPI_SCHEMA_FILE="execution-broker-${CALYCOPIS_OPENAPI_SCHEMA_VERSION}.yaml"`.
+    >   - `export` all five variables — an improvement over the current script, which sets only non-exported shell variables.
+    >   - When `GITHUB_ENV` is set, append all five, exactly like the broker's script.
+    >   - Keep the licence header and `configfile=${1:?}` handling.
+    >   
+    >   ### 3. Build scripts — use the new env vars
+    >   
+    >   - `bin/buildschema.sh`: `schema/${CALYCOPIS_OPENAPI_SCHEMA_PATH}/execution-broker.yaml` → `/tmp/${CALYCOPIS_OPENAPI_SCHEMA_FILE}`.
+    >   - `bin/buildjavaspring.sh` and `bin/buildjavaclient.sh`: `-Drevision=${CALYCOPIS_OPENAPI_SPRING_VERSION}` and `-Dcalycopis.schema.file=/tmp/${CALYCOPIS_OPENAPI_SCHEMA_FILE}`.
+    >   - `bin/buildpythonclient.sh`: `-Drevision=${CALYCOPIS_OPENAPI_PYTHON_VERSION}` and `-Dcalycopis.schema.file=/tmp/${CALYCOPIS_OPENAPI_SCHEMA_FILE}`.
+    >   - The `source bin/versions.sh config.yaml` line at the top of each script stays the same.
+    >   
+    >   ### 4. `.github/workflows/build-packages.yml` — use the new env names
+    >   
+    >   Replace every `${{env.*}}` reference:
+    >   - `${{env.schemashort}}` → `${{env.CALYCOPIS_OPENAPI_SCHEMA_PATH}}`
+    >   - `${{env.combinedschema}}` → `${{env.CALYCOPIS_OPENAPI_SCHEMA_FILE}}`
+    >   - `${{env.javaversion}}` → `${{env.CALYCOPIS_OPENAPI_SPRING_VERSION}}` (both Java jobs)
+    >   - `${{env.pythonversion}}` → `${{env.CALYCOPIS_OPENAPI_PYTHON_VERSION}}`
+    >   
+    >   Also add a "Check the build versions" step after "Configure our versions" in each job (echoing the `CALYCOPIS_*` vars), mirroring the broker workflow. `test-workflow.yml` needs no change (it references no versions).
+    >   
+    >   ### 5. `AGENTS.md` — update documentation
+    >   
+    >   - Directory layout entries for `config.yaml` and `versions.sh` (lines ~53, ~63).
+    >   - Step 2 "Configure the versions" (lines ~97–114): document the new exported env vars and values.
+    >   - "Schema version" section (lines ~231–242): describe explicit versions in `config.yaml` and that both Java artifacts use the spring version.
+    >   - Optionally add a "Version management" section mirroring the broker's AGENTS.md.
+    >   - README.md needs no change.
+    >   
+    >   ## Verification
+    >   
+    >   1. `source bin/versions.sh config.yaml` → confirm the five `CALYCOPIS_OPENAPI_*` vars export with the expected values.
+    >   2. `bin/buildschema.sh` → confirm it produces `/tmp/execution-broker-1.0.7.yaml`.
+    >   3. Grep for the old names (`schemashort`, `schemaversion`, `combinedschema`, `javaversion`, `pythonversion`) to confirm no live references remain (old notes/ history can be left as-is).
+    >   4. Validate the workflow YAML with a linter.
+    >   
+    >   ## Out of scope
+    >   
+    >   - No changes to the broker project (it already defines the target env vars).
+    >   - No changes to the Maven POMs, codegen, or schema files.
+    >   - No version bump — values stay at `1.0.7` / `1.0.7-SNAPSHOT` / `1.0.7.dev5`.
+    >   
+    >   ---
+    >   
+    >   Would you like me to proceed with implementing this plan?
+
+    ?   Yes, please implement this plan.
+
+    >   ....
+    >   ....
+    >   The plan has been fully implemented in `/Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq`. The openapi project now uses the broker-style config file and `CALYCOPIS_OPENAPI_*` environment variables.
+    >   
+    >   ## Changes made
+    >   
+    >   **`config.yaml`** — Restructured to explicit, full version strings under an `openapi:` namespace (broker style), replacing the old derived `schema:`/`python:`/`java:` blocks:
+    >   ```yaml
+    >   openapi:
+    >     schema:
+    >       path: "v1.0"
+    >       version: "1.0.7"
+    >     python:
+    >       version: "1.0.7.dev5"
+    >     spring:
+    >       version: "1.0.7-SNAPSHOT"
+    >   ```
+    >   
+    >   **`bin/versions.sh`** — Rewritten in the broker's style: reads each field with `yq`, **exports** five `CALYCOPIS_OPENAPI_*` variables (`SCHEMA_VERSION`, `SCHEMA_PATH`, `SPRING_VERSION`, `PYTHON_VERSION`, plus derived `SCHEMA_FILE` = `execution-broker-1.0.7.yaml`), and appends them to `GITHUB_ENV` when set. No more derivation logic.
+    >   
+    >   **`bin/buildschema.sh`, `bin/buildjavaspring.sh`, `bin/buildjavaclient.sh`, `bin/buildpythonclient.sh`** — Now consume the new env vars (`CALYCOPIS_OPENAPI_SCHEMA_PATH`, `CALYCOPIS_OPENAPI_SCHEMA_FILE`, `CALYCOPIS_OPENAPI_SPRING_VERSION`, `CALYCOPIS_OPENAPI_PYTHON_VERSION`).
+    >   
+    >   **`.github/workflows/build-packages.yml`** — All `${{env.*}}` references migrated to the `CALYCOPIS_OPENAPI_*` names, and each of the four jobs now has a "Check the build versions" step echoing the five vars (mirroring the broker workflow).
+    >   
+    >   **`AGENTS.md`** — Updated the directory layout entries, Step 2 (env var list), and replaced the "Schema version" section with a broker-style "Version management" section.
+    >   
+    >   ## Verification performed
+    >   
+    >   - `source bin/versions.sh config.yaml` → all five vars exported with correct values (`1.0.7`, `v1.0`, `1.0.7-SNAPSHOT`, `1.0.7.dev5`, `execution-broker-1.0.7.yaml`); `GITHUB_ENV` writing confirmed.
+    >   - `bin/buildschema.sh` → produced `/tmp/execution-broker-1.0.7.yaml` (51 KB) successfully.
+    >   - `bash -n` passes on all five scripts; workflow YAML parses cleanly with a YAML linter.
+    >   - Grep for the old names (`schemashort`, `combinedschema`, `javaversion`, `pythonversion`, etc.) finds only historical `notes/zrq/*.txt` log entries — no live references remain.
+    >   
+    >   The version values are unchanged (`1.0.7` / `1.0.7-SNAPSHOT` / `1.0.7.dev5`), and no changes were made to the broker project, the Maven POMs, or the schema files.
+
+
+# -----------------------------------------------------
+
+    Workspace: /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+    ?   /plan
+    ?   Create a plan to add SimpleSessionConnector links to a session that executes a DockerSimpleComputeResourceEntity
+    ?   to provide access to the contents of the DockerSimpleComputeResourceEntity's `containerStdout` and `containerStderr` properties.
+    ?   
+    ?   The SimpleSessionConnector links should appear in the SimpleExecutionSession's list of connectors when the session is OFFERED.
+    ?   
+    ?   When the session is OFFERED the SimpleSessionConnectors should start with the following properties:
+    ?   ```
+    ?   kind: https://www.purl.org/ivoa.net/Calycopis-openapi/schema/v1.0/kinds/executable/docker-container-stdout-get.yaml
+    ?   status: PREPARING
+    ?   protocol: HTTP
+    ?   location: null
+    ?   ```
+    ?   for containerStdout, and
+    ?   ```
+    ?   kind: https://www.purl.org/ivoa.net/Calycopis-openapi/schema/v1.0/kinds/executable/docker-container-stderr-get.yaml
+    ?   status: PREPARING
+    ?   protocol: HTTP
+    ?   location: null
+    ?   ```
+    ?   for containerStderr.
+    ?   
+    ?   Once the DockerSimpleComputeResourceEntity has updated it's containerStdout and containerStderr
+    ?   properties with data from the DockerClient,
+    ?   the stdout and stderr SimpleSessionConnector links'
+    ?   status values should be AVAILABLE,
+    ?   and their locations should point to a HTTP endpoint that provides HTTP GET access to read the
+    ?   contents of the containerStdout and containerStderr properties,
+    ?   using BaseDelegateImpl.getBaseUri() to create the full endpoint location
+    ?   ```
+    ?   <baseUri>/sessions/{uuid}/docker/stdout-get
+    ?   ```
+    ?   and
+    ?   ```
+    ?   <baseUri>/sessions/{uuid}/docker/stderr-get
+    ?   ```
+    ?   
+    ?   When the DockerSimpleComputeResourceEntity has finished it's execution,
+    ?   [COMPLETED, CANCELLED, FAILED],
+    ?   the SimpleSessionConnectors links' status should be FINISHED.
+
+    >   ....
+    >   ....
+
+
+    ?   There are a number of places where you have updated the AIMetrics for a file that you have modified,
+    ?   adding a new block like the following:
+    ?   ```
+    ?    *     {
+    ?    *     "timestamp": "2026-08-27T09:00:00",
+    ?    *     "name": "Cursor CLI",
+    ?    *     "version": "2026.02.13-41ac335",
+    ?    *     "model": "Claude 4.6 Opus (Thinking)",
+    ?    *     "contribution": {
+    ?    *       "value": 10,
+    ?    *       "units": "%"
+    ?    *       }
+    ?   ```
+    ?   The timestamp and contribution are correct, but we need to make the instructions clearer.
+    ?   The name, version and model fields should be copied from the template, they should filled in using the metadata from agent and model used for the current session.
+    ?   For the current session these would be:
+    ?   * Name: @deepseek-ai/dsh (the DeepSeek Harness — the agent runtime + web GUI at http://127.0.0.1:3080)
+    ?   * Version: 0.1.1-rc.2 (from the installed package at /usr/local/lib/node_modules/@deepseek-ai/dsh/package.json)
+    ?   * Agent model: deepseek-v4-flash (the model powering this agent)
+    ?   
+    ?   Can you update the AIMetrics blocks that you modified in this session with the correct values,
+    ?   and can you suggest improved wording for the rule that makes this clearer.
+
+    >   ....
+    >   ....
+
+
+    ?   There are a number of places where we use a String value to represent the status of the connector.
+    ?   
+    ?   For example:
+    ?   `DockerSimpleComputeResourceEntity.CONNECTOR_STATUS_PREPARING`
+    ?   `DockerSimpleComputeResourceEntity.updateLogConnector(... String status)`
+    ?   `DockerSimpleComputeResourceEntity.CONNECTOR_STATUS_PREPARING`
+    ?   `SimpleExecutionSessionConnector.getStatus()`
+    ?   
+    ?   Can we change these to use the StatusEnum from IvoaSimpleSessionConnector.
+
+    >   ....
+    >   ....
+
+    #
+    # AI generated code reverts to String rather than specific eunum type.
+    # I think the term is "primitive obsession in AI-generated code".
+    # https://cekrem.github.io/posts/architecture-by-autocomplete/
+    #
+
+
+    ?   A number of times you have had to access files outside the current workspace to perform a task.
+    ?   For example, using Maven needs to write metadata to the `.m2` sub-directory of the user's home directory,
+    ?   and needs to read files from the system configuration in `/etc`.
+    ?   ```
+    ?   Escalate sandbox to danger-full-access: The broker run writes Maven metadata to /root/.m2 outside the workspace and must read /etc/calycopis configuration.
+    ?   ```
+    ?   What is the best way to allow access specific local directories like this so that you don't need to
+    ?   ask permission each time ?
+
+    >   ....
+    >   ....
+    >   I've traced the full mechanism through the harness source. Here's the honest picture and the practical options.
+    >   
+    >   ## How the sandbox works
+    >   
+    >   The file-effect sandbox is a **closed three-mode vocabulary** — there is **no per-directory allowlist** option:
+    >   
+    >   | Mode | File writes allowed |
+    >   |---|---|
+    >   | `read-only` | none |
+    >   | `workspace-write` (current default) | workspace root only (+ platform temp) |
+    >   | `danger-full-access` | everywhere (no confinement) |
+    >   
+    >   The `dsh-sandbox-policy` docs are explicit: *"One primary workspace root per session — extra writable roots are **not part of** `SandboxExecutionPolicy`."* So a config like `allowedPaths: [/root/.m2]` doesn't exist today — I checked the provider config (`dsh-sandbox-local`/`dsh-sandbox-policy` only expose `mode` + `workspaceRoot`/runner options). Reads are never confined, which is why `/etc/calycopis` was never a problem — only *writes* to `/root/.m2` triggered the prompts.
+    >   
+    >   ## The supported ways to stop the prompts
+    >   
+    >   **1. Set `DSH_PERMISSION_MODE=danger-full-access` on the harness process (the intended switch).**
+    >   The shipped base patch resolves the default as:
+    >   ```yaml
+    >   mode: !!js process.env.DSH_PERMISSION_MODE ?? 'workspace-write'
+    >   approval.policy: !!js (process.env.DSH_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'
+    >   ```
+    >   So one env var both disables confinement **and** flips the approval policy to `never` — no more prompts for anything, including Maven's `.m2` writes. It must be present when the harness boots (config is resolved at load), so it goes in the `broker-dev` container's launch environment (podman run / compose `environment:` / service unit), then restart the harness. Downside: it's global — it removes confinement for *all* paths, not just the specific ones.
+    >   
+    >   **2. Keep `workspace-write` and route the outside-writes into the workspace (best if you want to keep confinement).**
+    >   Since writes are confined to the workspace root, point the tools at workspace paths instead:
+    >   - Maven: `-Dmaven.repo.local=<workspace>/build/m2` (seed it once with `cp -a /root/.m2 build/m2` so nothing re-downloads — this is the one I couldn't do because `.m2` is 1.2 GB)
+    >   - Python: venvs under `build/` (as I did with `build/test-venv`)
+    >   - `/etc/calycopis` needs no change — reads are always allowed
+    >   
+    >   This is the "narrowest trust" approach: no prompts, sandbox still on, but the first Maven run needs the one-time seed copy.
+    >   
+    >   **3. Just answer the prompts (current behaviour).** Each approved escalation is a one-shot grant for that exact command — it does *not* persist for the session. This is the designed gate for occasional needs; it's just noisy when a tool writes `.m2` on every build.
+    >   
+    >   **4. (Advanced) Patch the profile** — `$DSH_HOME/profiles/web/cordis.patch.yml` is currently `[]`; you could pin `sandbox-policy.config.mode: danger-full-access` there. But since the vocabulary is closed and extra roots aren't supported, the only meaningful override is the same `danger-full-access` as option 1 — so the env var is simpler.
+    >   
+    >   ## Recommendation
+    >   
+    >   - If you're comfortable with an unconfined dev container: **option 1** — set `DSH_PERMISSION_MODE=danger-full-access` in the `broker-dev` container launch and restart the harness. Cleanest, and it also removes future prompt friction for other tools.
+    >   - If you want to keep file-effect confinement: **option 2** — a one-time `cp -a /root/.m2 build/m2` plus `-Dmaven.repo.local` (and I'd also recommend adding `build/m2` to `.gitignore`).
+    >   
+    >   One caveat: this sandbox governs file effects only — network is already unrestricted in every mode, so nothing about connectivity changes either way.
+    >   
+    >   If you tell me how the `broker-dev` container is launched (the run command/compose file), I can add the `DSH_PERMISSION_MODE` env var to it for you.
+
+    #
+    # Propose this as an issue/plugine enhancment ?
+    # Per workspace additional directories.
+    # Using portable fields like $USER_HOME.
+    #
+
+    #
+    # Note to self - I was wrong about the kind/type field.
+    # In fact, SimpleSessionConnector needs both, a kind, and a type.
+    # `kind` should be reserved for polymorphic schema types, like AbstractExecutable etc.
+    # `type` should be used to indicate the semantic meaning of the content, like docker-stdout or docker-stderr.
+    # https://github.com/uksrc/Calycopis-broker/issues/95
+    #
+
+    ?   We do not need to define the StatusEnum values as constants in DockerSimpleComputeResourceEntity.
+    ?   * DockerSimpleComputeResourceEntity.CONNECTOR_STATUS_PREPARING
+    ?   * DockerSimpleComputeResourceEntity.CONNECTOR_STATUS_AVAILABLE
+    ?   * DockerSimpleComputeResourceEntity.CONNECTOR_STATUS_FINISHED
+    ?   The code should simply use the enum values themselves.
+
+    >   ....
+    >   ....
+
+
+    ?   Please add something to the AGENTS.md file that instructs agents to avoid defining constants that replicate existing enum values.
+
+    >   ....
+    >   ....
+
+
+    ?   Rather than 'LogConnector' can we refer the connectors by something that matches their class name e.g. 'SessionConnector'.
+    ?   * DockerSimpleComputeResourceEntity.updateLogConnector => updateSessionConnector
+    ?   * DockerSimpleComputeResourceEntity.markLogConnectorsFinished => markSessionConnectorsFinished
+    ?   * DockerSimpleComputeResourceEntity.markLogConnectorsAvailable => markSessionConnectorsAvailable
+    ?   * DockerSimpleComputeResourceEntity.markLogConnectorsFinished => markSessionConnectorsFinished
+
+    >   ....
+    >   ....
+
+    #
+    # Note to self - this was probably easier to just go ahead and do using Eclipse than ask the agent to do it.
+    # On the other hand changing the code without telling the agent may confuse it when we come to summarising the changes.
+    #
+
+
+    ?   There are a number of Python tests that try to read the
+    ?   content of stdout by using a docker client to catch the
+    ?   container before it is deleted and reading container logs
+    ?   from within the Python test itself.
+    ?   
+    ?   The tests are currently disabled by naming them as skip_xyz rather than test_xyz.
+    ?   
+    ?   For example TestDockerVolumeMount.skip_md5_matches in test_docker_volume_mount.py:
+    ?   ```
+    ?   class TestDockerVolumeMount
+    ?       ...
+    ?       def skip_md5_matches(self, client, docker_client):
+    ?           ....
+    ?           while datetime.now(timezone.utc).timestamp() < deadline:
+    ?               container = _find_container_by_image(
+    ?                   docker_client,
+    ?                   "heliophorus-androcles",
+    ?                   test_start,
+    ?               )
+    ?               if container is not None:
+    ?                   container.reload()
+    ?                   status = container.status
+    ?                   if status in ("exited", "dead", "stopped"):
+    ?                       container_stdout = container.logs(
+    ?                           stdout=True, stderr=False,
+    ?                       ).decode("utf-8", errors="replace")
+    ?                       break
+    ?                   container_stdout = container.logs(
+    ?                       stdout=True, stderr=False,
+    ?                   ).decode("utf-8", errors="replace")
+    ?                   if container_stdout.strip():
+    ?                       break
+    ?               _sleep(5.0)
+    ?   ```
+    ?   
+    ?   Also TestAndroclesMd5.skip_sha256_matches and TestAndroclesMd5.skip_md5_matches_local
+    ?   in test_docker_androcles_md5.py
+    ?   
+    ?   Can you update these to read the content of stdout from the
+    ?   session connector that is now available in the broker REST API
+    ?   and enable the tests by renaming them from skip_xyz to test_xyz.
+    ?   
+    ?   The updated tests should no longer need to use the _find_container_by_image()
+    ?   method to locate containers. Can you check that the _find_container_by_image()
+    ?   methods are not used anywhere else and then delete them.
+
+    >   ....
+    >   ....
+
+
+    ?   Can you add a test to test_docker_session_connectors.py that runs an alpine container
+    ?   with a command that produces a known output on both stdout and stderr.
+
+    >   ....
+    >   ....
+
+
+    ?   This all looks good.
+    ?   Can you create a commit message that summarises the work done in this session.
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+
+    Comitted the changes to Zarquan.20260826-zrq-catchup.
+    Created a pull request to merge that into uksrc.TRD-133-Small-steps-24-08-2026
+    https://github.com/uksrc/Calycopis-broker/pull/96
+
+    Pull request workflow failed 1 test.
+    https://github.com/uksrc/Calycopis-broker/actions/runs/33077837784/job/98536655998
+
+        FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+
+    Pull request workflow failed 2 tests.
+    https://github.com/uksrc/Calycopis-broker/actions/runs/33101621857/job/98620531793
+
+        FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+        FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
+
+    Pull request workflow failed 1 test.
+    https://github.com/uksrc/Calycopis-broker/actions/runs/33077837784/job/98631038268
+
+        FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+
+
+    Pull request workflow failed 2 tests.
+    https://github.com/uksrc/Calycopis-broker/actions/runs/33101621857/job/98620531793?pr=96
+
+        FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+        FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
+
+
+
+___________________ TestAndroclesMd5.test_md5_matches_local ____________________
+self = <test_docker_androcles_md5.TestAndroclesMd5 object at 0x7fe96a6a02d0>
+client = <calycopis_openapi_client.wrappers.execution_client.ExecutionBrokerClient object at 0x7fe96a69a660>
+docker_client = <docker.client.DockerClient object at 0x7fe96a699fd0>
+    def test_md5_matches_local(self, client, docker_client):
+        """
+        Compute the expected MD5 locally, run androcles via the broker,
+        read the captured stdout from the session connector, and verify
+        the hash matches.
+        """
+>       expected_md5 = _compute_expected_md5(docker_client, BIND_MOUNT_TEST_FILE)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+docker/test_docker_androcles_md5.py:349:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+docker_client = <docker.client.DockerClient object at 0x7fe96a699fd0>
+filepath = '/tmp/tmp.s8udK5Gpwl/random.dat'
+    def _compute_expected_md5(docker_client: docker.DockerClient, filepath: str) -> str:
+        """Compute the MD5 of a file as seen through a Podman/Docker bind mount.
+
+        Rootless Podman may see different file content from the host when
+        running under a different user namespace, so we compute the
+        reference hash through the same bind mount mechanism that the
+        broker will use.
+        """
+        container = docker_client.containers.run(
+            "alpine:3",
+            command=["md5sum", "/input"],
+            volumes={filepath: {"bind": "/input", "mode": "ro"}},
+            remove=True,
+            stdout=True,
+            stderr=False,
+        )
+        output = container.decode("utf-8", errors="replace").strip()
+>       return output.split()[0]
+               ^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+docker/test_docker_androcles_md5.py:167: IndexError
+____________________ TestDockerVolumeMount.test_md5_matches ____________________
+self = <test_docker_volume_mount.TestDockerVolumeMount object at 0x7fe96a6a3390>
+client = <calycopis_openapi_client.wrappers.execution_client.ExecutionBrokerClient object at 0x7fe96a69a660>
+docker_client = <docker.client.DockerClient object at 0x7fe96a46d6d0>
+    def test_md5_matches(self, client, docker_client):
+        """
+        Download the same URL in a reference container, run androcles
+        via the broker with an http:// data resource, read the captured
+        stdout from the session connector, and verify the MD5 matches.
+        """
+>       expected_md5 = _compute_expected_md5(docker_client, HTTP_TEST_URL)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+docker/test_docker_volume_mount.py:265:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+docker_client = <docker.client.DockerClient object at 0x7fe96a46d6d0>
+url = 'https://github.com/ivoa-std/ExecutionBroker/releases/download/auto-pdf-preview/ExecutionBroker-draft.pdf'
+    def _compute_expected_md5(docker_client: docker.DockerClient, url: str) -> str:
+        """Download a URL inside a container and compute the MD5.
+
+        Uses the same Docker/Podman API path as the broker, so the result
+        reflects the file content as seen through the container runtime.
+        """
+        output = docker_client.containers.run(
+            "alpine:3",
+            command=["sh", "-c", f"wget -q -O /tmp/data '{url}' && md5sum /tmp/data"],
+            remove=True,
+            stdout=True,
+            stderr=False,
+        )
+>       return output.decode("utf-8", errors="replace").strip().split()[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+docker/test_docker_volume_mount.py:145: IndexError
+=========================== short test summary info ============================
+FAILED docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+FAILED docker/test_docker_volume_mount.py::TestDockerVolumeMount::test_md5_matches
+================== 2 failed, 49 passed in 1397.11s (0:23:17) ===================

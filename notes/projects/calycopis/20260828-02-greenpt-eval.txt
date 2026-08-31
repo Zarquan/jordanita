@@ -1,0 +1,241 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Evaluate GreenPT model provider.
+        https://greenpt.com/
+        https://docs.greenpt.ai/models
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    name: Hilary Jacobs
+    mail: greenpt.ai@dm92.uk
+    pass: onepass
+
+    keys:
+      - apikey-001: sk-rVRwATF1RfC62-TwRHBers9S8jXjO0JWl_TNs0WTec8
+
+
+# -----------------------------------------------------
+# Run our DSH development environment in it's pod, with writable config.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod broker-pod \
+        --name broker-dev \
+        --env "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${TEST_DIR}:/tmp/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:rw,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --volume "${HOME}/.dsh:/root/.dsh:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/deepseek-harness:2026.08.26 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                            COMMAND     CREATED             STATUS             PORTS                                                     NAMES
+    >   51072381efa5  localhost/podman-pause:5.4.2-1743552000                      2 minutes ago       Up About a minute  0.0.0.0:5432->5432/tcp                                    05e4b2670858-infra
+    >   9ee795168d21  localhost/podman-pause:5.4.2-1743552000                      2 minutes ago       Up 6 seconds       0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp  b20b04855257-infra
+    >   39929d58a813  docker.io/library/postgres:latest                postgres    About a minute ago  Up About a minute  0.0.0.0:5432->5432/tcp                                    postgres
+    >   2fb81fe7cb5a  localhost/calycopis/deepseek-harness:2026.08.26  bash        6 seconds ago       Up 4 seconds       0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp  broker-dev
+
+# -----------------------------------------------------
+# Install the PostgreDQL client and check if we can see our database.
+#[root@calycopis-dev]
+
+    dnf install -y postgresql
+
+    pg_isready --host postgres
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq
+
+        source bin/versions.sh config.yaml
+        source bin/container-host.sh
+
+        pushd java
+
+            ./mvnw spring-boot:run
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Check we can see the broker from the host system.
+#[user@desktop]
+
+    curl --head http://127.0.0.1:8082/actuator/health
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Connect a second terminal to the broker container.
+#[user@desktop]
+
+    podman exec \
+        --tty \
+        --interactive \
+        broker-dev \
+            bash
+
+    >   ....
+    >   ....
+
+# -----------------------------------------------------
+# Install the DSH http proxy plugin
+and run the DeepSeek harness with http proxy.
+#[root@calycopis-dev]
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+
+
+    cat /root/.dsh/profiles/web/pnpm-workspace.yaml
+
+    >   ....
+    >   ....
+
+    >   {
+    >     "hoistPattern": [
+    >       "*"
+    >     ],
+    >     "included": {
+    >       "dependencies": true,
+    >       "devDependencies": true,
+    >       "optionalDependencies": true
+    >     },
+    >     "injectedDeps": {},
+    >     "layoutVersion": 5,
+    >     "hoistedLocations": {
+    >       "@smanx/dsh-proxy@https://codeload.github.com/smanx/dsh-proxy/tar.gz/95e07fe4f2be31772188e7f6c55df9b0f2a17c18": [
+    >         "node_modules/@smanx/dsh-proxy"
+    >       ]
+    >     },
+    >     "nodeLinker": "hoisted",
+    >     "packageManager": "pnpm@10.33.0",
+    >     "pendingBuilds": [],
+    >     "publicHoistPattern": [],
+    >     "prunedAt": "Wed, 26 Aug 2026 11:09:00 GMT",
+    >     "registries": {
+    >       "default": "https://registry.npmjs.org/",
+    >       "@jsr": "https://npm.jsr.io/"
+    >     },
+    >     "skipped": [],
+    >     "storeDir": "/root/.local/share/pnpm/store/v10",
+    >     "virtualStoreDir": ".pnpm",
+    >     "virtualStoreDirMaxLength": 120
+    >   }
+
+
+    ls /root/.local/share/pnpm/store/v10
+
+    >   files
+    >   index
+
+
+    ls /root/.dsh/.pnpm-store/v10
+
+    >   files
+    >   index
+    >   projects
+
+
+    vi /root/.dsh/profiles/web/pnpm-workspace.yaml
+
+        {
+          ....
+    -     "storeDir": "/root/.local/share/pnpm/store/v10",
+    +     "storeDir": "/root/.dsh/.pnpm-store/v10",
+          ....
+        }
+
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   ....
+    >   ....
+    >   Already up to date
+    >   Progress: resolved 1, reused 0, downloaded 1, added 0, done
+    >   Done in 3.3s using pnpm v10.33.0
+
+
+# -----------------------------------------------------
+# Run the DSH with http proxy.
+#[root@calycopis-dev]
+
+    dsh web --no-open
+
+    >   dsh web: http://127.0.0.1:3080
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Login to the harness from the desktop.
+#[user@desktop]
+
+    firefox \
+        --new-window \
+        'http://127.0.0.1:3081'
+
+    >   ....
+    >   ....
+
+
+
+
+
