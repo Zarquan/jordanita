@@ -1,0 +1,611 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Add resource statistics to the debug logs.
+        https://github.com/uksrc/Calycopis-broker/issues/31
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Ask DeepSeek to plan and implement the changes ..
+#[user@dsh-web]
+
+    ?   /plan
+    ?   Create a plan for outputting some debug statistics in SpringProcessingTransactionHandlerImpl.
+    ?   Add a `debugStats` method to SpringProcessingTransactionHandlerImpl
+    ?   that runs a query on the database and prints out some statistics as debug log messages.
+    ?   The database query should select the currently active SimpleExecutionSessionEntitys with phase IN [OFFERED, WAITING, PREPARING, AVAILABLE, RUNNING, RELEASING], ordered in that sequence.
+    ?   For each session, select the SimpleComputeResourceEntity joined to it, and get cpu cores and memory.
+    ?   For each of the rows in the query result display the following in a debug message
+    ?   [session uuid][phase][compute uuid][cores][memory]
+    ?   Then display a summary debug message with the total [cores] and [memory] for all the active sesisons.
+
+    >   Debug statistics for active execution sessions in SpringProcessingTransactionHandlerImpl
+    >   Goal
+    >   
+    >   Add a debugStats() method to SpringProcessingTransactionHandlerImpl (spring package) that runs one database query over currently-active execution sessions and prints per-session and summary statistics as DEBUG log messages. Per user decisions:
+    >   
+    >       cores/memory source: the offered max values (maxofferedcores, maxofferedmemory) of the SimpleComputeResourceEntity — the values the broker actually allocated (and the Docker platform enforces as container limits).
+    >       call site: debugStats() is invoked at the very start of getNext(...) in SpringProcessingTransactionHandlerImpl, so it runs on every processing-loop poll (only doing DB work when DEBUG logging is enabled).
+    >   
+    >   Files to change
+    >   
+    >       java/src/main/java/net/ivoa/calycopis/broker/spring/jpa/SpringSessionEntityRepository.java — add the query.
+    >       java/src/main/java/net/ivoa/calycopis/broker/spring/processing/SpringProcessingTransactionHandlerImpl.java — wait, no: java/src/main/java/net/ivoa/calycopis/broker/spring/SpringProcessingTransactionHandlerImpl.java — add the method, the repository dependency, and the invocation in getNext.
+    >   
+    >   No interface changes: debugStats() is a new public method on the concrete class only. ProcessingTransactionHandler (engine, framework-neutral) is unchanged.
+    >   Change 1 — Repository query (SpringSessionEntityRepository)
+    >   
+    >   Add imports java.util.List, org.springframework.data.jpa.repository.Query, org.springframework.data.repository.query.Param (the latter two already present in sibling SpringProcessingRequestEntityRepository) and add a method returning the joined rows:
+    >   java
+    >   
+    >   @Query(
+    >       """
+    >       SELECT
+    >           s.uuid,
+    >           s.phase,
+    >           c.uuid,
+    >           c.maxofferedcores,
+    >           c.maxofferedmemory
+    >       FROM
+    >           SimpleExecutionSessionEntity s,
+    >           SimpleComputeResourceEntity c
+    >       WHERE
+    >           c.session = s
+    >       AND
+    >           s.phase IN :phases
+    >       """
+    >           )
+    >   public List<Object[]> selectActiveSessionsWithCompute(
+    >       @Param("phases") final List<IvoaSimpleExecutionSessionPhase> phases
+    >       );
+    >   
+    >   Design notes:
+    >   
+    >       SimpleExecutionSessionEntity is the concrete session entity; SimpleComputeResourceEntity is the (abstract, JOINED-inheritance) compute entity whose maxofferedcores/maxofferedmemory columns live on its own table, so one JPQL query covers both Mock and Docker platform compute rows via WHERE c.session = s.
+    >       Each result row is an Object[]: [0] = session UUID, [1] = IvoaSimpleExecutionSessionPhase, [2] = compute UUID, [3] = Long cores, [4] = Long memory.
+    >       No SQL ORDER BY: the phase column is @Enumerated(EnumType.STRING), so a DB-level ORDER BY phase would sort alphabetically and cannot produce the required phase sequence. Ordering is applied in the caller (Change 2) using an explicit phase-sequence list.
+    >       Sessions without a linked compute resource are excluded by the inner-join semantics (consistent with "the compute resource joined to it").
+    >   
+    >   Change 2 — debugStats() in SpringProcessingTransactionHandlerImpl
+    >   
+    >   Add:
+    >   
+    >       a second @Autowired field: private SpringSessionEntityRepository sessionRepository;
+    >       imports: java.util.Comparator, java.util.List, SpringSessionEntityRepository (net.ivoa.calycopis.broker.spring.jpa), IvoaSimpleExecutionSessionPhase (net.ivoa.calycopis.openapi.spring.model);
+    >       a constant listing the active phases in the required sequence (enum constants only — no replicated string/constant aliases, per coding rules):
+    >   
+    >   java
+    >   
+    >   private static final List<IvoaSimpleExecutionSessionPhase> ACTIVE_PHASES = List.of(
+    >       IvoaSimpleExecutionSessionPhase.OFFERED,
+    >       IvoaSimpleExecutionSessionPhase.WAITING,
+    >       IvoaSimpleExecutionSessionPhase.PREPARING,
+    >       IvoaSimpleExecutionSessionPhase.AVAILABLE,
+    >       IvoaSimpleExecutionSessionPhase.RUNNING,
+    >       IvoaSimpleExecutionSessionPhase.RELEASING
+    >       );
+    >   
+    >       the new method (public, no separate @Transactional — its only call site, getNext(...), already runs in a REQUIRES_NEW transaction, so the query executes inside that transaction):
+    >   
+    >   java
+    >   
+    >   public void debugStats()
+    >       {
+    >       if (!log.isDebugEnabled())
+    >           {
+    >           return;
+    >           }
+    >       List<Object[]> rows = this.sessionRepository.selectActiveSessionsWithCompute(
+    >           ACTIVE_PHASES
+    >           );
+    >       rows.sort(
+    >           Comparator.comparing(
+    >               (Object[] row) -> ACTIVE_PHASES.indexOf(row[1])
+    >               )
+    >           );
+    >       long totalCores = 0;
+    >       long totalMemory = 0;
+    >       for (Object[] row : rows)
+    >           {
+    >           UUID sessionUuid = (UUID) row[0];
+    >           IvoaSimpleExecutionSessionPhase phase = (IvoaSimpleExecutionSessionPhase) row[1];
+    >           UUID computeUuid = (UUID) row[2];
+    >           Long cores = (Long) row[3];
+    >           Long memory = (Long) row[4];
+    >           log.debug("Active session [{}][{}][{}][{}][{}]",
+    >               sessionUuid, phase, computeUuid, cores, memory);
+    >           if (cores != null)
+    >               {
+    >               totalCores = totalCores + cores;
+    >               }
+    >           if (memory != null)
+    >               {
+    >               totalMemory = totalMemory + memory;
+    >               }
+    >           }
+    >       log.debug("Active session summary [{}][{}]",
+    >           totalCores, totalMemory);
+    >       }
+    >   
+    >       call it as the first statement of getNext(...):
+    >   
+    >   java
+    >   
+    >   public UUID getNext(final ProcessingService service)
+    >       {
+    >       this.debugStats();
+    >       ...
+    >       }
+    >   
+    >   Rationale and edge cases:
+    >   
+    >       The isDebugEnabled() guard means the query is only executed when DEBUG output is actually enabled, so the per-loop-poll call adds no database load in normal (INFO) operation.
+    >       Sorting by ACTIVE_PHASES.indexOf(phase) reproduces exactly the required sequence OFFERED → WAITING → PREPARING → AVAILABLE → RUNNING → RELEASING (the enum's own ordinal order for these six values coincides, but the explicit list makes the intent and ordering unambiguous).
+    >       cores/memory may be null in the DB (Long columns): they are logged as-is per row and treated as 0 in the totals.
+    >       No active sessions → no per-row messages and a summary of [0][0].
+    >       No ternaries (?:) used; braces and line width follow the surrounding file style.
+    >   
+    >   Compliance with repo rules (implementation step)
+    >   
+    >       AIMetrics: add an entry to the header of both modified files with "name": "@deepseek-ai/dsh", "version" from the session, "model": current session model, current ISO-8601 timestamp, and a small estimated contribution percentage. SpringSessionEntityRepository currently has no AIMetrics block, so one must be added there.
+    >       Copyright year: both files already carry 2026 in their <meta:licence>; no year change required.
+    >       No new repository (uses existing SpringSessionEntityRepository bean), no fragile patterns, no schema/API changes.
+    >   
+    >   Verification / acceptance criteria
+    >   
+    >       Compile succeeds: source bin/versions.sh config.yaml then cd java && ./mvnw clean compile (run from the repo root; requires the version env vars from bin/versions.sh).
+    >       SpringSessionEntityRepository exposes selectActiveSessionsWithCompute(...); SpringProcessingTransactionHandlerImpl compiles with the new autowired repository, debugStats(), and the getNext invocation.
+    >       Functional spot-check (broker running against PostgreSQL): run with the logger net.ivoa.calycopis.broker.spring (or the whole broker package) at DEBUG (e.g. temporary log4j2.xml logger element or logging.level override), start one or two sessions through the offer-set/direct flows so they sit in phases such as WAITING/PREPARING/AVAILABLE/RUNNING/RELEASING, and confirm in the log:
+    >           one Active session [<session uuid>][<phase>][<compute uuid>][<cores>][<memory>] line per active session, rows ordered by phase in the sequence OFFERED, WAITING, PREPARING, AVAILABLE, RUNNING, RELEASING;
+    >           a final Active session summary [<total cores>][<total memory>] line summing the rows.
+    >       Existing behaviour unchanged: with DEBUG off, getNext still performs only its normal processing (no extra query executed).
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Build and run the broker.
+#[user@desktop]
+
+    podman exec \
+        -it \
+        calycopis-dev \
+            bash
+
+        pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/
+
+            source bin/versions.sh config.yaml
+
+            pushd java
+
+                ./mvnw clean spring-boot:run
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run the integration tests.
+#[user@desktop]
+
+    podman exec \
+        -it \
+        calycopis-dev \
+            bash
+
+        export CALYCOPIS_URL=${CALYCOPIS_URL:='http://127.0.0.1:8082'}
+
+        export CALYCOPIS_ADMIN_USERNAME="$(
+            yq \
+                '.calycopis.admin.username' \
+                /etc/calycopis/admin.yaml
+            )"
+
+        export CALYCOPIS_ADMIN_PASSWORD="$(
+            yq \
+                '.calycopis.admin.password' \
+                /etc/calycopis/admin.yaml
+            )"
+
+        pushd /Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/
+
+            source bin/versions.sh config.yaml
+
+            pushd tests/python
+
+                pip install -r requirements.txt
+
+                pytest -v docker
+
+
+    #
+    # Debug found what I was looking for :-)
+    # Lots of OFFERED sessions cloging up the queue because we don't remove EXPIRED offers.
+
+    >   ....
+    >   ....
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 ProcessingServiceImpl loop() Starting processing loop [f578b4d7-a909-11f1-8881-ed98127ce622]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [9d6726e6-5c49-45d6-a5bd-5de6a8b79688][OFFERED][e0b1832d-c142-41ae-b66c-742c6d4ee6c3][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [2813e4ad-47d2-45ce-9d62-c30923067662][OFFERED][6404cf1c-2db5-4678-9764-ab84d8bd0f20][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [d37004dc-62e8-4a8e-8aa6-f13c4e22a9be][OFFERED][7f3cae9a-648d-4d99-a03c-9a440ca492ab][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [7be75410-4917-4585-8e13-c126c0e2ed00][OFFERED][60f56ff8-a88f-45fe-b205-6f7bf9ba49ba][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [89335dd8-c240-4b7e-bb02-ec110a218cbd][OFFERED][7535ef89-caef-4f63-b8a3-9330d7ede7f8][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [d2363657-945b-4b90-af2f-fd1c1d199524][OFFERED][db680e71-696e-45e5-aeab-d229497cc2f3][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [99e1765c-c812-4d4b-949d-c68f8d78cd18][OFFERED][59bd9dcf-c022-4550-b746-52447232a0da][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [8e62d4fc-9a8a-4015-90c8-2c2d60abd354][OFFERED][367ae060-013c-4e1e-96bb-e25344de97e7][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [323aaf13-fc53-43d6-a851-8acaf54c37a0][OFFERED][28c31e89-43c7-4836-81c4-ada55263cf2e][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [87846cf3-b9a5-4cfa-9f6e-13e3295555fe][OFFERED][bfe21eaf-1642-4495-9a03-327f2bd73a59][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [e4f52016-d992-4e4a-a498-45b5acfee4bc][OFFERED][38f5a447-7562-4f54-9c21-b4cd0686d2b8][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [8434f275-da91-4e88-bedf-a0e9fc0aa7a8][OFFERED][d2d71a3a-70d3-44a1-888c-a680d0f6d369][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [0a95a986-7daa-4dde-9519-e1549839c99c][PREPARING][8fbb5bd2-347b-4e6e-a78c-6806a022d94d][2][2]
+    >   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session summary [26][26]
+    >   ....
+    >   ....
+
+    Solution
+    1. Add a womble thread to tidy things up.
+    2. Set the offer expiry to 60 seconds.
+    3. Change OFFERED to EXPIRED when they reach their expiry time.
+    4. Delete them when they have been EXPIRED for > 5min.
+
+    5. Update the tests to REJECT the ones we don't accept.
+    6. Test to verufy what happens to the EXPIRED ones.
+    7. Test to verufy what happens to the REJECTED ones.
+
+
+    #
+    # Also found this.
+    # If it is already FAILED, no need to check the components.
+    # If it is aldeay FAILED, no update needed.
+
+    >   ....
+    >   ....
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 ProcessingServiceImpl loop() Pre-processing request [c8b31011-5f42-4d9f-b498-c8699c9765a2]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity preProcess() Pre-processing update request for session [0147fb93-5fb8-4b96-a687-47b131e43dc3][SimpleExecutionSessionEntity$HibernateProxy][FAILED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity count() Component [a753b304-db10-4401-9dda-b2cea4e068a7][DockerDockerContainerEntity] phase [COMPLETED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity count() Component [15173d85-b1d6-4d5e-b5e3-d00c224edece][DockerSimpleComputeResourceEntity] phase [FAILED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity count() Component [ea05e1ef-ad94-40d6-9744-dcc54c1b2646][DockerSimpleDataFileResourceEntity] phase [COMPLETED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity count() Component [f2002ceb-5e5b-477a-9160-5c73a27d29fb][AbstractStorageResourceEntity$HibernateProxy] phase [COMPLETED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity preProcess() Found [1] components marked as [FAILED]
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 UpdateSessionRequestEntity preProcess() Skipping change to [FAILED] for session [0147fb93-5fb8-4b96-a687-47b131e43dc3][SimpleExecutionSessionEntity$HibernateProxy], phase is already [FAILED]
+    >   ....
+    >   ....
+
+    #
+    # Also found this
+    # Docker container failed because host directory is empty.
+    # a) test should skip/fail if TEST_FILE is null
+    # b) validator should have rejected the request
+    # c) need tests to deliberately try invalid params.
+
+
+    >   ....
+    >   ....
+    >   2026-09-05 09:48:59 DEBUG scheduling-1 DockerSimpleComputeResourceEntity createAndStartContainer() Creating Docker container from image [ghcr.io/zarquan/heliophorus-androcles:sha-9a2513b]
+    >   2026-09-05 09:48:59 WARN scheduling-1 DockerSimpleComputeResourceEntity createAndStartContainer() Failed to create/start Docker container for [15173d85-b1d6-4d5e-b5e3-d00c224edece]: Status 500: {"cause":"host directory cannot be empty","message":"fill out specgen: host directory cannot be empty","response":500}
+    >   ....
+    >   ....
+
+
+
+# -----------------------------------------------------
+# Ask DeepSeek to implement some changes ..
+#[user@dsh-web]
+
+    ?   Can we simplify the debug messages.
+    ?   Leave the database query as is, but modify the debug message to skip the component uuid.
+    ?   From:
+    ?   `Active session [session-uuid][phase][component-uuid][cores][memory]`
+    ?   To:
+    ?   `Active [session-uuid][phase][cores][memory]`
+    ?   and shorten the summary message from
+    ?   `Active session summary [cores][memory]`
+    ?   to just
+    ?   `Active [cores][memory]`
+
+
+# -----------------------------------------------------
+# Ask DeepSeek to fix a problem ..
+#[user@dsh-web]
+
+    ?   /plan
+    ?   The new debug messages have helped identify an issue with the state transition processing.
+    ?   After running the Python test suite, we can see the following in the debug logs:
+    ?   ```
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 ProcessingServiceImpl loop() Starting processing loop [f578b4d7-a909-11f1-8881-ed98127ce622]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [9d6726e6-5c49-45d6-a5bd-5de6a8b79688][OFFERED][e0b1832d-c142-41ae-b66c-742c6d4ee6c3][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [2813e4ad-47d2-45ce-9d62-c30923067662][OFFERED][6404cf1c-2db5-4678-9764-ab84d8bd0f20][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [d37004dc-62e8-4a8e-8aa6-f13c4e22a9be][OFFERED][7f3cae9a-648d-4d99-a03c-9a440ca492ab][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [7be75410-4917-4585-8e13-c126c0e2ed00][OFFERED][60f56ff8-a88f-45fe-b205-6f7bf9ba49ba][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [89335dd8-c240-4b7e-bb02-ec110a218cbd][OFFERED][7535ef89-caef-4f63-b8a3-9330d7ede7f8][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [d2363657-945b-4b90-af2f-fd1c1d199524][OFFERED][db680e71-696e-45e5-aeab-d229497cc2f3][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [99e1765c-c812-4d4b-949d-c68f8d78cd18][OFFERED][59bd9dcf-c022-4550-b746-52447232a0da][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [8e62d4fc-9a8a-4015-90c8-2c2d60abd354][OFFERED][367ae060-013c-4e1e-96bb-e25344de97e7][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [323aaf13-fc53-43d6-a851-8acaf54c37a0][OFFERED][28c31e89-43c7-4836-81c4-ada55263cf2e][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [87846cf3-b9a5-4cfa-9f6e-13e3295555fe][OFFERED][bfe21eaf-1642-4495-9a03-327f2bd73a59][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [e4f52016-d992-4e4a-a498-45b5acfee4bc][OFFERED][38f5a447-7562-4f54-9c21-b4cd0686d2b8][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [8434f275-da91-4e88-bedf-a0e9fc0aa7a8][OFFERED][d2d71a3a-70d3-44a1-888c-a680d0f6d369][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session [0a95a986-7daa-4dde-9519-e1549839c99c][PREPARING][8fbb5bd2-347b-4e6e-a78c-6806a022d94d][2][2]
+    ?   2026-09-05 09:37:41 DEBUG scheduling-1 SpringProcessingTransactionHandlerImpl debugStats() Active session summary [26][26]
+    ?   ```
+    ?   I think this is because some of the Python tests create requests, but leaves them as OFFERED, not ACCEPTing or REJECTing them.
+    ?   The database gradually accumulates OFFERED sessions that consume cores and memory, making subsequent tests wait until after the OFFERED sessions duration has expired.
+    ?   
+    ?   Please create a plan for implementing the following:
+    ?   
+    ?   Create a new session processing request class
+    ?   ```
+    ?   public class ExpireSessionRequestEntity
+    ?   extends SessionProcessingRequestEntity
+    ?   implements SessionProcessingRequest
+    ?   ```
+    ?   which is based on PrepareSessionRequestEntity, with modified behavior.
+    ?   
+    ?   When a session is created, an ExpireSessionRequest is automatically added to the processing queue, with an activation time set to just after the session expiry time.
+    ?   
+    ?   When the ExpireSessionRequest is processed it checks the session phase.
+    ?   If the session phase is not OFFERED, then ExpireSessionRequest does nothing.
+    ?   If the session phase is OFFERED, and the expiry time has not been reached, re-schedule the request to activate after a fixed duration DEFAULT_POLL_INTERVAL.
+    ?   If the session phase is OFFERED, and the expiry time has been reached, set the session phase to EXPIRED and schedule a ReleaseComponent request for all of the session components.
+
+    >   ....
+    >   ....
+    >   Implemented and verified. Summary of the changes:
+    >   New file
+    >   
+    >       engine/functional/processing/session/ExpireSessionRequestEntity.java — extends SessionProcessingRequestEntity implements SessionProcessingRequest, @Table("expiresessionrequests"). Behavior:
+    >           preProcess: if session is OFFERED and expiry (session.getExpires()) has been reached → set phase EXPIRED and schedule a ReleaseComponentRequest for all session components (executable, compute, data, storage); if still OFFERED but not yet expired → nothing (postProcess decides); any other phase → nothing.
+    >           postProcess (re-derives from the persisted phase, since pre/post run in separate transactions): still OFFERED + expiry in the future → activate(DEFAULT_POLL_INTERVAL) (5 s re-schedule); no expiry time → finish; otherwise → done (deletes the request).
+    >           DEFAULT_POLL_INTERVAL = Duration.ofSeconds(5).
+    >   
+    >   Supporting changes
+    >   
+    >       ProcessingRequestEntity — new activate(Instant) overload so activation can be set to an absolute instant (the session expiry).
+    >       SessionProcessingRequestFactory / ...FactoryImpl — new createExpireSessionRequest(session): saves the request and activates it at session.getExpires(), so the queue fires it just after the session expiry.
+    >       OfferSetRequestParserImpl.stageTwo — after each new session (offer flow and direct flow) is fully built, schedules its expire request.
+    >       LifecycleComponentEntity.getReleaseAction — new INITIALIZING case: releasing a never-prepared component is a clean no-op (previously it hit default and marked the component FAILED); leaves room for future platform-specific release behaviour.
+    >       ReleaseComponentRequestEntity.postProcess — INITIALIZING → finish the request (done) instead of falling into default → fail.
+    >       UpdateSessionRequestEntity — EXPIRED added to every terminal/skip list, so component-driven updates can never overwrite an expired session.
+    >       PrepareSessionRequestEntity — EXPIRED is now treated as terminal: no-op in preProcess (was: failSession) and done in postProcess (was: error branch).
+    >   
+    >   AIMetrics entries added/updated on all created/modified files per repo rules; no ternary operators; existing code style followed.
+    >   Verification
+    >   
+    >       ./mvnw -o compile — BUILD SUCCESS.
+    >       Runtime (mock broker + PostgreSQL, DEBUG logs):
+    >           Creating an offer-set logs Creating ExpireSessionRequest for session [...], and the DB shows the request with activation exactly equal to the session's expires.
+    >           Forcing expiry: session OFFERED → EXPIRED, the session disappears from the Active [uuid][phase][cores][memory] / Active totals [...] debug lines, and the two ReleaseComponentRequests ran as clean no-ops (Component [...] is [INITIALIZING], nothing to release), leaving components INITIALIZING — no FAILED, no session overwrite.
+    >           No-op path: forcing an expire request for an accepted (non-OFFERED) session logs is no longer [OFFERED], nothing to do and finishes without touching the session.
+    >       Test broker stopped; working tree contains exactly the files above (git status — the two spring files were already modified from the earlier debug-stats work).
+
+
+    ?   /plan
+    ?   Can you modify OfferSetEntityFactoryImpl create method to replace DEFAULT_EXPIRY_TIME_SECONDS
+    ?   with a configuration value `calycopis.broker.timing.session.EXPIRED.timeout` read
+    ?   from the application configuration.
+    ?   
+    ?   Can you modify ExpireSessionRequestEntity method to replace DEFAULT_POLL_INTERVAL
+    ?   with a configuration value `calycopis.broker.timing.session.EXPIRED.polling` read
+    ?   from the application configuration.
+
+    >   ....
+    >   ....
+    >   Done. Both constants are now configuration-driven.
+    >   New files
+    >   
+    >       engine/functional/platform/SessionTimingSettings.java — framework-neutral interface: getExpiredTimeoutSeconds() and getExpiredPollingSeconds().
+    >       spring/platform/SessionTimingSettingsImpl.java — @Component @ConfigurationProperties(prefix = "calycopis.broker.timing.session") with a nested Expired holder (timeout default 300, polling default 5). Spring's relaxed binding maps the YAML key EXPIRED to the expired property, so the effective keys are exactly calycopis.broker.timing.session.EXPIRED.timeout / ...polling.
+    >   
+    >   Modified files
+    >   
+    >       engine/functional/platform/Platform.java — added SessionTimingSettings getSessionTimingSettings();.
+    >       spring/platform/mock/MockPlatformImpl.java and spring/platform/docker/DockerPlatformImpl.java — autowire the settings bean and implement the getter (same pattern as CostsAndMetricsSettings).
+    >       engine/entities/offerset/OfferSetEntityFactory.java — deleted DEFAULT_EXPIRY_TIME_SECONDS.
+    >       engine/entities/offerset/OfferSetEntityFactoryImpl.java — offer-set expiry now uses this.platform.getSessionTimingSettings().getExpiredTimeoutSeconds().
+    >       engine/functional/processing/session/ExpireSessionRequestEntity.java — deleted DEFAULT_POLL_INTERVAL; the postProcess re-schedule now reads platform.getSessionTimingSettings().getExpiredPollingSeconds() and activates with Duration.ofSeconds(pollingSeconds).
+    >       java/src/main/resources/application.yaml — new block under calycopis.broker:
+    >       yaml
+    >   
+    >           timing:
+    >             session:
+    >               EXPIRED:
+    >                 timeout: 300
+    >                 polling: 5
+    >   
+    >       Defaults preserve the previous behaviour exactly (300 s offer-set/session expiry; 5 s poll).
+    >   
+    >   Verification
+    >   
+    >       ./mvnw -o compile — BUILD SUCCESS.
+    >       Runtime (mock broker + PostgreSQL) with overrides --calycopis.broker.timing.session.EXPIRED.timeout=45 and ...polling=2:
+    >           a created offer-set session had expires = creation + 45 s (not 300 s);
+    >           forcing the expire request active before expiry produced the debug re-schedule line every 2 s (re-scheduling expire request for [2]s);
+    >           the session transitioned OFFERED → EXPIRED on the first poll after its configured expiry (12:09:36 for a 12:09:35 expiry).
+    >       Broker stopped; git status shows only the intended files (the session/engine files under processing/session and the two spring debug-stat files also remain modified from the earlier expiry-feature and debug-stats work).
+    >   
+    >   One design note: the values are exposed through Platform (not Spring-injected into engine classes) because ExpireSessionRequestEntity.postProcess runs on a request entity freshly re-loaded from the database, so the polling interval must be readable from the Platform passed in at process time — this also keeps the engine/ package free of Spring, per the repo rules.
+
+    ?   /plan
+    ?   Can you create some Python integration test that verify the EXPIRED behaviour.
+
+    >   Python integration tests for the EXPIRED session behaviour
+    >   Goal
+    >   
+    >   Add a new Python integration test suite tests/python/states/ that verifies the session-state transitions implemented earlier (offer-set/session expiry → EXPIRED, and the "no-op when not OFFERED" behaviour), and document in AGENTS.md that tests in this directory may query the broker database directly (via a Python database client) to verify state transitions.
+    >   
+    >   Per user decision:
+    >   
+    >       New top-level test directory tests/python/states (state-transition tests), not any/ or mock/.
+    >       AGENTS.md is updated to state that tests/python/states tests may access the database directly using a Python database client to verify state transitions.
+    >   
+    >   Files
+    >   New — tests/python/states/test_session_expiry.py
+    >   
+    >   Verifies the expiry state machine through the HTTP API, using the DB read-only to verify the internal transitions.
+    >   
+    >   Setup pattern mirrors existing tests: reuse the root tests/python/conftest.py fixtures (client = seeded authenticated user; admin credentials come from CALYCOPIS_ADMIN_USERNAME/CALYCOPIS_ADMIN_PASSWORD, as in CI's entrypoint.sh).
+    >   
+    >   Tests derive the wait deadline from each session's own expires field (returned by the API), so they pass regardless of the broker's configured calycopis.broker.timing.session.EXPIRED.timeout:
+    >   
+    >       with default config (300 s) each wait is ~5–6 minutes;
+    >       the module docstring documents how to run the broker with a short timeout (e.g. mock profile: SPRING_PROFILES_ACTIVE=mock ./mvnw spring-boot:run -Dspring-boot.run.arguments="--calycopis.broker.timing.session.EXPIRED.timeout=20 --calycopis.broker.timing.session.EXPIRED.polling=1"), making the suite run in about a minute.
+    >       Shared helpers: _grace_deadline(expires) (expires + 30 s grace for scheduler/poll skew, normalising naive datetimes to UTC), _wait_for_phase(...) and _wait_until(...) pollers using client.get_session.
+    >   
+    >   Tests:
+    >   
+    >       test_offered_session_becomes_expired
+    >           Submit an offer-set request (client.submit_execution(..., follow_redirect=True)); take offers[0]; assert it is OFFERED and has an expires.
+    >           Poll until the session phase is EXPIRED (fail if the expires + grace deadline passes first).
+    >           Re-fetch after a short pause and assert it is still EXPIRED (verifies EXPIRED is immutable and that the release-component clean-up did not flip it to FAILED/COMPLETED).
+    >           DB assertions (read-only): session row phase is EXPIRED in simpleexecutionsessions; no ExpireSessionRequest row remains for that session in the processing-request tables (the request is deleted when done); no compute component of the session is FAILED in lifecyclecomponents (components were never started and were released as no-ops).
+    >   
+    >       test_non_offered_sessions_are_not_expired
+    >           Scenario A (rejected): create an offer-set, reject offers[0] via client.set_session_phase(..., REJECTED); assert REJECTED.
+    >           Scenario B (accepted/running): from a second offer-set, accept offers[0] via client.set_session_phase(..., ACCEPTED) (or direct_execute); assert its phase is no longer OFFERED.
+    >           Wait until both sessions' expires deadlines (+ grace) have passed, then:
+    >               Scenario A phase is still REJECTED (not EXPIRED);
+    >               Scenario B phase is not EXPIRED and not OFFERED (e.g. COMPLETED on mock with default timing, or mid-lifecycle if the broker uses a very short timeout).
+    >           DB check: the expire requests for both sessions were processed and removed from the queue, and neither session row was changed to EXPIRED.
+    >   
+    >   Notes:
+    >   
+    >       Uses only the offer-set/accept/reject flows (no platform-specific containers), so it works against both mock and docker brokers; it is primarily run with a mock broker for speed.
+    >       pytest -v states (from tests/python/, with CALYCOPIS_URL, CALYCOPIS_ADMIN_USERNAME, CALYCOPIS_ADMIN_PASSWORD set as in entrypoint.sh) runs the suite.
+    >       New file gets the standard Python licence header and an # AIMetrics entry (agent @deepseek-ai/dsh, current session version/model, timestamp, 100 %).
+    >   
+    >   New — tests/python/states/conftest.py
+    >   
+    >   Provides a database fixture (session-scoped) plus small query helpers used by the tests:
+    >   
+    >       Read datasource settings from /etc/calycopis/database.yaml (path overridable via CALYCOPIS_DATABASE_YAML); parse spring.datasource.url (jdbc:postgresql://host:port/db) and credentials.
+    >       Allow host override via CALYCOPIS_DB_HOST (needed for local developer runs where the DB is at 127.0.0.1), otherwise default to the host in the URL (inside the CI pod this resolves to postgres).
+    >       psycopg.connect(...); each test gets its own short-lived connection (or a cursor) and closes it.
+    >       Helper functions, e.g. session_phase(conn, uuid), expire_request_exists(conn, session_uuid), component_phases(conn, session_uuid) (reads lifecyclecomponents for the session's compute component via abstractcomputeresources.session), so the DB assertions stay readable.
+    >       Licence header + # AIMetrics entry.
+    >   
+    >   Modified — tests/python/requirements.txt
+    >   
+    >   Add psycopg[binary] so the tester image (and local test environments) has the Python DB client. Update the (currently empty) # AIMetrics: [] header block to record the modification.
+    >   Modified — AGENTS.md
+    >   
+    >       Add a bullet under the Python tests section describing the new tests/python/states/ directory: tests that verify session/component state transitions, which are permitted to access the broker database directly using a Python database client (e.g. psycopg, datasource read from /etc/calycopis/database.yaml) to verify state transitions.
+    >       Mention it in the sub-directory table next to any//mock//docker/.
+    >       Add an @deepseek-ai/dsh entry to the AGENTS.md AIMetrics list (existing header format) for the modification.
+    >   
+    >   Not touched: tests/python/bin/entrypoint.sh / run-tests.sh / CI wiring (the states suite is run manually or per-directory like any/mock; wiring it into CI can be a follow-up if wanted).
+    >   Verification / acceptance criteria
+    >   
+    >       Broker compile is unaffected (no Java changes).
+    >       Start the mock broker with a short expiry config, e.g. SPRING_PROFILES_ACTIVE=mock ./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=jdbc:postgresql://127.0.0.1:5432/calycopis --calycopis.broker.timing.session.EXPIRED.timeout=20 --calycopis.broker.timing.session.EXPIRED.polling=1"
+    >       Run the suite from tests/python/ with the environment exported (admin creds read from /etc/calycopis/admin.yaml, CALYCOPIS_URL), and CALYCOPIS_DB_HOST=127.0.0.1 for local developer containers: pytest -v states → both tests pass within ~a minute with the short-timeout broker.
+    >       The DB-backed assertions confirm: OFFERED session row flips to EXPIRED; the expire request is removed from the queue after processing; non-OFFERED (REJECTED/accepted) sessions are untouched; components are not failed by the expiry release.
+    >       AGENTS.md documents the direct-DB-access rule for tests/python/states.
+
+    ?   \plan
+    ?   Can you perform three git commits with appropriate messages:
+    ?   * The initial set of changes to the debug messaging.
+    ?   * Fixing the OFFERED to EXPIRED transitions.
+    ?   * Adding the Python tests.
+
+    >   ....
+    >   ....
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Reviewing the PR has raised some questions.
+
+        class SimpleExecutionSessionEntityUpdateHandlerImpl
+            {
+
+            // Check - does saving an accepted entity cascade to save the rejected ones too ?
+            update(phase)
+                platform...save(entity)
+
+            }
+
+    #
+    # Accept() schedules a processing request, reject(), cancel() and fail() just set the phase
+    # Logged as issue #99
+    # https://github.com/uksrc/Calycopis-broker/issues/99
+
+        class SimpleExecutionSessionEntityUpdateHandlerImpl
+            {
+            // Accept schedules an asynchronous processing request.
+            accept(entity)
+                {
+                ....
+                entity.setPhase(ACCEPTED)
+                ....
+                platform...createPrepareSessionRequest(entity)
+                ....
+                }
+
+            // This just sets the phase, without scheduling a processing request.
+            // TODO This should schedule a corresponding processing requests.
+            // TODO Should this cancel the components here ?
+            reject(entity)
+                {
+                ....
+                entity.setPhase(REJECTED)
+                ....
+                }
+
+        ExpireSessionRequestEntity
+            // Checks the phase is OFFERED and changes it to EXPIRED.
+
+        CancelSessionRequestEntity
+            // Ignores the current phase and cancels the components.
+
+        RejectSessionRequestEntity
+            // Ignore the current phase and cancels the components.
+
+        FailSessionRequestEntity
+            // Ignore the current phase and cancels the components.
+
+
+
+
+    Tests
+
+        # Move the test container metadata to a shared test config.
+        # Updating the container means changing in one place only.
+        # Logged as issue #101
+        # https://github.com/uksrc/Calycopis-broker/issues/101
+
+        https://github.com/uksrc/Calycopis-broker/blob/f38f6c708a6098a2ea49c9c9682eadda4a38ce15/tests/python/docker/test_docker_androcles_md5.py#L112-L115
+        https://github.com/uksrc/Calycopis-broker/blob/f38f6c708a6098a2ea49c9c9682eadda4a38ce15/tests/python/docker/test_docker_bind_mount.py#L107-L108
+        https://github.com/uksrc/Calycopis-broker/blob/f38f6c708a6098a2ea49c9c9682eadda4a38ce15/tests/python/docker/test_docker_direct_execution.py#L102-L105
+
+        test_session_expiry.py
+
+            # Heliophorus-cantliei test container: waits N seconds then exits
+            # with a configurable exit code.
+            CANTLIEI_IMAGE = "ghcr.io/zarquan/heliophorus-cantliei:sha-831ee57"
+            CANTLIEI_DIGEST = "sha256:6e495692cc6f1cae2023f261f433d4691aa70b19416730f8301e45fbb74bc526"
+
+

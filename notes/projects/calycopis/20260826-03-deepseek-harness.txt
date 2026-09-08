@@ -190,7 +190,7 @@
     >   2fb81fe7cb5a  localhost/calycopis/deepseek-harness:2026.08.26  bash        6 seconds ago       Up 4 seconds       0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp  broker-dev
 
 # -----------------------------------------------------
-# Install the PostgreDQL client and check if we can see our database.
+# Install the PostgreSQL client and check if we can see our database.
 #[root@calycopis-dev]
 
     dnf install -y postgresql
@@ -245,19 +245,19 @@
 
 # -----------------------------------------------------
 # Install the DSH http proxy plugin
-and run the DeepSeek harness with http proxy.
+# and run the DeepSeek harness with http proxy.
 #[root@calycopis-dev]
 
     dsh plugin --profile web add github:smanx/dsh-proxy#master
 
     >    ERR_PNPM_UNEXPECTED_STORE  Unexpected store location
-    >   
+    >
     >   The dependencies at "/root/.dsh/profiles/web/node_modules" are currently linked from the store at "/root/.local/share/pnpm/store/v10".
-    >   
+    >
     >   pnpm now wants to use the store at "/root/.dsh/.pnpm-store/v10" to link dependencies.
-    >   
+    >
     >   If you want to use the new store location, reinstall your dependencies with "pnpm install".
-    >   
+    >
     >   You may change the global store location by running "pnpm config set store-dir <dir> --global".
     >   (This error may happen if the node_modules was installed with a different major version of pnpm)
     >   dsh: pnpm failed in profile directory /root/.dsh/profiles/web

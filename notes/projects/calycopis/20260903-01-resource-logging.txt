@@ -1,0 +1,164 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Add resource statistics to the debug logs.
+        https://github.com/uksrc/Calycopis-broker/issues/31
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Help from Google AI to setup GitHub branches
+#
+
+    ?   How do I setup a local github branch to that I can do the following:
+    ?   
+    ?   Start with GitHub repository `github-A`
+    ?   Created fork GitHub repository `github-B`
+    ?   Cloned repository `github-B` to `local-B` on local machine.
+    ?   
+    ?   Created feature branch `feature-A` in repository `github-A`
+    ?   How do I create a `dev-branch-001` branch in `local-B` that is based on `github-A/feature-A`
+    ?   Such that commits on `dev-branch-001` are pushed to `github-B/dev-branch-001`
+    ?   Then when ready I can create a pull request to merge `github-B/dev-branch-001` into `github-A/feature-A`.
+    ?   
+    ?   Accumulating small sets of changes in `github-B/dev-branch-001`, `github-B/dev-branch-002`, `github-B/dev-branch-00n`
+    ?   Merging them as they are ready to build the full feature in `github-A/feature-A`.
+
+    >   To set up this workflow, you need to configure local-B to talk to both repositories: github-A (usually named upstream) and github-B (usually named origin).
+    >   Here is the exact step-by-step terminal workflow to set this up and manage your feature development.
+    >   ## Step 1: Link your local repository to both GitHub remotes
+    >   Open your terminal in local-B. You need to add github-A as a remote repository so your local machine can see its branches.
+    >   
+    >      1. Check your current remotes (it should currently just show your fork, github-B):
+    >   
+    >      git remote -v# You should see 'origin' pointing to github-B
+    >   
+    >      2. Add github-A as the 'upstream' remote:
+    >   
+    >      git remote add upstream <URL-to-github-A>
+    >   
+    >      3. Fetch all the latest branches from both repositories so your local machine is up to date:
+    >   
+    >      git fetch --all
+    >   
+    >   
+    >   ------------------------------
+    >   ## Step 2: Create dev-branch-001 based on github-A/feature-A
+    >   Now, create your local branch using the upstream remote branch as the starting point:
+    >   
+    >   git checkout -b dev-branch-001 upstream/feature-A
+    >   
+    >   (Alternatively, use git switch -c dev-branch-001 upstream/feature-A)
+    >   ------------------------------
+    >   ## Step 3: Push changes to your fork (github-B)
+    >   When you make commits on dev-branch-001 and want to push them to your fork (github-B), use the -u (set-upstream) flag. This tells Git that even though the branch started from github-A, its push destination should be github-B (origin).
+    >   
+    >   git push -u origin dev-branch-001
+    >   
+    >   For all future updates to this specific branch, you can just type git push.
+    >   ------------------------------
+    >   ## Step 4: Open the Pull Request on GitHub
+    >   Once you have pushed your small batch of changes to github-B/dev-branch-001:
+    >   
+    >      1. Go to your fork page on GitHub (github-B).
+    >      2. GitHub will display a yellow banner saying "dev-branch-001 had recent pushes". Click Compare & pull request.
+    >      3. In the Pull Request configuration dropdowns, set them exactly like this:
+    >      * base repository: github-A | base: feature-A
+    >         * head repository: github-B | compare: dev-branch-001
+    >   
+    >   ------------------------------
+    >   ## Step 5: Setting up subsequent branches (dev-branch-002, etc.)
+    >   When you are ready to start the next small set of changes, you want to make sure you are basing it on the absolute latest version of github-A/feature-A (which now includes your merged 001 changes).
+    >   Run these commands to start the next cycle:
+    >   
+    >   # 1. Fetch the absolute latest changes from github-A
+    >   git fetch upstream
+    >   # 2. Create your next branch starting from the updated upstream feature branch
+    >   git checkout -b dev-branch-002 upstream/feature-A
+    >   # 3. Work, commit, and push it to your fork
+    >   git push -u origin dev-branch-002
+    >   
+    >   Would you like to know how to keep your local environment clean by deleting these small branches once they are successfully merged, or do you need help setting up git aliases to make fetching and pushing faster?
+
+
+# -----------------------------------------------------
+# Create a new branch to work on.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        git remote -v
+
+    >   ....
+    >   ....
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (fetch)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (push)
+
+        git fetch --all
+
+    >   Fetching origin
+    >   Fetching uksrc
+    >   remote: Enumerating objects: 1, done.
+    >   remote: Counting objects: 100% (1/1), done.
+    >   remote: Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   Unpacking objects: 100% (1/1), 951 bytes | 951.00 KiB/s, done.
+    >   From github.com:uksrc/Calycopis-broker
+    >    * [new branch]        TRD-133-Small-steps-24-08-2026 -> uksrc/TRD-133-Small-steps-24-08-2026
+    >   ....
+    >   ....
+
+
+        branchname=resource-logging
+        newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        basebranch=uksrc/TRD-133-Small-steps-24-08-2026
+
+        git checkout main
+        git checkout -b "${newbranch}" "${basebranch:?}"
+
+    >   branch '20260903-zrq-resource-logging' set up to track 'uksrc/TRD-133-Small-steps-24-08-2026'.
+    >   Switched to a new branch '20260903-zrq-resource-logging'
+
+
+        git push -u origin "${newbranch}"
+
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote:
+    >   remote: Create a pull request for '20260903-zrq-resource-logging' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/Calycopis-broker-uksrc/pull/new/20260903-zrq-resource-logging
+    >   remote:
+    >   To github.com:Zarquan/Calycopis-broker-uksrc.git
+    >    * [new branch]        20260903-zrq-resource-logging -> 20260903-zrq-resource-logging
+    >   branch '20260903-zrq-resource-logging' set up to track 'origin/20260903-zrq-resource-logging'.
+
+
+

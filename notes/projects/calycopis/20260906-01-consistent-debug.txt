@@ -1,0 +1,110 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Consistent debug messages.
+        https://github.com/uksrc/Calycopis-broker/issues/59
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Create a new branch to work on.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd "${CALYCOPIS_CODE}"
+
+        git remote -v
+
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (fetch)
+    >   origin	git@github.com:Zarquan/Calycopis-broker-uksrc.git (push)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (fetch)
+    >   uksrc	git@github.com:uksrc/Calycopis-broker.git (push)
+
+
+        git fetch --all
+
+    >   Fetching origin
+    >   Fetching uksrc
+    >   remote: Enumerating objects: 1, done.
+    >   remote: Counting objects: 100% (1/1), done.
+    >   remote: Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   Unpacking objects: 100% (1/1), 928 bytes | 928.00 KiB/s, done.
+    >   From github.com:uksrc/Calycopis-broker
+    >      3a23f29d..e1851505  TRD-133-Small-steps-24-08-2026 -> uksrc/TRD-133-Small-steps-24-08-2026
+
+
+        branchname=consistent-debug
+        newbranch=$(date '+%Y%m%d')-zrq-${branchname:?}
+
+        basebranch=uksrc/TRD-133-Small-steps-24-08-2026
+
+        git checkout main
+        git checkout -b "${newbranch}" "${basebranch:?}"
+
+    >   branch '20260906-zrq-consistent-debug' set up to track 'uksrc/TRD-133-Small-steps-24-08-2026'.
+    >   Switched to a new branch '20260906-zrq-consistent-debug'
+
+
+        git push -u origin "${newbranch}"
+
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote:
+    >   remote: Create a pull request for '20260906-zrq-consistent-debug' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/Calycopis-broker-uksrc/pull/new/20260906-zrq-consistent-debug
+    >   remote:
+    >   To github.com:Zarquan/Calycopis-broker-uksrc.git
+    >    * [new branch]        20260906-zrq-consistent-debug -> 20260906-zrq-consistent-debug
+    >   branch '20260906-zrq-consistent-debug' set up to track 'origin/20260906-zrq-consistent-debug'.
+
+        git branch
+
+    >     20260826-zrq-catchup
+    >     20260903-zrq-resource-logging
+    >   * 20260906-zrq-consistent-debug
+    >     main
+
+
+        git branch -d 20260826-zrq-catchup
+
+        git branch -d 20260903-zrq-resource-logging
+
+        git branch
+
+    >   * 20260906-zrq-consistent-debug
+    >     main
+
+
+# -----------------------------------------------------
+# Ask DeepSeek to plan the changes ..
+#[user@dsh-web]
+
+
+
+

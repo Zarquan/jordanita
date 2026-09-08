@@ -39,16 +39,13 @@
 
         Evaluate Cursor
         https://github.com/uksrc/Calycopis-broker/issues/65
+            Done
 
         Evaluate DeepSeek harness
         https://github.com/uksrc/Calycopis-broker/issues/62
 
         Evaluate Claude code
         https://github.com/uksrc/Calycopis-broker/issues/63
-
-        Evaluate Cursor
-        https://github.com/uksrc/Calycopis-broker/issues/65
-            Done
 
         Develop agent skill to drive the broker API
         https://github.com/uksrc/Calycopis-broker/issues/88
@@ -177,10 +174,10 @@
     Networking resources
     https://github.com/uksrc/Calycopis-broker/issues/83
 
-        Exposing external network ports
+        Exposing network ports (ingress)
         https://github.com/uksrc/Calycopis-broker/issues/84
 
-        Requesting external network access
+        Requesting network access (egress)
         https://github.com/uksrc/Calycopis-broker/issues/85
 
 

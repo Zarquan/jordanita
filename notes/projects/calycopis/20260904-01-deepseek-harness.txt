@@ -1,0 +1,1079 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Configuring DeepSeek harness to run in a container.
+
+        https://deepseek.com/harness/en/
+        https://deepseek-code.com/
+        https://github.com/deepseek-ai/deepseek-harness
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run a new instance of our deepseek-harness container.
+#[user@desktop]
+
+    podman run \
+        -it \
+        --rm \
+        localhost/calycopis/deepseek-harness \
+            bash
+
+    #
+    # The DSH config directory doesn't exist yet.
+
+    jq '.' /root/.dsh/profiles/web/pnpm-workspace.yaml
+
+    >   jq: error: Could not open file /root/.dsh/profiles/web/pnpm-workspace.yaml: No such file or directory
+
+
+    #
+    # Try installing the http proxy module.
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   dsh: initialized profile web at /root/.dsh/profiles/web
+    >   
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.25.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.25.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /root/.local/share/pnpm/store/v10
+    >     Virtual store is at:             node_modules/.pnpm
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
+    >   
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   Done in 3.2s using pnpm v10.33.0
+
+    #
+    # This is the problem - default pnpm/store is in .local not .dsh
+    # Content-addressable store is at: /root/.local/share/pnpm/store/v10
+
+
+# -----------------------------------------------------
+# Run a new instance of our developer tools.
+#[user@desktop]
+
+    podman run \
+        -it \
+        --rm \
+        localhost/calycopis/developer-tools \
+            bash
+
+
+# -----------------------------------------------------
+# Install the pre-requisite tools.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+
+# -----------------------------------------------------
+# Install DeekSeek harness with a specific home.
+#[root@calycopis-dev]
+
+    export DSH_HOME=/opt/dsh
+
+    mkdir "${DSH_HOME}"
+
+    npm install -g \
+        '@deepseek-ai/dsh'
+
+
+    >           '@deepseek-ai/dsh'
+    >   npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+    >   
+    >   added 524 packages in 1m
+    >   
+    >   66 packages are looking for funding
+    >     run `npm fund` for details
+
+    #
+    # I guess that means it was installed OK ?
+    #
+
+    #
+    # Both directories are empty.
+
+    ls -al /opt/dsh/
+
+    >   ....
+    >   ....
+
+    ls -al /root/.dsh/
+
+    >   ls: cannot access '/root/.dsh/': No such file or directory
+
+
+    #
+    # Try installing the http proxy module.
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   dsh: initialized profile web at /opt/dsh/profiles/web
+    >   
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.25.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.25.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /root/.local/share/pnpm/store/v10
+    >     Virtual store is at:             node_modules/.pnpm
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
+    >   
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   Done in 2.9s using pnpm v10.33.0
+
+
+    ls -al /root
+
+    >   ....
+    >   ....
+    >   dr-xr-x---. 1 root root  32 Sep  4 13:54 .
+    >   dr-xr-xr-x. 1 root root  44 Sep  4 13:07 ..
+    >   -rw-r--r--. 1 root root  18 Jan 17  2026 .bash_logout
+    >   -rw-r--r--. 1 root root 144 Jan 17  2026 .bash_profile
+    >   -rw-r--r--. 1 root root 575 Jan 17  2026 .bashrc
+    >   drwxr-xr-x. 1 root root   8 Sep  4 13:54 .cache
+    >   -rw-r--r--. 1 root root 100 Jan 17  2026 .cshrc
+    >   drwxr-xr-x. 1 root root  20 Sep  4 13:54 .local
+    >   drwxr-xr-x. 1 root root  26 Sep  4 13:12 .npm
+    >   drwx------. 1 root root   0 Aug 26 16:50 .ssh
+    >   -rw-r--r--. 1 root root 129 Jan 17  2026 .tcshrc
+
+
+    ls -al /opt/dsh
+
+    >   ....
+    >   ....
+    >   drwxr-xr-x. 1 root root  6 Sep  4 13:54 profiles
+
+
+    ls -al /opt/dsh/profiles
+
+    >   ....
+    >   ....
+    >   drwxr-xr-x. 1 root root 146 Sep  4 13:54 web
+
+    ls -al /opt/dsh/profiles/web/
+
+    >   ....
+    >   ....
+    >   -rw-r--r--. 1 root root 217 Sep  4 13:54 cordis.patch.yml
+    >   drwxr-xr-x. 1 root root 106 Sep  4 13:54 node_modules
+    >   -rw-r--r--. 1 root root 323 Sep  4 13:54 package.json
+    >   -rw-r--r--. 1 root root 708 Sep  4 13:54 pnpm-lock.yaml
+    >   -rw-r--r--. 1 root root  61 Sep  4 13:54 pnpm-workspace.yaml
+
+
+    yq '.' /opt/dsh/profiles/web/pnpm-workspace.yaml
+
+    >   packages:
+    >     - .
+    >   nodeLinker: hoisted
+    >   autoInstallPeers: false
+
+
+    ls -al /root/.local/share/pnpm/store/v10/
+
+    >   ....
+    >   ....
+    >   drwxr-xr-x. 1 root root 1024 Sep  4 13:54 files
+    >   drwxr-xr-x. 1 root root   28 Sep  4 13:54 https+++codeload.github.com+smanx+dsh-proxy+tar.gz+95e07fe4f2be31772188e7f6c55df9b0f2a17c18
+    >   drwxr-xr-x. 1 root root 1024 Sep  4 13:54 index
+    >   drwxr-xr-x. 1 root root   64 Sep  4 13:54 projects
+    >   drwxr-xr-x. 1 root root   82 Sep  4 13:54 tmp
+
+    #
+    # How do we set the location before we install anything.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run a new instance of our developer tools.
+#[user@desktop]
+
+    podman run \
+        -it \
+        --rm \
+        --publish 8082:8082 \
+        --publish 3080:3080 \
+        --publish 3081:3081 \
+        localhost/calycopis/developer-tools \
+            bash
+
+
+# -----------------------------------------------------
+# Install the pre-requisite tools.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+
+# -----------------------------------------------------
+# Install DeekSeek harness with a specific home.
+#[root@calycopis-dev]
+
+    export DSH_HOME=/opt/dsh
+
+    mkdir "${DSH_HOME}"
+    mkdir -p "${DSH_HOME}/profiles/web"
+
+cat > "${DSH_HOME}/profiles/web/pnpm-workspace.yaml" << EOF
+"storeDir": "${DSH_HOME}/pnpm/store/v10"
+EOF
+
+
+    npm install -g \
+        '@deepseek-ai/dsh'
+
+    >   ....
+    >   ....
+
+
+    yq '.' "${DSH_HOME}/profiles/web/pnpm-workspace.yaml"
+
+    >   "storeDir": "/opt/dsh/pnpm/store/v10"
+
+    #
+    # Try installing the http proxy module.
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   dsh: initialized profile web at /opt/dsh/profiles/web
+    >   
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.25.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.25.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /opt/dsh/pnpm/store/v10
+    >     Virtual store is at:             node_modules/.pnpm
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy 0.1.1
+    >   
+    >   Done in 3.1s using pnpm v10.33.0
+
+
+    #
+    # So if we mount /opt/dsh as a volume, can we make this re-usable ?
+    #
+
+    #
+    # Is there an advantage to installing DSH and the proxy in the container ?
+    # Or do we just install the pre-requisites in the container image,
+    # and then install DSH and the proxy once when we create the mounted volume.
+    #
+
+
+# -----------------------------------------------------
+# Explore our current config in our home directory.
+#[user@desktop]
+
+    pushd ~/.dsh/
+
+        ls -al
+
+    >   ....
+    >   ....
+    >   -rw-r--r--. 1 Zarquan Zarquan   37 Aug 26 12:25 .anonymous-user-id
+    >   -rw-------. 1 Zarquan Zarquan   73 Aug 26 12:19 .credentials.yaml
+    >   drwxr-xr-x. 1 Zarquan Zarquan    6 Aug 26 18:10 .pnpm-store
+    >   drwxr-xr-x. 1 Zarquan Zarquan   30 Aug 26 12:09 profiles
+    >   drwx------. 1 Zarquan Zarquan  232 Aug 26 13:04 sessions
+    >   -rw-------. 1 Zarquan Zarquan   52 Aug 26 12:09 settings.yaml
+    >   drwx------. 1 Zarquan Zarquan  114 Aug 27 19:02 storages
+
+
+    cat .anonymous-user-id
+
+    >   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+    yq '.' .credentials.yaml
+
+    >   version: 1
+    >   refs:
+    >     DEEPSEEK_API_KEY: xxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+    yq '.' settings.yaml
+
+    >   ui-onboarding:
+    >     welcomeNoticeVersion: 2026-08-13.1
+
+
+    ls -al .pnpm-store/v10
+
+    >   ....
+    >   ....
+    >   drwxr-xr-x. 1 Zarquan Zarquan 1024 Aug 26 18:10 files
+    >   drwxr-xr-x. 1 Zarquan Zarquan   28 Aug 27 04:12 https+++codeload.github.com+smanx+dsh-proxy+tar.gz+95e07fe4f2be31772188e7f6c55df9b0f2a17c18
+    >   drwxr-xr-x. 1 Zarquan Zarquan 1024 Aug 26 18:10 index
+    >   drwxr-xr-x. 1 Zarquan Zarquan   64 Aug 26 18:10 projects
+    >   drwxr-xr-x. 1 Zarquan Zarquan   84 Aug 27 04:12 tmp
+
+
+    ls -al profiles
+    ls -al profiles/node_modules/
+
+    >   ....
+    >   ....
+    >   lrwxrwxrwx. 1 Zarquan Zarquan   65 Aug 26 12:09 accepts -> /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/accepts
+    >   lrwxrwxrwx. 1 Zarquan Zarquan   68 Aug 26 12:09 agent-base -> /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/agent-base
+    >   lrwxrwxrwx. 1 Zarquan Zarquan   61 Aug 26 12:09 ajv -> /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/ajv
+    >   lrwxrwxrwx. 1 Zarquan Zarquan   69 Aug 26 12:09 ajv-formats -> /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/ajv-formats
+    >   drwxr-xr-x. 1 Zarquan Zarquan    6 Aug 26 12:09 @anthropic-ai
+    >   lrwxrwxrwx. 1 Zarquan Zarquan   66 Aug 26 12:09 argparse -> /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/argparse
+    >   drwxr-xr-x. 1 Zarquan Zarquan   38 Aug 26 12:09 @aws
+    >   drwxr-xr-x. 1 Zarquan Zarquan   92 Aug 26 12:09 @aws-crypto
+    >   drwxr-xr-x. 1 Zarquan Zarquan  762 Aug 26 12:09 @aws-sdk
+
+    #
+    # All the symlinks to /usr/local/lib/node_modules are broken,
+    # because they are symlinks into the container's filesystem.
+    # Which means that if we don't replicate them, the harness will break.
+    #
+
+    ls -al profiles/web
+
+    >   ....
+    >   ....
+    >   -rw-r--r--. 1 Zarquan Zarquan 217 Aug 26 12:08 cordis.patch.yml
+    >   -rw-r--r--. 1 Zarquan Zarquan 223 Aug 27 04:13 cordis.yml
+    >   drwxr-xr-x. 1 Zarquan Zarquan 106 Aug 27 04:12 node_modules
+    >   -rw-r--r--. 1 Zarquan Zarquan 294 Aug 26 12:09 package.json
+    >   -rw-r--r--. 1 Zarquan Zarquan 708 Aug 27 04:12 pnpm-lock.yaml
+    >   -rw-r--r--. 1 Zarquan Zarquan  61 Aug 26 12:08 pnpm-workspace.yaml
+
+
+    yq '.' profiles/web/cordis.patch.yml
+
+    >   # Your patch layer for this dsh profile, applied after every bundle layer:
+    >   # a top-level YAML array of loader patch entries (id-targeted config
+    >   # overrides, disables, and insert lists; `!!js` expressions allowed).
+    >   []
+
+
+    yq '.' profiles/web/cordis.yml
+
+    >   # dsh profile root — an empty entry list. The tree is composed as patches:
+    >   # each bundle in package.json's dsh.profile.bundles, then cordis.patch.yml, then any
+    >   # --patch overlays. Edit cordis.patch.yml, not this file.
+    >   []
+
+
+    jq '.' profiles/web/package.json
+
+    >   {
+    >     "name": "dsh-profile-web",
+    >     "private": true,
+    >     "dependencies": {
+    >       "@smanx/dsh-proxy": "github:smanx/dsh-proxy#master"
+    >     },
+    >     "dsh": {
+    >       "profile": {
+    >         "bundles": [
+    >           "@deepseek-ai/dsh-base",
+    >           "@deepseek-ai/dsh-web-app",
+    >           "@smanx/dsh-proxy"
+    >         ]
+    >       }
+    >     }
+    >   }
+
+
+    yq '.' profiles/web/pnpm-lock.yaml
+
+    >   lockfileVersion: '9.0'
+    >   settings:
+    >     autoInstallPeers: false
+    >     excludeLinksFromLockfile: false
+    >   importers:
+    >     .:
+    >       dependencies:
+    >         '@smanx/dsh-proxy':
+    >           specifier: github:smanx/dsh-proxy#master
+    >           version: https://codeload.github.com/smanx/dsh-proxy/tar.gz/95e07fe4f2be31772188e7f6c55df9b0f2a17c18
+    >   packages:
+    >     '@smanx/dsh-proxy@https://codeload.github.com/smanx/dsh-proxy/tar.gz/95e07fe4f2be31772188e7f6c55df9b0f2a17c18':
+    >       resolution: {tarball: 'https://codeload.github.com/smanx/dsh-proxy/tar.gz/95e07fe4f2be31772188e7f6c55df9b0f2a17c18'}
+    >       version: 0.1.1
+    >   snapshots:
+    >     '@smanx/dsh-proxy@https://codeload.github.com/smanx/dsh-proxy/tar.gz/95e07fe4f2be31772188e7f6c55df9b0f2a17c18': {}
+
+
+    yq '.' profiles/web/pnpm-workspace.yaml
+
+    >   packages:
+    >     - .
+    >   nodeLinker: hoisted
+    >   autoInstallPeers: false
+
+
+    ls -al sessions
+
+    >   ....
+    >   ....
+    >   drwx------. 1 Zarquan Zarquan 264 Aug 27 06:14 --Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--
+    >   drwx------. 1 Zarquan Zarquan 176 Aug 27 05:25 --Calycopis-Calycopis-openapi-Calycopis-openapi-uksrc-zrq--
+
+
+    ls -al sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--
+
+    >   ....
+    >   ....
+    >   drwx------. 1 Zarquan Zarquan  36 Aug 26 12:21 session-2aa91ef6-45f3-48f2-8ded-2bed8bc64e09
+    >   drwx------. 1 Zarquan Zarquan  36 Aug 27 06:14 session-506a87a0-9143-437c-965d-66357ef6834a
+    >   drwx------. 1 Zarquan Zarquan  36 Aug 26 14:46 session-cea55dc4-5c4f-481a-835d-986d0107b00f
+
+
+    ls -al sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-506a87a0-9143-437c-965d-66357ef6834a
+
+    >   ....
+    >   ....
+    >   -rw-------. 1 Zarquan Zarquan 2935900 Aug 27 19:02 session.jsonl.zstd
+
+
+    sudo dnf install -y zstd
+
+    zstd -d sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-506a87a0-9143-437c-965d-66357ef6834a/session.jsonl.zstd
+
+    jq '.' sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-506a87a0-9143-437c-965d-66357ef6834a/session.jsonl
+
+    >   {
+    >     "type": "session",
+    >     "version": 0,
+    >     "id": "session-506a87a0-9143-437c-965d-66357ef6834a",
+    >     "createdAt": 1787807644975,
+    >     "cwd": "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq",
+    >     "delegationDepth": 0,
+    >     "agentPreset": "standard"
+    >   }
+    >   {
+    >     "type": "permission/preset",
+    >     "seq": 0,
+    >     "time": 1787807645040,
+    >     "data": {
+    >       "preset": "workspace-write"
+    >     }
+    >   }
+    >   {
+    >     "type": "sandbox/mode",
+    >     "seq": 1,
+    >     "time": 1787807645052,
+    >     "data": {
+    >       "mode": "workspace-write"
+    >     }
+    >   }
+    >   {
+    >     "type": "approval/policy",
+    >     "seq": 2,
+    >     "time": 1787807645056,
+    >     "data": {
+    >       "policy": "ask"
+    >     }
+    >   }
+    >   ....
+    >   ....
+
+
+    ls -al storages
+
+    >   ....
+    >   ....
+    >   -rw-------. 1 Zarquan Zarquan  2677 Aug 27 10:03 message_feedback.json
+    >   -rw-------. 1 Zarquan Zarquan 17556 Aug 27 19:02 session_projcache.json
+    >   -rw-------. 1 Zarquan Zarquan  1210 Aug 27 06:14 workspace.json
+
+
+    jq '.' storages/message_feedback.json
+
+    >   {
+    >     "unit": {
+    >       "name": "message_feedback",
+    >       "version": 0
+    >     },
+    >     "global": null,
+    >     "tables": {
+    >       "sessions": {
+    >         "session-2aa91ef6-45f3-48f2-8ded-2bed8bc64e09": {
+    >           "session": {
+    >             "createdAt": 1787743285131,
+    >             "cwd": "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq"
+    >           },
+    >           "items": [
+    >             {
+    >               "messageId": "b09facfb-62ca-4515-8403-78768615214d",
+    >               "rating": "positive",
+    >               "version": "a8e688a4-9f7e-46cf-9a56-c1cc61a69b91",
+    >               "createdAt": 1787743694955,
+    >               "updatedAt": 1787743694955
+    >             }
+    >           ]
+    >         },
+    >   ....
+    >   ....
+
+
+    jq '.' storages/session_projcache.json
+
+    >   {
+    >     "unit": {
+    >       "name": "session_projcache",
+    >       "version": 3
+    >     },
+    >     "global": null,
+    >     "tables": {
+    >       "sessions": {
+    >         "session-2aa91ef6-45f3-48f2-8ded-2bed8bc64e09": {
+    >           "identity": {
+    >             "createdAt": 1787743285131,
+    >             "cwd": "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq"
+    >           },
+    >           "rows": {
+    >             "sessionStats": {
+    >               "ver": 1,
+    >               "seq": 14543,
+    >               "val": {
+    >                 "turns": 6,
+    >                 "steps": 33,
+    >                 "llmMs": 171171,
+    >                 "toolMs": 6731,
+    >                 "ttftMs": 58742,
+    >                 "ttftSteps": 33,
+    >                 "decodeMs": 112429,
+    >                 "decodeTokens": 15603,
+    >                 "lastTurn": 6,
+    >                 "openStep": null,
+    >                 "pendingCalls": {}
+    >               }
+    >             },
+    >   ....
+    >   ....
+
+
+    jq '.' storages/workspace.json
+
+    >   {
+    >     "unit": {
+    >       "name": "workspace",
+    >       "version": 2
+    >     },
+    >     "global": {
+    >       "initialized": true,
+    >       "workspaceIds": [
+    >         "0e8c9dfd-9a64-44f1-890e-5be484205c80",
+    >         "b51c35be-89e4-45bd-83cf-699b19a762ee"
+    >       ],
+    >       "archivedSessionIds": []
+    >     },
+    >     "tables": {
+    >       "workspaces": {
+    >         "b51c35be-89e4-45bd-83cf-699b19a762ee": {
+    >           "path": "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq",
+    >           "title": "Calycopis-broker-uksrc-zrq",
+    >           "sessionIds": [
+    >             "session-506a87a0-9143-437c-965d-66357ef6834a",
+    >             "session-cea55dc4-5c4f-481a-835d-986d0107b00f",
+    >             "session-2aa91ef6-45f3-48f2-8ded-2bed8bc64e09"
+    >           ],
+    >           "createdAt": "2026-08-26T11:21:24.846Z",
+    >           "updatedAt": "2026-08-27T05:14:05.076Z"
+    >         },
+    >         "0e8c9dfd-9a64-44f1-890e-5be484205c80": {
+    >           "path": "/Calycopis/Calycopis-openapi/Calycopis-openapi-uksrc-zrq",
+    >           "title": "Calycopis-openapi-uksrc-zrq",
+    >           "sessionIds": [
+    >             "session-a510a3f9-addc-457d-bf11-39b319b9c971",
+    >             "session-d50bf2a3-be88-43dc-a07f-6116af81437d"
+    >           ],
+    >           "createdAt": "2026-08-26T12:04:25.194Z",
+    >           "updatedAt": "2026-08-27T04:25:21.691Z"
+    >         }
+    >       }
+    >     }
+    >   }
+
+
+    #
+    # OK, so a lot of detail in our home directory.
+    # Probably want to keep that.
+    #
+
+    #
+    # Which ones do we need to preserve ?
+    #
+
+    #
+    # Look for references to the current home.
+    grep -c -l -r '/\.dsh' ~/.dsh
+
+    >   ....
+    >   /home/Zarquan/.dsh/profiles/web/node_modules/@smanx/dsh-proxy/dsh-proxy/lib/index.cjs.map
+    >   /home/Zarquan/.dsh/profiles/web/node_modules/.pnpm-workspace-state-v1.json
+    >   /home/Zarquan/.dsh/profiles/web/node_modules/.modules.yaml
+    >   /home/Zarquan/.dsh/sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-506a87a0-9143-437c-965d-66357ef6834a/session.jsonl
+    >   /home/Zarquan/.dsh/.pnpm-store/v10/files/5b/98893e30989b57d66250ebbda709179a073335a9081dfd727f8b0785adb4a0c799f051f5ce7e111bd2094e7291cc63d4656541e995d216327d5100b1c96d3d
+    >   /home/Zarquan/.dsh/.pnpm-store/v10/tmp/_tmp_1065_a8f2d2728b5ae2d6f698ffc43b430f88/dsh-proxy/lib/index.cjs.map
+    >   ....
+
+
+    #
+    # Look for references to the local share directory.
+    grep -c -l -r '/\.local' ~/.dsh
+
+    >   ....
+    >   /home/Zarquan/.dsh/sessions/--Calycopis-Calycopis-broker-Calycopis-broker-uksrc-zrq--/session-506a87a0-9143-437c-965d-66357ef6834a/session.jsonl
+    >   ....
+
+    #
+    # List the contents again.
+
+    ls -al /home/Zarquan/.dsh
+
+    >   -rw-r--r--. 1 Zarquan Zarquan   37 Aug 26 12:25 .anonymous-user-id
+    >   -rw-------. 1 Zarquan Zarquan   73 Aug 26 12:19 .credentials.yaml
+    >   drwxr-xr-x. 1 Zarquan Zarquan    6 Aug 26 18:10 .pnpm-store
+    >   drwxr-xr-x. 1 Zarquan Zarquan   30 Aug 26 12:09 profiles
+    >   drwx------. 1 Zarquan Zarquan  232 Aug 26 13:04 sessions
+    >   -rw-------. 1 Zarquan Zarquan   52 Aug 26 12:09 settings.yaml
+    >   drwx------. 1 Zarquan Zarquan  114 Aug 27 19:02 storages
+
+    #
+    # I think we want to keep these ...
+
+        .anonymous-user-id
+        .credentials.yaml
+        .pnpm-store
+        sessions
+        settings.yaml
+        storages
+
+    #
+    # Leaves a question about what to keep from profiles ..
+
+    ls -al /home/Zarquan/.dsh/profiles/node_modules
+
+        #
+        # Lots of broken links to /usr/local/lib/node_modules
+        # So this one should be created by the install.
+        #
+
+    ls -al /home/Zarquan/.dsh/profiles/web
+
+    >   ....
+    >   ....
+    >   -rw-r--r--. 1 Zarquan Zarquan 217 Aug 26 12:08 cordis.patch.yml
+    >   -rw-r--r--. 1 Zarquan Zarquan 223 Aug 27 04:13 cordis.yml
+    >   drwxr-xr-x. 1 Zarquan Zarquan 106 Aug 27 04:12 node_modules
+    >   -rw-r--r--. 1 Zarquan Zarquan 294 Aug 26 12:09 package.json
+    >   -rw-r--r--. 1 Zarquan Zarquan 708 Aug 27 04:12 pnpm-lock.yaml
+    >   -rw-r--r--. 1 Zarquan Zarquan  61 Aug 26 12:08 pnpm-workspace.yaml
+
+
+    ls -al /home/Zarquan/.dsh/profiles/web/node_modules
+
+    >   ....
+    >   ....
+    >   -rw-r--r--. 1 Zarquan Zarquan 769 Aug 27 04:12 .modules.yaml
+    >   drwxr-xr-x. 1 Zarquan Zarquan  18 Aug 27 04:12 .pnpm
+    >   -rw-r--r--. 1 Zarquan Zarquan 812 Aug 27 04:12 .pnpm-workspace-state-v1.json
+    >   drwxr-xr-x. 1 Zarquan Zarquan  18 Aug 26 12:09 @smanx
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Save our old DSH home.
+#[user@desktop]
+
+    mv "${HOME}/.dsh" "${HOME}/old-dsh"
+
+    mkdir "${HOME}/Projects/local/dsh"
+
+
+# -----------------------------------------------------
+# Run a new instance of our developer tools.
+#[user@desktop]
+
+    podman run \
+        -it \
+        --rm \
+        --publish 8082:8082 \
+        --publish 3080:3080 \
+        --publish 3081:3081 \
+        --env "DSH_HOME=/opt/dsh" \
+        --volume "${HOME}/Projects/local/dsh:/opt/dsh:rw,Z" \
+        --volume "${HOME}/old-dsh:/opt/old-dsh:ro,Z" \
+        localhost/calycopis/developer-tools \
+            bash
+
+
+# -----------------------------------------------------
+# Install the pre-requisite tools.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+
+# -----------------------------------------------------
+# Copy the configuration files we want to keep.
+#[root@calycopis-dev]
+
+    pushd /opt/old-dsh/
+
+        cp -a .anonymous-user-id /opt/dsh/
+        cp -a .credentials.yaml  /opt/dsh/
+        cp -a .pnpm-store        /opt/dsh/
+        cp -a sessions           /opt/dsh/
+        cp -a settings.yaml      /opt/dsh/
+        cp -a storages           /opt/dsh/
+
+
+# -----------------------------------------------------
+# Install DeekSeek harness with a specific home.
+#[root@calycopis-dev]
+
+    mkdir -p "${DSH_HOME}/profiles/web"
+
+cat > "${DSH_HOME}/profiles/web/pnpm-workspace.yaml" << EOF
+"storeDir": "${DSH_HOME}/pnpm/store/v10"
+EOF
+
+
+    npm install -g \
+        '@deepseek-ai/dsh'
+
+    >   ....
+    >   ....
+
+
+    yq '.' "${DSH_HOME}/profiles/web/pnpm-workspace.yaml"
+
+    >   ....
+    >   ....
+
+    #
+    # Install the http proxy module.
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   dsh: initialized profile web at /opt/dsh/profiles/web
+    >   
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.25.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.25.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Packages are cloned from the content-addressable store to the virtual store.
+    >     Content-addressable store is at: /opt/dsh/pnpm/store/v10
+    >     Virtual store is at:             node_modules/.pnpm
+    >   Packages: +1
+    >   +
+    >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
+    >   
+    >   dependencies:
+    >   + @smanx/dsh-proxy 0.1.1
+    >   
+    >   Done in 3.4s using pnpm v10.33.0
+
+
+    #
+    # Exit this container and start a new instance with everything in place.
+    #
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Stop and remove everything ..
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman stop $(podman ps -aq)
+
+    podman rm $(podman ps -aq)
+
+    podman volume rm $(podman volume ls -q)
+
+    podman network stop $(podman network ls -q)
+
+
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+# -----------------------------------------------------
+# Create our log directory.
+#[user@desktop]
+
+    LOG_DIR=$(mktemp -d)
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[user@desktop]
+
+    TEST_DIR=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TEST_DIR}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    chmod a+r "${TESTFILE}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0544523 s, 184 MB/s
+
+
+# -----------------------------------------------------
+# Create our network and pod.
+#[user@desktop]
+
+    podman network create \
+        --subnet 172.30.100.0/24 \
+        calycopis-network
+
+    podman pod create \
+        --name calycopis-pod \
+        --network calycopis-network \
+        --publish 8082:8082 \
+        --publish 3080:3080 \
+        --publish 3081:3081
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database in our pod.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+
+# -----------------------------------------------------
+# Run our development environment in our pod, with writable config.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod calycopis-pod \
+        --name calycopis-dev \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${TEST_DIR}:/tmp/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:rw,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --env    "DSH_HOME=/opt/dsh" \
+        --volume "${HOME}/Projects/local/dsh:/opt/dsh:rw,Z" \
+        --volume "${HOME}/old-dsh:/opt/old-dsh:ro,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --env    "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --env    "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/developer-tools:2026.08.26 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                           COMMAND     CREATED        STATUS        PORTS                                                               NAMES
+    >   d3f398f11450  localhost/podman-pause:5.4.2-1743552000                     3 minutes ago  Up 2 minutes  0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp            483b7748c612-infra
+    >   4cf71d51b7a5  docker.io/library/postgres:latest               postgres    2 minutes ago  Up 2 minutes  0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp, 5432/tcp  postgres
+    >   69f196ef8c46  localhost/calycopis/developer-tools:2026.08.26  bash        6 seconds ago  Up 5 seconds  0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-dev
+
+# -----------------------------------------------------
+# Install the PostgreSQL client and check if we can see our database.
+#[root@calycopis-dev]
+
+    dnf install -y postgresql
+
+    pg_isready --host postgres
+
+    >   postgres:5432 - accepting connections
+
+
+# -----------------------------------------------------
+# Install the pre-requisite tools for DSH.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+
+# -----------------------------------------------------
+# (re)install DSH.
+#[root@calycopis-dev]
+
+    npm install -g \
+        '@deepseek-ai/dsh'
+
+    >   npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+    >   added 524 packages in 1m
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# (re)install the web proxy module.
+#[root@calycopis-dev]
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >      ╭──────────────────────────────────────────╮
+    >      │                                          │
+    >      │   Update available! 10.33.0 → 11.25.0.   │
+    >      │   Changelog: https://pnpm.io/v/11.25.0   │
+    >      │     To update, run: pnpm add -g pnpm     │
+    >      │                                          │
+    >      ╰──────────────────────────────────────────╯
+    >   
+    >   Already up to date
+    >   Progress: resolved 1, reused 1, downloaded 0, added 0, done
+    >   Done in 2.6s using pnpm v10.33.0
+
+
+# -----------------------------------------------------
+# Run the DSH web profile.
+#[root@calycopis-dev]
+
+    dsh web --no-open
+
+    >   dsh web: http://127.0.0.1:3080/?token=qhRjJC3FQP8h8Lh8-D5mmGXekFLjtog5vX1FOgtzvMo
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Login to the harness from the desktop, using the token.
+#[user@desktop]
+
+    firefox \
+        --new-window \
+        'http://127.0.0.1:3081/?token=qhRjJC3FQP8h8Lh8-D5mmGXekFLjtog5vX1FOgtzvMo'
+
+        #
+        # Looks good.
+        # Previous sessions are visible.
+        # Have go at the next things on the todo list ...
+        #
+
+
+# -----------------------------------------------------
+# Next thing in the todo list ....
+#[user@dsh-web]
+
+

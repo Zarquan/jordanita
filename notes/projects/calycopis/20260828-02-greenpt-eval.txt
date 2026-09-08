@@ -83,7 +83,7 @@
     >   2fb81fe7cb5a  localhost/calycopis/deepseek-harness:2026.08.26  bash        6 seconds ago       Up 4 seconds       0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp  broker-dev
 
 # -----------------------------------------------------
-# Install the PostgreDQL client and check if we can see our database.
+# Install the PostgreSQL client and check if we can see our database.
 #[root@calycopis-dev]
 
     dnf install -y postgresql

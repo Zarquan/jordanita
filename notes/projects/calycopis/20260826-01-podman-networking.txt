@@ -113,7 +113,7 @@
     >           RX errors 0  dropped 0  overruns 0  frame 0
     >           TX packets 878  bytes 90072 (87.9 KiB)
     >           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-    >   
+    >
     >   lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
     >           inet 127.0.0.1  netmask 255.0.0.0
     >           inet6 ::1  prefixlen 128  scopeid 0x10<host>
@@ -463,9 +463,9 @@ org.hibernate.exception.JDBCConnectionException: Unable to obtain isolated JDBC 
     ?   If I run the service containers without a pod, they are both accessible from the host system using the loop back address and the host's IP address, but the services cannot reach eah other from inside their containers.
 
     >   Yes. The missing piece is a user-defined Podman network shared by the two pods, combined with port publishing on each pod.
-    >   
+    >
     >   A useful topology is:
-    >   
+    >
     >                            host
     >                             |
     >                 +-----------+-----------+
@@ -598,66 +598,66 @@ org.hibernate.exception.JDBCConnectionException: Unable to obtain isolated JDBC 
     >   ....
     >   ....
     >   Your host claims the entire 10.0.0.0/8 network on enp3s0:
-    >   
+    >
     >       10.0.0.0/8 dev enp3s0
-    >   
+    >
     >   and the interface itself is configured as:
-    >   
+    >
     >       10.12.0.6/8
-    >   
+    >
     >   So Podman cannot safely auto-allocate any of its usual 10.89.0.0/24-style networks because they all fall inside the host’s directly connected /8.
-    >   
+    >
     >   For this machine, I would avoid 10.0.0.0/8 entirely for Podman user-defined networks and use part of 172.16.0.0/12 instead, provided you do not
     >   have a VPN or other network using it.
-    >   
+    >
     >   For example:
-    >   
+    >
     >       podman network create \
     >           --subnet 172.30.100.0/24 \
     >           calycopis-services
-    >   
+    >
     >   Given the routing table you showed, that subnet does not currently overlap any host route.
-    >   
+    >
     >   You can then create the pods on that network:
-    >   
+    >
     >       podman pod create \
     >           --name service-a-pod \
     >           --network calycopis-services \
     >           --network-alias service-a \
     >           --publish 8080:8080
-    >   
+    >
     >       podman pod create \
     >           --name service-b-pod \
     >           --network calycopis-services \
     >           --network-alias service-b \
     >           --publish 5432:5432
-    >   
+    >
     >   The resulting access pattern is:
-    >   
+    >
     >       Host -> service A:
     >           localhost:8080
-    >   
+    >
     >       Host -> service B:
     >           localhost:5432
-    >   
+    >
     >       Pod A -> service B:
     >           service-b:5432
-    >   
+    >
     >       Pod B -> service A:
     >           service-a:8080
-    >   
-    >   
+    >
+    >
     >   One thing I would change longer-term is Podman’s automatic subnet pool, because with a /8 LAN route you
     >   will otherwise keep hitting this whenever you run:
-    >   
+    >
     >       podman network create some-network
-    >   
+    >
     >   without specifying --subnet.
-    >   
+    >
     >   For rootless Podman, you can configure this in:
-    >   
+    >
     >       ~/.config/containers/containers.conf
-    >   
+    >
     >   using a pool somewhere in 172.16.0.0/12, for example allocating /24s from a larger reserved block such as 172.30.0.0/16.
     >   The exact default_subnet_pools syntax varies slightly by containers-common/Podman version,
     >   so if you want, I can give you the correct containers.conf entry for your installed Podman version.
@@ -792,7 +792,7 @@ org.hibernate.exception.JDBCConnectionException: Unable to obtain isolated JDBC 
     >   0db39b86096d  ghcr.io/ivoa/calycopis/developer-tools:2026.07.16  bash        6 seconds ago   Up 5 seconds   0.0.0.0:3080->3080/tcp, 0.0.0.0:8082->8082/tcp  broker-dev
 
 # -----------------------------------------------------
-# Install the PostgreDQL client and check if we can see our database.
+# Install the PostgreSQL client and check if we can see our database.
 #[root@calycopis-dev]
 
     dnf install -y postgresql
@@ -869,7 +869,7 @@ org.hibernate.exception.JDBCConnectionException: Unable to obtain isolated JDBC 
     >   ....
     >   dependencies:
     >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
-    >   
+    >
     >   Packages: +1
     >   +
     >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
