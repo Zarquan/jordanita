@@ -1,0 +1,336 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+
+
+
+# -----------------------------------------------------
+
+Lots of questions about the requirements for the execution system.
+
+** User identities
+Assuming that the main authentication will be via one or more IAM systems.
+Are all eMerlin users registered in the SRCNet IAM ?
+Just the SRCNet IAM, or SRCNet plus STFC ?
+
+** Access rules
+Will we want to have different quotas for different users/groups.
+Will we want to have different access rules for different users/groups.
+    SRCnet => x+y
+    STFC   => a+b
+
+** User home
+Will we want to give users a global 'home' (rw) directory that is shared across all sessions.
+    GLOBAL_USER_HOME=/global/home/{username}
+
+** User data
+Will we want to give users a global 'data' (ro) directory that is shared across all sessions.
+    GLOBAL_USER_DATA=/global/data/{username}
+
+** Group data
+Will we want to give groups a global 'data' (ro) directory that is shared across all sessions.
+    GLOBAL_GROUP_HOME=/global/data/{groupname}
+
+    South African system mounts data in predictable location in global group space
+    Selecting a data product, it automagically appears unpacked at that location.
+    /global/data/{groupname}/{productid}
+    /global/data/{groupname}/CY3229_L_002_20160111
+
+If a user is a member of more than one group, can they access data in both ?
+
+    /global/data/group-A/...
+    /global/data/group-B/...
+
+How do we want to show the filesystem to the user ?
+Is there a file explorer UI ?
+
+
+** Temp data
+
+Will we want to give users a 'temp' (rw) directory that is specific to each execution session.
+    SESSION_DATA=/temp/{sessionid}
+
+If we allocate session specific space, how long does it last after the session completes ?
+Is it just a directory in the user's space, and it is up to them to manage the quota.
+    SESSION_DATA=/global/data/{username}/{sessionid}
+
+Does it make sense to the user to see it as one file system ?
+
+    /global/{groupname}/data/{productid}
+    /global/{groupname}/data/CY3229_L_002_20160111 <- ro mount of archive data
+
+    /global/{groupname}/temp/{sessionid}
+    /global/{groupname}/temp/06a7c888-51a7-47ac-a47a-fb4acf4148b6 <- rw mount of temp space
+
+    /global/{groupname}/store/ <- rw mount of group's storage space
+
+    /data  : read only access to the original data products.
+    /temp  : Temp space for the execution to work in.
+    /store : Storage space to put the user's results.
+
+    What does an individual container execution see ?
+    What uid:gid does an individual container execution use ?
+
+    CANFAR does a lot of work to assign global uid:gid to all users.
+    Access to directories is controlled by uid:gid.
+    You can see /home/other, but you can't access it.
+
+    If we simplify the container execution to a fixed uid:gid.
+    How do we control what they can access.
+    Do we only mount the relevant paths.
+        /home/username is mounted
+        /home/other is not mounted
+
+    Where does the user put their results so that they can be used as inputs to another step ?
+
+
+** Executables (Docker containers)
+Have some of the processing steps already been packaged as containers ?
+Can we get access to the images and some README instructions on how to use them ?
+
+*** Batch mode only
+Do we assume all the docker containers will run in un-attended batch mode.
+No requirement to publish any network ports for ingress.
+Will the users want access to an active stream for stdout and stderr, or is a static file (after completion) enough ?
+
+*** Vanilla containers
+Are there any unusual behaviours we should be aware of ?
+Is it enough to test with our own generic test containers ?
+
+*** User uid:gid
+What user id will the containers use to execute the task ?
+Is it imposed by the platform, or are containers allowed to assign their own uid and gid values ?
+
+If the execution uid is 0, what are the uid:gid of the results ?
+
+*** White list
+
+* Allow the users to execute any containers ?
+* Restrict execution to a white list of approved containers ?
+* Restrict execution to a specific container registry ?
+
+
+
+** Input data
+Ben has pointed me at some data examples.
+https://www.e-merlin.ac.uk/distribute/CY3/CY3229/CY3229_L_002_20160111/weblog/index.html
+=> 9.7 GiB tar file
+
+*** eMerlin TAP responses
+
+Can we create some example TAP queries to query the archive for public data that we can use for testing.
+Use case :
+    TAP query => TAP result => data identifier => transfer URL
+
+What location information will the TAP responses contain ?
+Does the download URL in a TAP response need to be protected ?
+
+
+
+** Data staging
+*** HTTP transfer
+HTTP GET to transfer the data from the archive into the processing platform.
+If so, where do we transfer it to, local storage on the compute nodes, or a shared CephObj/CephFS data directory.
+
+*** Ceph transfer
+If the archive is reacahble via Ceph, do we want to use volume mounts to make it appear in the user's file system.
+Is the IO performance of a volume mount good enough ?
+Is the archive data stored in one large CephFS directory tree, in lots of smaller trees, or as individual CephObj objects.
+Is the archive data stored tarred or untarred ?
+
+How do we convert a TAP query response into a CephFS or CephObj reference ?
+Is there a pattern we can recognise ?
+e.g. starts with 'ivo://emerlin.ac.uk' then 'ivo://emerlin.ac.uk/<product-id>'
+     translates to 'cephfs:archive/<product-id>'
+
+** External data
+Is accessing external data in scope ?
+Is access to SRCNet data in scope ?
+
+If so, where do we stage external data ?
+
+** Output data
+
+Do we want to save the results of a task to an internal storage location ?
+Is this part of the user's home or data spaces ?
+
+Do we want to mount the storage as a volume, and pass writes through to the storage system.
+Do we want to stage the data locally and then push the results when the task completes.
+
+If we save the results to an internal storage (Ceph?) system, how do we reference them to use the as inputs to another step.
+Do we want to use our own namespace ivo://emerlin.ac.uk://storage/<object-id> ?
+
+
+# -----------------------------------------------------
+Example data
+https://www.e-merlin.ac.uk/distribute/CY3/CY3229/CY3229_L_002_20160111/weblog/index.html
+
+    cd /home/Zarquan/temp/eMerlin/example-001
+
+    ls -al CY3229_L_002_20160111.tar
+
+    # Is there a pattern to the file name ?
+    # Can we parse the tar name to get into about it ?
+
+
+
+    Do we download vi HTTP GET, S3 GET, or can we mount as a CephObj or a CepFS directory ?
+    Assume HTTP GET (simplest)
+
+    Transfer time from one machine to another
+
+    date --iso=seconds
+    scp CY3229_L_002_20160111.tar Zarquan@tyrosine:CY3229_L_002_20160111.tar
+    date --iso=seconds
+
+    25MB/s
+    27MB/s
+    19MB/s
+
+--START--
+2026-09-09T05:40:04+01:00
+CY3229_L_002_20160111.tar   100%    9917MB  24.4MB/s    06:47
+2026-09-09T05:46:52+01:00
+--END--
+
+    Transfer time ~7min @25MB/s
+
+
+
+
+    Unpacking the tar file.
+    Is the archive stored packed or unpacked ?
+    Do we unpack it auomatically, or does the user do that ?
+
+    date --iso=seconds
+    tar -x -v -f CY3229_L_002_20160111.tar
+    date --iso=seconds
+
+--START--
+2026-09-09T05:28:21+01:00
+
+./CY3229_L_002_20160111/
+./CY3229_L_002_20160111/inputs.txt
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/.git/
+....
+....
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/inputs.txt
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/eMCP.css
+./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/emerlin-2.gif
+./CY3229_L_002_20160111/casa_eMCP.log
+
+./CY3229_L_002_20160111/weblog/
+./CY3229_L_002_20160111/weblog/info/
+./CY3229_L_002_20160111/weblog/info/eMCP_info.pkl
+./CY3229_L_002_20160111/weblog/info/eMCP.log.txt
+./CY3229_L_002_20160111/weblog/info/eMCP_errors.log.txt
+./CY3229_L_002_20160111/weblog/info/casa_eMCP.log.txt
+./CY3229_L_002_20160111/weblog/info/source_separations.txt
+./CY3229_L_002_20160111/weblog/info/eMCP_info.txt
+./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111.ms.listobs.txt
+./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111_avg.ms.listobs.txt
+./CY3229_L_002_20160111/weblog/info/caltables.txt
+./CY3229_L_002_20160111/weblog/plots/
+./CY3229_L_002_20160111/weblog/plots/caltables/
+./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_d.K0_1.png
+./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_p.G0_phs.png
+./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_ap.G0_phs.png
+....
+....
+
+2026-09-09T05:30:46+01:00
+--END--
+
+
+    2026-09-09T05:28:21+01:00
+    2026-09-09T05:30:46+01:00
+    ~2min 20 sec
+    say 2.5min, 2min30sec, ~150 sec
+
+    Unpack time ~150 sec
+
+
+
+    ls -al .
+
+--START--
+....
+....
+drwxr-xr-x. 1 Zarquan Zarquan         336 Jul  2  2019 CY3229_L_002_20160111
+-rw-r--r--. 1 Zarquan Zarquan 10398411724 Sep  8 16:48 CY3229_L_002_20160111.tar
+--END--
+
+
+    du -h -d 1 CY3229_L_002_20160111
+
+--START--
+10M     CY3229_L_002_20160111/eMERLIN_CASA_pipeline
+230M    CY3229_L_002_20160111/weblog
+868K    CY3229_L_002_20160111/logs
+16G     CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms
+666M    CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms.flagversions
+17G     CY3229_L_002_20160111
+--END--
+
+    Does the user already know what is inside.
+    If so, do they want to uppack only selected parts ?
+
+
+
+# -----------------------------------------------------
+
+    From my notes 14th May (UKSRC all hands)
+    Slurm deployment
+        ssh into login node
+        bindfs to mount data from RSE (Rucio?)
+        mount bind to mount individual files
+        shell script to combine these into one command
+
+    jasmin
+        'scratch' space kept for 28 days
+        globus in/out
+        condor environment
+        notebooks, pods, slurm
+
+    PRABHA survey in Meerkat
+        PRe-processed And Backsplash galaxies from a multi-phase Hydrogen Approach.
+        It is an international astrophysics survey that takes advantage of MeerKAT’s
+        advanced high spectral resolution capabilities to study the interstellar
+        medium of galaxies.
+
+        6TiB image
+        run singularity from command line
+        Lofar micro-bench in github
+
