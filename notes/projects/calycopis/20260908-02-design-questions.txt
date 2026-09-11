@@ -217,11 +217,9 @@ https://www.e-merlin.ac.uk/distribute/CY3/CY3229/CY3229_L_002_20160111/weblog/in
     27MB/s
     19MB/s
 
---START--
-2026-09-09T05:40:04+01:00
-CY3229_L_002_20160111.tar   100%    9917MB  24.4MB/s    06:47
-2026-09-09T05:46:52+01:00
---END--
+    >   2026-09-09T05:40:04+01:00
+    >   CY3229_L_002_20160111.tar   100%    9917MB  24.4MB/s    06:47
+    >   2026-09-09T05:46:52+01:00
 
     Transfer time ~7min @25MB/s
 
@@ -236,42 +234,40 @@ CY3229_L_002_20160111.tar   100%    9917MB  24.4MB/s    06:47
     tar -x -v -f CY3229_L_002_20160111.tar
     date --iso=seconds
 
---START--
-2026-09-09T05:28:21+01:00
-
-./CY3229_L_002_20160111/
-./CY3229_L_002_20160111/inputs.txt
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/.git/
-....
-....
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/inputs.txt
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/eMCP.css
-./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/emerlin-2.gif
-./CY3229_L_002_20160111/casa_eMCP.log
-
-./CY3229_L_002_20160111/weblog/
-./CY3229_L_002_20160111/weblog/info/
-./CY3229_L_002_20160111/weblog/info/eMCP_info.pkl
-./CY3229_L_002_20160111/weblog/info/eMCP.log.txt
-./CY3229_L_002_20160111/weblog/info/eMCP_errors.log.txt
-./CY3229_L_002_20160111/weblog/info/casa_eMCP.log.txt
-./CY3229_L_002_20160111/weblog/info/source_separations.txt
-./CY3229_L_002_20160111/weblog/info/eMCP_info.txt
-./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111.ms.listobs.txt
-./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111_avg.ms.listobs.txt
-./CY3229_L_002_20160111/weblog/info/caltables.txt
-./CY3229_L_002_20160111/weblog/plots/
-./CY3229_L_002_20160111/weblog/plots/caltables/
-./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_d.K0_1.png
-./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_p.G0_phs.png
-./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_ap.G0_phs.png
-....
-....
-
-2026-09-09T05:30:46+01:00
---END--
+    >   2026-09-09T05:28:21+01:00
+    >   
+    >   ./CY3229_L_002_20160111/
+    >   ./CY3229_L_002_20160111/inputs.txt
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/.git/
+    >   ....
+    >   ....
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/inputs.txt
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/eMCP.css
+    >   ./CY3229_L_002_20160111/eMERLIN_CASA_pipeline/utils/emerlin-2.gif
+    >   ./CY3229_L_002_20160111/casa_eMCP.log
+    >   
+    >   ./CY3229_L_002_20160111/weblog/
+    >   ./CY3229_L_002_20160111/weblog/info/
+    >   ./CY3229_L_002_20160111/weblog/info/eMCP_info.pkl
+    >   ./CY3229_L_002_20160111/weblog/info/eMCP.log.txt
+    >   ./CY3229_L_002_20160111/weblog/info/eMCP_errors.log.txt
+    >   ./CY3229_L_002_20160111/weblog/info/casa_eMCP.log.txt
+    >   ./CY3229_L_002_20160111/weblog/info/source_separations.txt
+    >   ./CY3229_L_002_20160111/weblog/info/eMCP_info.txt
+    >   ./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111.ms.listobs.txt
+    >   ./CY3229_L_002_20160111/weblog/info/CY3229_L_002_20160111_avg.ms.listobs.txt
+    >   ./CY3229_L_002_20160111/weblog/info/caltables.txt
+    >   ./CY3229_L_002_20160111/weblog/plots/
+    >   ./CY3229_L_002_20160111/weblog/plots/caltables/
+    >   ./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_d.K0_1.png
+    >   ./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_p.G0_phs.png
+    >   ./CY3229_L_002_20160111/weblog/plots/caltables/CY3229_L_002_20160111_bpcal_ap.G0_phs.png
+    >   ....
+    >   ....
+    >   
+    >   2026-09-09T05:30:46+01:00
 
 
     2026-09-09T05:28:21+01:00
@@ -285,24 +281,20 @@ CY3229_L_002_20160111.tar   100%    9917MB  24.4MB/s    06:47
 
     ls -al .
 
---START--
-....
-....
-drwxr-xr-x. 1 Zarquan Zarquan         336 Jul  2  2019 CY3229_L_002_20160111
--rw-r--r--. 1 Zarquan Zarquan 10398411724 Sep  8 16:48 CY3229_L_002_20160111.tar
---END--
+    >   ....
+    >   ....
+    >   drwxr-xr-x. 1 Zarquan Zarquan         336 Jul  2  2019 CY3229_L_002_20160111
+    >   -rw-r--r--. 1 Zarquan Zarquan 10398411724 Sep  8 16:48 CY3229_L_002_20160111.tar
 
 
     du -h -d 1 CY3229_L_002_20160111
 
---START--
-10M     CY3229_L_002_20160111/eMERLIN_CASA_pipeline
-230M    CY3229_L_002_20160111/weblog
-868K    CY3229_L_002_20160111/logs
-16G     CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms
-666M    CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms.flagversions
-17G     CY3229_L_002_20160111
---END--
+    >   10M     CY3229_L_002_20160111/eMERLIN_CASA_pipeline
+    >   230M    CY3229_L_002_20160111/weblog
+    >   868K    CY3229_L_002_20160111/logs
+    >   16G     CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms
+    >   666M    CY3229_L_002_20160111/CY3229_L_002_20160111_avg.ms.flagversions
+    >   17G     CY3229_L_002_20160111
 
     Does the user already know what is inside.
     If so, do they want to uppack only selected parts ?
