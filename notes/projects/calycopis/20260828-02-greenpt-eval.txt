@@ -40,7 +40,7 @@
     pass: onepass
 
     keys:
-      - apikey-001: sk-rVRwATF1RfC62-TwRHBers9S8jXjO0JWl_TNs0WTec8
+      - apikey-001: ....
 
 
 # -----------------------------------------------------

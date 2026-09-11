@@ -59,7 +59,7 @@
     dsh plugin --profile web add github:smanx/dsh-proxy#master
 
     >   dsh: initialized profile web at /root/.dsh/profiles/web
-    >   
+    >
     >      ╭──────────────────────────────────────────╮
     >      │                                          │
     >      │   Update available! 10.33.0 → 11.25.0.   │
@@ -67,14 +67,14 @@
     >      │     To update, run: pnpm add -g pnpm     │
     >      │                                          │
     >      ╰──────────────────────────────────────────╯
-    >   
+    >
     >   Packages are cloned from the content-addressable store to the virtual store.
     >     Content-addressable store is at: /root/.local/share/pnpm/store/v10
     >     Virtual store is at:             node_modules/.pnpm
-    >   
+    >
     >   dependencies:
     >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
-    >   
+    >
     >   Packages: +1
     >   +
     >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
@@ -119,9 +119,9 @@
 
     >           '@deepseek-ai/dsh'
     >   npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
-    >   
+    >
     >   added 524 packages in 1m
-    >   
+    >
     >   66 packages are looking for funding
     >     run `npm fund` for details
 
@@ -147,7 +147,7 @@
     dsh plugin --profile web add github:smanx/dsh-proxy#master
 
     >   dsh: initialized profile web at /opt/dsh/profiles/web
-    >   
+    >
     >      ╭──────────────────────────────────────────╮
     >      │                                          │
     >      │   Update available! 10.33.0 → 11.25.0.   │
@@ -155,14 +155,14 @@
     >      │     To update, run: pnpm add -g pnpm     │
     >      │                                          │
     >      ╰──────────────────────────────────────────╯
-    >   
+    >
     >   Packages are cloned from the content-addressable store to the virtual store.
     >     Content-addressable store is at: /root/.local/share/pnpm/store/v10
     >     Virtual store is at:             node_modules/.pnpm
-    >   
+    >
     >   dependencies:
     >   + @smanx/dsh-proxy github:smanx/dsh-proxy#master
-    >   
+    >
     >   Packages: +1
     >   +
     >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
@@ -287,7 +287,7 @@ EOF
     dsh plugin --profile web add github:smanx/dsh-proxy#master
 
     >   dsh: initialized profile web at /opt/dsh/profiles/web
-    >   
+    >
     >      ╭──────────────────────────────────────────╮
     >      │                                          │
     >      │   Update available! 10.33.0 → 11.25.0.   │
@@ -295,17 +295,17 @@ EOF
     >      │     To update, run: pnpm add -g pnpm     │
     >      │                                          │
     >      ╰──────────────────────────────────────────╯
-    >   
+    >
     >   Packages are cloned from the content-addressable store to the virtual store.
     >     Content-addressable store is at: /opt/dsh/pnpm/store/v10
     >     Virtual store is at:             node_modules/.pnpm
     >   Packages: +1
     >   +
     >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
-    >   
+    >
     >   dependencies:
     >   + @smanx/dsh-proxy 0.1.1
-    >   
+    >
     >   Done in 3.1s using pnpm v10.33.0
 
 
@@ -813,7 +813,7 @@ EOF
     dsh plugin --profile web add github:smanx/dsh-proxy#master
 
     >   dsh: initialized profile web at /opt/dsh/profiles/web
-    >   
+    >
     >      ╭──────────────────────────────────────────╮
     >      │                                          │
     >      │   Update available! 10.33.0 → 11.25.0.   │
@@ -821,17 +821,17 @@ EOF
     >      │     To update, run: pnpm add -g pnpm     │
     >      │                                          │
     >      ╰──────────────────────────────────────────╯
-    >   
+    >
     >   Packages are cloned from the content-addressable store to the virtual store.
     >     Content-addressable store is at: /opt/dsh/pnpm/store/v10
     >     Virtual store is at:             node_modules/.pnpm
     >   Packages: +1
     >   +
     >   Progress: resolved 1, reused 0, downloaded 1, added 1, done
-    >   
+    >
     >   dependencies:
     >   + @smanx/dsh-proxy 0.1.1
-    >   
+    >
     >   Done in 3.4s using pnpm v10.33.0
 
 
@@ -1041,7 +1041,7 @@ EOF
     >      │     To update, run: pnpm add -g pnpm     │
     >      │                                          │
     >      ╰──────────────────────────────────────────╯
-    >   
+    >
     >   Already up to date
     >   Progress: resolved 1, reused 1, downloaded 0, added 0, done
     >   Done in 2.6s using pnpm v10.33.0
@@ -1053,7 +1053,7 @@ EOF
 
     dsh web --no-open
 
-    >   dsh web: http://127.0.0.1:3080/?token=qhRjJC3FQP8h8Lh8-D5mmGXekFLjtog5vX1FOgtzvMo
+    >   dsh web: http://127.0.0.1:3080/?token=....
 
 
 # -----------------------------------------------------
@@ -1063,7 +1063,7 @@ EOF
 
     firefox \
         --new-window \
-        'http://127.0.0.1:3081/?token=qhRjJC3FQP8h8Lh8-D5mmGXekFLjtog5vX1FOgtzvMo'
+        'http://127.0.0.1:3081/?token=....'
 
         #
         # Looks good.
