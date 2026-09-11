@@ -1,0 +1,218 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+
+Questions about the requirements for the execution system.
+
+Suggest we request a vanilla Openstack/K8s system from Cambridge.
+IF they can give us a ready made system
+No admin work on our part
+
+Work on real and simulated platforms
+
+We need to be able to connect to both storage systems
+
+    CephFS
+
+    CephObj
+
+
+TODO If Ian can give us an OpenStack project, plus CephObj and CephFS, then we can just go for it.
+TODO If not, then ask Cambridge for something equivalent.
+Dave to contact Cambs to see what is available.
+
+Target is to solve the filesystem mounting.
+
+We will need to do the K8s deploy on OpenStack ourselves.
+Integrating K8S with OpenStack ingress/outgress was the complicated part.
+
+Everything scripted
+Requirement that anythong we do will be part of the Flux CI deployment.
+
+In test system - Rook is running Ceph inside the K8s cluster itself.
+Depends on how much can we simulate.
+
+Admin's role is to provide us with optimised resources.
+e.g. Ceph etc.
+
+Any new K8s components have to integrate with the Flux deployment that Paul/Steve have been working on.
+Flux is there to deploy the required components.
+
+Is time well spent working on Cambs/RAL or is it just wated time ?
+
+Forced into whatever they have implemented. Local systems are very different.
+
+From a user perspective they want it to look like POSIX filesystem
+
+To make things scale you can't have user IDs
+CANFAR uid:gid doesn't scale.
+Better to store things in blobs
+
+If managing the eMerlin archive
+Much easier if it does look like one big filesystem.
+
+User wants everything to appear in a POSIX filesystem
+
+Paul:
+User has a 'space'.
+Looks like a consistent POSIX filesystem
+but we use volume mounts to make things appear to be in the same system
+
+Exposing the whole 'home' area is complicated
+Execution only sees a part of the filesystem
+
+    /inputs
+
+    /outputs
+
+
+Setup process mounts the right things into /inputs and /outputs
+That makes the execution setup easier.
+
+How does the user find those things
+How does the user select thos things.
+Need a "data descriptor object" that says where the things are.
+Main SRC have implemented this as you always call an API
+We pass a semi-resolved data descriptor.
+
+Data products from the archive.
+
+    mounted as read only
+
+    CephFS or CephObj
+
+    only mount the things that a user is allowed to see based on OIDC
+
+    CephFS - can we mount selected sub-directories ?
+
+    CephObj - easier to control access to individual buckets
+
+
+Users own data
+mounted read/write
+
+    Their own data
+
+    External downloaded data
+
+    Results from previous steps
+
+    Doesn't need to be a single POSIX directory tree
+
+    Some parts in CephFS
+
+    Some parts in CepObj
+
+
+Pods always run with the same uid:gid
+What data the Pod has access to is controlled by volume mounts by our platform, when the pod is created.
+
+In terms of data movement :
+
+    Local means within this data center
+
+    CephFS or CephObj
+
+    Remote means other sites
+
+    Cambridge
+
+    Sydney
+
+
+------------------------
+
+Data descriptor:
+JSON object that resolves to a data object we can mount or transfer
+
+    CephFS
+
+    CepObj
+
+    external http
+
+
+Separate deliverable :
+
+    A service to resolve [data descriptor] into a local location
+
+    Things in SRCNet <domain><product-id>
+
+    Things in eMerlin archive
+
+    Things in user's 'space' e.g. results from previous operations
+
+    HTTP references that you download
+
+    S3 references that you download
+
+
+User makes TAP query, gets VOTable results.
+The VOTable contains or refers to the data descriptor
+
+Proposal
+http scheme that includes special characters like !
+answers different based on who is asking
+user agent or accepts header
+
+Data descriptor for inputs
+Resolves to where to read the data from
+
+Data descriptor for outputs
+
+    /output/21 of job <2219>
+
+
+The execution platform writes the data to a location in Ceph.
+The execution platform fills in the details.
+
+Lunch break -----------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
