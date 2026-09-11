@@ -1,0 +1,543 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Configuring DeepSeek harness to use GreenPT
+        https://greenpt.com/
+        https://account.greenpt.ai/
+
+        Use db_connector to query the database
+        https://github.com/JohnXu22786/db-connector
+
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Stop and remove everything ..
+#[user@desktop]
+
+    podman pod stop $(podman pod ls -q)
+
+    podman pod rm $(podman pod ls -q)
+
+    podman stop $(podman ps -aq)
+
+    podman rm $(podman ps -aq)
+
+    podman volume rm $(podman volume ls -q)
+
+    podman network rm $(podman network ls -q)
+
+
+# -----------------------------------------------------
+# Create our configuration files.
+#[user@desktop]
+
+    CONFIG_DIR=$(mktemp -d)
+
+    cat > "${CONFIG_DIR}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+    cat > "${CONFIG_DIR}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/calycopis
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+    cat > "${CONFIG_DIR}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+    yq '.spring.datasource.username' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgusername"
+
+    yq '.spring.datasource.password' \
+       "${CONFIG_DIR}/database.yaml" \
+       > "${CONFIG_DIR}/pgpassword"
+
+# -----------------------------------------------------
+# Create our log directory.
+#[user@desktop]
+
+    LOG_DIR=$(mktemp -d)
+
+
+# -----------------------------------------------------
+# Create our test data file.
+#[user@desktop]
+
+    TEST_DIR=$(
+        mktemp -d
+        )
+
+    TESTFILE=${TEST_DIR}/random.dat
+
+    dd if=/dev/urandom of=${TESTFILE} bs=1MB count=10
+
+    # https://stackoverflow.com/a/25045505
+    chcon -Rt svirt_sandbox_file_t "${TESTFILE}"
+    chmod a+r "${TESTFILE}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0550339 s, 182 MB/s
+
+
+# -----------------------------------------------------
+# Create our network and pod.
+#[user@desktop]
+
+    podman network create \
+        --subnet 172.30.100.0/24 \
+        calycopis-network
+
+    podman pod create \
+        --name calycopis-pod \
+        --network calycopis-network \
+        --publish 8082:8082 \
+        --publish 3080:3080 \
+        --publish 3081:3081
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database in our pod.
+#[user@desktop]
+
+    podman run \
+        --rm \
+        --detach \
+        --replace \
+        --name postgres \
+        --pod calycopis-pod \
+        --env "POSTGRES_DB=calycopis" \
+        --env "POSTGRES_USER_FILE=/etc/calycopis/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=/etc/calycopis/pgpassword" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:ro,Z" \
+        docker.io/library/postgres:latest
+
+
+# -----------------------------------------------------
+# Run our development environment in our pod, with writable config.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+    # WARNING - exposing the user's Podman socket requires a patch to the SELinux rules.
+    # WARNING - this exposes the user's SSH agent to the container.
+    # WARNING - exposing the user's SSH agent requires a patch to the SELinux rules.
+
+    source "${HOME:?}/calycopis.env"
+    source "${HOME:?}/heliophorus.env"
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod calycopis-pod \
+        --name calycopis-dev \
+        --volume "${LOG_DIR}:/var/log/calycopis:rw,Z" \
+        --volume "${TEST_DIR}:/tmp/calycopis:rw,Z" \
+        --volume "${CONFIG_DIR}:/etc/calycopis:rw,Z" \
+        --volume "${HOME}/.m2:/root/.m2:rw,Z" \
+        --env    "DSH_HOME=/opt/dsh" \
+        --volume "${HOME}/Projects/local/dsh:/opt/dsh:rw,Z" \
+        --volume "${CALYCOPIS_ROOT}:/Calycopis:rw,Z" \
+        --volume "${HELIOPHORUS_ROOT}:/Heliophorus:rw,Z" \
+        --env    "SSH_AUTH_SOCK=/tmp/ssh-sock" \
+        --volume "${SSH_AUTH_SOCK}:/tmp/ssh-sock:rw,Z" \
+        --env    "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock:rw,Z" \
+        localhost/calycopis/developer-tools:2026.08.26 \
+            bash
+
+            podman ps
+
+    >   CONTAINER ID  IMAGE                                           COMMAND     CREATED         STATUS         PORTS                                                               NAMES
+    >   ec81b8c39666  localhost/podman-pause:5.4.2-1743552000                     55 seconds ago  Up 39 seconds  0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp            442141aaf6cb-infra
+    >   b84743f4b5da  docker.io/library/postgres:latest               postgres    39 seconds ago  Up 39 seconds  0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp, 5432/tcp  postgres
+    >   9e66642983eb  localhost/calycopis/developer-tools:2026.08.26  bash        5 seconds ago   Up 4 seconds   0.0.0.0:3080-3081->3080-3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-dev
+
+# -----------------------------------------------------
+# Install the PostgreSQL client and check if we can see our database.
+#[root@calycopis-dev]
+
+    dnf install -y postgresql
+
+    pg_isready --host postgres
+
+    >   postgres:5432 - accepting connections
+
+
+# -----------------------------------------------------
+# Install the pre-requisite tools for DSH.
+#[root@calycopis-dev]
+
+    dnf install -y \
+        nodejs \
+        pnpm
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# (re)install DSH.
+#[root@calycopis-dev]
+
+    npm install -g \
+        '@deepseek-ai/dsh'
+
+    >   ....
+    >   added 521 packages in 1m
+    >   ....
+
+
+# -----------------------------------------------------
+# (re)install the web proxy module.
+#[root@calycopis-dev]
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >      ╭─────────────────────────────────────────╮
+    >      │                                         │
+    >      │   Update available! 10.33.0 → 12.3.4.   │
+    >      │   Changelog: https://pnpm.io/v/12.3.4   │
+    >      │    To update, run: pnpm add -g pnpm     │
+    >      │                                         │
+    >      ╰─────────────────────────────────────────╯
+    >
+    >   Packages: +1 -1
+    >   +-
+    >   Progress: resolved 2, reused 1, downloaded 1, added 1, done
+    >
+    >   dependencies:
+    >   - @smanx/dsh-proxy 0.1.1
+    >   + @smanx/dsh-proxy 0.1.3
+    >
+    >   Done in 3.2s using pnpm v10.33.0
+
+
+# -----------------------------------------------------
+# Run the DSH web profile.
+#[root@calycopis-dev]
+
+    dsh web --no-open
+
+    >   file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1545
+    >   		throw new Error(`${binName}: ${stage}: ${detail}${stack}`, { cause });
+    >   		      ^
+    >
+    >   Error: dsh: plugin tree failed to load: failed to apply loader entry dsh-proxy (@smanx/dsh-proxy): cannot get property "webServer" without inject
+    >   Error: cannot get property "webServer" without inject
+    >       at Fiber.<anonymous> (file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js:618:35)
+    >       at file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/cordis/lib/index.js:1141:34
+    >       at Proxy.register (file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js:618:16)
+
+
+# -----------------------------------------------------
+# Asked DeepSeek chat to diagnose the issue.
+# https://chat.deepseek.com/share/hv7ag1f1spkn82jbps
+
+    ?   Can you diagnose the cause of this error
+    ?
+    ?   file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1545
+    ?   		throw new Error(`${binName}: ${stage}: ${detail}${stack}`, { cause });
+    ?   		      ^
+    ?   Error: dsh: plugin tree failed to load: failed to apply loader entry dsh-proxy (@smanx/dsh-proxy): cannot get property "webServer" without inject
+    ?   Error: cannot get property "webServer" without inject
+    ?       at Fiber.<anonymous> (file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js:618:35)
+    ?       at file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/cordis/lib/index.js:1141:34
+    ?       at Proxy.register (file:///usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js:618:16)
+    ?   ....
+    ?   ....
+
+    >   This error is a known compatibility issue between the **`@smanx/dsh-proxy` plugin** and the DSH core's connection service, triggered by a stricter service-access check introduced in a recent DSH update.
+    >
+    >   ### 🔍 Root Cause
+    >
+    >   The error message `cannot get property "webServer" without inject` is the key clue. Here's the breakdown:
+    >
+    >   1.  **The Plugin's Expectation**: The `dsh-proxy` plugin, when registering an HTTP channel, attempts to access the `webServer` service on the connection context (e.g., via `owner.webServer.register(...)`).
+    >   2.  **The Core's Guardrail**: DSH uses the Cordis framework, which enforces a "strict service-access check." This means a plugin can only access a service if it has explicitly declared that dependency in its `inject` list.
+    >   3.  **The Missing Declaration**: The DSH core's connection service, which the `dsh-proxy` plugin relies on, does **not** have `webServer` listed in its own top-level `inject` array. It only declares `['credentials']`.
+    >   4.  **The Result**: When the proxy plugin tries to read the `webServer` property, Cordis throws an error because the dependency chain wasn't properly declared, causing the entire plugin tree to fail to load and preventing DSH from starting.
+    >
+    >   This is a known issue that specifically affects **third-party plugins** that try to register HTTP channels through the connection RPC/fetch interface. First-party plugins don't hit this because they declare their dependencies differently.
+    >
+    >   ### 🛠️ How to Fix It
+    >
+    >   You have a few options, depending on how comfortable you are with modifying core files.
+    >
+    >   #### Option 1: Use a Community "Fuse" Tool (Recommended for Quick Recovery)
+    >
+    >   The tool **`dsh-safe`** is designed exactly for this situation. It acts as a wrapper that automatically detects a failing plugin, disables it in your profile, and retries the startup, allowing DSH to boot normally.
+    >
+    >   1.  Install it globally:
+    >       ```bash
+    >       npm install -g @hyzyn/dsh-safe
+    >       ```
+    >   2.  Instead of your usual `dsh` command, use `dsh-safe`. For example:
+    >       ```bash
+    >       dsh-safe -u web
+    >       ```
+    >       This will update DSH if needed and automatically isolate the problematic `dsh-proxy` plugin so you can get back into your environment.
+    >
+    >   #### Option 2: Apply the Local Workaround (Direct Fix)
+    >
+    >   If you prefer a more permanent fix, you can manually patch the DSH core file to add the missing `webServer` injection. This is the official workaround suggested in the bug report.
+    >
+    >   1.  Locate the file:
+    >       `/usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js`
+    >   2.  Find the `exports.inject` line (it should be near the top of the file).
+    >   3.  Change it from:
+    >       ```javascript
+    >       exports.inject = ['credentials'];
+    >       ```
+    >       To:
+    >       ```javascript
+    >       exports.inject = ['webServer', 'credentials'];
+    >       ```
+    >   4.  Save the file and try starting DSH again.
+    >
+    >   **Note**: This local patch may be overwritten if you update DSH. You would need to re-apply it after future updates.
+
+
+# -----------------------------------------------------
+# Edit the source code as suggested.
+#[root@calycopis-dev]
+
+    vi /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js
+
+        /** Services required before providing Connection. */
+    -   const inject = ["credentials"];
+    +   const inject = ["webServer","credentials"];
+        const Config = z.object({
+            ....
+            ....
+
+
+# -----------------------------------------------------
+# Run the DSH web profile.
+#[root@calycopis-dev]
+
+    dsh web --no-open
+
+    >   http://127.0.0.1:3080/?token=....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Login to the harness from the desktop, using the token.
+#[user@desktop]
+
+    firefox \
+        --new-window \
+        'http://127.0.0.1:3081/?token=....'
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Change the model provider
+#[user@dsh-web]
+
+    Settings
+        Models
+            Add custom provider
+
+                Provider ID : api-greenpt-ai
+                Display name : GreenPT
+                Base URL : https://api.greenpt.ai/v1
+                API protocol : openai-completions
+                API key : ....
+
+                Fetch available models : ✓
+
+
+
+# -----------------------------------------------------
+# Give it something to do ...
+#[user@dsh-web]
+
+    ?   /plan
+    ?   Can you analyse the database query defined in
+    ?   net.ivoa.calycopis.broker.engine.functional.booking.compute.simple.SimpleComputeResourceQuery
+
+Run time : 6m 10s
+    >   I've traced the full picture: the query itself, its call chain, and the entities/columns it reads. Here is the analysis.
+    >
+    >   ---
+    >
+    >   # Analysis: `SimpleComputeResourceQuery`
+    >
+    >   ## 1. What it is
+    >
+    >   `SimpleComputeResourceQuery` (`java/src/main/java/net/ivoa/calycopis/broker/engine/functional/booking/compute/simple/SimpleComputeResourceQuery.java`) is a **static builder for a PostgreSQL CTE query** that implements the compute-resource booking search: given a requested start window, duration, min cores and min memory, it finds contiguous 1-minute "blocks" of free capacity over a 2‑hour look‑ahead horizon and returns up to N candidate offers (`BlockStart`, `BlockLength`, `BlockCores`, `BlockMemory`).
+    >
+    >   Call chain:
+    >
+    >   1. `OfferSetRequestParserImpl.stageTwo()` (line 378) calls `platform.getComputeResourceOfferFactory().generate(startInterval, duration, minCores, minMemory, offerCount)`.
+    >   2. `SimpleComputeResourceOfferFactoryImpl.generate()` (line 64) calls `SimpleComputeResourceQuery.build(...)` then `queryHandler.query(query)`.
+    >   3. `SpringSimpleComputeResourceOfferQueryHandlerImpl` (docker platform wiring, `DockerPlatformImpl` line 356) executes it via `JdbcClient`/`JdbcTemplate` (`SpringAbstractQueryHandler`).
+    >   4. Each result row is mapped by `SimpleComputeResourceOfferBean.create()` into a `SimpleComputeResourceOfferBean`, and one `SimpleExecutionSessionEntity` is created per offer.
+    >
+    >   The `build()` method returns the query with `:name` placeholders substituted by **string replacement** (lines 444–479), not bound parameters — the code comments admit this is "vulnerable to SQL injection" and ideally should use `JdbcTemplate` named parameters.
+    >
+    >   ## 2. The tunable constants (lines 47–153)
+    >
+    >   | Constant | Value | Used where |
+    >   |---|---|---|
+    >   | `BLOCK_STEP_SECONDS` | 60 s | Granularity of the whole algorithm |
+    >   | `BLOCK_RANGE_SECONDS` | 2 h | `:rangeend` (120 blocks) — the look-ahead window |
+    >   | `DEFAULT_START_RANGE` | 5 min | Default start interval |
+    >   | `MAXIMUM_START_RANGE` | 24 h | **Unused** (dead constant) |
+    >   | `DEFAULT_DURATION` | 2 h | Default execution duration |
+    >   | `OFFER_DURATION_SCALE` / `MAXIMUM_DURATION` | 2× / 4 h | `:maxblocklength` cap |
+    >   | `DEFAULT_CPU_CORES_REQUEST` / `MAXIMUM_CPU_CORES_REQUEST` | 1 / 32 | Default; **max unused** |
+    >   | `TOTAL_AVAILABLE_CPU_CORES` | 256 | `:totalcores` |
+    >   | `OFFER_CPU_CORES_SCALE` | 2 | `:maxcores` |
+    >   | `DEFAULT_CPU_MEMORY_REQUEST` | 1 GiB (as `StorageUnit`) | Default memory — **units inconsistent, see §5** |
+    >   | `MAXIMUM_CPU_MEMORY_REQUEST` | 32 GiB | **Unused** |
+    >   | `TOTAL_AVAILABLE_CPU_MEMORY` | 256 GiB (as `StorageUnit`) | `:totalmemory` — **units inconsistent, see §5** |
+    >   | `OFFER_CPU_MEMORY_SCALE` | 2 | `:maxmemory` |
+    >   | `QUERY_LIMIT` | 4 | Default `:querylimit` |
+    >
+    >   The "TODO Check for maximum" comments (lines 413, 421, 429) correspond to the unused maximum constants.
+    >
+    >   ## 3. The SQL pipeline, CTE by CTE
+    >
+    >   **`ExecutionBlocks`** (lines 163–183) — every active session (phase `IN ('OFFERED','PREPARING','WAITING','RUNNING','RELEASING')`) becomes one reservation: block-aligned start `available_start_instant_seconds / 60`, length `available_duration_seconds / 60`, and capacity used:
+    >
+    >   ```sql
+    >   COALESCE(maxofferedcores,  maxrequestedcores)   AS UsedCores
+    >   COALESCE(maxofferedmemory, maxrequestedmemory)  AS UsedMemory
+    >   ```
+    >
+    >   This is the "offer if present, else the requested value" fallback. The join chain `simpleexecutionsessions → abstractcomputeresources (on session = uuid) → simplecomputeresources (on uuid)` follows the JOINED-inheritance schema. Note sessions in `ACCEPTED` (pre‑PREPARING) are **not** counted — an accepted-but-unstarted session's reservation can be double-booked (see §5).
+    >
+    >   **`AvailableBlocks`** (lines 184–207) — builds the time axis with `generate_series(1, 120)` shifted by `:rangeoffset` (= request start epoch-second / 60), so rows are absolute epoch-minute block numbers. For each candidate start row it LEFT-OUTER-JOINs overlapping reservations (`BlockStart <= StartRow AND BlockStart + BlockLength > StartRow`) and computes:
+    >
+    >   ```sql
+    >   COUNT(...)                       AS RowCount      -- computed but never used downstream
+    >   :totalcores  - sum(UsedCores)    AS FreeCores
+    >   :totalmemory - sum(UsedMemory)   AS FreeMemory
+    >   ```
+    >
+    >   **`ConsecutiveBlocks`** (lines 208–230) — the classic gaps-and-islands trick: `(StartRow + 1) - ROW_NUMBER() OVER (PARTITION BY (FreeCores >= :mincores AND FreeMemory >= :minmemory) ORDER BY StartRow)` gives every consecutive run of capacity-sufficient minutes the same `BlockGroup` value. Rows not meeting the minimums are filtered out.
+    >
+    >   **`CombinedBlocks`** (lines 231–245) — collapses each island into `(BlockStart, BlockLength, FreeCores, FreeMemory)` where the free values are `MIN(...)` across the run (the conservative "available throughout the run" amount). `HAVING COUNT(*) >= :minblocklength` drops runs shorter than the requested duration.
+    >
+    >   **`SplitBlocks`** (lines 246–265) — splits each qualifying run into overlapping? — no, *contiguous* sub-blocks of at most `:maxblocklength` blocks (the max duration we're allowed to offer, `min(requested × 2, 4 h)`), by cross-joining with `generate_series(1, :maxblocklength)`:
+    >
+    >   ```sql
+    >   BlockStart + (maxblocklength × (n-1)) < (BlockStart + BlockLength)
+    >   ```
+    >
+    >   so sub-blocks that start past the end of the run are filtered.
+    >
+    >   **`MatchingBlocks`** (lines 266–285) — for each candidate (sub-block start, sub-block length) pair, re-joins against the per-row availability from `AvailableBlocks` to find every 1-minute row inside the window, with sanity bounds `minblocklength <= BlockLength <= maxblocklength`.
+    >
+    >   **`GroupedBlocks`** (lines 286–297) — re-aggregates per `(BlockStart, BlockLength)`, again taking `MIN(FreeCores/FreeMemory)` across the contained rows.
+    >
+    >   **`ScaledBlocks`** (lines 298–312) — caps the offer at `LEAST(:maxcores, FreeCores)` / `LEAST(:maxmemory, FreeMemory)`. These `BlockCores`/`BlockMemory` are what the offer advertises, and `:maxcores`/`:maxmemory` are **2× the requested minimums**.
+    >
+    >   **Ranking CTEs** (lines 313–348) — three orderings, each `LIMIT :querylimit`:
+    >   - `EarlyBlocks`: earliest start, then most cores/memory, longest.
+    >   - `HiMemBlocks`: most memory first.
+    >   - `HiCpuBlocks`: most cores first.
+    >
+    >   **`CombinedQuery`** (lines 349–370) — `UNION` of the three rankings…
+    >
+    >   **…and then the final statement is `SELECT * FROM EarlyBlocks`** (line 372). The `CombinedQuery` CTE, `HiMemBlocks`, and `HiCpuBlocks` are **computed and thrown away** — dead code. The intended behaviour was almost certainly `SELECT * FROM CombinedQuery`, and there is no de-duplication or interleaving, so the "high memory" and "high CPU" offer strategies are currently never returned.
+    >
+    >   ## 4. Parameter substitution & defaults (`build()`, lines 380–482)
+    >
+    >   All 13 placeholders are replaced with numeric strings derived from:
+    >
+    >   - Request inputs: `requestStart` (epoch/60), `requestDuration` (→ `:minblocklength`, and ×2 capped at 4 h → `:maxblocklength`), `requestMinCores` (also ×2 → `:maxcores`), `requestMemory` (also ×2 → `:maxmemory`), `requestLimit` (`:querylimit`, falls back to `QUERY_LIMIT` when ≤ 0).
+    >   - Constants: `:blockstep`, `:totalcores`, `:totalmemory`, `:rangeoffset` (defaults from `requestStart`), `:rangestart` (always 1), `:rangeend` (always 120).
+    >
+    >   Defaults applied when inputs are null: start → `Interval.of(now, 5 min)`; open-ended start (`getEnd() == Instant.MAX`) → 5 min; duration → 2 h; cores → 1; memory → `DEFAULT_CPU_MEMORY_REQUEST.longValue()`.
+    >
+    >   ## 5. Issues and observations
+    >
+    >   **Unit mismatch in the memory dimension (significant).** `TOTAL_AVAILABLE_CPU_MEMORY` is `StorageUnits.gibibyte(256)`, and `.longValue()` returns **bytes** (274,877,906,944). But the entity columns (`maxofferedmemory`/`maxrequestedmemory` in `SimpleComputeResourceEntity`) and the request/context values (`OfferSetRequestParserContextImpl.totalMinMemory`, seeded from the validators' GiB values, e.g. `MIN_MEMORY_DEFAULT = 1L`) are in **GiB**. So:
+    >
+    >   - `FreeMemory = 274,877,906,944 − Σ UsedMemory(GiB)` is ~274 billion and always dwarfs the GiB-scale `:minmemory`/`:maxmemory`, so the memory dimension of the availability check **never actually constrains anything** in practice.
+    >   - `BlockMemory = LEAST(2×requestedGiB, ~274 billion)` is always exactly `2 × requested memory`.
+    >   - The fallback default `:minmemory = DEFAULT_CPU_MEMORY_REQUEST.longValue()` would inject **1 GiB in bytes (1,073,741,824)** — a value larger than `:totalmemory` in any consistent GiB world, which would zero out all offers. In the real call path `requestMemory` is never null (the validators always seed the context), so this default is a latent trap rather than a live bug.
+    >   - By contrast `TOTAL_AVAILABLE_CPU_CORES = 256L` is a plain number consistent with the GiB-style entity columns, so the **cores** dimension works correctly.
+    >
+    >   **Dead code: the union rankings are never returned.** `CombinedQuery`, `HiMemBlocks`, `HiCpuBlocks` are all computed, then the final `SELECT * FROM EarlyBlocks` (line 372) discards them. If the intent was to return a mix of early/high-mem/high-CPU offers, this is the bug to fix; otherwise the two ranking CTEs and the `CombinedQuery` UNION are pure wasted work.
+    >
+    >   **String-replacement parameter binding.** `build()` substitutes placeholders via `String.replace` (the code's own comment flags the SQL-injection risk, lines 440–442). In practice every injected value is numeric (epoch seconds, durations, cores, memory, limits), so the injection surface is small, but the pattern is fragile — e.g. a negative epoch offset, a `Duration` overflow (`requestDuration.getSeconds() * 2`), or a future non-numeric parameter would silently produce broken SQL.
+    >
+    >   **Truncation/edge cases in durations.** `:minblocklength = durationSeconds / 60` truncates. A requested duration < 60 s gives 0, making `HAVING COUNT(*) >= 0` and `BlockLength >= 0` vacuous — offers with 0-length blocks can be produced (and then `SimpleComputeResourceOfferBean` emits a zero-duration offer). A requested duration of 0 also makes `:maxblocklength = 0`, so `generate_series(1, 0)` returns nothing and **no offers are produced at all**. There is no clamping of requested durations to the [1 block, 4 h] range despite the `MAXIMUM_DURATION` cap existing.
+    >
+    >   **Unused max limits.** `MAXIMUM_START_RANGE` (24 h), `MAXIMUM_CPU_CORES_REQUEST` (32), `MAXIMUM_CPU_MEMORY_REQUEST` (32 GiB) are declared but never referenced — the "TODO Check for maximum" markers in `build()` (lines 413, 421, 429). Also, `build()` never clamps `requestMinCores`/`requestMemory` upward, so e.g. a 40-core request flows straight into `:mincores`/`:maxcores`.
+    >
+    >   **`RowCount` in `AvailableBlocks` is computed but never used** (line 188).
+    >
+    >   **The offer bean's interval is degenerate.** `SimpleComputeResourceOfferBean.create()` (lines 57–64) builds `Interval.of(BlockStart×60 s, Duration.ofSeconds(0))` — a **zero-length interval** — and carries the real length in a separate `duration` field. Callers happen to use `getStartInstant()` and `getDuration()` separately (`AbstractComputeResourceEntity` constructor, lines 122–129), so it works, but any reader of `getStartInterval()` sees start == end. Additionally the offer sets `min == max` for both cores and memory (`SimpleComputeResourceOfferBean` lines 92–95), i.e. the query advertises an exact amount, not a negotiable min/max range.
+    >
+    >   **Booked-but-unstarted sessions are not counted.** The `phase IN ('OFFERED','PREPARING','WAITING','RUNNING','RELEASING')` filter (line 182) excludes `ACCEPTED`. A session that has been accepted but not yet advanced to `PREPARING` holds a reservation that the booking query will happily double-book. (The `INITIAL`/`EXPIRED`/`REJECTED`/`COMPLETED`/`FAILED`/`CANCELLED` exclusions are correct.)
+    >
+    >   **Hard-coded horizon.** `BLOCK_RANGE_SECONDS = 2 h` is baked in as a constant; the TODO at line 51 notes it "should be set by the Duration of the requested start Interval". So a request asking to start 3 hours from now will get candidate blocks only within 2 hours of the requested start (which for a `now`-anchored default is the next 2 h — fine, but for an explicit future start window it silently under-scans).
+    >
+    >   **Typo in the public API.** The constant is `DATABSE_QUERY` (line 161) — part of the public surface of the class.
+    >
+    >   **Adjacent issue (outside the query itself, but in the same data flow):** `SimpleComputeResourceEntity.fillBean()` (lines 208–211) sets the memory bean from `minofferedcores`/`maxofferedcores` instead of `minofferedmemory`/`maxofferedmemory` — a copy/paste bug in the API serialization of the compute resource. Worth fixing together with any query work since it corrupts the advertised memory range.
+    >
+    >   ## 6. Summary
+    >
+    >   The query is a well-structured gaps-and-islands scheduler over 1-minute blocks with a 2-hour horizon: it aggregates active-session reservations per minute, finds contiguous runs meeting the requested cores/memory, splits runs into offerable sub-blocks (≤ 2× requested duration, ≤ 4 h), and ranks candidates. Its headline problems are: (1) the **memory dimension is effectively disabled by a GiB-vs-bytes mismatch** between the `StorageUnit` totals and the GiB entity columns; (2) the **final `SELECT` returns only `EarlyBlocks`, discarding the `HiMemBlocks`/`HiCpuBlocks`/`CombinedQuery` UNION**; (3) **string-replacement parameter binding** (acknowledged in the code) instead of named parameters; (4) several **dead constants and TODOs** for max-value clamping; and (5) smaller edge cases around sub-minute durations, the zero-length offer interval, and the missing `ACCEPTED` phase in the reservation filter.
+    >
+    >   I stopped at analysis as requested — no files were modified. If you'd like, I can turn any of these findings (e.g. the memory unit fix, the `CombinedQuery` return, or migrating to named parameters) into an implementation plan.
+
+# -----------------------------------------------------
+
+
+
+===START==
+
+===END==
+
+
+
