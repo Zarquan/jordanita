@@ -1,0 +1,604 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Launch our containers using anonymous volumes.
+        Run them in separate containers rather than multiple logins to the same container.
+        Using volumes-from to share the files.
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Delete any existing Podman components and build new container images.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    pushd  "${CALYCOPIS_CODE:?}"
+
+        docker/bin/clean.sh
+
+        docker/bin/build.sh
+
+    popd
+
+    podman images
+
+    >   REPOSITORY                            TAG         IMAGE ID      CREATED         SIZE
+    >   localhost/calycopis/deepseek-harness  2026.09.14  f4e19d2e711b  12 seconds ago  2.62 GB
+    >   localhost/calycopis/deepseek-harness  latest      f4e19d2e711b  12 seconds ago  2.62 GB
+    >   localhost/calycopis/developer-tools   2026.09.14  1d710754db63  2 minutes ago   2 GB
+    >   localhost/calycopis/developer-tools   latest      1d710754db63  2 minutes ago   2 GB
+    >   localhost/calycopis/fedora-base       2026.09.14  19ca48367aeb  4 minutes ago   682 MB
+    >   localhost/calycopis/fedora-base       latest      19ca48367aeb  4 minutes ago   682 MB
+    >   registry.fedoraproject.org/fedora     44          d0d57c02b5d0  20 hours ago    190 MB
+
+
+# -----------------------------------------------------
+# Create our environment variables file.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+
+    cat > "${CALYCOPIS_CODE}/calycopis.env" << EOF
+CALYCOPIS_DEV_NAME=calycopis-dev
+CALYCOPIS_POD_NAME=calycopis-pod
+CALYCOPIS_NET_NAME=calycopis-network
+CALYCOPIS_LOG_DIR=/var/calycopis/log
+CALYCOPIS_DATA_DIR=/var/calycopis/data
+CALYCOPIS_CONFIG_DIR=/etc/calycopis
+CALYCOPIS_DB_NAME=calycopis-db-name
+CALYCOPIS_DB_HOST=calycopis-db-host
+CALYCOPIS_DB_PORT=5432
+EOF
+
+
+# -----------------------------------------------------
+# Create our Podman network and Pod.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/calycopis.env"
+
+    podman pod stop   "${CALYCOPIS_POD_NAME:?}"
+    podman pod rm     "${CALYCOPIS_POD_NAME:?}"
+    podman network rm "${CALYCOPIS_NET_NAME:?}"
+
+
+    podman network create \
+        --subnet 172.30.100.0/24 \
+        "${CALYCOPIS_NET_NAME:?}"
+
+    podman pod create \
+        --name "${CALYCOPIS_POD_NAME:?}" \
+        --network "${CALYCOPIS_NET_NAME:?}" \
+        --publish 8082:8082 \
+        --publish 3081:3081
+
+
+# -----------------------------------------------------
+# Run our developer tools with anonymous volumes.
+# This means the lifetime of the volumes will be linked to the lifetime of the container.
+#[user@desktop]
+
+    # WARNING - this exposes the user's Podman socket to the container.
+
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/calycopis.env"
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  "${CALYCOPIS_POD_NAME:?}" \
+        --name "${CALYCOPIS_DEV_NAME:?}" \
+        --volume /etc/calycopis \
+        --volume /var/calycopis/log \
+        --volume /var/calycopis/data \
+        --env    "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${XDG_RUNTIME_DIR:?}/podman/podman.sock:/run/podman/podman.sock:rw,z" \
+        --volume "${CALYCOPIS_ROOT:?}:/Calycopis:rw,z" \
+        --volume "${HOME:?}/.m2:/root/.m2:rw,z" \
+        --env-file "${CALYCOPIS_CODE:?}/calycopis.env" \
+        localhost/calycopis/developer-tools:2026.09.14 \
+        bash
+
+        podman ps
+
+    >   CONTAINER ID  IMAGE                                           COMMAND     CREATED         STATUS        PORTS                                           NAMES
+    >   97ca35e6e337  localhost/podman-pause:5.4.2-1743552000                     11 seconds ago  Up 4 seconds  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp  595cf54fbe71-infra
+    >   3982277917f7  localhost/calycopis/developer-tools:2026.09.14  bash        4 seconds ago   Up 3 seconds  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp  calycopis-dev
+
+
+# -----------------------------------------------------
+# Create our broker configuration files.
+# TODO Add this to an initialization script.
+#[root@calycopis-dev]
+
+        cat > "${CALYCOPIS_CONFIG_DIR:?}/admin.yaml" << EOF
+calycopis:
+    admin:
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+EOF
+
+        cat > "${CALYCOPIS_CONFIG_DIR:?}/database.yaml" << EOF
+spring:
+    datasource:
+        url: jdbc:postgresql://${CALYCOPIS_DB_HOST:?}:5432/${CALYCOPIS_DB_NAME:?}
+        username: $(pwgen 32 1)
+        password: $(pwgen 32 1)
+        driverClassName: org.postgresql.Driver
+        initialize: true
+EOF
+
+        cat > "${CALYCOPIS_CONFIG_DIR:?}/spring.yaml" << EOF
+spring:
+    profiles:
+        active: docker
+EOF
+
+
+# -----------------------------------------------------
+# Create our database configuration files.
+# TODO Add this to an initialization script.
+# TODO Move these into a separate volume, only mounted in the DB container.
+#[root@calycopis-dev]
+
+        yq '.spring.datasource.username' \
+           "${CALYCOPIS_CONFIG_DIR:?}/database.yaml" \
+           > "${CALYCOPIS_CONFIG_DIR:?}/pgusername"
+
+        yq '.spring.datasource.password' \
+           "${CALYCOPIS_CONFIG_DIR:?}/database.yaml" \
+           > "${CALYCOPIS_CONFIG_DIR:?}/pgpassword"
+
+
+# -----------------------------------------------------
+# Create our timings configuration file.
+# TODO Add this to an initialization script.
+#[root@calycopis-dev]
+
+        cat > "${CALYCOPIS_CONFIG_DIR:?}/timings.yaml" << EOF
+calycopis:
+  broker:
+    timing:
+      session:
+        EXPIRED:
+          timeout: 300
+          polling: 5
+EOF
+
+
+# -----------------------------------------------------
+# Start our PostgreSQL database.
+#[root@calycopis-dev]
+
+    podman run \
+        --rm \
+        --detach \
+        --expose "${CALYCOPIS_DB_PORT:?}" \
+        --pod "${CALYCOPIS_POD_NAME:?}" \
+        --name "${CALYCOPIS_DB_HOST}" \
+        --env "POSTGRES_DB=${CALYCOPIS_DB_NAME:?}" \
+        --env "POSTGRES_USER_FILE=${CALYCOPIS_CONFIG_DIR:?}/pgusername" \
+        --env "POSTGRES_PASSWORD_FILE=${CALYCOPIS_CONFIG_DIR:?}/pgpassword" \
+        --volumes-from "${CALYCOPIS_DEV_NAME}" \
+        "docker.io/library/postgres:latest"
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# Wait for our database to become available.
+#[root@calycopis-dev]
+
+    postgreswait()
+        {
+        for ((i = 1; i <= 4; i++))
+        do
+            if pg_isready \
+                --host "${CALYCOPIS_DB_HOST:?}" \
+                --port "${CALYCOPIS_DB_PORT:?}" \
+                --dbname "${CALYCOPIS_DB_NAME:?}"
+            then
+                echo "[$(date)] database is ready"
+                return 0
+            fi
+            echo "[$(date)] waiting for database to start (${i}/10)."
+            sleep 10
+        done
+        echo "[$(date)] database is NOT ready"
+            return 1
+        }
+
+    postgreswait
+
+    >   calycopis-db-host:5432 - accepting connections
+    >   [Mon Sep 14 04:29:59 UTC 2026] database is ready
+
+
+# -----------------------------------------------------
+# Build and run our broker service.
+#[root@calycopis-dev]
+
+    pushd "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq"
+
+        source bin/versions.sh config.yaml
+
+        pushd java
+
+            ./mvnw clean spring-boot:run
+
+    >   ....
+    >   ....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run our Python tests in another container with volumes from our dev-tools container.
+#[user@desktop]
+
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/calycopis.env"
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  "${CALYCOPIS_POD_NAME:?}" \
+        --name "calycopis-pytest" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --env-file "${CALYCOPIS_CODE:?}/calycopis.env" \
+        --volumes-from "${CALYCOPIS_DEV_NAME:?}" \
+        localhost/calycopis/developer-tools:2026.09.14 \
+        bash
+
+        podman ps
+
+    >   CONTAINER ID  IMAGE                                           COMMAND     CREATED             STATUS                        PORTS                                                     NAMES
+    >   97ca35e6e337  localhost/podman-pause:5.4.2-1743552000                     2 minutes ago       Up 2 minutes                  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            595cf54fbe71-infra
+    >   3982277917f7  localhost/calycopis/developer-tools:2026.09.14  bash        2 minutes ago       Up 2 minutes                  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-dev
+    >   8154d2bfa7bd  docker.io/library/postgres:latest               postgres    About a minute ago  Up About a minute (starting)  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp, 5432/tcp  calycopis-db-host
+    >   2a256b44c5ea  localhost/calycopis/developer-tools:2026.09.14  bash        3 seconds ago       Up 3 seconds                  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-pytest
+
+
+# -----------------------------------------------------
+# Create our test data.
+# TODO Add this to an initialization script.
+#[root@calycopis-pytest]
+
+        testfilename=random.dat
+        testfilepath=${CALYCOPIS_DATA_DIR:?}/${testfilename:?}
+
+        dd if=/dev/urandom of=${testfilepath:?} bs=1MB count=10
+        chmod a+r "${testfilepath:?}"
+
+    >   10+0 records in
+    >   10+0 records out
+    >   10000000 bytes (10 MB, 9.5 MiB) copied, 0.0480705 s, 208 MB/s
+
+        testfilemd5sum=$(
+            md5sum "${testfilepath:?}" | awk '{print $1}'
+            )
+
+        testfilesha256sum=$(
+            sha256sum "${testfilepath:?}" | awk '{print $1}'
+            )
+
+        testdatahostpath=$(
+            podman inspect \
+                calycopis-dev \
+            | jq -r '
+                .[0].Mounts.[]
+                | select(.Destination == "'${CALYCOPIS_DATA_DIR:?}'")
+                | .Source
+                '
+            )
+
+        testfilehostpath=${testdatahostpath:?}/${testfilename:?}
+
+        cat > "${CALYCOPIS_CONFIG_DIR:?}/testing.yaml" << EOF
+calycopis:
+  broker:
+    testing:
+      testdata:
+        - name: "${testfilename:?}"
+          filepath: "${testfilepath:?}"
+          hostpath: "${testfilehostpath}"
+          md5sum: "${testfilemd5sum:?}"
+          sha256sum: "${testfilesha256sum:?}"
+
+        - name: "apples.jpg"
+          filepath: "http://www.beespace.me/sites/www.beespace.me/files/styles/large/public/field/image/20250824_111206.jpg"
+          md5sum: "4e3a7c3bde242d127fbfb925e94c9f32"
+          sha256sum: "a58505e353f1533a3e08ec530df820331a1bd9fd1150f779372ba1cecbc24f20"
+EOF
+
+
+        yq '.' "${CALYCOPIS_CONFIG_DIR:?}/testing.yaml"
+
+    >   calycopis:
+    >     broker:
+    >       testing:
+    >         testdata:
+    >           - name: "random.dat"
+    >             filepath: "/var/calycopis/data/random.dat"
+    >             hostpath: "/home/Zarquan/.local/share/containers/storage/volumes/2e2f028de8f44d3333097dac2f074588c3cf2a3fddfd35e418f263aca87e2b60/_data/random.dat"
+    >             md5sum: "0a326b15e910c8b0180cb8f1a1fc2159"
+    >             sha256sum: "34ca81021934100c74d2fb2f3ffb2d95aab5571b03cfcfc29614737067606ade"
+    >           - name: "apples.jpg"
+    >             filepath: "http://www.beespace.me/sites/www.beespace.me/files/styles/large/public/field/image/20250824_111206.jpg"
+    >             md5sum: "4e3a7c3bde242d127fbfb925e94c9f32"
+    >             sha256sum: "a58505e353f1533a3e08ec530df820331a1bd9fd1150f779372ba1cecbc24f20"
+
+
+# -----------------------------------------------------
+# Check we can access our test data from an Alpine container
+#[root@calycopis-pytest]
+
+    podman pull alpine:3
+
+    podman run \
+        --rm \
+        --volume "${testfilehostpath:?}:/input" \
+        alpine:3 sh -c '
+            md5sum /input | awk "{print \$1}"
+            sha256sum /input | awk "{print \$1}"
+            '
+
+    >   0a326b15e910c8b0180cb8f1a1fc2159
+    >   34ca81021934100c74d2fb2f3ffb2d95aab5571b03cfcfc29614737067606ade
+
+
+# -----------------------------------------------------
+# Configure and run our Python tests.
+#[root@calycopis-pytest]
+
+    export CALYCOPIS_URL=http://${CALYCOPIS_DEV_NAME:?}:8082
+
+    export CALYCOPIS_ADMIN_USERNAME=$(
+        yq \
+            '.calycopis.admin.username' \
+            "${CALYCOPIS_CONFIG_DIR:?}/admin.yaml"
+        )
+
+    export CALYCOPIS_ADMIN_PASSWORD=$(
+        yq \
+            '.calycopis.admin.password' \
+            "${CALYCOPIS_CONFIG_DIR:?}/admin.yaml"
+        )
+
+    export TEST_DATA_FILE=$(
+        yq \
+            '.calycopis.broker.testing.testdata.[]
+            | select(.name == "random.dat")
+            | .hostpath
+            ' \
+            "${CALYCOPIS_CONFIG_DIR:?}/testing.yaml"
+        )
+
+    pushd "/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq"
+
+        source bin/versions.sh config.yaml
+
+        pushd tests/python
+
+            pip install -r requirements.txt
+
+            pytest -v -s docker
+
+    >   ....
+    >   ....
+    >   ==================================================== 51 passed in 1652.22s (0:27:32) ====================================================
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Run our DSH container with volumes from our dev-tools container.
+#[user@desktop]
+
+    source "${HOME}/dsh.env"
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/calycopis.env"
+
+    podman run \
+        --rm \
+        --tty \
+        --interactive \
+        --pod  "${CALYCOPIS_POD_NAME:?}" \
+        --name "calycopis-dsh" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --env-file "${CALYCOPIS_CODE:?}/calycopis.env" \
+        --volumes-from "${CALYCOPIS_DEV_NAME:?}" \
+        --env "DSH_HOME=/opt/dsh" \
+        --volume "${DSH_HOME:?}:/opt/dsh:rw,z" \
+        localhost/calycopis/deepseek-harness:2026.09.14 \
+        bash
+
+        podman ps
+
+    >   CONTAINER ID  IMAGE                                            COMMAND     CREATED         STATUS                    PORTS                                                     NAMES
+    >   97ca35e6e337  localhost/podman-pause:5.4.2-1743552000                      13 minutes ago  Up 13 minutes             0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            595cf54fbe71-infra
+    >   3982277917f7  localhost/calycopis/developer-tools:2026.09.14   bash        13 minutes ago  Up 13 minutes             0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-dev
+    >   8154d2bfa7bd  docker.io/library/postgres:latest                postgres    12 minutes ago  Up 12 minutes (starting)  0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp, 5432/tcp  calycopis-db-host
+    >   2a256b44c5ea  localhost/calycopis/developer-tools:2026.09.14   bash        11 minutes ago  Up 11 minutes             0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-pytest
+    >   f3fbb4471ccd  localhost/calycopis/deepseek-harness:2026.09.14  bash        4 seconds ago   Up 3 seconds              0.0.0.0:3081->3081/tcp, 0.0.0.0:8082->8082/tcp            calycopis-dsh
+
+
+# -----------------------------------------------------
+# (re)install the web proxy module.
+# TODO Add this to an initialization script.
+#[root@calycopis-dsh]
+
+    dsh plugin --profile web add github:smanx/dsh-proxy#master
+
+    >   Already up to date
+    >   Progress: resolved 1, reused 1, downloaded 0, added 0, done
+    >   Done in 2.2s using pnpm v10.33.0
+
+
+# -----------------------------------------------------
+# Edit the source code as suggested.
+# https://chat.deepseek.com/share/hv7ag1f1spkn82jbps
+# TODO Add this to an initialization script.
+#[root@calycopis-dsh]
+
+    sed -i '
+        /^const inject =/ {
+            s/^const inject = \["credentials"\];/const inject = \["webServer", "credentials"\];/
+            }
+        ' /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js
+
+    sed -n '
+        /^const inject =/ p
+        ' /usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-connection/lib/index.js
+
+    >   const inject = ["webServer", "credentials"];
+
+
+# -----------------------------------------------------
+# Run the DSH web profile.
+#[root@calycopis-dsh]
+
+    dsh web --no-open
+
+    >   ....
+    >   dsh web: http://127.0.0.1:3080/?token=....
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Connect to the proxy URL.
+#[user@desktop]
+
+    firefox \
+        --new-window \
+        "http://127.0.0.1:3081/?token=...." \
+        &
+
+    #
+    # Yay - works.
+    # Session history is intact.
+    #
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    Functionality is implemented in four containers.
+
+    * calycopis-dev
+    * calycopis-db-host
+    * calycopis-pytest
+    * calycopis-dsh
+
+    All four containers should be able to see the same configuration files.
+
+    * /etc/calycopis
+    * /var/calycopis/log
+    * /var/calycopis/data
+
+    The three development containers, calycopis-dev, calycopis-pytest, and calycopis-dsh,
+    should be able to seaccess the Podman socket and run Podman commands.
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    TODO Update the Python tests to read ther configuration from the yaml config files.
+    Removing the need for the environment variables, CALYCOPIS_ADMIN_USERNAME, CALYCOPIS_ADMIN_PASSWORD, and TEST_DATA_FILE.
+
+    TODO Remove the extra debug code from docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local
+
+    TODO Update the AGENTS.md file to reflect the new way of deploying the serice and tests.
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+# Ask DeepSeek to examine these notes.
+#[root@calycopis-dsh]
+
+    ?   Please read and summarise the notes at `/Calycopis/Calycopis-broker/Calycopis-broker-uksrc-zrq/notes/zrq/20260914-01-podman-testing.txt`
+
+    >   Here's a summary of `notes/zrq/20260914-01-podman-testing.txt`:
+    >   
+    >   ## Purpose
+    >   A contemporary log of a Podman-based testing setup for the Calycopis broker. The stated **target**: launch containers using **anonymous volumes** (volume lifetime tied to container lifetime), run each component in its **own container** rather than multiple logins to one container, and share files between them via **`--volumes-from`**. Status at time of writing: *work in progress*.
+    >   
+    >   ## What the notes record (step by step)
+    >   
+    >   1. **Image build** — Cleaned and rebuilt the container stack (`docker/bin/clean.sh`, `docker/bin/build.sh`): `fedora-base` (682 MB), `developer-tools` (2 GB), and `deepseek-harness` (2.62 GB), all tagged `2026.09.14` / `latest`.
+    >   
+    >   2. **Environment & network setup** — Created `calycopis.env` defining names for the dev container, pod (`calycopis-pod`), network (`calycopis-network`, subnet `172.30.100.0/24`), shared dirs (`/etc/calycopis`, `/var/calycopis/log`, `/var/calycopis/data`), and DB (`calycopis-db-host:5432`). The pod publishes ports **8082** (broker) and **3081** (web proxy).
+    >   
+    >   3. **Developer container** — Launched `calycopis-dev` with **anonymous volumes** for the three shared config/data dirs, plus mounts for the Podman socket (with an explicit *WARNING: this exposes the user's Podman socket to the container*), the code tree, and `~/.m2`.
+    >   
+    >   4. **Broker config** — Inside the dev container, generated `admin.yaml`, `database.yaml` (pwgen credentials), `spring.yaml` (docker profile), `timings.yaml` (session EXPIRED timeout 300s / polling 5s), and separate `pgusername`/`pgpassword` files for the DB container.
+    >   
+    >   5. **PostgreSQL** — Started `calycopis-db-host` in the pod using **`--volumes-from calycopis-dev`** and `POSTGRES_*_FILE` env vars; verified readiness with `pg_isready`.
+    >   
+    >   6. **Broker** — Built and ran via `./mvnw clean spring-boot:run` (output elided).
+    >   
+    >   7. **Test container** — Launched `calycopis-pytest` as a separate container using **`--volumes-from calycopis-dev`** and the Podman socket.
+    >   
+    >   8. **Test data** — Created a 10 MB `random.dat` inside the shared data volume, computed its md5/sha256, and — key detail — discovered the **host path** of the anonymous volume via `podman inspect calycopis-dev` (it resolved to a Podman storage volume under `/home/Zarquan/.local/share/containers/storage/volumes/.../_data/`). Wrote `testing.yaml` listing `random.dat` and an `apples.jpg` (fetched from a URL, with expected checksums). Verified the file was reachable from an **Alpine container** bind-mounted at the host path, with matching checksums.
+    >   
+    >   9. **Test run** — Ran the docker Python test suite: **51 passed in 1652.22s (~27.5 min)**.
+    >   
+    >   10. **DSH container** — Launched `calycopis-dsh` (deepseek-harness image) with `--volumes-from calycopis-dev`, installed the `dsh-proxy` web plugin, patched `dsh-client-connection` to inject `webServer` credentials, ran `dsh web`, and confirmed access through the proxy URL on port 3081 — "Yay – works. Session history is intact."
+    >   
+    >   ## Final architecture
+    >   Four containers, all sharing the same config volumes:
+    >   - `calycopis-dev` (broker), `calycopis-db-host` (PostgreSQL), `calycopis-pytest` (tests), `calycopis-dsh` (DSH web)
+    >   - Shared dirs: `/etc/calycopis`, `/var/calycopis/log`, `/var/calycopis/data`
+    >   - The three dev containers can access the Podman socket and run Podman commands.
+    >   
+    >   ## Open TODOs
+    >   - Update the Python tests to read configuration from the YAML files, removing the need for `CALYCOPIS_ADMIN_USERNAME`, `CALYCOPIS_ADMIN_PASSWORD`, and `TEST_DATA_FILE` env vars.
+    >   - Remove extra debug code from `tests/python/docker/test_docker_androcles_md5.py::TestAndroclesMd5::test_md5_matches_local`.
+    >   - Update `AGENTS.md` to reflect the new way of deploying the service and tests.
+    >   
+    >   The notes end with the four-container layout as a working model — the anonymous-volume + `volumes-from` approach proved successful (tests passed, proxy worked).
+
+    ?   /plan
+    ?   Can you create a plan for updating the project AGENTS.md file to match the new process for configuring and running the containers.
+
+    >   ....
+    >   ....
+
+
+    ?   /plan
+    ?   Please create a plan for verifying that you can stop the existing broker service, re-build the Java code and start a new broker,
+    ?   and then run the Python tests using these instructions.
+
+    >   ....
+    >   ....
+
+

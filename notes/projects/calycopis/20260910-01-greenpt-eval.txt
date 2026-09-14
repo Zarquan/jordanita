@@ -29,10 +29,6 @@
         https://greenpt.com/
         https://account.greenpt.ai/
 
-        Use db_connector to query the database
-        https://github.com/JohnXu22786/db-connector
-
-
     Result:
 
         Work in progress ...
@@ -400,7 +396,7 @@ EOF
     ?   Can you analyse the database query defined in
     ?   net.ivoa.calycopis.broker.engine.functional.booking.compute.simple.SimpleComputeResourceQuery
 
-Run time : 6m 10s
+    Run time : 6m 10s
     >   I've traced the full picture: the query itself, its call chain, and the entities/columns it reads. Here is the analysis.
     >
     >   ---
@@ -532,12 +528,4 @@ Run time : 6m 10s
     >   I stopped at analysis as requested — no files were modified. If you'd like, I can turn any of these findings (e.g. the memory unit fix, the `CombinedQuery` return, or migrating to named parameters) into an implementation plan.
 
 # -----------------------------------------------------
-
-
-
-===START==
-
-===END==
-
-
 

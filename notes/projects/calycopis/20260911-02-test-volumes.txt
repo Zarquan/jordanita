@@ -1,0 +1,323 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Experimenting with using shared volumes.
+        Configuration files, data files and logs.
+
+    Result:
+
+        In theory we could create directories on the host and then use bind mount volumes.
+        But I think we can do everything we need using anonymous volumes.
+        The anonymous volumes would be linked to the lifetime of the container.
+        Deleting the pod deletes the container, which releases the volumes.
+
+
+# -----------------------------------------------------
+# Asked ChatGPT about creating Podman volumes.
+
+    ?   Is it possible to create a podman volume that mounts a specific directory from the host file system. equivalent to a bind mout volue in the run command
+
+    >   Yes. Podman supports a **named volume backed by a specific host directory**, although for most cases a direct bind mount is simpler.
+    >   
+    >   For example, your normal bind mount might be:
+    >   
+    >   ```bash
+    >   podman run \
+    >       --volume /data/calycopis:/app/data \
+    >       myimage
+    >   ```
+    >   
+    >   You can create a named Podman volume that effectively performs the same bind mount:
+    >   
+    >   ```bash
+    >   podman volume create \
+    >       --opt type=none \
+    >       --opt device=/data/calycopis \
+    >       --opt o=bind \
+    >       calycopis-data
+    >   ```
+    >   
+    >   Then use it like a normal named volume:
+    >   
+    >   ```bash
+    >   podman run \
+    >       --volume calycopis-data:/app/data \
+    >       myimage
+    >   ```
+    >   
+    >   You can inspect it with:
+    >   
+    >   ```bash
+    >   podman volume inspect calycopis-data
+    >   ```
+    >   
+    >   You should see options corresponding to:
+    >   
+    >   ```text
+    >   device=/data/calycopis
+    >   type=none
+    >   o=bind
+    >   ```
+    >   
+    >   ### One important difference
+    >   
+    >   This is still fundamentally a **bind mount**. Podman isn't copying the data into its normal volume storage. The named volume is essentially a persistent Podman object describing how to mount `/data/calycopis`.
+    >   
+    >   Consequently:
+    >   
+    >   ```bash
+    >   podman volume rm calycopis-data
+    >   ```
+    >   
+    >   removes the Podman volume definition but **does not delete `/data/calycopis` or its contents**.
+    >   
+    >   For your use case, this can be quite useful if you want your scripts or pod definitions to deal exclusively in named volumes:
+    >   
+    >   ```bash
+    >   podman volume create \
+    >       --opt type=none \
+    >       --opt device="${HOST_DATA_DIR}" \
+    >       --opt o=bind \
+    >       application-data
+    >   
+    >   podman run \
+    >       --volume application-data:/data \
+    >       ...
+    >   ```
+    >   
+    >   There are a couple of subtleties around **rootless Podman, SELinux `:Z`/`:z`, ownership and user namespaces** with this type of volume. Given the rootless Podman setup you've been working with, those are worth considering before choosing this over a direct `-v /host:/container:Z` bind mount.
+
+# -----------------------------------------------------
+# Re-write the test script to use volumes.
+#[user@desktop]
+
+    #
+    # We need to use a host file path for the file:// bind mount tests.
+    #
+
+    HOST_DATA_DIR=$(mktemp -d)
+
+    podman volume \
+        create \
+            --opt type=none \
+            --opt device="${HOST_DATA_DIR}" \
+            --opt o=bind \
+            calycopis-data-vol
+
+    podman run \
+        -it \
+        --rm \
+        --volume calycopis-data-vol:/var/calycopis/data:z \
+        fedora \
+        bash -c '
+            date > /var/calycopis/data/datetime
+            '
+
+    #
+    #  But for the logging and configuration, we can use generic volumes.
+    #
+
+    podman volume \
+        create \
+            calycopis-cfg-vol
+
+    podman volume \
+        create \
+            calycopis-log-vol
+
+    podman run \
+        -it \
+        --rm \
+        --env "HOST_DATA_DIR=${HOST_DATA_DIR}" \
+        --volume calycopis-etc-vol:/etc/calycopis:z \
+        --volume calycopis-log-vol:/var/calycopis/log:z \
+        --volume calycopis-data-vol:/var/calycopis/data:z \
+        fedora \
+        bash -c '
+            echo "HOST_DATA_DIR [${HOST_DATA_DIR}]"
+            date > /etc/calycopis/datetime
+            date > /var/calycopis/log/datetime
+            date > /var/calycopis/data/datetime
+            '
+
+    podman run \
+        -it \
+        --rm \
+        --env "HOST_DATA_DIR=${HOST_DATA_DIR}" \
+        --volume calycopis-etc-vol:/etc/calycopis:z \
+        --volume calycopis-log-vol:/var/calycopis/log:z \
+        --volume calycopis-data-vol:/var/calycopis/data:z \
+        fedora \
+        bash -c '
+            echo "HOST_DATA_DIR [${HOST_DATA_DIR}]"
+            cat /etc/calycopis/datetime
+            cat /var/calycopis/log/datetime
+            cat /var/calycopis/data/datetime
+            '
+
+
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/bin/versions.sh" "${CALYCOPIS_CODE}/config.yaml"
+    source "${CALYCOPIS_CODE}/bin/container-host.sh"
+
+    podman run \
+        -it \
+        --rm \
+        --env "HOST_DATA_DIR=${HOST_DATA_DIR}" \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONTAINER_PATH}:/run/podman/podman.sock:rw,Z" \
+        --volume calycopis-etc-vol:/etc/calycopis:z \
+        --volume calycopis-log-vol:/var/calycopis/log:z \
+        --volume calycopis-data-vol:/var/calycopis/data:z \
+        localhost/calycopis/developer-tools:latest \
+            bash -c '
+                echo "HOST_DATA_DIR [${HOST_DATA_DIR}]"
+                podman run \
+                    --rm \
+                    --volume "${HOST_DATA_DIR}:/var/calycopis/mounted:z" \
+                    docker.io/library/alpine:3 \
+                    /bin/sh -c "
+                        ls -al /var/calycopis/mounted
+                        cat /var/calycopis/mounted/datetime
+                        "
+                '
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    #
+    # We want to modify run-tests.sh to setup the test configuration
+    # using a podman volume rather than direct access.
+    # So that run-tests.sh can be run from inside a container.
+    #
+
+    /etc/calycopis
+    /var/log/calycopis
+
+    HOST_DATA_DIR
+    /var/calycopis/data <-- we don't need to share this one.
+
+    We can create a volume, and then get it's host path.
+
+
+    source "${HOME}/calycopis.env"
+    source "${CALYCOPIS_CODE}/bin/container-host.sh"
+
+    podman run \
+        -it \
+        --rm \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONTAINER_PATH}:/run/podman/podman.sock:rw,Z" \
+        --volume '/etc/calycopis' \
+        --volume '/var/calycopis/log' \
+        --volume '/var/calycopis/data' \
+        localhost/calycopis/developer-tools:latest \
+        bash
+
+            #
+            # Three un-named volumes.
+            # Created when the container is created.
+            # Deleted when the container is deleted.
+            #
+
+    podman run \
+        -it \
+        --rm \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONTAINER_PATH}:/run/podman/podman.sock:rw,Z" \
+        --volume calycopis-etc-vol:/etc/calycopis:z \
+        --volume calycopis-log-vol:/var/calycopis/log:z \
+        --volume calycopis-data-vol:/var/calycopis/data:z \
+        localhost/calycopis/developer-tools:latest \
+        bash
+
+            #
+            # Three named volumes.
+            # Created when the container is created.
+            # Not deleted.
+            #
+
+            #
+            # We can get the host path by inspecting the volume.
+            podman inspect calycopis-data-vol -f '{{.Mountpoint}}'
+
+    >   /home/Zarquan/.local/share/containers/storage/volumes/calycopis-data-vol/_data
+
+
+
+
+    podman run \
+        -it \
+        --rm \
+        --name calycopis-test \
+        --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+        --volume "${CONTAINER_PATH}:/run/podman/podman.sock:rw,z" \
+        --volume /etc/calycopis \
+        --volume /var/calycopis/log \
+        --volume /var/calycopis/data \
+        localhost/calycopis/developer-tools:latest \
+        bash
+
+            HOST_DATA_PATH=$(
+                podman inspect calycopis-test \
+                | jq -r '.[0].Mounts.[] | select(.Destination == "/var/calycopis/data") | .Source'
+                )
+
+            echo "HOST_DATA_PATH [${HOST_DATA_PATH}]"
+
+            >   HOST_DATA_PATH [/home/Zarquan/.local/share/containers/storage/volumes/f4d6293383b9d337562e718287b5e3dd83480150a3e38241313687b0c1633b42/_data]
+
+
+            HOST_CONTAINER_PATH=$(
+                podman inspect calycopis-test \
+                | jq -r '.[0].Mounts.[] | select(.Destination == "/run/podman/podman.sock") | .Source'
+                )
+
+            echo "HOST_CONTAINER_PATH [${HOST_CONTAINER_PATH}]"
+            >   HOST_CONTAINER_PATH [/run/user/1000/podman/podman.sock]
+
+
+            podman run \
+                -it \
+                --rm \
+                --name calycopis-inner \
+                --env "CONTAINER_HOST=unix:///run/podman/podman.sock" \
+                --volumes-from calycopis-test \
+                localhost/calycopis/developer-tools:latest \
+                bash
+
+                podman inspect calycopis-test \
+                | jq -r '.[0].Mounts.[] | select(.Destination == "/var/calycopis/data") | .Source'
+
+                >   /home/Zarquan/.local/share/containers/storage/volumes/b997959db21db183d2c02c020cb869bb41c63c98783f087805be5a93fb065359/_data
+
+                podman inspect calycopis-inner \
+                | jq -r '.[0].Mounts.[] | select(.Destination == "/var/calycopis/data") | .Source'
+
+                >   /home/Zarquan/.local/share/containers/storage/volumes/b997959db21db183d2c02c020cb869bb41c63c98783f087805be5a93fb065359/_data
+
+
