@@ -40,17 +40,13 @@
 # Ask DeepSeek to update the tests.
 #[root@calycopis-dsh]
 
-==START==
-/plan
-Can you create a plan to update the Python tests to read their configuration from the yaml config files.
-Removing the need for the environment variables, CALYCOPIS_ADMIN_USERNAME, CALYCOPIS_ADMIN_PASSWORD, and TEST_DATA_FILE.
-Where possible move the code out of the individual test files and into the shared configtest.py.
-==END==
+    ?   /plan
+    ?   Can you create a plan to update the Python tests to read their configuration from the yaml config files.
+    ?   Removing the need for the environment variables, CALYCOPIS_ADMIN_USERNAME, CALYCOPIS_ADMIN_PASSWORD, and TEST_DATA_FILE.
+    ?   Where possible move the code out of the individual test files and into the shared configtest.py.
 
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 
 

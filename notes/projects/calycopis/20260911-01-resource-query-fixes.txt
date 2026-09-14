@@ -76,12 +76,10 @@
         # Fetch changes from origin and uksrc
         git fetch --all
 
---START--
-Fetching origin
-Fetching uksrc
-From github.com:uksrc/Calycopis-broker
- * [new branch]        TRD-149-Fix-issues-with-resource-query -> uksrc/TRD-149-Fix-issues-with-resource-query
---END--
+    >   Fetching origin
+    >   Fetching uksrc
+    >   From github.com:uksrc/Calycopis-broker
+    >    * [new branch]        TRD-149-Fix-issues-with-resource-query -> uksrc/TRD-149-Fix-issues-with-resource-query
 
 
         #
@@ -96,29 +94,25 @@ From github.com:uksrc/Calycopis-broker
         git checkout main
         git checkout -b "${newbranch}" "${uksrcbranch:?}"
 
---START--
-M	java/src/main/resources/application.yaml
-M	tests/python/docker/test_docker_androcles_md5.py
-M	tests/python/docker/test_docker_stress.py
-branch '20260911-zrq-resource-query-fixes' set up to track 'uksrc/TRD-149-Fix-issues-with-resource-query'.
-Switched to a new branch '20260911-zrq-resource-query-fixes'
---END--
+    >   M	java/src/main/resources/application.yaml
+    >   M	tests/python/docker/test_docker_androcles_md5.py
+    >   M	tests/python/docker/test_docker_stress.py
+    >   branch '20260911-zrq-resource-query-fixes' set up to track 'uksrc/TRD-149-Fix-issues-with-resource-query'.
+    >   Switched to a new branch '20260911-zrq-resource-query-fixes'
 
 
         #
         # Push our local branch to our forked repository.
         git push -u origin "${newbranch}"
 
---START--
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-remote:
-remote: Create a pull request for '20260911-zrq-resource-query-fixes' on GitHub by visiting:
-remote:      https://github.com/Zarquan/Calycopis-broker-uksrc/pull/new/20260911-zrq-resource-query-fixes
-remote:
-To github.com:Zarquan/Calycopis-broker-uksrc.git
- * [new branch]        20260911-zrq-resource-query-fixes -> 20260911-zrq-resource-query-fixes
-branch '20260911-zrq-resource-query-fixes' set up to track 'origin/20260911-zrq-resource-query-fixes'.
---END--
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   remote:
+    >   remote: Create a pull request for '20260911-zrq-resource-query-fixes' on GitHub by visiting:
+    >   remote:      https://github.com/Zarquan/Calycopis-broker-uksrc/pull/new/20260911-zrq-resource-query-fixes
+    >   remote:
+    >   To github.com:Zarquan/Calycopis-broker-uksrc.git
+    >    * [new branch]        20260911-zrq-resource-query-fixes -> 20260911-zrq-resource-query-fixes
+    >   branch '20260911-zrq-resource-query-fixes' set up to track 'origin/20260911-zrq-resource-query-fixes'.
 
 
 # -----------------------------------------------------
@@ -139,33 +133,31 @@ Please create a plan to fix the following issues:
 ===END==
 
 
---START--
-....
-....
-All seven issues are fixed, and the build is green. Summary of the changes:
-
-## Changes
-
-**`SimpleComputeResourceQuery.java`** — all six query-side fixes:
-1. **Memory unit mismatch** — `DEFAULT_CPU_MEMORY_REQUEST` and `TOTAL_AVAILABLE_CPU_MEMORY` are now plain `Long` GiB values (`1L`, `256L`) instead of `StorageUnits.gibibyte(...)` (whose `.longValue()` returned bytes), and `build()` substitutes them directly. The now-unused `wtf.metio.storageunits` imports were removed.
-2. **Dead code** — removed the `HiMemBlocks`, `HiCpuBlocks`, and `CombinedQuery` CTEs (the final `SELECT * FROM EarlyBlocks` was already discarding them), plus the unused `RowCount` column in `AvailableBlocks`. Result-set columns are unchanged.
-3. **Block-length truncation** — `:minblocklength`/`:maxblocklength` now round durations **up** to whole blocks with a minimum of 1 (`Math.max(1L, (seconds + 59) / 60)`), so a 30 s request yields a 1-block offer instead of a vacuous 0, and a 61 s request requires 2 blocks.
-4. **Unused max limits** — removed `MAXIMUM_START_RANGE`, `MAXIMUM_CPU_CORES_REQUEST`, `MAXIMUM_CPU_MEMORY_REQUEST` (verified: no references anywhere).
-5. **Booked-but-unstarted sessions** — `ACCEPTED` added to the phase filter: `phase IN ('ACCEPTED', 'OFFERED', 'PREPARING', 'WAITING', 'RUNNING', 'RELEASING')` (constant name verified against the generated `IvoaSimpleExecutionSessionPhase`).
-6. **Typo** — `DATABSE_QUERY` renamed to `DATABASE_QUERY` (declaration + the one use in `build()`).
-
-**`SimpleComputeResourceEntity.java`** — `fillBean()` now sets the memory bean from `minofferedmemory`/`maxofferedmemory` instead of the cores fields.
-
-**`SimpleComputeResourceQueryTest.java`** (new) — 9 JUnit 5 tests covering: no leftover placeholders, GiB memory totals (byte value `274877906944` absent), sub-minute rounding to ≥ 1 block, 61 s → 2 blocks, `ACCEPTED` present, dead CTEs absent, defaults (2 h → 120 blocks, `LIMIT 4`), open-ended interval defaulting, and the renamed constant.
-
-AIMetrics blocks were appended to both modified files and added to the new test per `agents/rules/` (copyright years were already 2026).
-
-## Verification
-
-`source bin/versions.sh config.yaml && ./mvnw -B test` → **BUILD SUCCESS**: 350 main sources compiled, `Tests run: 9, Failures: 0, Errors: 0`. (Note: the first attempt hit a sandbox denial on read-write access to the Maven cache under `/root/.m2`, which I escalated once and confirmed as the cause.)
-
-One thing to flag from the analysis: the query still reads schedule columns on `SimpleExecutionSessions` (`available_start_instant_seconds`/`available_duration_seconds`) that currently have **no writers** in the code — the only writer, `SimpleExecutionSessionEntity.init()`, is commented out. So the capacity-blocking logic is inert today, and the `ACCEPTED` change (while correct per the lifecycle) will only take effect once that's addressed — which is the existing TODO/issue #291 ("change the query to concentrate on compute resource"). That was explicitly out of scope for this plan.
---END--
+    >   ....
+    >   ....
+    >   All seven issues are fixed, and the build is green. Summary of the changes:
+    >   
+    >   ## Changes
+    >   
+    >   **`SimpleComputeResourceQuery.java`** — all six query-side fixes:
+    >   1. **Memory unit mismatch** — `DEFAULT_CPU_MEMORY_REQUEST` and `TOTAL_AVAILABLE_CPU_MEMORY` are now plain `Long` GiB values (`1L`, `256L`) instead of `StorageUnits.gibibyte(...)` (whose `.longValue()` returned bytes), and `build()` substitutes them directly. The now-unused `wtf.metio.storageunits` imports were removed.
+    >   2. **Dead code** — removed the `HiMemBlocks`, `HiCpuBlocks`, and `CombinedQuery` CTEs (the final `SELECT * FROM EarlyBlocks` was already discarding them), plus the unused `RowCount` column in `AvailableBlocks`. Result-set columns are unchanged.
+    >   3. **Block-length truncation** — `:minblocklength`/`:maxblocklength` now round durations **up** to whole blocks with a minimum of 1 (`Math.max(1L, (seconds + 59) / 60)`), so a 30 s request yields a 1-block offer instead of a vacuous 0, and a 61 s request requires 2 blocks.
+    >   4. **Unused max limits** — removed `MAXIMUM_START_RANGE`, `MAXIMUM_CPU_CORES_REQUEST`, `MAXIMUM_CPU_MEMORY_REQUEST` (verified: no references anywhere).
+    >   5. **Booked-but-unstarted sessions** — `ACCEPTED` added to the phase filter: `phase IN ('ACCEPTED', 'OFFERED', 'PREPARING', 'WAITING', 'RUNNING', 'RELEASING')` (constant name verified against the generated `IvoaSimpleExecutionSessionPhase`).
+    >   6. **Typo** — `DATABSE_QUERY` renamed to `DATABASE_QUERY` (declaration + the one use in `build()`).
+    >   
+    >   **`SimpleComputeResourceEntity.java`** — `fillBean()` now sets the memory bean from `minofferedmemory`/`maxofferedmemory` instead of the cores fields.
+    >   
+    >   **`SimpleComputeResourceQueryTest.java`** (new) — 9 JUnit 5 tests covering: no leftover placeholders, GiB memory totals (byte value `274877906944` absent), sub-minute rounding to ≥ 1 block, 61 s → 2 blocks, `ACCEPTED` present, dead CTEs absent, defaults (2 h → 120 blocks, `LIMIT 4`), open-ended interval defaulting, and the renamed constant.
+    >   
+    >   AIMetrics blocks were appended to both modified files and added to the new test per `agents/rules/` (copyright years were already 2026).
+    >   
+    >   ## Verification
+    >   
+    >   `source bin/versions.sh config.yaml && ./mvnw -B test` → **BUILD SUCCESS**: 350 main sources compiled, `Tests run: 9, Failures: 0, Errors: 0`. (Note: the first attempt hit a sandbox denial on read-write access to the Maven cache under `/root/.m2`, which I escalated once and confirmed as the cause.)
+    >   
+    >   One thing to flag from the analysis: the query still reads schedule columns on `SimpleExecutionSessions` (`available_start_instant_seconds`/`available_duration_seconds`) that currently have **no writers** in the code — the only writer, `SimpleExecutionSessionEntity.init()`, is commented out. So the capacity-blocking logic is inert today, and the `ACCEPTED` change (while correct per the lifecycle) will only take effect once that's addressed — which is the existing TODO/issue #291 ("change the query to concentrate on compute resource"). That was explicitly out of scope for this plan.
 
 
 ===START==
@@ -192,158 +184,142 @@ AIMetrics: [
   ]
 ===END==
 
---START--
-....
-....
-Done. Both files now instruct agents to append an AIMetrics block to any git commit messages they create.
-
-## Changes
-
-**`AGENTS.md`** — in the **Coding conventions** section:
-- Extended the existing `agents/rules/ai-metrics.mdc` rule bullet to say the block "must be added or updated in file headers for all created or modified files, **and appended to the end of any git commit messages created by the agent**".
-- Added five new bullets stating: every commit message must end with an AIMetrics block; `name`/`version`/`model` are the same values as a file-header block; `contribution.value` is an estimate of the agent's share of the commit's changes (100 if all changes are the agent's); commit blocks use `interval` (an ISO 8601 interval covering the current session) instead of the `timestamp` used in file headers; plus the exact format block you specified.
-- Appended a new entry to the file's own header AIMetrics block (per the ai-metrics rule) recording this modification.
-
-**`agents/rules/ai-metrics.mdc`** — added a `### Git commit messages` section (matching the `###`-heading style of `licence-header.mdc`) with:
-- The rule that every agent-created commit message must end with an AIMetrics block.
-- The clarification that `name`/`version`/`model` match the file-header values, and that `contribution.value` is the estimate of the agent's share of the changes, with `100` when all changes are the agent's.
-- The note that commit blocks use `interval` rather than `timestamp`.
-- The exact format block, copied verbatim from your request.
-
-Both changes are documentation-only; no build verification needed.
---END--
+    >   ....
+    >   ....
+    >   Done. Both files now instruct agents to append an AIMetrics block to any git commit messages they create.
+    >   
+    >   ## Changes
+    >   
+    >   **`AGENTS.md`** — in the **Coding conventions** section:
+    >   - Extended the existing `agents/rules/ai-metrics.mdc` rule bullet to say the block "must be added or updated in file headers for all created or modified files, **and appended to the end of any git commit messages created by the agent**".
+    >   - Added five new bullets stating: every commit message must end with an AIMetrics block; `name`/`version`/`model` are the same values as a file-header block; `contribution.value` is an estimate of the agent's share of the commit's changes (100 if all changes are the agent's); commit blocks use `interval` (an ISO 8601 interval covering the current session) instead of the `timestamp` used in file headers; plus the exact format block you specified.
+    >   - Appended a new entry to the file's own header AIMetrics block (per the ai-metrics rule) recording this modification.
+    >   
+    >   **`agents/rules/ai-metrics.mdc`** — added a `### Git commit messages` section (matching the `###`-heading style of `licence-header.mdc`) with:
+    >   - The rule that every agent-created commit message must end with an AIMetrics block.
+    >   - The clarification that `name`/`version`/`model` match the file-header values, and that `contribution.value` is the estimate of the agent's share of the changes, with `100` when all changes are the agent's.
+    >   - The note that commit blocks use `interval` rather than `timestamp`.
+    >   - The exact format block, copied verbatim from your request.
+    >   
+    >   Both changes are documentation-only; no build verification needed.
 
 ===START==
 Can you create a commit message to describe the changes made during this session.
 ===END==
 
---START--
-Here's a commit message describing this session's changes, following the project's short-summary style and ending with the AIMetrics block per the new rule:
+    >   Here's a commit message describing this session's changes, following the project's short-summary style and ending with the AIMetrics block per the new rule:
+    >   
+    >   ````
+    >   Fix SimpleComputeResourceQuery booking issues
+    >   
+    >   Fix the SimpleComputeResource database query and its offer
+    >   serialisation:
+    >   
+    >   * Use GiB values for the memory dimension instead of bytes.
+    >   * Remove the unused HiMemBlocks, HiCpuBlocks and CombinedQuery
+    >     ranking CTEs.
+    >   * Round requested and maximum durations up to whole blocks, with a
+    >     minimum of one block.
+    >   * Remove the unused MAXIMUM_START_RANGE, MAXIMUM_CPU_CORES_REQUEST
+    >     and MAXIMUM_CPU_MEMORY_REQUEST constants.
+    >   * Count ACCEPTED sessions in the booking query phase filter.
+    >   * Rename the DATABSE_QUERY constant to DATABASE_QUERY.
+    >   * Set the SimpleComputeResource memory bean from the offered memory
+    >     fields instead of the offered cores fields.
+    >   
+    >   Add a SimpleComputeResourceQueryTest unit test covering parameter
+    >   substitution, GiB memory totals, block rounding, the phase filter
+    >   and removal of the dead ranking CTEs.
+    >   
+    >   Add instructions to AGENTS.md and agents/rules/ai-metrics.mdc for
+    >   appending an AIMetrics block to agent-created git commit messages.
+    >   
+    >   AIMetrics: [
+    >       {
+    >       "interval": "2026-09-11T11:00:00/2026-09-11T11:52:50",
+    >       "name": "@deepseek-ai/dsh",
+    >       "version": "0.1.1-rc.2",
+    >       "model": "deepseek-v4-flash",
+    >       "contribution": {
+    >         "value": 100,
+    >         "units": "%"
+    >         }
+    >       }
+    >     ]
+    >   ````
+    >   
+    >   Notes:
+    >   
+    >   - **Interval**: the ISO 8601 interval covers the current session — I used `2026-09-11T11:00:00` (before the first edit at `11:29:44`) through the current time `11:52:50`. Adjust the start if your session began earlier.
+    >   - **Contribution**: set to `100` since all changes in this commit were written by the agent during the session.
+    >   - **Scope caveat**: the working tree also contains **pre-existing uncommitted changes** to five files that predate this session (`AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java`). This message describes only this session's changes — if you commit with `git add -A` those files come along undescribed, so you may want to stage selectively (`git add AGENTS.md agents/rules/ai-metrics.mdc java/src/main/java/.../SimpleComputeResourceQuery.java java/src/main/java/.../SimpleComputeResourceEntity.java java/src/test/.../SimpleComputeResourceQueryTest.java`) and use `git commit -F <message-file>`.
+    >   
+    >   Want me to write this to a file (e.g. `build/commit-message.txt`) or go ahead and create the commit with the selective staging?
 
-````
-Fix SimpleComputeResourceQuery booking issues
+    ?   Please create the commit with the selective staging.
 
-Fix the SimpleComputeResource database query and its offer
-serialisation:
+    >   The commit has been created and verified.
+    >   
+    >   ## Commit `091900d6` — `Fix SimpleComputeResourceQuery booking issues`
+    >   
+    >   Created on branch `20260911-zrq-resource-query-fixes` with exactly the five session files staged:
+    >   
+    >   | File | Change |
+    >   |---|---|
+    >   | `AGENTS.md` | Commit-message AIMetrics instructions + header AIMetrics entry |
+    >   | `agents/rules/ai-metrics.mdc` | New "Git commit messages" section |
+    >   | `.../compute/simple/SimpleComputeResourceQuery.java` | All six query fixes |
+    >   | `.../entities/compute/simple/SimpleComputeResourceEntity.java` | Memory-bean fix |
+    >   | `.../SimpleComputeResourceQueryTest.java` (new) | 9 unit tests |
+    >   
+    >   **5 files changed, 423 insertions(+), 88 deletions(-)** — and the full message body, including the `AIMetrics:` block (`interval: 2026-09-11T11:00:00/2026-09-11T11:56:01`, `@deepseek-ai/dsh`, `0.1.1-rc.2`, `deepseek-v4-flash`, contribution 100%), was recorded verbatim.
+    >   
+    >   The five pre-existing dirty files (`AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java`) remain **unstaged** in the working tree — they were left out of this commit as intended. Let me know if you'd like to handle those separately.
 
-* Use GiB values for the memory dimension instead of bytes.
-* Remove the unused HiMemBlocks, HiCpuBlocks and CombinedQuery
-  ranking CTEs.
-* Round requested and maximum durations up to whole blocks, with a
-  minimum of one block.
-* Remove the unused MAXIMUM_START_RANGE, MAXIMUM_CPU_CORES_REQUEST
-  and MAXIMUM_CPU_MEMORY_REQUEST constants.
-* Count ACCEPTED sessions in the booking query phase filter.
-* Rename the DATABSE_QUERY constant to DATABASE_QUERY.
-* Set the SimpleComputeResource memory bean from the offered memory
-  fields instead of the offered cores fields.
+    ?   Please create a commit message for the five pre-existing modified files.
+    ?   With the following description of the work :
+    ?       Renaming the interval and duration properties to clarify the distinction between the start interval (instant and duration) and the duration of the offer itself.
+    ?   The files were not modified by an agent so the AIMetrics block is empty.
+    ?   AIMetrics: []
 
-Add a SimpleComputeResourceQueryTest unit test covering parameter
-substitution, GiB memory totals, block rounding, the phase filter
-and removal of the dead ranking CTEs.
+    >   The diffs confirm it's a pure rename across the five files: `getStartInterval()`/`getStartInstant()`/`getDuration()` → `getOfferStartInterval()`/`getOfferStartInstant()`/`getOfferDuration()` (plus matching field/parameter renames in the beans and the two call sites). Here is the commit message:
+    >   
+    >   ````
+    >   Rename offer interval and duration properties
+    >   
+    >   Rename the interval and duration properties on the resource offer
+    >   to clarify the distinction between the start interval (instant and
+    >   duration) and the duration of the offer itself:
+    >   
+    >   * getStartInterval()  -> getOfferStartInterval()
+    >   * getStartInstant()   -> getOfferStartInstant()
+    >   * getDuration()       -> getOfferDuration()
+    >   
+    >   Update the field and constructor parameter names in
+    >   AbstractResourceOfferBean and SimpleComputeResourceOfferBean, and
+    >   the call sites in AbstractComputeResourceEntity and
+    >   OfferSetRequestParserImpl.
+    >   
+    >   AIMetrics: []
+    >   ````
+    >   
+    >   The `AIMetrics: []` block is empty since these files were not modified by an agent.
+    >   
+    >   Would you like me to create the commit with these five files staged (e.g. `git add` the five paths and `git commit -F` with this message)?
 
-Add instructions to AGENTS.md and agents/rules/ai-metrics.mdc for
-appending an AIMetrics block to agent-created git commit messages.
+    ?   Yes, please go ahead and commit the files.
 
-AIMetrics: [
-    {
-    "interval": "2026-09-11T11:00:00/2026-09-11T11:52:50",
-    "name": "@deepseek-ai/dsh",
-    "version": "0.1.1-rc.2",
-    "model": "deepseek-v4-flash",
-    "contribution": {
-      "value": 100,
-      "units": "%"
-      }
-    }
-  ]
-````
-
-Notes:
-
-- **Interval**: the ISO 8601 interval covers the current session — I used `2026-09-11T11:00:00` (before the first edit at `11:29:44`) through the current time `11:52:50`. Adjust the start if your session began earlier.
-- **Contribution**: set to `100` since all changes in this commit were written by the agent during the session.
-- **Scope caveat**: the working tree also contains **pre-existing uncommitted changes** to five files that predate this session (`AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java`). This message describes only this session's changes — if you commit with `git add -A` those files come along undescribed, so you may want to stage selectively (`git add AGENTS.md agents/rules/ai-metrics.mdc java/src/main/java/.../SimpleComputeResourceQuery.java java/src/main/java/.../SimpleComputeResourceEntity.java java/src/test/.../SimpleComputeResourceQueryTest.java`) and use `git commit -F <message-file>`.
-
-Want me to write this to a file (e.g. `build/commit-message.txt`) or go ahead and create the commit with the selective staging?
---END--
-
-==START==
-Please create the commit with the selective staging.
-==END==
-
---START--
-The commit has been created and verified.
-
-## Commit `091900d6` — `Fix SimpleComputeResourceQuery booking issues`
-
-Created on branch `20260911-zrq-resource-query-fixes` with exactly the five session files staged:
-
-| File | Change |
-|---|---|
-| `AGENTS.md` | Commit-message AIMetrics instructions + header AIMetrics entry |
-| `agents/rules/ai-metrics.mdc` | New "Git commit messages" section |
-| `.../compute/simple/SimpleComputeResourceQuery.java` | All six query fixes |
-| `.../entities/compute/simple/SimpleComputeResourceEntity.java` | Memory-bean fix |
-| `.../SimpleComputeResourceQueryTest.java` (new) | 9 unit tests |
-
-**5 files changed, 423 insertions(+), 88 deletions(-)** — and the full message body, including the `AIMetrics:` block (`interval: 2026-09-11T11:00:00/2026-09-11T11:56:01`, `@deepseek-ai/dsh`, `0.1.1-rc.2`, `deepseek-v4-flash`, contribution 100%), was recorded verbatim.
-
-The five pre-existing dirty files (`AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java`) remain **unstaged** in the working tree — they were left out of this commit as intended. Let me know if you'd like to handle those separately.
---END--
-
-==START==
-Please create a commit message for the five pre-existing modified files.
-With the following description of the work :
-    Renaming the interval and duration properties to clarify the distinction between the start interval (instant and duration) and the duration of the offer itself.
-The files were not modified by an agent so the AIMetrics block is empty.
-AIMetrics: []
-==END==
-
---START--
-The diffs confirm it's a pure rename across the five files: `getStartInterval()`/`getStartInstant()`/`getDuration()` → `getOfferStartInterval()`/`getOfferStartInstant()`/`getOfferDuration()` (plus matching field/parameter renames in the beans and the two call sites). Here is the commit message:
-
-````
-Rename offer interval and duration properties
-
-Rename the interval and duration properties on the resource offer
-to clarify the distinction between the start interval (instant and
-duration) and the duration of the offer itself:
-
-* getStartInterval()  -> getOfferStartInterval()
-* getStartInstant()   -> getOfferStartInstant()
-* getDuration()       -> getOfferDuration()
-
-Update the field and constructor parameter names in
-AbstractResourceOfferBean and SimpleComputeResourceOfferBean, and
-the call sites in AbstractComputeResourceEntity and
-OfferSetRequestParserImpl.
-
-AIMetrics: []
-````
-
-The `AIMetrics: []` block is empty since these files were not modified by an agent.
-
-Would you like me to create the commit with these five files staged (e.g. `git add` the five paths and `git commit -F` with this message)?
---END--
-
-==START==
-Yes, please go ahead and commit the files.
-==END==
-
---START--
-Done. Commit `ac5afa72` — **Rename offer interval and duration properties** — created on branch `20260911-zrq-resource-query-fixes`.
-
-## Summary
-
-- **5 files changed, 26 insertions(+), 26 deletions(-)**: `AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java` — exactly the five renamed files, no more.
-- The commit message (including the empty `AIMetrics: []` block) was recorded verbatim.
-- The **working tree is now completely clean** — `git status` shows no remaining changes. Both commits from this session are on the branch:
-  - `ac5afa72` Rename offer interval and duration properties
-  - `091900d6` Fix SimpleComputeResourceQuery booking issues
-
-The branch is ready to push or open a PR whenever you want.
---END--
+    >   Done. Commit `ac5afa72` — **Rename offer interval and duration properties** — created on branch `20260911-zrq-resource-query-fixes`.
+    >   
+    >   ## Summary
+    >   
+    >   - **5 files changed, 26 insertions(+), 26 deletions(-)**: `AbstractComputeResourceEntity.java`, `OfferSetRequestParserImpl.java`, `AbstractResourceOffer.java`, `AbstractResourceOfferBean.java`, `SimpleComputeResourceOfferBean.java` — exactly the five renamed files, no more.
+    >   - The commit message (including the empty `AIMetrics: []` block) was recorded verbatim.
+    >   - The **working tree is now completely clean** — `git status` shows no remaining changes. Both commits from this session are on the branch:
+    >     - `ac5afa72` Rename offer interval and duration properties
+    >     - `091900d6` Fix SimpleComputeResourceQuery booking issues
+    >   
+    >   The branch is ready to push or open a PR whenever you want.
 
 
 
