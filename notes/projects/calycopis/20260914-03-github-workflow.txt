@@ -36,13 +36,9 @@
 # Ask DeepSeek to update the scripts.
 #[root@calycopis-dsh]
 
-==START==
+    ?   
 
-==END==
-
---START--
-....
-....
---END--
+    >   ....
+    >   ....
 
 

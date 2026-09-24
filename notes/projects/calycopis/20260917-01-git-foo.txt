@@ -36,10 +36,8 @@
 
 # -----------------------------------------------------
 
-==START==
-How to rename a local git branch and then push to a new remote branch with the new name.
-Is is simply rename the local branch and then push ?
-==END==
+    ?   How to rename a local git branch and then push to a new remote branch with the new name.
+    ?   Is is simply rename the local branch and then push ?
 
     #
     # Lots of discussion ....
@@ -84,11 +82,9 @@ origin:tempbranch   history --- A --- B --- C
     # git push --force-with-lease origin C:oldbranch
     git push --force-with-lease origin ac5afa72facc34296a368885be626f3c7f8f04a3:20260911-zrq-resource-query-fixes
 
---START--
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-To github.com:Zarquan/Calycopis-broker-uksrc.git
- + 766392e4...ac5afa72 ac5afa72facc34296a368885be626f3c7f8f04a3 -> 20260911-zrq-resource-query-fixes (forced update)
---END--
+    >   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    >   To github.com:Zarquan/Calycopis-broker-uksrc.git
+    >    + 766392e4...ac5afa72 ac5afa72facc34296a368885be626f3c7f8f04a3 -> 20260911-zrq-resource-query-fixes (forced update)
 
     # 2. Open PR #1: origin:oldbranch -> upstream:main  (A, B, C)
     #    Merge it.
