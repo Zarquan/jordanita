@@ -1,0 +1,122 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Splitting recent work across two separate pull requests.
+        https://chat.deepseek.com/share/8v5nt1urkloio00z4b
+
+    Result:
+
+        Success.
+        https://github.com/uksrc/Calycopis-broker/pull/121
+        https://github.com/uksrc/Calycopis-broker/pull/122
+
+# -----------------------------------------------------
+
+==START==
+How to rename a local git branch and then push to a new remote branch with the new name.
+Is is simply rename the local branch and then push ?
+==END==
+
+    #
+    # Lots of discussion ....
+    # Re-defining the problem as we go ...
+    #
+
+
+------------------
+
+None of the branches used squashes.
+
+I checked the state of things in GitHub and it is a bit more complicated that I though, origin origin:oldbranch already contains commit `D`.
+
+Current state
+```
+local:oldbranch     history --- A --- B --- C --- D --- E
+origin:oldbranch    history --- A --- B --- C --- D
+upstream:main       history
+```
+
+The aim is to split the work so that `A --- B --- C` can be merged with one pull reqiest
+and `D --- E` can be merged with a second pull request.
+
+Do I need to delete the current `origin:oldbranch` and create a new `local:tempbranch`
+with just the first three commits ?
+```
+local:oldbranch     history --- A --- B --- C --- D --- E
+local:tempbranch    history --- A --- B --- C
+```
+
+Then push `local:tempbranch` and work from there ?
+```
+local:oldbranch     history --- A --- B --- C --- D --- E
+local:tempbranch    history --- A --- B --- C
+origin:tempbranch   history --- A --- B --- C
+```
+
+
+------------------
+
+    # 1. Rewind origin:oldbranch to C
+    # git push --force-with-lease origin C:oldbranch
+    git push --force-with-lease origin ac5afa72facc34296a368885be626f3c7f8f04a3:20260911-zrq-resource-query-fixes
+
+--START--
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To github.com:Zarquan/Calycopis-broker-uksrc.git
+ + 766392e4...ac5afa72 ac5afa72facc34296a368885be626f3c7f8f04a3 -> 20260911-zrq-resource-query-fixes (forced update)
+--END--
+
+    # 2. Open PR #1: origin:oldbranch -> upstream:main  (A, B, C)
+    #    Merge it.
+
+    # 3. Sync local main and origin:main
+    git checkout main
+    git fetch uksrc
+    git merge --ff-only uksrc/main
+    git push origin main
+
+    # 4. Create newbranch from oldbranch (A-E) and push
+    oldbranch=20260911-zrq-resource-query-fixes
+    newbranch=20260917-zrq-container-volumes
+
+    git checkout -b ${newbranch} ${oldbranch}
+    git push -u origin ${newbranch}
+
+    # 5. Open PR #2: origin:newbranch -> upstream:main  (D, E)
+    #    Merge it.
+
+    # 6. Cleanup
+    git checkout main
+    git fetch upstream
+    git merge --ff-only upstream/main
+    git push origin main
+    git branch -d oldbranch newbranch
+    git push origin --delete oldbranch newbranch
+
+
+
+
