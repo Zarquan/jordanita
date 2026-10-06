@@ -25,7 +25,10 @@
 
     Target:
 
-        Success
+        ukSRC research group meeting about how the eMerlin data will be stored
+        https://yopad.eu/p/eMerlin_design_ideas_2026-09-09
+
+        Paul, Ben, Dave
 
     Result:
 

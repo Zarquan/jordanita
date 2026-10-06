@@ -1,0 +1,124 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2025, Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        ukSRC research group meeting about using ARK IDs in eMerlin and IVOA.
+        https://yopad.eu/p/LocationService
+
+        Paul, Ben, Dave
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+Location service
+
+VOSpace is getting there.
+
+https://en.wikipedia.org/wiki/Archival_Resource_Key
+https://arks.org/about/ark-overview/
+https://github.com/squidgetx/arklet
+
+ARK potentially does all of what we are thinking about
+Why not just use it ?
+
+In the IVOA ocntext
+We could link it in so the IVOA registry is where you register your service.
+Could we register it in both ?
+Yes
+A databset could be registered in more than one place
+e.g. DOI and ARK and IVOA
+
+Formalism of how you create a data aset identifier.
+TAP response gives you an identifier that is obvious
+Balance between making it IVOA/astronomy specific vs generic portable
+
+Advantage of the ARK scheme is it looks like a http url.
+With the IVOA registery - there is a need for URI resolving service
+
+Do we need to write something down more concrete
+We can do prototypes quite quickly
+First step is deploy an ARK service
+Is it worth just putting up an ARK service, adding some merlin data and see what is good/bad about it ?
+Can we add ARK identifiers to TAP results.
+The beuty of them is they are just a URL, so we can output that as the location.
+DataLink reply - which is not the whole answer.
+No reason why we can't just go for it
+
+How would a clinet 'know' that insn't JUST a URL.
+If you understand ARK links, then you look out for ark! in the path.
+
+Just putting ARK link for an eMerlin data object into a browser will it ......
+
+    * download the tar file
+
+    * return JSON that describes the file
+
+
+TODO Create Jira ticket(s)
+
+    Register eMerlin ID
+
+    Select a simple service implementation.
+
+    Deploy it and give it a try.
+
+    Write down the rules for what client / server does when it receives a http://... url that.
+
+
+    Simple HTTP GET with no Accepts
+
+    Depends on what it points to
+
+    Simple form is just return the data
+
+
+Client doesn't need to manipulate the URL
+Client that is nieve just does a HTTP GET and recives the data.
+
+Seems to be saying the server makes the choice of what you get.
+If the client doesn't specify, the server decides what you get.
+
+Two different web servers can return the same object
+
+https://NMA/ark:NAAN/Name[Qualifier]
+
+NMA is hostname of a Name Mapping service e.g. nma-one.example.org
+
+NAAN Name Assigning Authority Number e.g. registration number for eMerlin
+
+http://nma-one.example.org/ark:<emerlin>/object-id
+refers to the same thing as
+http://nma-two.example.org/ark:<emerlin>/object-id
+
+To persuade the IVOA to be a name resolver, setup an example at ukSRC.
+
+We would need to register UKRSC to get a Name Assigning Authority Number
+We provide a resolver service at http://ark.uksrc.org/
+
+
