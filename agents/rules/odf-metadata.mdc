@@ -1,0 +1,169 @@
+---
+description: Populate ODF document metadata (title, subject, keywords, contributor, publisher, rights, AIMetrics) in .odg, .odp and .ods files
+alwaysApply: true
+---
+
+<!-- core:start -->
+An ODF document (`.odg`, `.odp`, `.ods`) is a zip whose `meta.xml` is the
+document's header. A drawing has no comment syntax, so `office:meta` is where the
+provenance, licence and AI-contribution information lives: it is the equivalent
+of the `<meta:header>` block and the `AIMetrics` block for a source file.
+
+Every ODF file an agent creates or modifies must carry all of the fields below.
+They are written by the script that generates the document, never by hand in a
+GUI — see [Generating, not hand-editing](#generating-not-hand-editing).
+
+## Required fields
+
+| Purpose | Element | Value |
+|---|---|---|
+| title | `<dc:title>` | the human title, no trailing full stop |
+| subject | `<dc:subject>` | one sentence: what the document is and who it is for |
+| keywords | `<meta:keyword>`, one element per keyword | 3 to 8 terms; LibreOffice joins them with `", "` in the PDF |
+| contributor | `<meta:user-defined meta:name="contributor" meta:value-type="string">` | the AI agent **and** the human, in the project's format (see the local block) |
+| publisher | `<meta:user-defined meta:name="publisher" meta:value-type="string">` | the publishing organisation, from the local block |
+| rights | `<meta:user-defined meta:name="rights" meta:value-type="string">` | the licence of the rendered document, from the local block |
+| comments | `<dc:description>` | the full `AIMetrics` block, see below |
+| byline | `<meta:initial-creator>` | the only element LibreOffice exports as the PDF `Author` |
+| last editor | `<dc:creator>` | the human who approved the change |
+| created | `<meta:creation-date>` | ISO 8601 (`YYYY-MM-DDThh:mm:ss`), when the file was first generated |
+| modified | `<dc:date>` | ISO 8601, last write |
+
+## Why exactly these elements
+
+Where the fields are visible matters when someone checks the document: in
+LibreOffice, `title`, `subject`, `keywords` and the `comments` appear on
+**File ▸ Properties ▸ Description**, while `contributor`, `publisher` and
+`rights` appear on **File ▸ Properties ▸ Custom Properties**. There is no
+Contributor, Publisher or Rights field on the Description tab, so a document
+that looks incomplete there is usually correct.
+
+Because that is invisible without a GUI, verify from the model instead:
+
+```bash
+python3 - <<'PY'
+# run against an instance started with:
+#   soffice --headless --accept='socket,host=127.0.0.1,port=2002;urp;'
+import uno
+from com.sun.star.beans import PropertyValue
+ctx = uno.getComponentContext().ServiceManager.createInstanceWithContext(
+    "com.sun.star.bridge.UnoUrlResolver", uno.getComponentContext()).resolve(
+    "uno:socket,host=127.0.0.1,port=2002;urp;StarOffice.ComponentContext")
+desktop = ctx.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", ctx)
+doc = desktop.loadComponentFromURL(uno.systemPathToFileUrl("deck.odg"), '_blank', 0,
+                                  (PropertyValue('Hidden', 0, True, 0),))
+udp = doc.getDocumentProperties().UserDefinedProperties
+ps = uno.invoke(udp, "queryInterface", (uno.getTypeByName("com.sun.star.beans.XPropertySet"),))
+for p in ps.getPropertySetInfo().getProperties():
+    print(p.Name, '=', ps.getPropertyValue(p.Name))
+doc.close(True)
+PY
+```
+
+ODF 1.3 `office:meta` has no `dc:contributor`, no `dc:rights` and no
+`dc:publisher`. Writing any of those makes the file **invalid**, and the schema
+says so:
+
+```
+$ xmllint --noout --relaxng OpenDocument-v1.3-schema.rng meta.xml
+meta.xml:13: element rights: Relax-NG validity error : Did not expect element rights there
+```
+
+So publisher, rights and contributor are carried as `meta:user-defined`
+properties, which the schema does allow and which LibreOffice preserves across a
+save. The rest of the table is standard ODF.
+
+`meta:initial-creator` deserves its own warning. It is the **only** source of the
+PDF `Author`:
+
+- `initial-creator` set, `dc:creator` set: the PDF `Author` is `initial-creator`.
+- `initial-creator` absent, `dc:creator` set: the PDF has **no `Author` at all**.
+
+Put the byline in `initial-creator`, and do not expect `dc:creator` to reach the
+PDF. Everything in the "contributor", "publisher", "rights" and "comments" rows
+is likewise ODG-only; see [`pdf-metadata.mdc`](pdf-metadata.mdc).
+
+`meta:generator` is tool-owned: LibreOffice rewrites it on every save, so it must
+not be used to record authorship. Record the tool chain in `contributor` and the
+`AIMetrics` block instead.
+
+## The AIMetrics block
+
+`dc:description` carries the same JSON array that a commit message carries, with
+one entry per **change** appended to the existing entries and none removed. The
+`timestamp`/`interval` choice, the percentage and the `name`/`version`/`model`
+rules are those of [`ai-metrics.mdc`](ai-metrics.mdc).
+
+`dc:description` is plain text, so there is no comment syntax and no fence around
+it: store `AIMetrics: [ ... ]` exactly as it would appear at the end of a commit
+message.
+
+## Verification
+
+```bash
+# 1. Every required field is present, with the right element names.
+unzip -p deck.odg meta.xml | xmllint --format -
+
+# 2. The metadata is schema-valid. Fetch the schema once:
+curl -sLO https://docs.oasis-open.org/office/OpenDocument/v1.3/os/schemas/OpenDocument-v1.3-schema.rng
+unzip -p deck.odg meta.xml > /tmp/meta.xml
+xmllint --noout --relaxng OpenDocument-v1.3-schema.rng /tmp/meta.xml
+```
+
+Validate `meta.xml` only. Do **not** gate on `content.xml` or `styles.xml`:
+LibreOffice writes `loext:*` extension attributes that the strict ODF 1.3 schema
+rejects, and it does so in its own files, so a schema failure there is expected
+and is not a defect in the document. Well-formedness is the test for those parts:
+
+```bash
+for part in content.xml styles.xml; do unzip -p deck.odg "$part" | xmllint --noout -; done
+```
+
+## Generating, not hand-editing
+
+The metadata must come from the script that builds the document, for three
+reasons: the `AIMetrics` history has to accumulate rather than be retyped; the
+metadata has to be reproducible when the document is rebuilt; and a GUI save
+rewrites `meta:generator`, the dates and the statistics, so a hand edit cannot be
+reproduced from anything tracked.
+
+A generated ODF artifact therefore belongs next to the script that produces it,
+and that script is tracked. Rebuilding an artifact by hand in the GUI breaks this
+rule even when the visual result is identical.
+
+## Further points
+
+- Append to the `AIMetrics` array; never replace existing entries, and never
+  delete an earlier contributor.
+- Keep the title and subject stable across rebuilds: they are what a reader sees
+  in a file listing and in the PDF, and changing them for cosmetic reasons
+  churns the artifact.
+- Do not put secrets, tokens or internal URLs in any metadata field. All of them
+  are exported into the PDF or visible in a zip listing of the document.
+<!-- core:end -->
+
+<!-- local:start -->
+For this project (Jordanita, `Zarquan/jordanita`):
+
+- **publisher**: `ukSRC`
+- **rights**: `Creative Commons Attribution-ShareAlike 4.0 International`
+  This repository is CC BY-SA 4.0 (see [`LICENSE`](../../LICENSE)), **not** GPL.
+  Do not put the GPL `<meta:licence>` text into ODF metadata.
+- **contributor**, in this exact shape:
+
+      Agent: @deepseek-ai/dsh <version> (<model>); Human: Dave Morris <dave.morris@manchester.ac.uk>
+
+- **byline** (`meta:initial-creator`), in this exact shape:
+
+      Dave Morris with @deepseek-ai/dsh <version> (<model>)
+
+- **dc:creator**: `Dave Morris`
+- **keywords**: the subject matter plus `ukSRC` and `IVOA` where they apply, for
+  example `RFC 9457`, `application/problem+json`, `ExecutionBroker`, `ukSRC`.
+- **placement**: one directory per talk, `presentations/<YYYYMMDD-NN-Name>/`,
+  holding the `.odg`, its exported `.pdf` of the same basename, and the script
+  that generates them. The existing `20260610-02-ExecutionBroker` directory is
+  the model: same basename for both files.
+- The project has no `AGENTS.md` yet; until one is added these rules are shared
+  by reference rather than loaded automatically.
+<!-- local:end -->

@@ -1,0 +1,112 @@
+---
+description: Metadata and provenance rules for PDF files exported from ODF or other tracked sources
+alwaysApply: true
+---
+
+<!-- core:start -->
+A tracked PDF is a **rendered artifact**, not a source document. It is produced
+from a tracked source by one command, it is never edited afterwards, and its
+metadata is inherited from that source rather than typed into it.
+
+## The PDF is an export
+
+- Every PDF in the repository must be reproducible from a tracked source with a
+  single command, run from the repository. If the source is an ODF document, its
+  metadata is governed by [`odf-metadata.mdc`](odf-metadata.mdc).
+- Never edit a PDF in place — not with a GUI, not with `pdftk`, not with a
+  metadata tool. An edit is lost at the next export, and it makes the artefact
+  unreproducible.
+- Re-export after every change to the source. A stale PDF is a defect, not a
+  convenience: it is the file most readers will open.
+
+## What survives the export
+
+LibreOffice exports a subset of the ODF metadata into the PDF. Measured on
+LibreOffice 26.2.6.3, with poppler `pdfinfo`:
+
+| ODF element | PDF field | Notes |
+|---|---|---|
+| `<dc:title>` | `Title` | and `dc:title` in the XMP packet |
+| `<dc:subject>` | `Subject` | also becomes XMP `dc:description` |
+| `<meta:keyword>` | `Keywords` | joined with `", "` |
+| `<meta:initial-creator>` | `Author` | **the only** source of `Author` |
+| `<dc:creator>` | — | never exported |
+| `<dc:description>` (AIMetrics) | — | never exported |
+| `<meta:user-defined>` contributor, publisher, rights | — | never exported |
+
+So a PDF carries title, subject, keywords and a byline, and nothing else. The
+byline is the field a reader actually sees, which is why
+[`odf-metadata.mdc`](odf-metadata.mdc) requires the AI agent to appear in
+`meta:initial-creator` and not only in `contributor`.
+
+If a project genuinely needs rights, publisher or the `AIMetrics` block inside
+the PDF, that is a **profile decision** and it needs an explicit build step that
+injects them — an XMP packet, or a `pdfmark` passed through Ghostscript — with
+the step recorded next to the export command. It is never a manual edit, and it
+is never assumed. Without that step, the ODF remains the authoritative record.
+
+## Checks
+
+Run these on every PDF that is added or re-exported:
+
+```bash
+# 1. Metadata matches the source, and an Author exists at all.
+pdfinfo deck.pdf | grep -E '^(Title|Subject|Keywords|Author):'
+
+# 2. Structure is sound.
+qpdf --check deck.pdf
+
+# 3. Page count matches the source document.
+pdfinfo deck.pdf | grep '^Pages:'
+
+# 4. The text is really in there, so a broken export cannot pass on metadata alone.
+pdftotext -layout deck.pdf - | head -20
+```
+
+Do **not** assert on `Producer`, `Creator`, `PDF version`, `CreationDate`,
+`File size` or the font list beyond checking that the expected fonts are present.
+Those are tool-owned and change on every export, so a test that pins them fails
+for reasons that are not defects.
+
+A PDF's `Author` is empty when the source has no `meta:initial-creator`; that is
+a real defect in the source, not a quirk of the export, and it is fixed in the
+source.
+
+## Further points
+
+- Name the PDF after the source, in the same directory: `name.odg` and
+  `name.pdf`. A reader must be able to find the source from the rendered file.
+- Do not commit a PDF whose source is untracked or missing. If the source cannot
+  be determined, the PDF is the only copy of something, and that is a decision
+  for a human, not a default.
+- Record the export in the source's `AIMetrics` block when the export is part of
+  the change; the PDF inherits the same dates and provenance as its source.
+- Keep every `.pdf` out of any generated index that assumes a text diff: a PDF
+  is opaque to review, so its source is what gets reviewed.
+<!-- core:end -->
+
+<!-- local:start -->
+For this project (Jordanita, `Zarquan/jordanita`):
+
+- PDFs live beside their `.odg` in `presentations/<YYYYMMDD-NN-Name>/`, with the
+  same basename — see `20260610-02-ExecutionBroker` and
+  `20261020-01-RFC9457-errors`.
+- Export with the headless converter, from the presentation directory, so the
+  PDF output name follows the source automatically:
+
+      soffice --headless -env:UserInstallation=file:///tmp/louser \
+          --convert-to pdf --outdir . <name>.odg
+
+  The `-env:UserInstallation` override is required in a container: without it
+  LibreOffice tries to write a profile into `$HOME` and fails.
+- Check the directory after exporting. A headless run can leave a lock file
+  `.~lock.<name>.odg#` behind, which is not tracked and must be deleted before
+  the export counts as finished. It holds the user and host that ran the
+  conversion, so it is also a small information leak if it is committed.
+- This project has no GPL `<meta:licence>` requirement on rendered documents;
+  the licence is stated in the `rights` metadata of the source and in
+  [`LICENSE`](../../LICENSE), which is CC BY-SA 4.0.
+- Copyright of the rendered diagrams rests with the human author named in
+  `contributor`; the agent appears as the tool that produced the artifact, not
+  as the rights holder.
+<!-- local:end -->
