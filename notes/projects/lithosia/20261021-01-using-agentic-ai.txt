@@ -1,0 +1,270 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Thoughts and ideas about uisng agentic AI for software development.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+
+    Upfront statements.
+
+    I use agantic AI for software development.
+    It is a game changing force multiplier, and I have no plans to go back.
+
+    I am concerned about a number of issues
+    resulting from wide adoption of agentic AI.
+
+    copyright - but not for the reason you think
+    vendor lock in - not for the reason you think
+
+    I am NOT as concerned about some of the things
+    that a lot of people worry about
+
+    loss of skills - the world turns
+    loss of jobs - this is a huge oppertunity, seize it
+
+
+# -----------------------------------------------------
+
+    loss of jobs
+
+        AI will not take your job. Someone using AI will take your job.
+        - Richard Baldwin (economist)
+
+    This is an industrial revolution.
+    We have been warned, we can see it coming.
+    Up to you how you react.
+    Pretend it isn't happening, embrace it with enthusiam, or somewhere in between.
+
+    My experience is people start out being sceptical - I did.
+    Particularly if their only experience is using AI via an online chat bot.
+    The 'aha' moment comes when they use an AI agent to assist with a project or domain they are familar with.
+
+    For me, I started using ChatGPT to write small fragments of shell script.
+    "How do I do 'x' in bash ?"
+
+    Next, I used ChaptGPT to ~write~ _vibe-code_ a Python tool to process OpenAPI schema.
+    https://github.com/Zarquan/Calycopis-Isobeon
+    It works, but I don't care about it.
+    I have no emotional attachment to the code base.
+    Someone else wrote it, not me.
+
+    Then I moved to using an agent to work on my main project.
+    I started with Cursor, but I have now moved to DeepSeek harness.
+    Both provided a game changing force multiplier, and I have no plans to go back.
+
+# -----------------------------------------------------
+
+    loss of skills
+
+    I started out as a hardware electronics engineer,
+    building digital circuits from AND, OR, and NOT gates
+    by physically wiring 74xx TTL chips together.
+
+    I studied microprocessor engineering in the Electronics department
+    at Essex University.
+
+    We learned BASIC, Pascal and then C in the computer science course,
+    and we learned 6502 assembler for the BBC Micro at home.
+
+    One of my first commercial projects was
+    a hand built Z80 board, with 8k of hand written assembler
+    manually programmed by typing hex numbers into an EPROM programmer.
+
+    Moving up the abstraction layers, we graduated from C to C++,
+    with virtual inheritance and operator overloading.
+
+    Then we moved from the complications of C++ to Java.
+    Learning to let go of a lot of the technical tricks
+    we had learned for simpler (yes) and more abstract language.
+
+    I can write in Python, but I'm not a fan.
+
+    Now I don't write any code.
+
+    I discuss the changes I want to make with an AI agent,
+    ask it to create a plan, review and comment on the
+    plan and then ask it to go ahead and implement it.
+
+    The AI agent makes the changes, writes the code,
+    commits it to GitHub and creates a pull request.
+
+    I review the pull request, but I don't analyse the code
+    line by line.
+
+    I concentrate on the outcome:
+    Does it do what I wanted it to.
+    Does it follow a clear and understandable process.
+    Does it pass all the tests.
+
+    I review the agent's plans and I review the resulting pull
+    requests, but I am still in the loop.
+
+    I recently discovered that "fiddling with the AGENTS file"
+    is called "harness engineering".
+
+    The next stage will be "loop engineering", stepping back
+    and letting an AI agent manage the development process.
+
+    Once apon a time we used to worry about the details of the
+    compiler flags we used to optimise our C programs.
+
+    Hardly anyone does that now.
+
+    Asking people to review the code line by line is like
+    asking someone to review the assembly code generated
+    by a C compiler.
+
+    Hardly anyone does that now.
+
+    We still check it looks good, but we don't
+    systematically review it line by line.
+
+    We use lint to check our C programs, and we use
+    AI agents to help review pull requests.
+    * Does it do what it is supposed to do.
+    * Does it follow the all guidlines.
+    * Does it pass all the tests.
+
+    AI agents are another development tool.
+    Another step up the ladder of abstractions.
+
+    I'm not losing skills.
+    I'm learning more and more every day.
+
+# -----------------------------------------------------
+
+    copyright - not for the reason you think
+
+    I'm not that concerned about AI training stealing everyone's
+    copyrighted material.
+
+    AI training doesn't work like that.
+    The resulting model doesn't contain copies of all of
+    the code that it has seen - that would be huge and unusable.
+
+    The model learns patterns, the same way that we do.
+
+    It learns about 'the vistor pattern' by reading text books
+    that describe the visitor pattern, and by reading thousands
+    of implementations that mention "using a vistor pattern"
+    in the comments.
+
+    When asked to implement something using a 'vistor pattern',
+    it doesn't produce a copy of one of the instances it has seen,
+    it generates a new code block that follows a similar pattern.
+
+    (*) I know - if it has only ever seen a few examples of a
+    particular pattern then the code it produces will be very
+    similar to the original, but it is still not simply
+    re-producing a copy it has stored in memory.
+    It is creating a new sequence, statistically similar
+    to the examples that it has learned from.
+
+    Thought experiment.
+    If a human attends a training course where they are shown
+    examples of a new pattern or method for doing something.
+
+    When they try to apply that in their work, the first few
+    implementations the produce will be very similar to the
+    examples they were shown in training.
+
+    As they see more examples of the pattern, their understanding
+    grows and the result they produce will evolve to adapt
+    the pattern to match problem they are trying to solve.
+
+    Is any of that coptright infringment, or just normal learning ?
+
+    If we train an AI model on thousands of examples of a pattern,
+    and then ask it to solve a similar problem, and it generates
+    a solution that uses a similar pattern, why is that copyright
+    infrimngment ?
+
+    As long as it produces a new sequence of code, with sufficiently
+    different structure adapted to solve the problem at hand,
+    then it isn't copyright infringment.
+
+    It might be patent infringment, but not copyright.
+
+
+    Which brings me to the thing I am concerned about.
+
+    What does this do to open source licencing.
+
+    At the moment, software licences rely on the
+    author claiming copyright of the content.
+
+    By claiming copyright of the material, the author can
+    use copyright law to impose licensing restrictions
+    on how that content can be used.
+
+    Open source licensing uses this to grant additional
+    rights to allow, or control, the use of their content.
+
+    but if an AI trained on all this wealth of source material
+    doens't repoduce the original material, it reproduces the
+    patterns, then the licencing of the original
+    based on copyright no longer applies.
+
+    This has implications for closed source software - Adobe clone.
+    and for open source software - the GPL stops being 'viral'.
+
+    "Create an app that behaves the same way as Adobe PS"
+
+    "Create an OS that behaves the same way as Linux"
+
+    both are equally within reach
+    but is this a problem ?
+
+    What about AI generated code.
+    Is that copyright-able ?
+    In the UK and EU, probably, yes.
+    In the USA, no. AI generated code is explicitly excluded.
+
+    Which means, any AI generated code is in the public domain.
+    Which is good, but how do we know.
+    AI generated code is explicitly marked as such,
+    it is not possible to distinguish between
+    human generated automatically copyrighted code
+    and AI generated explicitly public domain code.
+
+    Which makes it hard to re-use.
+
+
+
+
+
+# -----------------------------------------------------
+
+    vendor lock in
+
+
+
+
