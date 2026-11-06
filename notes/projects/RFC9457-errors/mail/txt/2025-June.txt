@@ -1,0 +1,359 @@
+From francois.bonnarel at gmail.com  Fri Jun  6 00:28:00 2025
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Fri, 6 Jun 2025 00:28:00 +0200
+Subject: Extensions and next step of Obscore
+Message-ID: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+
+
+During the obscore extension session (Wednesday third session, plenary) 
+this question came by Marco ?
+
+ ? ? ?? relationship extensions with ObsCore. How do we deal with 
+extensions attributes in ObsCore 1.2
+
+My answer (after session) : I see this as a multistep thing.
+
+  *  ?1 ) Radio extension and maybe others can be published as endorsed
+    notes. They include a description? of how to discover the extension
+    in regsitry and how to join that to Obscore. Take care than Common
+    attributes should have same name and VOTAble attributes and definition
+
+  * 2 ) ObsCore 1.2 in parallel should have a limited scope and can be
+    developed fast
+
+      * include IVOA product type vocabulary in dataproduct_type FIELD
+
+      * move the discovery of Obscore in registry to the table/schema
+        utype mode in tableset
+
+      * adopt additions and all changes which make consensus
+
+      * describe in a generic way how any kind of extension can be
+        declared and joined to the ObsCore 1.2 root table
+
+  * 3 ) Then take time to have ObsCOre 2.0
+
+      * this step includes all possible attributes of Obscore mandatory
+        / optional and all extensions (Radio, HE, Time),
+
+      *  ?and then we organize this in profiles : full, root, radio, HE,
+        Time and some combination of Time+HE and Time + Radio (Radio +HE
+        doesn't make sense) and maybe others to come. Root Obscore is
+        the common mandatory subset
+
+      * some attributes may be part of several profiles (eg Radio and
+        HE). They share the same definition in the different profiles
+
+      * Optional attributes are those in full which are in? none of the
+        other profiles
+
+      * Vision of the full ObsCore as being potentially? "restricted" in
+        several different profiles is more unified, but has actually the
+        same content than root mandatory + extensions + optional.
+        Profiles are restrictions of the full ObsCore
+
+      * This concept of profile was first proposed by Gregory DF in
+        Sydney (RIG session) and then again by JJ Kavelaars in an email
+        last winter
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250606/95d583d3/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Wed Jun 11 11:31:50 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 11 Jun 2025 11:31:50 +0200
+Subject: Extensions and next step of Obscore
+In-Reply-To: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+References: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+Message-ID: <20250611093150.uas5eda6b3no7ooz@victor>
+
+Dear Colleagues,
+
+Whoa, that's a wide distribution right there.  May I suggest to
+have discussions on the immediate future on radioig@ and heig@, and
+the wider future on dm@?
+
+On Fri, Jun 06, 2025 at 12:28:00AM +0200, BONNAREL FRANCOIS gmail via dal wrote:
+> My answer (after session) : I see this as a multistep thing.
+>
+>  *  ?1 ) Radio extension and maybe others can be published as endorsed
+>    notes. They include a description? of how to discover the extension
+>    in regsitry and how to join that to Obscore. Take care than Common
+>    attributes should have same name and VOTAble attributes and definition
+
+I still don't see any reason why these should be endorsed notes and
+not RECs.  They are very clearly in close analogy with Obscore
+(essentially: lists of normative columns), and while I give you IGs
+cannot do RFCs, that just means there needs to be a sponsoring WG.
+Since DAL has done Obscore, so should it sponsor the extensions.
+
+>  * 2 ) ObsCore 1.2 in parallel should have a limited scope and can be
+>    developed fast
+>
+>      * include IVOA product type vocabulary in dataproduct_type FIELD
+>
+>      * move the discovery of Obscore in registry to the table/schema
+>        utype mode in tableset
+>
+>      * adopt additions and all changes which make consensus
+>
+>      * describe in a generic way how any kind of extension can be
+>        declared and joined to the ObsCore 1.2 root table
+
+Agreed.  Will Mireille be editor?  I'm happy to provide PRs for the
+first two of Fran?ois' items as soon as I get a signal to that
+effect.
+
+>  * 3 ) Then take time to have ObsCOre 2.0
+
+Well, let's get 1.2 out of the door first and then see if there's
+really anything so fundamentally wrong with obscore 1 that a
+breaking change is unavoidable.
+
+Thanks,
+
+            Markus
+
+
+From mdittmar at cfa.harvard.edu  Wed Jun 11 16:27:53 2025
+From: mdittmar at cfa.harvard.edu (CresitelloDittmar, Mark)
+Date: Wed, 11 Jun 2025 10:27:53 -0400
+Subject: Extensions and next step of Obscore
+In-Reply-To: <20250611093150.uas5eda6b3no7ooz@victor>
+References: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+ <20250611093150.uas5eda6b3no7ooz@victor>
+Message-ID: <CAH4enyMOHwF4bZGHgWYWaC8i_XaYZ+vjQc8V9dvm9dUpKT0w1A@mail.gmail.com>
+
+A quick counterpoint here.
+The purpose of the ObsCore plenary was to bring this from a set of
+interest group projects, to the working group level for pushing through to
+standards.  I don't think that cutting the working groups out of the
+discussion is a good move.. but the topics should be directed to the
+appropriate working group(s).
+
+I certainly would like the DM group to be included in discussions about how
+we the DM content is going to move forward.
+
+My understanding about how this might play out is:
+  * ObsCore v1.2 to contain
+      * the 'common' properties identified across the domain-specific notes.
+           - some discussion may need to occur for proposed changes to core
+properties which are non-trivial
+      * relatively generic descriptions of the properties, and in some
+manner, referencing the extension documents for detailed descriptions of
+the properties in the context of that domain.
+      * MAY include the DAL / Registry components.. which apply to all
+extensions of ObsCore.
+           - I do think there is a cross group discussion still to take
+place regarding these interface standards containing content on different
+aspects of the workflow ( DM + DAL )
+  * Extension Documents
+      * is a bit of a TBD... in my opinion, we'd want the extended property
+set to be normative for the domain extension.. which implies a REC
+        * I'm seeing this as probably a DM REC for each of the
+domain-specific extensions? or one for all ObsCore Domain Extensions, with
+a section for each domain?
+      * I don't think this document includes the DAL / Registry / Semantics
+content of the current notes.. which should be resolved in similar
+discussions with the appropriate working groups to decide how that content
+is codified in standards.
+
+Mark
+
+
+
+
+On Wed, Jun 11, 2025 at 5:32?AM Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+> Dear Colleagues,
+>
+> Whoa, that's a wide distribution right there.  May I suggest to
+> have discussions on the immediate future on radioig@ and heig@, and
+> the wider future on dm@?
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250611/14571a30/attachment.htm>
+
+From francois.bonnarel at gmail.com  Wed Jun 11 16:38:15 2025
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Wed, 11 Jun 2025 16:38:15 +0200
+Subject: [Heig] Extensions and next step of Obscore
+In-Reply-To: <CAH4enyMOHwF4bZGHgWYWaC8i_XaYZ+vjQc8V9dvm9dUpKT0w1A@mail.gmail.com>
+References: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+ <20250611093150.uas5eda6b3no7ooz@victor>
+ <CAH4enyMOHwF4bZGHgWYWaC8i_XaYZ+vjQc8V9dvm9dUpKT0w1A@mail.gmail.com>
+Message-ID: <e28faabe-8830-41e7-a549-e3cb386c44cc@gmail.com>
+
+doing that
+Le 11/06/2025 ? 16:27, CresitelloDittmar, Mark via heig a ?crit?:
+> A quick counterpoint here.
+> The purpose of the ObsCore plenary was to bring this from a set of 
+> interest?group projects, to the working group level for pushing 
+> through to standards.? I don't think that cutting the working groups 
+> out of the discussion is a good move.. but the topics should be 
+> directed to the appropriate working group(s).
+>
+> I certainly would like the DM group to be included in discussions 
+> about how we the DM content is going to move forward.
+>
+> My understanding about how this might play out is:
+> ? * ObsCore v1.2 to contain
+> ? ? ? * the 'common' properties identified across the domain-specific 
+> notes.
+> ? ? ? ? ? ?- some discussion may need to occur for proposed changes to 
+> core properties which are non-trivial
+> ? ? ? * relatively generic descriptions of the properties, and in some 
+> manner, referencing the extension documents for detailed descriptions 
+> of the properties in the context of that domain.
+
+This has been proposed in one of the splinter before interop at least, 
+yes. But achieving that may delay 1.2 a lot. Hence my slightly different 
+view to
+
+have the minimal consensus ASAP
+
+> ? ? ? * MAY include the DAL / Registry components.. which apply to all 
+> extensions of ObsCore.
+> ? ? ? ? ? ?- I do think there is a cross group discussion still to 
+> take place regarding these interface standards containing content on 
+> different aspects of the workflow ( DM?+ DAL )
+> ? * Extension Documents
+> ? ? ? * is a bit of a TBD... in my opinion, we'd want the extended 
+> property set to be normative for the domain extension.. which implies 
+> a REC
+OK
+> ? ? ? ? * I'm seeing this as probably a DM REC for each of the 
+> domain-specific extensions? or one for all ObsCore Domain Extensions, 
+> with a section for each domain?
+Due to the different levels of achievment of the various extensions, I 
+dont' think a global document is appropriate.
+> ? ? ? * I don't think this document includes the DAL / Registry / 
+> Semantics content of the current notes.. which should be resolved in 
+> similar discussions with the appropriate working groups to decide how 
+> that content is codified in standards.
+
+OK. But at least the implementation of DAL and Registry aspects 
+(organzation in tables, service delivering the tables discovery) has to 
+be described.
+
+ObsCore 1.1 had this if I'm not mistaking
+
+Cheers
+
+Fran?ois
+
+>
+> Mark
+>
+>
+>
+> On Wed, Jun 11, 2025 at 5:32?AM Markus Demleitner via dal 
+> <dal at ivoa.net> wrote:
+>
+>     Dear Colleagues,
+>
+>     Whoa, that's a wide distribution right there.? May I suggest to
+>     have discussions on the immediate future on radioig@ and heig@, and
+>     the wider future on dm@?
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250611/9f4aec8e/attachment.htm>
+
+From francois.bonnarel at gmail.com  Wed Jun 11 21:29:59 2025
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Wed, 11 Jun 2025 21:29:59 +0200
+Subject: [Heig] Extensions and next step of Obscore
+In-Reply-To: <e28faabe-8830-41e7-a549-e3cb386c44cc@gmail.com>
+References: <bf9b01e5-5431-41ab-aed2-b098cf3fec23@gmail.com>
+ <20250611093150.uas5eda6b3no7ooz@victor>
+ <CAH4enyMOHwF4bZGHgWYWaC8i_XaYZ+vjQc8V9dvm9dUpKT0w1A@mail.gmail.com>
+ <e28faabe-8830-41e7-a549-e3cb386c44cc@gmail.com>
+Message-ID: <d3679b80-4d07-4b9f-a566-12044bf1d1bc@gmail.com>
+
+Le 11/06/2025 ? 16:38, BONNAREL FRANCOIS gmail a ?crit?:
+> Dear Mark, dear all
+> Le 11/06/2025 ? 16:27, CresitelloDittmar, Mark via heig a ?crit?:
+>> A quick counterpoint here.
+>> The purpose of the ObsCore plenary was to bring this from a set of 
+>> interest?group projects, to the working group level for pushing 
+>> through to standards.? I don't think that cutting the working groups 
+>> out of the discussion is a good move.. but the topics should be 
+>> directed to the appropriate working group(s).
+>>
+>> I certainly would like the DM group to be included in discussions 
+>> about how we the DM content is going to move forward.
+>>
+>> My understanding about how this might play out is:
+>> ? * ObsCore v1.2 to contain
+>> ? ? ? * the 'common' properties identified across the domain-specific 
+>> notes.
+>> ? ? ? ? ? ?- some discussion may need to occur for proposed changes 
+>> to core properties which are non-trivial
+>> ? ? ? * relatively generic descriptions of the properties, and in 
+>> some manner, referencing the extension documents for detailed 
+>> descriptions of the properties in the context of that domain.
+>
+> This has been proposed in one of the splinter before interop at least, 
+> yes. But achieving that may delay 1.2 a lot. Hence my slightly 
+> different view to
+>
+> have the minimal consensus ASAP
+>
+>> ? ? ? * MAY include the DAL / Registry components.. which apply to 
+>> all extensions of ObsCore.
+>> ? ? ? ? ? ?- I do think there is a cross group discussion still to 
+>> take place regarding these interface standards containing content on 
+>> different aspects of the workflow ( DM?+ DAL )
+>> ? * Extension Documents
+>> ? ? ? * is a bit of a TBD... in my opinion, we'd want the extended 
+>> property set to be normative for the domain extension.. which implies 
+>> a REC
+> OK
+>> ? ? ? ? * I'm seeing this as probably a DM REC for each of the 
+>> domain-specific extensions? or one for all ObsCore Domain Extensions, 
+>> with a section for each domain?
+> Due to the different levels of achievment of the various extensions, I 
+> dont' think a global document is appropriate.
+>> ? ? ? * I don't think this document includes the DAL / Registry / 
+>> Semantics content of the current notes.. which should be resolved in 
+>> similar discussions with the appropriate working groups to decide how 
+>> that content is codified in standards.
+>
+> OK. But at least the implementation of DAL and Registry aspects 
+> (organzation in tables, service delivering the tables discovery) has 
+> to be described.
+>
+> ObsCore 1.1 had this if I'm not mistaking
+>
+> Cheers
+>
+> Fran?ois
+>
+>>
+>> Mark
+>>
+>>
+>>
+>> On Wed, Jun 11, 2025 at 5:32?AM Markus Demleitner via dal 
+>> <dal at ivoa.net> wrote:
+>>
+>>     Dear Colleagues,
+>>
+>>     Whoa, that's a wide distribution right there.? May I suggest to
+>>     have discussions on the immediate future on radioig@ and heig@, and
+>>     the wider future on dm@?
+>>
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250611/169f6159/attachment-0001.htm>
+

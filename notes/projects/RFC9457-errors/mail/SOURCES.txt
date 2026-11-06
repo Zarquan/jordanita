@@ -1,0 +1,27 @@
+# dal pipermail monthly archives downloaded 2026-10-24
+# columns: url, bytes, sha256 (tab separated)
+http://mail.ivoa.net/pipermail/dal/2024-April.txt.gz	7224	02ab763c68817f5785c62c0a2dd3691f0944b58d0ab5b51bf51e18f57886f958
+http://mail.ivoa.net/pipermail/dal/2024-December.txt.gz	7581	5d30d785fe78c301ddafbc58e26cdd7459fc972079d42dd1a2e3c191e35f32ac
+http://mail.ivoa.net/pipermail/dal/2024-January.txt.gz	444	c55b47844fdfd55702a084f24095a21777719c6b6606b5ff7219c2f8676c11d6
+http://mail.ivoa.net/pipermail/dal/2024-July.txt.gz	760	85c2cdf9efea6a82f744731efbc59819a8741898fb6c9bd90d2810ba7969dae0
+http://mail.ivoa.net/pipermail/dal/2024-March.txt.gz	4471	cd3a52bcc588d21aa3b4e5d5cf20daa2d05d0d11d757ea23b01f309233425ca6
+http://mail.ivoa.net/pipermail/dal/2024-May.txt.gz	8543	0cc1cbb3f1560741629648bdb70da08ec86c4a59659e7d1e9478db7a1ccc0ce8
+http://mail.ivoa.net/pipermail/dal/2024-November.txt.gz	9634	69ae05142f13e1a1e9132b82ce6bd3651fb176017e9c609dc65940b08b66b89a
+http://mail.ivoa.net/pipermail/dal/2024-October.txt.gz	5431	e59e8b0835d07576f02f224abc9a1ccff27f00e82687891c0d2af6a5564b03f4
+http://mail.ivoa.net/pipermail/dal/2024-September.txt.gz	3218	9a50b16efe0c26662c5e8a00e6680a99f53209068c992a9349eeb579ff349232
+http://mail.ivoa.net/pipermail/dal/2025-April.txt.gz	4754	ef607d1960570ca7eb136e1718700988bc0dec6f9b95a9f749bf51f21cdbe7b9
+http://mail.ivoa.net/pipermail/dal/2025-December.txt.gz	1148	48cb64adc7f2a6f618cda5b61c41bdfbd838c957d254863c5cfbc8b498f56f59
+http://mail.ivoa.net/pipermail/dal/2025-July.txt.gz	18743	e04b5f6431d2d04d807e3a4a075339bf4bd4d61dc149ae95f9bc0baf08bbbd95
+http://mail.ivoa.net/pipermail/dal/2025-June.txt.gz	3832	c137843204011a22f51bdec5c74adb688ff0f77955fd3856674f97020a7a515c
+http://mail.ivoa.net/pipermail/dal/2025-May.txt.gz	3756	1ca99515b3fba3f9bd7b2815d102477444e1ad4dcfe00e7f5062a861de26b208
+http://mail.ivoa.net/pipermail/dal/2025-November.txt.gz	653	f84f6ab617891b37d00813f1232754c37ecded3c957317267ea9eaa6673c5686
+http://mail.ivoa.net/pipermail/dal/2025-October.txt.gz	11395	845e7f0041960025a8eb3ad58c570011c7cd524864d7a4e2a2270c5027d694e5
+http://mail.ivoa.net/pipermail/dal/2025-September.txt.gz	14336	18a7671c55b535756e62dbbecfc2d20d3c10ea865e06e64b48040da6241a0d2e
+http://mail.ivoa.net/pipermail/dal/2026-April.txt.gz	10131	f4d9e74b8e58016af3b1420845a244997e738aa61c2ec3413541701a7ae133d7
+http://mail.ivoa.net/pipermail/dal/2026-August.txt.gz	6564	5937c93abb0efc06587a032639e53e4b17c596f321d53053b0919a6e63363af5
+http://mail.ivoa.net/pipermail/dal/2026-January.txt.gz	6157	c97500c50e0e1610c1ebb9740f569d607716fd44e98945542b23c1a63c74494f
+http://mail.ivoa.net/pipermail/dal/2026-July.txt.gz	6858	a8efe8dfad3b5c637eb0c0d5d9c0aff0ee15ff01dc836a1d9ffbf9a344ca0c72
+http://mail.ivoa.net/pipermail/dal/2026-June.txt.gz	15251	836fd985fb752d6977550b57bd5beaf39dc3c9dffab583bd6b425b855920695b
+http://mail.ivoa.net/pipermail/dal/2026-March.txt.gz	3523	c76bf8671743ef0c6371c8c6b99b0caa40bd384b7fd80c4b3057eeefaa0d2b49
+http://mail.ivoa.net/pipermail/dal/2026-October.txt.gz	8550	fb3eb9c5374491df0ceb50b8d3f2821c3997c35aea5cbb9be097bec14f98e5b2
+http://mail.ivoa.net/pipermail/dal/2026-September.txt.gz	15763	64265242954c782d2bdd0a07eda88aea2183423678ee3b537f7b61b6c9be213e

@@ -1,0 +1,194 @@
+Date: Thu, 18 Jun 2026 16:56:12 -0700
+From: stelios.voutsinas at noirlab.edu (Stelios Voutsinas)
+Subject: SCS2: Non-VOTable errors?
+Message-ID: <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+In-Reply-To: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+
+Thanks Markus for raising this and the feedback, and Pat for the proposal.
+
+I'm hoping that my feedback on that point does not give the impression that
+I'm asking clients to cope with more variation so servers don't have to do
+the work, because that's not my intention. I do want to make sure we are
+not adding any unnecessary burden on the clients.
+
+Another way to frame this, based on what I'm hearing and the potential
+objections to adding JSON as a third possible format, is to make a
+distinction between what the spec specifies and what it tolerates.
+
+What the spec specifies is what clients can reliably parse in a structured
+way. Pat's plain text proposal (`{vocab term}: {human-readable
+explanation}`) seems like a another reasonable format/structure to use
+here. Clients that want to extract and display the error string have
+something defined to work with and VOTable remains valid for services that
+prefer it.
+
+What the spec tolerates is a separate question: what a service can return
+while remaining compatible, with the understanding that it may not provide
+the optimal user experience.
+
+A FastAPI service that emits a 422 with `{"detail": [...]}` shouldn't be
+treated as broken. It's just not returning an error in a structured way
+that clients can parse a message from. The body is advisory text. Clients
+can display whatever they get (show the JSON as-is, or even ignore the body
+and show something based on the status code). Only the HTTP status code
+triggers any  branching logic. JSON in this framing isn't a third parsing
+path and displaying the raw body is valid client behaviour.
+
+The language that might capture this: the body MAY be any human-readable
+format where producing the specified format would require unreasonable
+effort from the framework or infrastructure.
+That would cover FastAPI 422s, Pydantic validation errors and anything else
+the framework generates before application code runs, without endorsing any
+specific JSON schema as something clients need to parse.
+
+The machine-readable signal is the status code and that's what's
+authoritative (400 means bad parameters, 422 means invalid values, 503 try
+again later)
+The body is context for a human and I would say mandating a specific format
+for it is only justified if some client behaviour depends on parsing it,
+and to my understanding clients just display it. (Though client writers can
+chime in and disagree if this is incorrect)
+The tradeoff is a potentially degraded user experience on services that
+don't implement the structured path, versus guaranteed structured errors at
+the cost of extra implementation work on every service using a modern
+framework. Also, I'm assuming that most clients already have to handle
+error formats outside of VOTable and plain text, since network-layer
+failures produce whatever the infrastructure gives them regardless of what
+the spec says, so that resilience is already expected of them.
+
+To give a reference point from the implementation side, in our SIA service
+producing VOTable errors came out to around 200 lines across the exception
+handler and template:
+
+https://github.com/lsst-sqre/sia/blob/main/src/sia/templates/votable_error.xml
+https://github.com/lsst-sqre/sia/blob/main/src/sia/errors.py#L25
+https://github.com/lsst-sqre/sia/blob/main/src/sia/main.py#L88
+
+None of it is hard to write, but it's code every service author has to
+produce independently, has to test, and can go wrong in ways that are at
+times hard to catch.
+It's a small but real burden on every new implementation, and I'm not
+convinced the tradeoff is worth it when the end result for the user is a
+string on screen either way, and the status code is what clients should be
+branching on.
+
+Stelios Voutsinas
+
+On Thu, Jun 18, 2026 at 6:01?AM Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+> Dear DAL folks,
+>
+> two weeks ago I advertised the SCS2 working draft
+> <http://mail.ivoa.net/pipermail/dal/2026-June/008878.html>; interest
+> at least week's interop was good, so I think we ought to go ahead.
+>
+> As promised two weeks ago, I'd like to bring up points from Stelios'
+> feedback
+> <https://github.com/msdemlei/scs2-original-deleteme/issues/2> [1]
+> in suitable packages, and I'll start with one we've discussed a bit
+> at the Interop already:
+>
+>
+> > The spec is clear on this "all responses, including errors, must be
+> > in VOTable unless the client has requested a different
+> > RESPONSEFORMAT."
+> >
+> > While I do see the benefits, and it does give clients a single
+> > parsing path for both successful and error responses, this
+> > requirement makes writing services with modern HTTP frameworks
+> > awkward.
+> > FastAPI for example, automatically generates JSON validation errors
+> > with HTTP 422 responses.
+> >
+> > Overriding this to produce VOTable requires custom exception
+> > handlers for every error path and I would argue is a hurdle that
+> > goes against the "implementable within a week" target because you
+> > end up fighting against the frameworks and their own validation
+> > mechanisms.
+> >
+> > Also, since we define any client behavior that requires parsing
+> > error bodies in a structured way, I don't really see a huge win for
+> > clients being able to parse the error body, versus just showing it
+> > as it is came in the user.
+> >
+> > I'd argue that the HTTP status codes are more important for the
+> > client and already carry the machine-readable signal (400 = bad
+> > parameters, 422 = invalid values). They can then choose to either
+> > display information just based on the status code, include the
+> > extra context either by default or as a "Extra information on the
+> > error" button, and then potentially even parse the response if it
+> > comes in a format they can deal with. (Existing clients who know
+> > VOTable parse and return the relevant text, if they get JSON they
+> > can either parse it or just show it as JSON)
+> >
+> > I see the error body is advisory context and I think the format is
+> > a convenience choice, and by forcing it to be VOTable creates an
+> > implementation burden for service authors using modern HTTP
+> > frameworks.
+> >
+> > My take is that the requirement to produce VOTable errors should
+> > either be relaxed to allow any human-readable format for 4xx
+> > responses, or the spec should define the IVOA should define use
+> > cases that make VOTable parsing of error bodies necessary.
+>
+> First off: What SCS2 right now says is basically what DALI has, and I
+> think whatever we decide here should be fed back to DALI.
+>
+> Then, my minimal requirement is that *if VO code comes into play at
+> all*, clients should ideally have one clear way to get a string to
+> display to the user when something goes wrong.  Perhaps I can live
+> with two ways, but when clients have to expect three different
+> formats in which services report errors, I'd raise a veto.
+>
+> This clearly is different when the VO code doesn't even get to
+> respond; of course there are network timeouts, 504 from reverse
+> proxies and a bunch of other nastyness that may very well lead to
+> ugly, ununderstandable diagnostics.  But that we can't help as long
+> as we operate over a network, so let's concentrate on what we can
+> help.
+>
+> Meanwhile, Joshua has posted the sort of code they need to turn
+> messages from their framework into VOTables at
+> <
+> https://github.com/msdemlei/scs2-original-deleteme/issues/2#issuecomment-4650305818
+> >.
+>
+> My thoughts on this are: This is not insane code by any measure.  On
+> the other hand, if we allow multiple sorts of error responses, this
+> kind of work will need to be done in each client.  I feel pushing
+> responsibility there would be a bad move because:
+>
+> (1) Clients are a scarce resource; let's make it easier for them
+>
+> (2) The error parsing paths on the client side generally are much
+> less well-tested than the good path, and hence it's much more likely
+> that this stuff will be broken.  Getting wild errors and tracebacks
+> when, really, something else is wrong is the sort of user experience
+> that makes people hate the world.
+>
+> (3) If it's done on the server side, validators can much more easily
+> catch gross errors.
+>
+> But that's not *much* more than my 2 cents.  I would, for instance,
+> be open to Datalink-style error messages (controlled vocabulary term:
+> human-readable explanation) as well.  It's a bit ugly that
+> QUERY_STATUS signalling then become asymmetric between good and
+> failing requests, but then the VOTable wrapping of diagnostics isn't
+> too pretty either.
+>
+> Other thoughts?
+>
+> Thanks,
+>
+>           Markus
+>
+> [1] If anyone can move this bug to the new SCS2 repo, please do so;
+> it seems I can't.
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260618/500ead72/attachment-0001.htm>
+

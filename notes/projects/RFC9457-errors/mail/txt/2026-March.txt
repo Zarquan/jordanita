@@ -1,0 +1,198 @@
+From marco.molinaro at inaf.it  Thu Mar  5 17:41:53 2026
+From: marco.molinaro at inaf.it (Molinaro, Marco)
+Date: Thu, 5 Mar 2026 17:41:53 +0100
+Subject: ivoa.net/rdf is down
+In-Reply-To: <CAFZnOcmhgPBOxR1mUo5Thq6b4_7Fu9U1b5GTrh=P-JRX7KXD2w@mail.gmail.com>
+References: <CAFZnOckpWEB-OXu66Y2if0hiX+z=aqQbR+mcUe9POEXbt4Y20Q@mail.gmail.com>
+ <CAFZnOcmhgPBOxR1mUo5Thq6b4_7Fu9U1b5GTrh=P-JRX7KXD2w@mail.gmail.com>
+Message-ID: <CAFtRUx+PHXdDVRyaWtgF01S_asMOc5oLq3WAj=2-b==stvUPaA@mail.gmail.com>
+
+Dear Ignacio,
+
+as announced here
+
+http://mail.ivoa.net/pipermail/interop/2026-February/003016.html
+
+there's some maintenance going on, that causes the issue you see.
+
+IVOADoc is the right address, Giulia is possibly off for a couple of days.
+
+However can I suggest to subscribe to interop at ivoa.net?
+http://mail.ivoa.net/mailman/listinfo/interop
+
+It's the main info point for the IVOA community.
+
+Kind Regards
+    Marco
+
+
+Marco Molinaro
+INAF - Istituto Nazionale di AstroFisica
+Osservatorio Astronomico di Trieste
+email marco.molinaro at inaf.it
+tel. [+39] 333 33 20 564 [also Telegram]
+
+
+
+Il gio 5 mar 2026, 16:15 Ignacio Reyes <ireyesj93 at gmail.com> ha scritto:
+
+> Dear IVOA team,
+> Sorry for the spam, but I'm not sure who is the right person to message. I
+> work for the ALeRCE broker, one of the community brokers of the Vera C.
+> Rubin Observatory. While solving a bug with our deployment of the DaCHS
+> software (from GAVO) that we use for our TAP service, I noticed that the
+> problem is that https://www.ivoa.net/rdf/ is returning a code 403. I
+> believe the vocabulary was previously working, as some weeks ago I could
+> run the DaCHS code that relies on that website, and also archive.org
+> shows that the website used to be accessible.
+> Cheers,
+> *Ignacio Reyes Jainaga*
+> Lead Engineer
+> The ALeRCE Broker
+>
+> ---------- Forwarded message ---------
+> De: Ignacio Reyes <ireyesj93 at gmail.com>
+> Date: jue, 5 mar 2026 a la(s) 9:41?a.m.
+> Subject: ivoa.net/rdf is down
+> To: <ivoadoc at ivoa.net>
+>
+>
+> Dear IVOA team,
+> While solving a bug with the DaCHS software of the German Virtual
+> Observatory, I noticed that the problem is that https://www.ivoa.net/rdf/
+> is returning a code 403. I believe the vocabulary was previously working,
+> as some weeks ago I could run the DaCHS code that relies on that website,
+> and also archive.org shows that the website used to be accessible.
+> Cheers,
+>
+> *Ignacio Reyes Jainaga*
+> Lead Engineer
+> The ALeRCE Broker
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260305/9a93c398/attachment.htm>
+
+From nicolas.moreau at obspm.fr  Mon Mar 16 14:06:30 2026
+From: nicolas.moreau at obspm.fr (nicolas)
+Date: Mon, 16 Mar 2026 14:06:30 +0100
+Subject: pattern matching in SLAP 2 protocol
+Message-ID: <42ef498b-0a9b-4063-beff-50d46b1aa56f@obspm.fr>
+
+Dear DAL and Apps members,
+
+In the current draft of the Simple Line Access Protocol version 2 
+(SLAP2), we have introduced a SPECIES parameter where the user
+can specify a species name (i.e CH4, CO2 ... ). In order to add 
+flexibility, this parameter can accept
+pattern matching expressions.
+
+In the current specification, we use SQL-like patterns as users are already
+familiar with them through SQL and ADQL (%, _).
+Another possibility would be to use shell patterns instead (?, *).
+
+To illustrate the difference, searching for a species whose name starts 
+with the letter C:
+
+ ? SQL pattern? : SPECIES=C%
+ ? Shell pattern: SPECIES=C*
+
+And searching for a 3-character species name starting with C:
+
+ ? SQL pattern? : SPECIES=C__
+ ? Shell pattern: SPECIES=C??
+
+ From an implementor point of view, SQL patterns have the advantage that 
+they can be used
+directly as-is if there is an SQL database behind the service. On the 
+other hand, shell patterns
+are widely used outside of the database world.
+
+While discussing this with Markus, it appeared to be the first time 
+RE-like expressions are used in an
+IVOA protocol. This choice could set a precedent. We would therefore like
+to get your opinion: should we stick with SQL patterns or use shell 
+patterns?
+
+
+Best regards
+
+-- 
+Nicolas Moreau
+LUX - Paris Observatory
+
+T?l Meudon : 01 45 07 79 76
+T?l Paris : 01 40 51 23 02
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Mar 17 11:12:27 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 17 Mar 2026 11:12:27 +0100
+Subject: pattern matching in SLAP 2 protocol
+In-Reply-To: <42ef498b-0a9b-4063-beff-50d46b1aa56f@obspm.fr>
+References: <42ef498b-0a9b-4063-beff-50d46b1aa56f@obspm.fr>
+Message-ID: <5uphbhucxut2ap2t5yejqrwsizlpaycd2tbipfy7lh6ovl6dj2@hskkeuiaanp5>
+
+Dear Colleagues,
+
+On Mon, Mar 16, 2026 at 02:06:30PM +0100, nicolas via apps wrote:
+> While discussing this with Markus, it appeared to be the first time
+> RE-like expressions are used in an IVOA protocol. This choice could
+> set a precedent. We would therefore like to get your opinion:
+> should we stick with SQL patterns or use shell patterns?
+
+Actually, I think this should one day be DALI material.  For
+instance, from long experience I'd say SSAP's TARGETNAME or
+COLLECTION (and their future DAP equivalents) should share that
+pattern syntax.  So, I'm sure it will pay to think a bit about it now
+to avoid having different pattern languages down the road.
+
+As Nicolas says, we could have SQL patterns and just quote the SQL
+spec for the whole story, including an escape mechanism (while
+matching % will probably be rather rare, at least _ and * absolutely
+could be in the various fields folks may want to query with such
+patterns).
+
+While I'd be fine with going the SQL route, my personal baseline (but
+then I'm spending much of my life in unix shells) would be to include
+(essentially) the documentation of python's fnmatch module.  That's
+*, ?, [seq], and [^seq].  The escaping mechanism there is using
+character classes (where I think []] and [[] need a bit of care to
+avoid ambiguities).
+
+*If* one were ever to implement this from scratch, the python
+implementation (fnmatch.py) is 192 lightly documented LoC, which I
+claim is reasonable.
+
+More realistically, though, these patterns would usually be
+translated into SQL patterns, and that's the weak point: LIKE doesn't
+do character classes.  So, perhaps we should dump these and use * and
+? only, and then escape with a backslash?  That would rather
+trivially be translated into LIKE patterns, and character classes are
+perhaps not so important after all?
+
+Thoughts welcome.  In particular: Among your friends and colleagues,
+how many still regularly type shell patterns?
+
+      -- Markus
+
+
+From gpdf at ipac.caltech.edu  Sat Mar 21 00:32:27 2026
+From: gpdf at ipac.caltech.edu (Dubois-Felsmann, Gregory P.)
+Date: Fri, 20 Mar 2026 23:32:27 +0000
+Subject: Broken links to ADQL 2.00 REC
+Message-ID: <DM6PR03MB356108FEAD48B726FB59C689F44CA@DM6PR03MB3561.namprd03.prod.outlook.com>
+
+On https://ivoa.net/documents , the link for ADQL 2.00 *looks* OK:
+
+https://www.ivoa.net/Documents/cover/ADQL-20081030.html
+
+but the target appears to have been overwritten at some point.
+
+The page that loads appears to have the content of the cover page for the ADQL 2.1 REC (i.e., https://www.ivoa.net/Documents/ADQL/20231215/index.html), but the document links (html, pdf, tex) are broken and don't either reach the 2.1 text or the 2.00 text.  (This is most likely because they're relative links and no "20231215" directory exists under "https://www.ivoa.net/Documents/cover".)
+
+Please find a way to restore the 2.00 landing page; quite a few services still implement this version.
+
+Many thanks,
+Gregory Dubois-Felsmann
+

@@ -1,0 +1,1793 @@
+From msdemlei at ari.uni-heidelberg.de  Mon Jul  7 09:09:48 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 7 Jul 2025 09:09:48 +0200
+Subject: TAPRegExt: sync/async preference
+Message-ID: <20250707070948.774krioxdrsfvws6@victor>
+
+Dear DAL, Dear Registry,
+
+Let me bring a recent pyVO bug to your attention; there are various
+ways to resolve it, and I'd appreciate opinions on what way to go.
+
+Basically, Rubin would like to be able to tell TAP clients: "Prefer
+async mode on this service".  I can totally see how, say, TOPCAT,
+could pre-set the Mode combo box based on that, and that's enough to
+convince me it's a sensible feature.
+
+But of course there are many ways to let a service communicate such a
+preference.  See https://github.com/astropy/pyvo/issues/685 for
+some discussion and deliberations.
+
+The two approaches I'd currently consider the most plausible would
+be:
+
+(small) Just add a <preferredMode> element to the schema.  Rubin
+would thus say
+
+  <capability standardID="ivo://ivoa.net/std/tap">
+    ...
+    <preferredMode>async></preferredMode>
+
+(large) Add a <limits> container element that would contain all the
+various limits (executionDuration, outputLimit,...).  This would have
+an attribute @mode (say; there are probably better names) that would
+say something like sync-auth for "these limits apply to authenticated
+users querying synchronously".  You could also express your modal
+preference in an attribute to these containers.  So, you could
+perhaps say:
+
+  <limits mode="sync-open">
+    <executionDuration>
+      <default>10</default>
+    </executionDuration>
+    <outputLimit>
+      <default>1000</default>
+      <hard>20000</hard>
+    </outputLimit>
+  </limits>
+
+  <limits mode="async-open" prefer="True">
+    <executionDuration>
+      <default>10000</default>
+    </executionDuration>
+    <outputLimit>
+      <default>100000</default>
+      <hard>20000000</hard>
+    </outputLimit>
+  </limits>
+
+
+Discussion
+----------
+
+The (small) option has the charm of being doable in a couple of
+minutes of spec work and less than an hour on the server side, tests
+an all.  I also believe that it will address the problem the Rubin
+folks have pretty much exactly and minimally.  I have a hard time
+resisting the temptation of "minimal".
+
+On the other hand, we've had the problem of how services express the
+*fact* that their limits are very different on their async and sync
+endpoints (and probably between auth and non-auth) for a long time.
+For instance, my DaCHS instance times you out on sync after 10
+seconds, whereas you can have up to 172800 seconds on async.
+Current TAPRegExt has no way to communicate that <cough> 3.2 dex
+effect to clients, while to me that seems a fairly relevant thing to
+say.
+
+On the other hand, the limit element is a bit of work to specify and
+quite a bit of additional work to implement.  It is also a bit ugly
+in that for backwards compatibility, we will certainly have to keep
+around the "default" limits for a while; but then saying "the default
+limits are the ones for sync" (or for the preferred mode?) would, I
+think, be a reasonable answer for that qualm.
+
+Since (large) solves another, possibly even more important problem
+than the Rubin itch, too, I think that *would* be the way I'd prefer.
+Except, before I put more work into it, I'd need encouraging words
+("rough consensus") and in particular non-binding commitments to put
+it into pyVO and (at least inofficially) into TOPCAT, where the
+limits displays would then change (sensibly, i.e., probably not
+clobbering user inputs) according to the mode switch.  I'd commit to
+do the spec work and a server-side implementation in DaCHS.
+
+So... Opinions?  (large) or (small)?  Or yet something else, like my
+old dream of RDF-in-VOResource that I mention in in bug #685?
+
+Thanks,
+
+           Markus
+
+
+From m.b.taylor at bristol.ac.uk  Mon Jul  7 13:44:41 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Mon, 7 Jul 2025 12:44:41 +0100 (BST)
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <20250707070948.774krioxdrsfvws6@victor>
+References: <20250707070948.774krioxdrsfvws6@victor>
+Message-ID: <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+
+Markus et al.,
+
+[I have followed up to the dal list only and not to registry
+to reduce noise and confusion; DAL anyway owns TAPRegExt as
+well as TAP]
+
+On Mon, 7 Jul 2025, Markus Demleitner via registry wrote:
+
+> Basically, Rubin would like to be able to tell TAP clients: "Prefer
+> async mode on this service".  I can totally see how, say, TOPCAT,
+> could pre-set the Mode combo box based on that, and that's enough to
+> convince me it's a sensible feature.
+
+Before offering an opinion, I'd like to understand better exactly
+what Rubin or other services might mean by "prefer async mode",
+or why they might want to express that.  Does it really mean
+"sync is deprecated here, and although we implement it because
+it's mandatory in the spec there's some reason why it's really
+a bad idea to use it for this service", or just "sync imposes
+limits that mean long-running queries may not complete"
+(which is anyway generally understood for sync)?
+
+For instance when topcat first hits a TAP service one thing it
+does is issue the following synchronous query:
+
+   SELECT COUNT(*) AS nrow FROM TAP_SCHEMA.columns
+
+so it can figure out whether it's a big or small service to
+inform some later decisions about metadata acquisition.
+The strong expectation is that this query (and some other
+under-the-hood ones that it makes) is going to execute fast,
+so the additional overhead on the client side of making an
+asychronous query is an unnecessary burden.
+
+If we implement some way for services to say "prefer async mode"
+does it mean that such quickie queries must/should be submitted
+async?  On the other hand, if a service says "prefer sync mode",
+does it mean that a query I know is going to exceed a normal
+HTTP timeout must/should be submitted sync?
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From pdowler.cadc at gmail.com  Wed Jul  9 19:34:44 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Wed, 9 Jul 2025 10:34:44 -0700
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+Message-ID: <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+
+I know a little more about what Rubin is doing in their TAP service and I'm
+not sure static declarations in TAPRegExt can/will really capture the subtle
+nature of the service behaviour.
+
+In a nutshell: some sync queries are executed immediately/normally and return
+results. Other queries are always put into a queue and executed in async mode
+under the hood. We/they are also trying to figure out how the sync request can
+block (until the job actually finishes) and probably how to tell
+clients to keep retrying
+until that happens.
+
+note: specifically in this case, tap_schema queries execute in the
+simple/direct/normal
+way and queries on the other content are performed in async mode.
+
+So this is not just a "preferred mode" but really a behaviour of the
+implementation that
+is currently opaque to the client. With the current state of the TAP
+API, I don't think
+a solution where it remains opaque is going to work very well. I can
+see roughly two
+kinds of solutions:
+
+1. We more carefully define TAP-sync patterns to make blocking and retry
+a part of the API so clients can be written to deal with it successfully
+2. We more carefully define TAP-sync to be able to respond with "this
+request is actually
+executing in async mode, here is the UWS job URL"
+
+I haven't thought either of these through all that much, but my gut
+feeling is that from a
+standard/clarity point of view, option 2 is simpler and option 1 could
+be quite complex.
+
+I think a feature-rich client like topcat and pyvo could also deal
+with option 2 pretty easily, but that
+quickly becomes a lot less true for simple/custom scripts or basic
+command-line usage of curl, etc.
+
+--
+Maybe higher level questions to think about:
+- does this kind of thing make TAP-sync a second class endpoint? it
+would be simpler to implement
+but worse for a lot of uses
+- is this sync vs async more general that TAP? are there other
+services/requests where the server
+wants/needs to choose how it will execute?
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Mon, 7 Jul 2025 at 04:44, Mark Taylor via dal <dal at ivoa.net> wrote:
+>
+> Markus et al.,
+>
+> [I have followed up to the dal list only and not to registry
+> to reduce noise and confusion; DAL anyway owns TAPRegExt as
+> well as TAP]
+>
+> On Mon, 7 Jul 2025, Markus Demleitner via registry wrote:
+>
+> > Basically, Rubin would like to be able to tell TAP clients: "Prefer
+> > async mode on this service".  I can totally see how, say, TOPCAT,
+> > could pre-set the Mode combo box based on that, and that's enough to
+> > convince me it's a sensible feature.
+>
+> Before offering an opinion, I'd like to understand better exactly
+> what Rubin or other services might mean by "prefer async mode",
+> or why they might want to express that.  Does it really mean
+> "sync is deprecated here, and although we implement it because
+> it's mandatory in the spec there's some reason why it's really
+> a bad idea to use it for this service", or just "sync imposes
+> limits that mean long-running queries may not complete"
+> (which is anyway generally understood for sync)?
+>
+> For instance when topcat first hits a TAP service one thing it
+> does is issue the following synchronous query:
+>
+>    SELECT COUNT(*) AS nrow FROM TAP_SCHEMA.columns
+>
+> so it can figure out whether it's a big or small service to
+> inform some later decisions about metadata acquisition.
+> The strong expectation is that this query (and some other
+> under-the-hood ones that it makes) is going to execute fast,
+> so the additional overhead on the client side of making an
+> asychronous query is an unnecessary burden.
+>
+> If we implement some way for services to say "prefer async mode"
+> does it mean that such quickie queries must/should be submitted
+> async?  On the other hand, if a service says "prefer sync mode",
+> does it mean that a query I know is going to exceed a normal
+> HTTP timeout must/should be submitted sync?
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Thu Jul 10 07:12:12 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 10 Jul 2025 07:12:12 +0200
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+Message-ID: <20250710051212.lhegbvuie57ldbvn@victor>
+
+Hi Pat,
+
+On Wed, Jul 09, 2025 at 10:34:44AM -0700, Patrick Dowler via dal wrote:
+> note: specifically in this case, tap_schema queries execute in the
+> simple/direct/normal way and queries on the other content are
+> performed in async mode.
+
+Hm.  That, of all things, TAP_SCHEMA is the odd one out here (in
+addition to the general uglyness of having the same data in two
+places and the pain with manipulating TAP_SCHEMA when it "changes"
+due to authentication) to me is another indication that we ought to
+move towards communicating our table metadata through VOSI
+exclusively.
+
+But that's just a ceterum censeo.
+
+> 1. We more carefully define TAP-sync patterns to make blocking and retry
+> a part of the API so clients can be written to deal with it successfully
+> 2. We more carefully define TAP-sync to be able to respond with
+> "this request is actually executing in async mode, here is the UWS
+> job URL"
+
+Since we really want clients to implement async anyway, it would seem
+to me that (2) should not complicate things much, and thus it would
+be my choice, too.
+
+On (1), there was a bit of discussion in pyVO bug #683
+<https://github.com/astropy/pyvo/issues/683> without much of a
+convincing outcome; to me, that also suggests looking into (2).
+
+> I think a feature-rich client like topcat and pyvo could also deal
+> with option 2 pretty easily, but that quickly becomes a lot less
+> true for simple/custom scripts or basic command-line usage of curl,
+
+At some point I think we have to accept that complex patterns and
+simple tools may not always mix well despite our best efforts (to
+both keep patterns as simple as possible and to make things
+accessible to simple tools whenever reasonable).
+
+        -- Markus
+
+
+From m.b.taylor at bristol.ac.uk  Thu Jul 10 11:56:17 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Thu, 10 Jul 2025 10:56:17 +0100 (BST)
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+Message-ID: <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+
+On Wed, 9 Jul 2025, Patrick Dowler via dal wrote:
+
+> 1. We more carefully define TAP-sync patterns to make blocking and retry
+> a part of the API so clients can be written to deal with it successfully
+> 2. We more carefully define TAP-sync to be able to respond with "this
+> request is actually
+> executing in async mode, here is the UWS job URL"
+> ... 
+> I think a feature-rich client like topcat and pyvo could also deal
+> with option 2 pretty easily, but that
+> quickly becomes a lot less true for simple/custom scripts or basic
+> command-line usage of curl, etc.
+
+I don't really understand the motivation here.
+
+Is the idea that the existing sync interface continues to work,
+but an async-masquerading-as-sync-aware client submitting a sync job 
+can switch to async mode if it gets a response with additional 
+information (headers?) indicating that it's async really?
+If the client is prepared to do that, why not submit an async
+job in the first place?  If an unsophisticated client fails to
+switch to async mode, the job would presumably continue to execute 
+following a client HTTP timeout, consuming resources uselessly.
+
+Or is the idea to respecify the sync endpoint in such a way that
+clients have to do more negotiation than just a single POST/GET
+yielding a VOTable response?  The existing sync query is really
+a nice convenience for quickie clients (e.g. shell scripts)
+wanting to do something easy.
+
+To me the existing situation of having two options for submitting
+a job works well for clients, and my impression is that users
+understand it OK.  Has the understanding of client and server
+requirements for short- and long-running jobs changed since
+TAP 1.0 was specified with both sync and async endpoints?
+
+If services don't want to work synchronously under the hood they
+can provide a sync facade on their asynchronous behaviour,
+which I believe is what some implementations do already.
+
+I would also actually say it's a feature (though maybe an unintended 
+one) that sync jobs typically time out before too long, indicating 
+that the submitted query is actually expensive, which may not be
+obvious to the ADQL author.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From paul.harrison at manchester.ac.uk  Tue Jul 15 09:36:52 2025
+From: paul.harrison at manchester.ac.uk (Paul Harrison)
+Date: Tue, 15 Jul 2025 07:36:52 +0000
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+Message-ID: <D0DE2F88-3A06-4877-9047-5E829658092B@manchester.ac.uk>
+
+
+
+> On 10 Jul 2025, at 10:56, Mark Taylor via dal <dal at ivoa.net> wrote:
+> 
+> To me the existing situation of having two options for submitting
+> a job works well for clients, and my impression is that users
+> understand it OK.  Has the understanding of client and server
+> requirements for short- and long-running jobs changed since
+> TAP 1.0 was specified with both sync and async endpoints?
+> 
+> If services don't want to work synchronously under the hood they
+> can provide a sync facade on their asynchronous behaviour,
+> which I believe is what some implementations do already.
+
+Indeed it is a suggested model of implementation in the standard - https://www.ivoa.net/documents/UWS/20161024/REC-UWS-1.1-20161024.html#SynchronousService and of course it could be arranged to be done without the redirection suggested there.
+> 
+> I would also actually say it's a feature (though maybe an unintended 
+> one) that sync jobs typically time out before too long, indicating 
+> that the submitted query is actually expensive, which may not be
+> obvious to the ADQL author.
+> 
+
+I agree and it might not just be that the individual query is expensive, but that the server is overloaded with many clients and cannot afford to keep all of the synchronous connections open.
+
+
+> On 9 Jul 2025, at 18:34, Patrick Dowler via dal <dal at ivoa.net> wrote:
+> 
+> 2. We more carefully define TAP-sync to be able to respond with "this
+> request is actually
+> executing in async mode, here is the UWS job URL"
+
+In the case of a timeout on the synchronous call the response could be a 504 with a job URL in the body. If the call succeeds then the normal response is sent, so that a ?dumb? client does not need to do anything special. Timeouts on the async job could be adjusted so that it will be killed fairly quickly anyway, but extended if the client makes some effort to find out the status of the job. If the service does not want to allow this opportunity to ?hook in? to the async behaviour it just responds with a standard DALI error.
+
+Paul.
+
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250715/adba1d3b/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 2893 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250715/adba1d3b/attachment-0001.p7s>
+
+From gregory.mantelet at astro.unistra.fr  Tue Jul 15 15:41:49 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 15 Jul 2025 15:41:49 +0200
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+Message-ID: <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+
+Hi Pat, Mark, Paul, Markus,
+
+To be honest, I don't like either this false-/sync/ endpoint. Changing 
+that way
+the behavior of this endpoint is clearly a breaking change. I expect a lot
+of clients that may be broken by such a change. Besides, as Mark said, this
+endpoint is really convenient for quick queries run by simple scripts: the
+/sync/ API is very simple and easy to use. Thus, a sync request is easy to
+design (especially for malicious intent) and to run. If we change it, 
+firstly,
+there is no more point to name it /sync/ (and for this endpoint to exist
+anyway), and secondly, it breaks the behavior expected by the user. It is
+quite like creating a simple function named /doSomethingWithSimpleAPI()/
+which actually does /doSomethingWithADifferentAndMoreComplexAPI()/.
+After this, the user may not really trust completely the TAP API and I would
+not blame him/her.
+
+However, such behavior is fine for a TAP client. If a TAP client hides the
+execution mode by running everything in /async/ mode, it is OK for my point
+of view (probably a subjective point of view here as we are actually working
+on a TAP web interface which will do this). This is fine because it is a 
+client
+choice which will not impact any other way to query the same service.
+
+Having both execution modes is, according to me, a nice thing to have,
+considering the complexity of UWS and ADQL. Users that want to run a
+simple and quick query can do that with a simple API, otherwise, they know
+that they will have to put more efforts by adding a UWS layer. This is their
+choice.
+
+Now, to come back on the Markus' question, I'd be in favor of (large), for
+the same reasons as you, Markus: 2 use-cases covered by this solution.
+But I have to say that I have some concerns about what happens when
+no /mode/ attribute is provided (like for older TAP services). In such 
+situation,
+I'd say that it applies to both modes (like a global definition) unless any
+specific one is specified just after (like a variable overwrite). But 
+for sure,
+it is more work, especially for TAP clients.
+
+Cheers,
+Gr?gory
+
+
+On 10/07/2025 11:56, Mark Taylor via dal wrote:
+> On Wed, 9 Jul 2025, Patrick Dowler via dal wrote:
+>
+>> 1. We more carefully define TAP-sync patterns to make blocking and retry
+>> a part of the API so clients can be written to deal with it successfully
+>> 2. We more carefully define TAP-sync to be able to respond with "this
+>> request is actually
+>> executing in async mode, here is the UWS job URL"
+>> ...
+>> I think a feature-rich client like topcat and pyvo could also deal
+>> with option 2 pretty easily, but that
+>> quickly becomes a lot less true for simple/custom scripts or basic
+>> command-line usage of curl, etc.
+> I don't really understand the motivation here.
+>
+> Is the idea that the existing sync interface continues to work,
+> but an async-masquerading-as-sync-aware client submitting a sync job
+> can switch to async mode if it gets a response with additional
+> information (headers?) indicating that it's async really?
+> If the client is prepared to do that, why not submit an async
+> job in the first place?  If an unsophisticated client fails to
+> switch to async mode, the job would presumably continue to execute
+> following a client HTTP timeout, consuming resources uselessly.
+>
+> Or is the idea to respecify the sync endpoint in such a way that
+> clients have to do more negotiation than just a single POST/GET
+> yielding a VOTable response?  The existing sync query is really
+> a nice convenience for quickie clients (e.g. shell scripts)
+> wanting to do something easy.
+>
+> To me the existing situation of having two options for submitting
+> a job works well for clients, and my impression is that users
+> understand it OK.  Has the understanding of client and server
+> requirements for short- and long-running jobs changed since
+> TAP 1.0 was specified with both sync and async endpoints?
+>
+> If services don't want to work synchronously under the hood they
+> can provide a sync facade on their asynchronous behaviour,
+> which I believe is what some implementations do already.
+>
+> I would also actually say it's a feature (though maybe an unintended
+> one) that sync jobs typically time out before too long, indicating
+> that the submitted query is actually expensive, which may not be
+> obvious to the ADQL author.
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk           https://www.star.bristol.ac.uk/mbt/
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250715/1fcb7582/attachment.htm>
+
+From paul.harrison at manchester.ac.uk  Tue Jul 15 18:22:24 2025
+From: paul.harrison at manchester.ac.uk (Paul Harrison)
+Date: Tue, 15 Jul 2025 16:22:24 +0000
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+ <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+Message-ID: <E20BE2A3-D7B5-48FF-BC45-EAA9FD39E4C4@manchester.ac.uk>
+
+
+
+> On 15 Jul 2025, at 14:41, Gregory MANTELET via dal <dal at ivoa.net> wrote:
+> 
+> 
+> To be honest, I don't like either this false-sync endpoint. Changing that way
+> the behavior of this endpoint is clearly a breaking change
+
+What I suggested is a backwards compatible extension for ?dumb" clients assuming that they always treat a non-2xx http response is an error. It is still a sync endpoint that can time-out (which could happen in the current UWS/TAP standard definitions) - it is just that the timeout *could* contain information that would allow a slightly less dumb client to see that it might be possible still to obtain the result if they are prepared to wait longer and do the full async protocol. Simple clients do not have to do any more work than before.
+
+Paul.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250715/30ee311c/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 2893 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250715/30ee311c/attachment-0001.p7s>
+
+From SVoutsinas at lsst.org  Wed Jul 16 18:52:46 2025
+From: SVoutsinas at lsst.org (Stelios Voutsinas)
+Date: Wed, 16 Jul 2025 16:52:46 +0000
+Subject: Thoughts on standardizing TAP timeout/error handling
+Message-ID: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+
+Hi everyone,
+
+I wanted to bring up an issue we've been discussing over in the pyvo repo (astropy/pyvo#686) about TAP clients not being able to reliably distinguish query timeouts from other failures.
+
+The basic motivation and problem in question here is that different services handle timeouts in different ways, some return specific HTTP codes, others just drop connections, and it does not currently seem possible for clients to distinguish timeouts from the error message.
+This makes it really hard for clients to know what actually went wrong and whether they should suggest something useful to the user (like "hey try async mode instead").
+
+An initial thought was to investigate if there are any appropriate HTTP codes like 408, but as Mark Taylor pointed out, these aren't appropriate for processing timeouts, and other than that there doesn't seem to be a good standard HTTP code for "query took too long to process." So we've been thinking about other approaches.
+
+
+An idea that was brought up is extending how we handle errors in DALI, but in a way that doesn't break existing clients. The idea is to keep QUERY_STATUS simple (still just ERROR, OK, OVERFLOW) but add some structured info alongside it.
+
+Something like this:
+
+
+<VOTABLE>
+  <RESOURCE type="results">
+    <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+    <INFO name="ERROR_TYPE" value="resource-limit"/>
+    <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+  </RESOURCE>
+</VOTABLE>
+
+
+The nice thing about this is that old clients just see ERROR and handle it however they already do, but newer clients can check the ERROR_TYPE and do something smarter like suggesting async for timeouts, or asking the user to reduce their result size for storage limits.
+
+I'm thinking we could have error types like:
+- resource-limit (with subtypes like time-limit-exceeded, storage-limit-exceeded)
+- authorization (authentication-expired, insufficient-permissions)
+- query-syntax (invalid-adql, table-not-found, etc.)
+
+We could even include some additional context when it's helpful:
+
+<INFO name="ERROR_TYPE" value="resource-limit"/>
+<INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+<INFO name="SYNC_LIMIT_SECONDS" value="30"/>
+<INFO name="ASYNC_LIMIT_SECONDS" value="3600"/>
+
+
+Though I can see the argument that this descriptive metadata might be over-complicating things, and this depends on whether clients would actually use it.
+I think the main thing is agreeing on the error types and subtypes first.
+
+
+This would give clients enough info to make better decisions about retries or remedy recommendation to the user without being too prescriptive about what they should do.
+Markus suggested this might be a good candidate for a standard vocabulary, which makes sense to me. And the approach seems extensible enough that we could add new error types later without breaking anything.
+I think this could be something we try out in a few implementations (DaCHS, Rubin, pyvo, maybe TOPCAT) and see how it works in practice before making it official in DALI.
+
+
+What do you all think? Does this seem like a reasonable direction? Are there other error scenarios we should be thinking about? Any obvious problems with this approach?
+
+The timeout issue is relevant for Rubin because we've decided that we have different timeouts for async vs sync queries and want to push users towards using async, so this would be one step in the direction of making this easier.
+
+So it would be great to find a way forward on this if this seems reasonable. (The full discussion is in the GitHub issue if anyone wants more context on this)
+
+Thanks,
+
+Stelios Voutsinas
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250716/57a53f1d/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Thu Jul 17 09:15:37 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 17 Jul 2025 09:15:37 +0200
+Subject: Thoughts on standardizing TAP timeout/error handling
+In-Reply-To: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+References: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+Message-ID: <20250717071537.y7m6uzhpqqmpwgb6@victor>
+
+Dear Colleagues,
+
+On Wed, Jul 16, 2025 at 04:52:46PM +0000, Stelios Voutsinas via dal wrote:
+> <VOTABLE>
+>   <RESOURCE type="results">
+>     <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+>     <INFO name="ERROR_TYPE" value="resource-limit"/>
+>     <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+>   </RESOURCE>
+> </VOTABLE>
+[...]
+>
+> Markus suggested this might be a good candidate for a standard
+> vocabulary, which makes sense to me. And the approach seems
+> extensible enough that we could add new error types later without
+> breaking anything.
+
+Actually, I was suggesting to *only* have ERROR_TYPE and make its
+value controlled by a vocabulary.  In that way, thanks to the
+hierarchy of the vocabulary, services can communicate types and
+Stelios' subtypes in one go.  A part of the vocabulary could, for
+instance, be:
+
+  resource-limit-exceeded
+    time-limit-exceeded
+    disk-limit-exceeded
+    network-transfer-limit-exceeded
+    request-string-too-long  (though that probably ought to be HTTP-level)
+  client-error
+    parameter-syntax-error
+      bad-adql
+    missing-parameter
+
+...and so on.
+
+If a server says
+
+  <INFO name="ERROR_TYPE" value="bad-adql"/>
+
+a client that has first-hand knowlege of that term knows that there's
+no point re-submitting this query (at least to that server) and
+specifically, that their users need to check their query syntax.
+
+Less sophisticated clients might only classify by the top-level
+concepts, and I claim finding these is easy to do; cf.
+https://ivoa.net/documents/Vocabularies/20230206/REC-Vocabularies-2.1.html#tth_sEc3.2.2
+
+Basically, when the error type is in error_type and you have a dict
+of predefined reactions error_actions, you would write something
+like (actual Python):
+
+
+  # Fetch the vocabulary
+  import requests
+  voc = requests.get(
+    "http://www.ivoa.net/rdf/error-type",
+    headers={"accept": "application/x-desise+json"}
+  ).json()
+
+  # find the most specific reaction ofr error_type
+  while error_type not in error_actions:
+    error_type = voc["terms"][error_type]["narrower"][0]
+
+  error_actions[error_type]()
+
+This will raise an IndexError if no appropriate action can be found,
+but that's easy to change.
+
+If good terms for that error-type vocabulary cross your mind while
+you're thinking about this, please let me know.
+
+Thanks,
+
+              Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Thu Jul 17 10:42:47 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 17 Jul 2025 10:42:47 +0200
+Subject: Thoughts on standardizing TAP timeout/error handling
+In-Reply-To: <20250717071537.y7m6uzhpqqmpwgb6@victor>
+References: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+ <20250717071537.y7m6uzhpqqmpwgb6@victor>
+Message-ID: <4b44d053-1432-424f-ada5-b95eb4c70a44@astro.unistra.fr>
+
+Dear Stelios, Markus and all,
+
+I like this idea of improving error messages by standardizing them with some
+well defined vocabulary. Whether or not having a subtype, I'd say that 
+simpler
+is generally better. I'd be in favor of "ERROR_TYPE" while not being 
+wild against
+the subtype element. Maybe the main type and subtype can be just a way to
+organize the vocabulary document.
+
+> So it would be great?to find a way forward on this if this seems 
+> reasonable. (The full discussion is in the GitHub issue if anyone 
+> wants more context on this)
+
+For those which do not follow GitHub notifications for DALI, here is a 
+pointer to
+the mentioned GitHub issue: https://github.com/ivoa-std/DALI/issues/62
+
+Cheers,
+Gr?gory
+
+
+
+On 17/07/2025 09:15, Markus Demleitner via dal wrote:
+> Dear Colleagues,
+>
+> On Wed, Jul 16, 2025 at 04:52:46PM +0000, Stelios Voutsinas via dal wrote:
+>> <VOTABLE>
+>>    <RESOURCE type="results">
+>>      <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+>>      <INFO name="ERROR_TYPE" value="resource-limit"/>
+>>      <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+>>    </RESOURCE>
+>> </VOTABLE>
+> [...]
+>> Markus suggested this might be a good candidate for a standard
+>> vocabulary, which makes sense to me. And the approach seems
+>> extensible enough that we could add new error types later without
+>> breaking anything.
+> Actually, I was suggesting to *only* have ERROR_TYPE and make its
+> value controlled by a vocabulary.  In that way, thanks to the
+> hierarchy of the vocabulary, services can communicate types and
+> Stelios' subtypes in one go.  A part of the vocabulary could, for
+> instance, be:
+>
+>    resource-limit-exceeded
+>      time-limit-exceeded
+>      disk-limit-exceeded
+>      network-transfer-limit-exceeded
+>      request-string-too-long  (though that probably ought to be HTTP-level)
+>    client-error
+>      parameter-syntax-error
+>        bad-adql
+>      missing-parameter
+>
+> ...and so on.
+>
+> If a server says
+>
+>    <INFO name="ERROR_TYPE" value="bad-adql"/>
+>
+> a client that has first-hand knowlege of that term knows that there's
+> no point re-submitting this query (at least to that server) and
+> specifically, that their users need to check their query syntax.
+>
+> Less sophisticated clients might only classify by the top-level
+> concepts, and I claim finding these is easy to do; cf.
+> https://ivoa.net/documents/Vocabularies/20230206/REC-Vocabularies-2.1.html#tth_sEc3.2.2
+>
+> Basically, when the error type is in error_type and you have a dict
+> of predefined reactions error_actions, you would write something
+> like (actual Python):
+>
+>
+>    # Fetch the vocabulary
+>    import requests
+>    voc = requests.get(
+>      "http://www.ivoa.net/rdf/error-type",
+>      headers={"accept": "application/x-desise+json"}
+>    ).json()
+>
+>    # find the most specific reaction ofr error_type
+>    while error_type not in error_actions:
+>      error_type = voc["terms"][error_type]["narrower"][0]
+>
+>    error_actions[error_type]()
+>
+> This will raise an IndexError if no appropriate action can be found,
+> but that's easy to change.
+>
+> If good terms for that error-type vocabulary cross your mind while
+> you're thinking about this, please let me know.
+>
+> Thanks,
+>
+>                Markus
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250717/f5b99f2f/attachment-0001.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Jul 17 11:02:45 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 17 Jul 2025 11:02:45 +0200
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <E20BE2A3-D7B5-48FF-BC45-EAA9FD39E4C4@manchester.ac.uk>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+ <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+ <E20BE2A3-D7B5-48FF-BC45-EAA9FD39E4C4@manchester.ac.uk>
+Message-ID: <49e61064-132a-496c-95c4-35c901c824c0@astro.unistra.fr>
+
+Thank you Paul for this suggestion. I just commented on the original idea.
+
+Anyway, with the suggestion you've proposed, it means that a service able to
+provide such advanced/smart sync response would have to:
+
+- either always run the query asynchronously
+ ? (even though the sync layer said it timed out, it would keep running 
+in the
+ ?? potential hope someone may click on the "wait for the response" link and
+ ?? switch on the async endpoint)
+
+- or will have to restart the query if the user click on the "wait for 
+the?response"
+ ? link
+
+Maybe there is another technical server solution. If not, any of these 
+solutions
+convince me that this server complexity worth the effort. Let's keep things
+simple.
+
+I still think that such behavior should be applied on client side. And 
+that would
+be even more possible thanks to what Stelios has just proposed with a
+standardized error type in DALI answers. If a sync query fails with a 
+time out
+error, the client can propose to try again in async mode. Then, as I 
+said, a client
+may also decide to run everything on async mode and show immediately
+the result if it succeeded quickly (as TAPHandle does).
+
+Cheers,
+Gr?gory
+
+
+On 15/07/2025 18:22, Paul Harrison wrote:
+>
+>
+>> On 15 Jul 2025, at 14:41, Gregory MANTELET via dal <dal at ivoa.net> wrote:
+>>
+>>
+>> To be honest, I don't like either this false-/sync/endpoint. Changing 
+>> that way
+>> the behavior of this endpoint is clearly a breaking change
+>
+> What I suggested is a backwards compatible extension for ?dumb" 
+> clients assuming that they always treat a non-2xx http response is an 
+> error. It is still a sync endpoint that can time-out (which could 
+> happen in the current UWS/TAP standard definitions) - it is just that 
+> the timeout *could* contain information that would allow a slightly 
+> less dumb client to see that it might be possible still to obtain the 
+> result if they are prepared to wait longer and do the full async 
+> protocol. Simple clients do not have to do any more work than before.
+>
+> Paul.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250717/24e89465/attachment.htm>
+
+From m.b.taylor at bristol.ac.uk  Thu Jul 17 11:29:42 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Thu, 17 Jul 2025 10:29:42 +0100 (BST)
+Subject: Thoughts on standardizing TAP timeout/error handling
+In-Reply-To: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+References: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+Message-ID: <bc711c76-ed5a-7274-bfcd-b8315e97cc6@andromeda.star.bris.ac.uk>
+
+Stelios,
+
+as I said elsewhere I think this looks reasonable, and I agree with
+the idea of trying it out in some services and clients prior to
+actual standardisation.  I'd be happy to prototype some client code
+in topcat if some service implementation out there starts emitting
+error details like this.
+
+Mark
+
+
+On Wed, 16 Jul 2025, Stelios Voutsinas via dal wrote:
+
+> Hi everyone,
+> 
+> I wanted to bring up an issue we've been discussing over in the pyvo repo (astropy/pyvo#686) about TAP clients not being able to reliably distinguish query timeouts from other failures.
+> 
+> The basic motivation and problem in question here is that different services handle timeouts in different ways, some return specific HTTP codes, others just drop connections, and it does not currently seem possible for clients to distinguish timeouts from the error message.
+> This makes it really hard for clients to know what actually went wrong and whether they should suggest something useful to the user (like "hey try async mode instead").
+> 
+> An initial thought was to investigate if there are any appropriate HTTP codes like 408, but as Mark Taylor pointed out, these aren't appropriate for processing timeouts, and other than that there doesn't seem to be a good standard HTTP code for "query took too long to process." So we've been thinking about other approaches.
+> 
+> 
+> An idea that was brought up is extending how we handle errors in DALI, but in a way that doesn't break existing clients. The idea is to keep QUERY_STATUS simple (still just ERROR, OK, OVERFLOW) but add some structured info alongside it.
+> 
+> Something like this:
+> 
+> 
+> <VOTABLE>
+>   <RESOURCE type="results">
+>     <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+>     <INFO name="ERROR_TYPE" value="resource-limit"/>
+>     <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+>   </RESOURCE>
+> </VOTABLE>
+> 
+> 
+> The nice thing about this is that old clients just see ERROR and handle it however they already do, but newer clients can check the ERROR_TYPE and do something smarter like suggesting async for timeouts, or asking the user to reduce their result size for storage limits.
+> 
+> I'm thinking we could have error types like:
+> - resource-limit (with subtypes like time-limit-exceeded, storage-limit-exceeded)
+> - authorization (authentication-expired, insufficient-permissions)
+> - query-syntax (invalid-adql, table-not-found, etc.)
+> 
+> We could even include some additional context when it's helpful:
+> 
+> <INFO name="ERROR_TYPE" value="resource-limit"/>
+> <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+> <INFO name="SYNC_LIMIT_SECONDS" value="30"/>
+> <INFO name="ASYNC_LIMIT_SECONDS" value="3600"/>
+> 
+> 
+> Though I can see the argument that this descriptive metadata might be over-complicating things, and this depends on whether clients would actually use it.
+> I think the main thing is agreeing on the error types and subtypes first.
+> 
+> 
+> This would give clients enough info to make better decisions about retries or remedy recommendation to the user without being too prescriptive about what they should do.
+> Markus suggested this might be a good candidate for a standard vocabulary, which makes sense to me. And the approach seems extensible enough that we could add new error types later without breaking anything.
+> I think this could be something we try out in a few implementations (DaCHS, Rubin, pyvo, maybe TOPCAT) and see how it works in practice before making it official in DALI.
+> 
+> 
+> What do you all think? Does this seem like a reasonable direction? Are there other error scenarios we should be thinking about? Any obvious problems with this approach?
+> 
+> The timeout issue is relevant for Rubin because we've decided that we have different timeouts for async vs sync queries and want to push users towards using async, so this would be one step in the direction of making this easier.
+> 
+> So it would be great to find a way forward on this if this seems reasonable. (The full discussion is in the GitHub issue if anyone wants more context on this)
+> 
+> Thanks,
+> 
+> Stelios Voutsinas
+> 
+> 
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From gregory.mantelet at astro.unistra.fr  Thu Jul 17 12:13:31 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 17 Jul 2025 12:13:31 +0200
+Subject: DAL Running Meeting #21 - Cone Search 1.1
+Message-ID: <d5c8ee16-3d6c-465d-b485-cfe9dd9605ba@astro.unistra.fr>
+
+Dear IVOA members,
+
+As you may already know, the Simple Cone Search protocol has not been
+updated for years. Marco is now in charge of editing this document and has
+already started to collect ideas for the next versions (see GitHub 
+Issues <https://github.com/ivoa-std/ConeSearch/issues>).
+
+Some issues have already been fixed with the intention to release a minor
+revision: 1.1. The idea of this version is to align it as much as 
+possible with
+UCD1+ and DALI (e.g. MAXREC, RESPONSEFORMAT). More features are of
+course planned for future versions (major?).
+
+Marco, Joshua and I would like to start this discussion with as many 
+people as possible, because this is one of the most used DAL protocols. 
+To find the best
+date for this DAL Running Meeting, please, fill the following poll:
+
+https://strawpoll.com/X3nkPpw5LgE
+
+There are 3 possible dates (in early September), each with only one time. If
+none of these dates and times are good for you, please let us know by
+proposing an alternative in comment or by email to Joshua or myself.
+
+The final date for this meeting will be announced on the 1st of September.
+
+Cheers,
+Gr?gory
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250717/b81eedd8/attachment.htm>
+
+From SVoutsinas at lsst.org  Thu Jul 17 20:27:43 2025
+From: SVoutsinas at lsst.org (Stelios Voutsinas)
+Date: Thu, 17 Jul 2025 18:27:43 +0000
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <49e61064-132a-496c-95c4-35c901c824c0@astro.unistra.fr>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+ <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+ <E20BE2A3-D7B5-48FF-BC45-EAA9FD39E4C4@manchester.ac.uk>,
+ <49e61064-132a-496c-95c4-35c901c824c0@astro.unistra.fr>
+Message-ID: <6a7e7897b24b49bcb8c6675d213e3f45@lsst.org>
+
+Dear DAL,
+
+Some thoughts on this interesting discussion:
+
+I do like the idea of Pat's "option 2" and Paul's 504-with-job-URL approach.
+
+For services with resource constraints, I think this addresses a real operational problem.
+In our case for example, we run sync queries asynchronously underneath in an event-based architecture, but supporting sync forces us to keep HTTP connections open, tying up connection pools and memory for what are fundamentally async operations. The continue-as-async pattern would let us be honest about our architecture by starting the query immediately and then releasing the connection if it doesn't complete quickly versus maintaining expensive synchronous operations that don't scale with user load.
+
+
+On the question of why not just use async?
+I think there are good reasons clients may choose to default to sync beyond just simplicity, since sync is stateless and perhaps slightly resource-efficient for clients, i.e one HTTP request, one response, done versus creating jobs, polling loops, cleanup logic and maintaining state across multiple requests.
+
+If the majority of the queries complete within the sync timeout limits for most services sync's resource efficiency makes it a reasonable choice to default.
+In fact as far as I can see pyvo (search method) and Topcat default to sync, but then users hit service timeouts on queries that could complete if given more time.
+
+Also I'm not sure if I would classify this as a breaking change. This actually improves the failure mode rather than breaking it from my perspective.
+
+Currently: sync timeout -> cryptic error -> user frustration (?).
+With continue-as-async: sync timeout -> clear "query running, check here" message.
+
+For "dumb" clients, the user would just get a VOTable back with a message indicating that the job is still executing, and a link to the async job instead of a 504 or cryptic message, whereas smart clients can auto-switch to polling. The success cases remain identical, so I'm not sure if this would be breaking anything.
+
+In terms of the implementation complexity, I do think this would mainly benefit services that run sync jobs as async in the background, and for those I think the implementation seems straightforward.
+For other services which would require architectural changes to support this, I think the optional nature of this allows them to choose whether to spend the effort implementing it. Services could also check whether the user has polled the async endpoint to make the decision whether to stop the query in this case as well if there is concern about computational load of keeping the query running in this case.
+
+
+The fundamental issue I think is that sync mode is structurally limited by HTTP timeouts and connection pools, but potentially can be seen as a good starting point for both users and client libraries. At the same time there is always the question of how visible the TAP execution mode (async/sync) should be to the user vs simplifying the process and number of steps they need to go through get the results they are interested in.
+
+
+I do see an argument for why not just improve the error messages pointing users to async. But I still see a couple limitations that are not addressed if we go that route, which is that the UX experience still isn't great for users of a service that has very low sync limits. They'd have to remember to switch to async mode each time they try to use the client, and in some cases if they are unaware of the protocols it may not be obvious what they have to do. Also we double the computational load, since each query is essentially run twice. Perhaps this is where Markus' idea comes in of advertising limits and a preference for run mode. Where this gets tricky from my point of view is for TAP_SCHEMA queries as mentioned, where we know they will complete quickly and thus they follow a different execution path where sync makes sense.
+
+
+In general for our service both "continue-as-async" and the "preference-in-the-capabilities" approach would help, assuming clients like pyvo/topcat would implement changes to either follow the redirect or switch the execution mode accordingly, slightly leaning towards Option 2 because of the flexibility and the TAP_SCHEMA limitations of the metadata approach. But at the same time Marcus's original proposal is probably the more friction-less approach so I think that would also be a good way forward if the alternative is too contentious.
+
+Cheers,
+Stelios Voutsinas
+
+________________________________
+From: dal <dal-bounces at ivoa.net> on behalf of Gr?gory Mantelet via dal <dal at ivoa.net>
+Sent: Thursday, July 17, 2025 2:02 AM
+To: Paul Harrison
+Cc: dal at ivoa.net
+Subject: Re: TAPRegExt: sync/async preference
+
+Thank you Paul for this suggestion. I just commented on the original idea.
+
+Anyway, with the suggestion you've proposed, it means that a service able to
+provide such advanced/smart sync response would have to:
+
+- either always run the query asynchronously
+  (even though the sync layer said it timed out, it would keep running in the
+   potential hope someone may click on the "wait for the response" link and
+   switch on the async endpoint)
+
+- or will have to restart the query if the user click on the "wait for the response"
+  link
+
+Maybe there is another technical server solution. If not, any of these solutions
+convince me that this server complexity worth the effort. Let's keep things
+simple.
+
+I still think that such behavior should be applied on client side. And that would
+be even more possible thanks to what Stelios has just proposed with a
+standardized error type in DALI answers. If a sync query fails with a time out
+error, the client can propose to try again in async mode. Then, as I said, a client
+may also decide to run everything on async mode and show immediately
+the result if it succeeded quickly (as TAPHandle does).
+
+Cheers,
+Gr?gory
+
+
+On 15/07/2025 18:22, Paul Harrison wrote:
+
+
+On 15 Jul 2025, at 14:41, Gregory MANTELET via dal <dal at ivoa.net><mailto:dal at ivoa.net> wrote:
+
+
+To be honest, I don't like either this false-sync endpoint. Changing that way
+the behavior of this endpoint is clearly a breaking change
+
+What I suggested is a backwards compatible extension for ?dumb" clients assuming that they always treat a non-2xx http response is an error. It is still a sync endpoint that can time-out (which could happen in the current UWS/TAP standard definitions) - it is just that the timeout *could* contain information that would allow a slightly less dumb client to see that it might be possible still to obtain the result if they are prepared to wait longer and do the full async protocol. Simple clients do not have to do any more work than before.
+
+Paul.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250717/712bf5c7/attachment.htm>
+
+From tcivera at cefca.es  Thu Jul 24 12:02:03 2025
+From: tcivera at cefca.es (Tamara Civera)
+Date: Thu, 24 Jul 2025 12:02:03 +0200
+Subject: TAPRegExt: sync/async preference
+In-Reply-To: <6a7e7897b24b49bcb8c6675d213e3f45@lsst.org>
+References: <20250707070948.774krioxdrsfvws6@victor>
+ <e1141cf0-5498-2348-b664-4e50456f232e@andromeda.star.bris.ac.uk>
+ <CAFK8nrq18AvycU-BVFCyqAXw=6xMu=CFvpKu+mE0nTyZatHQFA@mail.gmail.com>
+ <9e7ddbc2-196f-f491-f83f-394f7621b439@andromeda.star.bris.ac.uk>
+ <91dad973-2404-49e3-96fa-11cb8908e6c6@astro.unistra.fr>
+ <E20BE2A3-D7B5-48FF-BC45-EAA9FD39E4C4@manchester.ac.uk>
+ <49e61064-132a-496c-95c4-35c901c824c0@astro.unistra.fr>
+ <6a7e7897b24b49bcb8c6675d213e3f45@lsst.org>
+Message-ID: <90b5a4c1-fc02-4bd5-8d32-7c8ea9d8d57f@cefca.es>
+
+Dear DAL,
+
+
+This is a very interesting discussion. While I don?t have a strong 
+opinion on the async vs sync mode debate, I am particularly interested 
+in the topic of defining different limits,?such as execution time and 
+output size, depending on the type of "mode" (async or sync mode) and 
+whether the user is authenticated or anonymous.
+
+
+At CEFCA/OAJ, we already apply different output limits depending on the 
+execution mode, but currently there is no standard way to communicate 
+this to clients. Additionally, in the future, we would also like to 
+define different limits based on the user?s authentication status. So 
+having a standard mechanism to declare these variations would therefore 
+be very helpful for us.
+
+
+In this context, I believe Markus?s proposal of introducing "limits" 
+blocks could be a very good starting point to address this.
+
+
+Thank you for your efforts and for considering this point.
+
+
+Best regards,
+
+
+Tamara
+
+
+El 17/7/25 a las 20:27, Stelios Voutsinas via dal escribi?:
+> Dear DAL,
+>
+> Some thoughts on this interesting discussion:
+>
+> I do like the idea of Pat's "option 2" and Paul's 504-with-job-URL 
+> approach.
+>
+> For services with resource constraints, I think this addresses a real 
+> operational problem.
+> In our case for example, we run sync queries asynchronously underneath 
+> in an event-based architecture, but supporting sync forces us to keep 
+> HTTP connections open, tying up connection pools and memory for what 
+> are fundamentally async operations. The continue-as-async pattern 
+> would let us be honest about our architecture by starting the query 
+> immediately and then releasing the connection if it doesn't complete 
+> quickly versus maintaining expensive synchronous operations that don't 
+> scale with user load.
+>
+>
+> On the question of why not just use async?
+> I think there are good reasons clients may choose to default to sync 
+> beyond just simplicity, since sync is stateless and perhaps slightly 
+> resource-efficient for clients, i.e one HTTP request, one response, 
+> done versus creating jobs, polling loops, cleanup logic and 
+> maintaining state across multiple requests.
+>
+> If the majority of the queries complete within the sync timeout limits 
+> for most services sync's resource efficiency makes it a reasonable 
+> choice to default.
+> In fact as far as I can see pyvo (search method) and Topcat default to 
+> sync, but then users hit service timeouts on queries that could 
+> complete if given more time.
+>
+> Also I'm not sure if I would classify this as a breaking change. This 
+> actually improves the failure mode rather than breaking it from my 
+> perspective.
+>
+> Currently: sync timeout -> cryptic error -> user frustration (?).
+> With continue-as-async: sync timeout -> clear "query running, check 
+> here" message.
+>
+> For "dumb" clients, the user would just get a VOTable back with a 
+> message indicating that the job is still executing, and a link to the 
+> async job instead of a 504 or cryptic message, whereas smart clients 
+> can auto-switch to polling. The success cases remain identical, so I'm 
+> not sure if this would be breaking anything.
+>
+> In terms of the implementation complexity, I do think this would 
+> mainly benefit services that run sync jobs as async in the background, 
+> and for those I think the implementation seems straightforward.
+> For other services which would require architectural changes to 
+> support this, I think the optional nature of this allows them to 
+> choose whether to spend the effort implementing it. Services could 
+> also check whether the user has polled the async endpoint to make the 
+> decision whether to stop the query in this case as well if there is 
+> concern about computational load of keeping the query running in this 
+> case.
+>
+>
+> The fundamental issue I think is that sync mode is structurally 
+> limited by HTTP timeouts and connection pools, but potentially can be 
+> seen as a good starting point for both users and client libraries. At 
+> the same time there is always the question of how visible the TAP 
+> execution mode (async/sync) should be to the user vs simplifying the 
+> process and number of steps they need to go through get the results 
+> they are interested in.
+>
+>
+> I do see an argument for why not just improve the error messages 
+> pointing users to async. But I still see a couple limitations that are 
+> not addressed if we go that route, which is that the UX experience 
+> still isn't great for users of a service that has very low sync 
+> limits. They'd have to remember to switch to async mode each time they 
+> try to use the client, and in some cases if they are unaware of the 
+> protocols it may not be obvious what they have to do. Also we double 
+> the computational load, since each query is essentially run twice. 
+> Perhaps this is where Markus' idea comes in of advertising limits and 
+> a preference for run mode. Where this gets tricky from my point of 
+> view is for TAP_SCHEMA queries as mentioned, where we know they will 
+> complete quickly and thus they follow a different execution path where 
+> sync makes sense.
+>
+>
+> In general for our service both "continue-as-async" and the 
+> "preference-in-the-capabilities" approach would help, assuming clients 
+> like pyvo/topcat would implement changes to either follow the redirect 
+> or switch the execution mode accordingly, slightly leaning towards 
+> Option 2 because of the flexibility and the TAP_SCHEMA limitations of 
+> the metadata approach. But at the same time Marcus's original proposal 
+> is probably the more friction-less approach so I think that would also 
+> be a good way forward if the alternative is too contentious.
+>
+> Cheers,
+> Stelios Voutsinas
+>
+> ------------------------------------------------------------------------
+> *From:* dal <dal-bounces at ivoa.net> on behalf of Gr?gory Mantelet via 
+> dal <dal at ivoa.net>
+> *Sent:* Thursday, July 17, 2025 2:02 AM
+> *To:* Paul Harrison
+> *Cc:* dal at ivoa.net
+> *Subject:* Re: TAPRegExt: sync/async preference
+> Thank you Paul for this suggestion. I just commented on the original idea.
+>
+> Anyway, with the suggestion you've proposed, it means that a service 
+> able to
+> provide such advanced/smart sync response would have to:
+>
+> - either always run the query asynchronously
+> ? (even though the sync layer said it timed out, it would keep running 
+> in the
+> ?? potential hope someone may click on the "wait for the response" 
+> link and
+> ?? switch on the async endpoint)
+>
+> - or will have to restart the query if the user click on the "wait for 
+> the?response"
+> ? link
+>
+> Maybe there is another technical server solution. If not, any of these 
+> solutions
+> convince me that this server complexity worth the effort. Let's keep 
+> things
+> simple.
+>
+> I still think that such behavior should be applied on client side. And 
+> that would
+> be even more possible thanks to what Stelios has just proposed with a
+> standardized error type in DALI answers. If a sync query fails with a 
+> time out
+> error, the client can propose to try again in async mode. Then, as I 
+> said, a client
+> may also decide to run everything on async mode and show immediately
+> the result if it succeeded quickly (as TAPHandle does).
+>
+> Cheers,
+> Gr?gory
+>
+>
+> On 15/07/2025 18:22, Paul Harrison wrote:
+>>
+>>
+>>> On 15 Jul 2025, at 14:41, Gregory MANTELET via dal <dal at ivoa.net> wrote:
+>>>
+>>>
+>>> To be honest, I don't like either this false-/sync/endpoint. 
+>>> Changing that way
+>>> the behavior of this endpoint is clearly a breaking change
+>>
+>> What I suggested is a backwards compatible extension for ?dumb" 
+>> clients assuming that they always treat a non-2xx http response is an 
+>> error. It is still a sync endpoint that can time-out (which could 
+>> happen in the current UWS/TAP standard definitions) - it is just that 
+>> the timeout *could* contain information that would allow a slightly 
+>> less dumb client to see that it might be possible still to obtain the 
+>> result if they are prepared to wait longer and do the full async 
+>> protocol. Simple clients do not have to do any more work than before.
+>>
+>> Paul.
+>
+-- 
+Tamara Civera Lorenzo
+Scientific Database Engineer
+Logotipo CEFCA 	*Centro de Estudios de F?sica del Cosmos de Arag?n*
+
+  * Plaza San Juan n? 1, piso 2?
+  * 44001 Teruel
+  * Tfno: +34978221266 - Ext: 1116
+  * Fax: +34978602334
+  * Email: tcivera at cefca.es
+  * Url: http://www.cefca.es
+
+Este correo electr?nico y, en su caso,?cualquier archivo adjunto al 
+mismo,?contiene informaci?n de car?cter?confidencial exclusivamente 
+dirigida a su?destinatario. Queda prohibida su?divulgaci?n, copia o 
+distribuci?n a terceros?sin la previa autorizaci?n escrita de?nuestra 
+entidad. En el caso de haber?recibido este correo electr?nico por 
+error,?por favor, elim?nelo de inmediato y?notifique esta circunstancia 
+al?remitente. En conformidad con lo establecido en las?normativas 
+vigentes de Protecci?n de?Datos a nivel nacional y europeo, 
+le?informamos que en la Fundaci?n CEFCA?tenemos un inter?s leg?timo para 
+tratar sus datos de contacto con la finalidad de informarle de?nuestras 
+actividades y?gestionar sus?peticiones. Sus datos no?ser?n cedidos 
+a?terceros, y los?conservaremos s?lo?mientras sea?necesario para 
+el?mantenimiento de?nuestra relaci?n o la?gesti?n de su?solicitud. Puede 
+ejercer sus derechos de acceso,?rectificaci?n y supresi?n de sus datos, 
+as??como los derechos de limitaci?n y?oposici?n a su tratamiento con 
+fines?promocionales, escribiendo a rgpd at cefca.es. Tambi?n?puede 
+dirigirse?a nuestro Delegado de?Protecci?n de?Datos para 
+cualquier?consulta relacionada?con nuestra pol?tica?de 
+privacidad,?escribiendo a dpd at cefca.es .
+------------------------------------------------------------------------
+This email and, when appropriate, any file attached to it, contains 
+confidential information exclusively addressed to its recipient. It is 
+forbidden the disclosure, copying or distribution of this email to third 
+parties without the prior written authorization of our entity. Should 
+you have received this email by mistake, please delete it immediately 
+and notify the sender of this circumstance. According to the provisions 
+of current Data Protection regulations at national and European level, 
+we inform you that at CEFCA we have a legitimate interest to process 
+your contact data in order to inform you of our activities and manage 
+your requests. Your data will not be transferred to third parties, and 
+we will keep it only as long as it is necessary for the maintenance of 
+our relationship or the management of your request. You can exercise 
+your rights of access, rectification and deletion of your data, as well 
+as the rights of limitation and opposition to its treatment for 
+promotional purposes, by writing to rgpd at cefca.es. You can also contact 
+our Data Protection Officer for any query related to our privacy policy, 
+writing to dpd at cefca.es .
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/ad764a0b/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: logo.png
+Type: image/png
+Size: 3470 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/ad764a0b/attachment-0001.png>
+
+From tcivera at cefca.es  Thu Jul 24 13:24:39 2025
+From: tcivera at cefca.es (Tamara Civera)
+Date: Thu, 24 Jul 2025 13:24:39 +0200
+Subject: Thoughts on standardizing TAP timeout/error handling
+In-Reply-To: <bc711c76-ed5a-7274-bfcd-b8315e97cc6@andromeda.star.bris.ac.uk>
+References: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+ <bc711c76-ed5a-7274-bfcd-b8315e97cc6@andromeda.star.bris.ac.uk>
+Message-ID: <a640a198-125c-4eff-93a7-59b6cb185493@cefca.es>
+
+Hi everyone,
+
+I find this topic very interesting and relevant, especially from an 
+operational perspective. I also think the idea of using a controlled 
+hierarchical vocabulary for "ERROR_TYPE" is a great approach. From my 
+experience, I believe it is relatively simple to implement in TAP 
+services, at least in those we manage at CEFCA/OAJ.
+
+Furthermore, if you need any collaboration from the Operations Group to 
+help define it or for any other matter, we would be happy to collaborate 
+in any way we can.
+
+Best regards,
+
+Tamara
+
+El 17/7/25 a las 11:29, Mark Taylor via dal escribi?:
+> Stelios,
+>
+> as I said elsewhere I think this looks reasonable, and I agree with
+> the idea of trying it out in some services and clients prior to
+> actual standardisation.  I'd be happy to prototype some client code
+> in topcat if some service implementation out there starts emitting
+> error details like this.
+>
+> Mark
+>
+>
+> On Wed, 16 Jul 2025, Stelios Voutsinas via dal wrote:
+>
+>> Hi everyone,
+>>
+>> I wanted to bring up an issue we've been discussing over in the pyvo repo (astropy/pyvo#686) about TAP clients not being able to reliably distinguish query timeouts from other failures.
+>>
+>> The basic motivation and problem in question here is that different services handle timeouts in different ways, some return specific HTTP codes, others just drop connections, and it does not currently seem possible for clients to distinguish timeouts from the error message.
+>> This makes it really hard for clients to know what actually went wrong and whether they should suggest something useful to the user (like "hey try async mode instead").
+>>
+>> An initial thought was to investigate if there are any appropriate HTTP codes like 408, but as Mark Taylor pointed out, these aren't appropriate for processing timeouts, and other than that there doesn't seem to be a good standard HTTP code for "query took too long to process." So we've been thinking about other approaches.
+>>
+>>
+>> An idea that was brought up is extending how we handle errors in DALI, but in a way that doesn't break existing clients. The idea is to keep QUERY_STATUS simple (still just ERROR, OK, OVERFLOW) but add some structured info alongside it.
+>>
+>> Something like this:
+>>
+>>
+>> <VOTABLE>
+>>    <RESOURCE type="results">
+>>      <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+>>      <INFO name="ERROR_TYPE" value="resource-limit"/>
+>>      <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+>>    </RESOURCE>
+>> </VOTABLE>
+>>
+>>
+>> The nice thing about this is that old clients just see ERROR and handle it however they already do, but newer clients can check the ERROR_TYPE and do something smarter like suggesting async for timeouts, or asking the user to reduce their result size for storage limits.
+>>
+>> I'm thinking we could have error types like:
+>> - resource-limit (with subtypes like time-limit-exceeded, storage-limit-exceeded)
+>> - authorization (authentication-expired, insufficient-permissions)
+>> - query-syntax (invalid-adql, table-not-found, etc.)
+>>
+>> We could even include some additional context when it's helpful:
+>>
+>> <INFO name="ERROR_TYPE" value="resource-limit"/>
+>> <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+>> <INFO name="SYNC_LIMIT_SECONDS" value="30"/>
+>> <INFO name="ASYNC_LIMIT_SECONDS" value="3600"/>
+>>
+>>
+>> Though I can see the argument that this descriptive metadata might be over-complicating things, and this depends on whether clients would actually use it.
+>> I think the main thing is agreeing on the error types and subtypes first.
+>>
+>>
+>> This would give clients enough info to make better decisions about retries or remedy recommendation to the user without being too prescriptive about what they should do.
+>> Markus suggested this might be a good candidate for a standard vocabulary, which makes sense to me. And the approach seems extensible enough that we could add new error types later without breaking anything.
+>> I think this could be something we try out in a few implementations (DaCHS, Rubin, pyvo, maybe TOPCAT) and see how it works in practice before making it official in DALI.
+>>
+>>
+>> What do you all think? Does this seem like a reasonable direction? Are there other error scenarios we should be thinking about? Any obvious problems with this approach?
+>>
+>> The timeout issue is relevant for Rubin because we've decided that we have different timeouts for async vs sync queries and want to push users towards using async, so this would be one step in the direction of making this easier.
+>>
+>> So it would be great to find a way forward on this if this seems reasonable. (The full discussion is in the GitHub issue if anyone wants more context on this)
+>>
+>> Thanks,
+>>
+>> Stelios Voutsinas
+>>
+>>
+>>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk           https://urldefense.com/v3/__https://www.star.bristol.ac.uk/mbt/__;!!D9dNQwwGXtA!V5TAr7F-mH3RcTdXYEBXmWZL8oPTJllt4A00AcaN7fC0_voWDJUxT1VAL6D6mehRmWodtHGF6w$  
+-- 
+Tamara Civera Lorenzo
+Scientific Database Engineer
+Logotipo CEFCA 	*Centro de Estudios de F?sica del Cosmos de Arag?n*
+
+  * Plaza San Juan n? 1, piso 2?
+  * 44001 Teruel
+  * Tfno: +34978221266 - Ext: 1116
+  * Fax: +34978602334
+  * Email: tcivera at cefca.es
+  * Url: http://www.cefca.es
+
+Este correo electr?nico y, en su caso,?cualquier archivo adjunto al 
+mismo,?contiene informaci?n de car?cter?confidencial exclusivamente 
+dirigida a su?destinatario. Queda prohibida su?divulgaci?n, copia o 
+distribuci?n a terceros?sin la previa autorizaci?n escrita de?nuestra 
+entidad. En el caso de haber?recibido este correo electr?nico por 
+error,?por favor, elim?nelo de inmediato y?notifique esta circunstancia 
+al?remitente. En conformidad con lo establecido en las?normativas 
+vigentes de Protecci?n de?Datos a nivel nacional y europeo, 
+le?informamos que en la Fundaci?n CEFCA?tenemos un inter?s leg?timo para 
+tratar sus datos de contacto con la finalidad de informarle de?nuestras 
+actividades y?gestionar sus?peticiones. Sus datos no?ser?n cedidos 
+a?terceros, y los?conservaremos s?lo?mientras sea?necesario para 
+el?mantenimiento de?nuestra relaci?n o la?gesti?n de su?solicitud. Puede 
+ejercer sus derechos de acceso,?rectificaci?n y supresi?n de sus datos, 
+as??como los derechos de limitaci?n y?oposici?n a su tratamiento con 
+fines?promocionales, escribiendo a rgpd at cefca.es. Tambi?n?puede 
+dirigirse?a nuestro Delegado de?Protecci?n de?Datos para 
+cualquier?consulta relacionada?con nuestra pol?tica?de 
+privacidad,?escribiendo a dpd at cefca.es .
+------------------------------------------------------------------------
+This email and, when appropriate, any file attached to it, contains 
+confidential information exclusively addressed to its recipient. It is 
+forbidden the disclosure, copying or distribution of this email to third 
+parties without the prior written authorization of our entity. Should 
+you have received this email by mistake, please delete it immediately 
+and notify the sender of this circumstance. According to the provisions 
+of current Data Protection regulations at national and European level, 
+we inform you that at CEFCA we have a legitimate interest to process 
+your contact data in order to inform you of our activities and manage 
+your requests. Your data will not be transferred to third parties, and 
+we will keep it only as long as it is necessary for the maintenance of 
+our relationship or the management of your request. You can exercise 
+your rights of access, rectification and deletion of your data, as well 
+as the rights of limitation and opposition to its treatment for 
+promotional purposes, by writing to rgpd at cefca.es. You can also contact 
+our Data Protection Officer for any query related to our privacy policy, 
+writing to dpd at cefca.es .
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/bbb61008/attachment.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: logo.png
+Type: image/png
+Size: 3470 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/bbb61008/attachment.png>
+
+From dower at stsci.edu  Thu Jul 24 21:00:31 2025
+From: dower at stsci.edu (Theresa Dower)
+Date: Thu, 24 Jul 2025 19:00:31 +0000
+Subject: Thoughts on standardizing TAP timeout/error handling
+In-Reply-To: <a640a198-125c-4eff-93a7-59b6cb185493@cefca.es>
+References: <0d83cfcc2bca44f993b1d0eac4e365aa@lsst.org>
+ <bc711c76-ed5a-7274-bfcd-b8315e97cc6@andromeda.star.bris.ac.uk>
+ <a640a198-125c-4eff-93a7-59b6cb185493@cefca.es>
+Message-ID: <CE2A0DCC-9344-45CC-8122-DA47E9412761@stsci.edu>
+
+We at MAST have *just* run into a question of how to note timeout errors from various server- and client- side limits; I wouldn?t mind trying this out as we adjust relevant behavior in our TAP service.
+
+Our context is similar to Rubin?s: we?re just now having to set a longer default timeout for async queries than sync ones, and support user negotiation of async timeouts up to a higher limit using executionDuration. We?re still actively deciding on a good upper limit based on experience with TAP and CASJOBS, but given most queries we get work with shorter limits in sync mode, the preference is for folks to try the simpler sync mode workflow exercising fewer pieces of our infrastructure first. Being able to provide more information when that doesn?t work would be nice.
+
+Cheers,
+--Tessa
+
+From: dal <dal-bounces at ivoa.net> on behalf of Tamara Civera via dal <dal at ivoa.net>
+Reply-To: Tamara Civera <tcivera at cefca.es>
+Date: Thursday, July 24, 2025 at 7:24?AM
+To: "dal at ivoa.net" <dal at ivoa.net>
+Subject: Re: Thoughts on standardizing TAP timeout/error handling
+
+External Email - Use Caution
+
+Hi everyone,
+
+I find this topic very interesting and relevant, especially from an operational perspective. I also think the idea of using a controlled hierarchical vocabulary for "ERROR_TYPE" is a great approach. From my experience, I believe it is relatively simple to implement in TAP services, at least in those we manage at CEFCA/OAJ.
+
+Furthermore, if you need any collaboration from the Operations Group to help define it or for any other matter, we would be happy to collaborate in any way we can.
+
+Best regards,
+
+Tamara
+El 17/7/25 a las 11:29, Mark Taylor via dal escribi?:
+
+Stelios,
+
+
+
+as I said elsewhere I think this looks reasonable, and I agree with
+
+the idea of trying it out in some services and clients prior to
+
+actual standardisation.  I'd be happy to prototype some client code
+
+in topcat if some service implementation out there starts emitting
+
+error details like this.
+
+
+
+Mark
+
+
+
+
+
+On Wed, 16 Jul 2025, Stelios Voutsinas via dal wrote:
+
+
+
+Hi everyone,
+
+
+
+I wanted to bring up an issue we've been discussing over in the pyvo repo (astropy/pyvo#686) about TAP clients not being able to reliably distinguish query timeouts from other failures.
+
+
+
+The basic motivation and problem in question here is that different services handle timeouts in different ways, some return specific HTTP codes, others just drop connections, and it does not currently seem possible for clients to distinguish timeouts from the error message.
+
+This makes it really hard for clients to know what actually went wrong and whether they should suggest something useful to the user (like "hey try async mode instead").
+
+
+
+An initial thought was to investigate if there are any appropriate HTTP codes like 408, but as Mark Taylor pointed out, these aren't appropriate for processing timeouts, and other than that there doesn't seem to be a good standard HTTP code for "query took too long to process." So we've been thinking about other approaches.
+
+
+
+
+
+An idea that was brought up is extending how we handle errors in DALI, but in a way that doesn't break existing clients. The idea is to keep QUERY_STATUS simple (still just ERROR, OK, OVERFLOW) but add some structured info alongside it.
+
+
+
+Something like this:
+
+
+
+
+
+<VOTABLE>
+
+  <RESOURCE type="results">
+
+    <INFO name="QUERY_STATUS" value="ERROR">Query exceeded processing time limit</INFO>
+
+    <INFO name="ERROR_TYPE" value="resource-limit"/>
+
+    <INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+
+  </RESOURCE>
+
+</VOTABLE>
+
+
+
+
+
+The nice thing about this is that old clients just see ERROR and handle it however they already do, but newer clients can check the ERROR_TYPE and do something smarter like suggesting async for timeouts, or asking the user to reduce their result size for storage limits.
+
+
+
+I'm thinking we could have error types like:
+
+- resource-limit (with subtypes like time-limit-exceeded, storage-limit-exceeded)
+
+- authorization (authentication-expired, insufficient-permissions)
+
+- query-syntax (invalid-adql, table-not-found, etc.)
+
+
+
+We could even include some additional context when it's helpful:
+
+
+
+<INFO name="ERROR_TYPE" value="resource-limit"/>
+
+<INFO name="ERROR_SUBTYPE" value="time-limit-exceeded"/>
+
+<INFO name="SYNC_LIMIT_SECONDS" value="30"/>
+
+<INFO name="ASYNC_LIMIT_SECONDS" value="3600"/>
+
+
+
+
+
+Though I can see the argument that this descriptive metadata might be over-complicating things, and this depends on whether clients would actually use it.
+
+I think the main thing is agreeing on the error types and subtypes first.
+
+
+
+
+
+This would give clients enough info to make better decisions about retries or remedy recommendation to the user without being too prescriptive about what they should do.
+
+Markus suggested this might be a good candidate for a standard vocabulary, which makes sense to me. And the approach seems extensible enough that we could add new error types later without breaking anything.
+
+I think this could be something we try out in a few implementations (DaCHS, Rubin, pyvo, maybe TOPCAT) and see how it works in practice before making it official in DALI.
+
+
+
+
+
+What do you all think? Does this seem like a reasonable direction? Are there other error scenarios we should be thinking about? Any obvious problems with this approach?
+
+
+
+The timeout issue is relevant for Rubin because we've decided that we have different timeouts for async vs sync queries and want to push users towards using async, so this would be one step in the direction of making this easier.
+
+
+
+So it would be great to find a way forward on this if this seems reasonable. (The full discussion is in the GitHub issue if anyone wants more context on this)
+
+
+
+Thanks,
+
+
+
+Stelios Voutsinas
+
+
+
+
+
+
+
+
+
+--
+
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+
+m.b.taylor at bristol.ac.uk<mailto:m.b.taylor at bristol.ac.uk>          https://urldefense.com/v3/__https://www.star.bristol.ac.uk/mbt/__;!!D9dNQwwGXtA!V5TAr7F-mH3RcTdXYEBXmWZL8oPTJllt4A00AcaN7fC0_voWDJUxT1VAL6D6mehRmWodtHGF6w$<https://urldefense.com/v3/__https:/www.star.bristol.ac.uk/mbt/__;!!D9dNQwwGXtA!V5TAr7F-mH3RcTdXYEBXmWZL8oPTJllt4A00AcaN7fC0_voWDJUxT1VAL6D6mehRmWodtHGF6w$>
+--
+
+Tamara Civera Lorenzo
+Scientific Database Engineer
+[Logotipo CEFCA]
+
+Centro de Estudios de F?sica del Cosmos de Arag?n
+
+  *   Plaza San Juan n? 1, piso 2?
+  *   44001 Teruel
+  *   Tfno: +34978221266 - Ext: 1116
+  *   Fax: +34978602334
+  *   Email: tcivera at cefca.es<mailto:tcivera at cefca.es>
+  *   Url: http://www.cefca.es<https://urldefense.com/v3/__http:/www.cefca.es__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xHAXiwWo5d7dzpA89VGP8en34NZgdIX5ssUn3OjQQmWDS-UrJmqSaIjvxo6YHrLMrkMpWx3_$>
+
+Este correo electr?nico y, en su caso, cualquier archivo adjunto al mismo, contiene informaci?n de car?cter confidencial exclusivamente dirigida a su destinatario. Queda prohibida su divulgaci?n, copia o distribuci?n a terceros sin la previa autorizaci?n escrita de nuestra entidad. En el caso de haber recibido este correo electr?nico por error, por favor, elim?nelo de inmediato y notifique esta circunstancia al remitente. En conformidad con lo establecido en las normativas vigentes de Protecci?n de Datos a nivel nacional y europeo, le informamos que en la Fundaci?n CEFCA tenemos un inter?s leg?timo para tratar sus datos de contacto con la finalidad de informarle de nuestras actividades y gestionar sus peticiones. Sus datos no ser?n cedidos a terceros, y los conservaremos s?lo mientras sea necesario para el mantenimiento de nuestra relaci?n o la gesti?n de su solicitud. Puede ejercer sus derechos de acceso, rectificaci?n y supresi?n de sus datos, as? como los derechos de limitaci?n y oposici?n a su tratamiento con fines promocionales, escribiendo a rgpd at cefca.es<mailto:rgpd at cefca.es>. Tambi?n puede dirigirse a nuestro Delegado de Protecci?n de Datos para cualquier consulta relacionada con nuestra pol?tica de privacidad, escribiendo a dpd at cefca.es<mailto:dpd at cefca.es> .
+________________________________
+This email and, when appropriate, any file attached to it, contains confidential information exclusively addressed to its recipient. It is forbidden the disclosure, copying or distribution of this email to third parties without the prior written authorization of our entity. Should you have received this email by mistake, please delete it immediately and notify the sender of this circumstance. According to the provisions of current Data Protection regulations at national and European level, we inform you that at CEFCA we have a legitimate interest to process your contact data in order to inform you of our activities and manage your requests. Your data will not be transferred to third parties, and we will keep it only as long as it is necessary for the maintenance of our relationship or the management of your request. You can exercise your rights of access, rectification and deletion of your data, as well as the rights of limitation and opposition to its treatment for promotional purposes, by writing to rgpd at cefca.es<mailto:rgpd at cefca.es>. You can also contact our Data Protection Officer for any query related to our privacy policy, writing to dpd at cefca.es<mailto:dpd at cefca.es> .
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/ca4c4d60/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.png
+Type: image/png
+Size: 3471 bytes
+Desc: image001.png
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250724/ca4c4d60/attachment-0001.png>
+

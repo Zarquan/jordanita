@@ -1,0 +1,57 @@
+Date: Wed, 1 Jul 2026 15:07:36 +0200
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Subject: Text error messages
+Message-ID: <jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>
+In-Reply-To: <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+
+Hi again,
+
+On Tue, Jun 30, 2026 at 03:41:48PM +0100, Dave Morris via dal wrote:
+> On 2026-06-30 13:58, Markus Demleitner via dal wrote:
+> > So... unless someone wants to seriously champion RFC 9457, I'd
+> > hope for Pat's DALI-text spec and move on ...
+>
+> Challenge accepted :-)
+
+Ok, so... what would become possible or noticeably simpler if we did
+adopt RFC 9457 into DALI as compared to adopting the SODA errors
+<https://ivoa.net/documents/SODA/20170517/REC-SODA-1.0.html#tth_sEc5.2>
+into DALI?
+
+And is that benefit really proportional to incurring the load of an
+extra library?  Or the effort of parsing the JSON and XML oneself?
+
+> In the spirit of the P3T team. If there is an existing RFC with several
+> implementations behind it, we should at least evaluate it before we invent
+> our wheel.
+
+The trouble is: We already have (at least) two wheels (VOTable
+QUERY_STATUS and SODA/Datalink plain text).  Pulling in another two
+wheels (RFC 9457 in XML and JSON) and telling people: "Oh, the other
+two wheels suck, and they'll go away in less than 20 years" is
+possible but needs a more than a gut feeling to justify.
+
+> In addition to the Python framework that James cited, it looks like there is
+> a growing ecosystem around creating and consuming RFC-9457 messages.
+
+"Growing" is a word that usually gives me the creeps when I think
+about tech that's supposed to last 20 years.  Few things survive 20
+years of growth.
+
+> I think it is worth a look.
+
+Sure.  But after a (superficial, ok) look I've not come up with a
+credible scenario in which the extra complication over SODA-like
+text/plain messages is worth it.
+
+Thanks,
+
+            Markus
+
+

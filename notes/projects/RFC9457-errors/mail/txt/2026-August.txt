@@ -1,0 +1,405 @@
+From msdemlei at ari.uni-heidelberg.de  Wed Aug  5 08:26:10 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 5 Aug 2026 08:26:10 +0200
+Subject: SCS2 Migration Plan
+In-Reply-To: <CAPx=0xNJWwaky2Y9cZLGcM5w-3CXTtGNmzpLEwhBif55vPA-BA@mail.gmail.com>
+References: <o5np2ducamunktj4pefh7rt6qs444yndqwrwckvksd46nqvwxf@7pvfrtd5vphu>
+ <CAPx=0xNJWwaky2Y9cZLGcM5w-3CXTtGNmzpLEwhBif55vPA-BA@mail.gmail.com>
+Message-ID: <cwigd6srmf73uginjspepugdmf6bv2xjqoa7ayxo4x5air2vzc@xxh46xghun6a>
+
+Hi DAL,
+
+On Tue, Aug 04, 2026 at 11:02:03AM -0700, Stelios Voutsinas wrote:
+> One more question to iron out the details I have is whether it is valid for
+> a service to co-locate both dialects under the same accessURL?
+> If this is allowed, there might be some confusion due to the different
+> error conventions, but I don't know how common a use case that would be or
+> if the spec should take a position one way or another.
+
+I have not thought this through.  Ages ago, it was thought that by
+passing in a VERSION parameter, such a co-location would be simple
+and safe.  We have shelved that idea for many reasons, and I believe
+plannig for it is asking for all kinds of trouble, in particular
+raising the expectation that multiple versions live next to each
+other beyond a (notionally brief) transition time.
+
+My stance would be: If you think you can reliably auto-detect the
+protocol version, I'd not come after you.  But I'd neither design
+protocols such that that is easy nor would I discuss such a design in
+the spec.
+
+URLs are cheap.  Guessing is hard.  I'd use two URIs.
+
+Thanks,
+
+          Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Wed Aug  5 09:54:22 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 5 Aug 2026 09:54:22 +0200
+Subject: SCS2 Migration Plan
+In-Reply-To: <CAPx=0xNJWwaky2Y9cZLGcM5w-3CXTtGNmzpLEwhBif55vPA-BA@mail.gmail.com>
+References: <o5np2ducamunktj4pefh7rt6qs444yndqwrwckvksd46nqvwxf@7pvfrtd5vphu>
+ <CAPx=0xNJWwaky2Y9cZLGcM5w-3CXTtGNmzpLEwhBif55vPA-BA@mail.gmail.com>
+Message-ID: <mh6rbnb6ppae2zxlclmxessk2gj5wwgrcrj4egicuhlryhgdkz@7urfhkzqjhua>
+
+Dear DAL,
+
+On Tue, Aug 04, 2026 at 11:02:03AM -0700, Stelios Voutsinas wrote:
+> "Operators currently running a ConeSearch-1 service SHOULD NOT retire it
+> before the transition team declares the migration window closed. New
+> implementations of SCS2 MAY do so without also standing up a ConeSearch-1
+> interface."
+
+What do you think of <https://github.com/ivoa-std/SCS2/pull/6>?  I've
+made this a little less standardese because the appendix is
+non-normative anyway.
+
+Thanks,
+
+        Markus
+
+
+From stelios.voutsinas at noirlab.edu  Tue Aug  4 20:02:03 2026
+From: stelios.voutsinas at noirlab.edu (Stelios Voutsinas)
+Date: Tue, 4 Aug 2026 11:02:03 -0700
+Subject: SCS2 Migration Plan
+In-Reply-To: <o5np2ducamunktj4pefh7rt6qs444yndqwrwckvksd46nqvwxf@7pvfrtd5vphu>
+References: <o5np2ducamunktj4pefh7rt6qs444yndqwrwckvksd46nqvwxf@7pvfrtd5vphu>
+Message-ID: <CAPx=0xNJWwaky2Y9cZLGcM5w-3CXTtGNmzpLEwhBif55vPA-BA@mail.gmail.com>
+
+Thanks Markus for raising this as well as the pointer to the Gavo record,
+that does resolve my question on #3.
+One more question to iron out the details I have is whether it is valid for
+a service to co-locate both dialects under the same accessURL?
+If this is allowed, there might be some confusion due to the different
+error conventions, but I don't know how common a use case that would be or
+if the spec should take a position one way or another.
+
+On #7 I think your minimal language works for me and fixes my objection,
+that new implementors shouldn't have to stand up a legacy interface they
+have no other reason to build.
+Perhaps to make it even more explicit:
+
+"Operators currently running a ConeSearch-1 service SHOULD NOT retire it
+before the transition team declares the migration window closed. New
+implementations of SCS2 MAY do so without also standing up a ConeSearch-1
+interface."
+
+Thanks,
+
+Stelios
+
+On Mon, Jul 27, 2026 at 5:39?AM Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+> Dear DAL folks,
+>
+> In my loose series of community polling on Stelios' comments on
+> SCS2[1], I'd say the last question (Jul 9th) on POST support is
+> settled in DALI 1.2.  So, let's move on to:
+>
+>   7. Migration plan
+>
+>   I think it's less than ideal and an unnecessary hurdle to have to
+>   require all SCS2 services (including new service creators) to be
+>   accompanied by ConeSearch-1.0 interfaces.
+>   Also, I don't know if it is clear how registry records should be
+>   structured for a service that implements both 1.1 and 2.0
+>   simultaneously (One record or two? Should VOSI capabilities list
+>   both capability types?)
+>   I'd be in favor of exempting new SCS2 ConeSearch implementors of
+>   having to write implementations for both.
+>
+> On the requirement of parallel implementations... well, this is a
+> consequence of the original desideratum "No VO splits" from the
+> College Park talk
+> <https://wiki.ivoa.net/internal/IVOA/InterOpJune2025MVT/lecture-notes.pdf
+> >.
+>
+> Something's got to give, sure, and perhaps it's acceptable if legacy
+> clients don't see the most recent services.  I *would* like to say
+> that until we offcially pull ConeSearch-1, the differences should be
+> as small as possible.  I'd say the minimal language should be "If you
+> already run a ConeSearch-1 service, don't pull it until the
+> transition team tells you to."  I am very grateful for suggestions
+> what to write.
+>
+> The Registry records... well, at least for legacy services they stay
+> as they are, including their granularity, except there will be an
+> extra capability with the SCS2 standardID.  That means that sure, as
+> long as it's there, the VOSI capabilities will have both ConeSearch-1
+> and SCS2 capabilities.  The PoC record:
+>
+>
+> http://dc.g-vo.org/oai.xml?verb=GetRecord&metadataPrefix=ivo_vor&identifier=ivo://org.gavo.dc/gaia/q3/cone
+>
+> shows how it's supposed to look like (or at least I hope so:-).
+>
+> Thanks,
+>
+>            Markus
+>
+>
+> [1] https://github.com/msdemlei/scs2-original-deleteme/issues/2
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260804/a173816c/attachment.htm>
+
+From marco.molinaro at inaf.it  Wed Aug  5 16:29:06 2026
+From: marco.molinaro at inaf.it (Molinaro, Marco)
+Date: Wed, 5 Aug 2026 16:29:06 +0200
+Subject: WD ConeSearch 1.1 - for "final" group review
+Message-ID: <CAFtRUxLFCzC4JSH4dBv5Tswi6u4K9XBJNVYULZP09no_r2cUmw@mail.gmail.com>
+
+Dear DAL,
+
+to move forward with ConeSearch-1.1, please find
+attached here a working draft that is meant to
+collect final feedback and review within the group
+on the updated specification (that covers all the
+1.1 marked issue on github).
+
+While feedback comes in (on this list, on the github
+repo https://github.com/ivoa-std/ConeSearch, on the
+slack DAL channel, ...) the next planned steps are
+for the OpenAPI document to add to the specification,
+and for implementations and validator suite(s).
+
+Thank you for your attention,
+    Marco
+
+-- 
+Marco Molinaro
+INAF - Istituto Nazionale di AstroFisica
+Osservatorio Astronomico di Trieste
+email marco.molinaro at inaf.it
+tel. [+39] 333 33 20 564 [also Telegram]
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260805/346427c7/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: WD-ConeSearch-1.1-20260609.pdf
+Type: application/pdf
+Size: 412456 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260805/346427c7/attachment-0001.pdf>
+
+From gregory.mantelet at astro.unistra.fr  Tue Aug 18 16:31:05 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 18 Aug 2026 16:31:05 +0200
+Subject: ADQL's default branch renamed
+Message-ID: <5065fc43-e001-4355-83d5-a37e911e390b@astro.unistra.fr>
+
+Dear ADQL authors and users,
+
+This is information about the GitHub repository for the ADQL standard.
+You are free to ignore this email if you do not use it.
+
+Taking into account best practices with Git repository, I have changed the
+default branch from `master` to `main`. If you have a fork or a local 
+clone here
+are the commands (as provided by GitHub) to propagate this change on 
+your side:
+
+    git switch master
+    git branch -m master main
+    git fetch origin
+    git branch -u origin/main main
+    git remote set-head origin -a
+
+
+Cheers,
+Gr?gory M.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260818/9f5e8bb0/attachment.htm>
+
+From gpdf at ipac.caltech.edu  Wed Aug 19 06:45:52 2026
+From: gpdf at ipac.caltech.edu (Dubois-Felsmann, Gregory P.)
+Date: Wed, 19 Aug 2026 04:45:52 +0000
+Subject: Canonical RESPONSEFORMAT values to use for different VOTable
+ serializations?
+Message-ID: <BYAPR03MB3560F36979B6350D9119FD3EF4A52@BYAPR03MB3560.namprd03.prod.outlook.com>
+
+Dear colleagues,
+
+A since-superseded draft of TAPRegExt 1.1
+
+https://www.ivoa.net/documents/TAPRegExt/20151117/WD-TAPRegExt-1.1-20151117.html
+
+appears to be the only place on ivoa.net where candidates for canonical RESPONSEFORMAT values for requesting specific serializations of VOTable can be found in a document.
+
+    <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegExt#output-votable-binary2">
+      <mime>application/x-votable+xml;serialization=binary2</mime>
+      <alias>votable/b2</alias>
+    </outputFormat>
+ [...]
+    <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegEXT#output-votable-td">
+      <mime>application/x-votable+xml;serialization=tabledata</mime>
+      <alias>votable/td</alias>
+    </outputFormat>
+
+This example is not in more recent drafts and appears to have been moved to 
+
+https://github.com/ivoa-std/TAPRegExt/blob/0350097178adebbaa32fc9873c796df41839cbb3/sample.xml#L429-L439
+
+    <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegExt#output-votable-binary2">
+      <mime>application/x-votable+xml;serialization=BINARY2</mime>
+      <alias>votable/b2</alias>
+      <alias>votableb2</alias>
+    </outputFormat>
+    <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegExt#output-votable-td">
+      <mime>application/x-votable+xml;serialization=TABLEDATA</mime>
+      <alias>text/xml</alias>
+      <alias>votable/td</alias>
+      <alias>votabletd</alias>
+    </outputFormat>
+
+with changed capitalization and additional aliases (without the "/"s).  That's probably not canonical yet either because a release hasn't been cut from that repo yet. 
+
+Am I missing something somewhere else about this issue?
+
+For new implementers, does it seem like a reasonably safe bet to go with the current sample.xml values?
+
+Many thanks,
+Gregory
+
+From msdemlei at ari.uni-heidelberg.de  Thu Aug 20 11:01:41 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 20 Aug 2026 11:01:41 +0200
+Subject: Canonical RESPONSEFORMAT values to use for different VOTable
+ serializations?
+In-Reply-To: <BYAPR03MB3560F36979B6350D9119FD3EF4A52@BYAPR03MB3560.namprd03.prod.outlook.com>
+References: <BYAPR03MB3560F36979B6350D9119FD3EF4A52@BYAPR03MB3560.namprd03.prod.outlook.com>
+Message-ID: <a642d6bkmg4ji6jgvtznzoszrl7wyqiurxgi6vo2cmyrvuisev@rajb6o7y2342>
+
+Hi Gregory,
+
+On Wed, Aug 19, 2026 at 04:45:52AM +0000, Dubois-Felsmann, Gregory P. via dal wrote:
+> A since-superseded draft of TAPRegExt 1.1
+>
+> https://www.ivoa.net/documents/TAPRegExt/20151117/WD-TAPRegExt-1.1-20151117.html
+>
+> appears to be the only place on ivoa.net where candidates for
+> canonical RESPONSEFORMAT values for requesting specific
+> serializations of VOTable can be found in a document.
+
+Somewhat regrettably, there are no canonical media types for the
+various VOTable serialisations, at least not in the sense of strings
+you can simply compare.
+
+There is the serialization parameter to the application/x-votable+xml
+parameter as defined in VOTable sect. 8:
+<https://ivoa.net/Documents/VOTable/20250116/REC-VOTable-1.5.html#tth_sEc8>.
+
+As is shown there, however, there can be additional parameters, and,
+SIGH, RFC 2045 media types are case-insensitive (oh pain!).  So, with
+the current level of standardisation, you really have to write (or
+use) a media type parser and look at the serialization parameter if
+you want plausible interoperability.
+
+Could we make that simpler?  Sure.  DALI could define canonical,
+opaque strings, for example, possibly building on what TAPRegExt has
+done (the ivoids there were defined before we had the serialization
+parameter, and i probably wouldn't have defined them if it had.  But
+having some pre-defined strings you wouldn't have to parse like
+TAPRegExt's StandardsRegExt keys would still be nice).
+
+Could we make that less haphazard?  Sure.  Someone would need to
+follow the rules of RFC 2045 and mint a proper media type for
+VOTables.  As part of this process, we would produce a document that
+strictly defines the legal parameters for that proper VOTable media
+type.
+
+Yes, that wouldn't alleviate the need for parsing the input to
+RESPONSEFORMAT, but at least we'd finally be following the IETF rules
+by their spirit.  We've thought about that occasionally, but frankly:
+Changing the VOTable media type seems much too difficult by now, and
+the IANA wouldn't let us keep x-votable.  So, I don't think is will
+ever happen, and in a note on "Dirty secrets of the VO" I've always
+wanted to write I'd note about that much.
+
+>     <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegExt#output-votable-binary2">
+>     <outputFormat ivo-id="ivo://ivoa.net/std/TAPRegEXT#output-votable-td">
+>
+> This example is not in more recent drafts and appears to have been moved to
+
+Oh, but it is: See
+<https://github.com/ivoa-std/TAPRegExt/blob/master/sample.xml>.
+
+After all that, here's my implementation advice: don't sweat
+responseformat.  Proper clients shouldn't have much business
+requesting one sort of VOTable over the other, and requesting other
+formats is something that's outside of VO and interoperability
+anyway (for now, at least; this might be different when we bless,
+say, parquet+VOTable as a second first-class response format), so
+there's probably some human in the loop doing something manually.
+
+If you can give them a chance to discover what sort of values they
+can stick into RESPONSEFORMAT, you've done what you can.
+
+Enabling that discovery, however, still is a bit of a problem *right
+now*.  But you can already adopt VODataService 1.3's stat child (cf.
+<https://ivoa.net/documents/VODataService/20260601/PR-VODataService-1.3-20260601.html#tth_sEc3.5>)
+for a RESPONSEFORMAT inputParam in your vs:ParamHTTP interface in
+your capabilities.  That's (regrettably) a somewhat new thing to do,
+but it solves quite a few of our problems, and the earlier we start
+showing this sort of parameter metadata, the earlier our users will
+start looking of it.
+
+Thanks,
+
+         Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Thu Aug 27 15:34:34 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 27 Aug 2026 15:34:34 +0200
+Subject: SLAP2 and the data-source vocabulary
+Message-ID: <4fgmfdl4tag3jqgys45exryfmvku5jehqyxhefcygnui37vw6z@xgwd6wmu7u6g>
+
+Dear Semantics, dear DAL,
+
+You may remember the data-source vocabulary that we're currently
+trying to introduce with VODataService 1.3:
+<https://www.ivoa.net/rdf/data-source/>.
+
+When last discussed in Strasbourg (rather lively), it was about
+telling #abstract-model from #concrete-model.  Now, my hopes that
+#observation is less tricky (for now) turn out to be unjustified.
+This is because on the way to SLAP2, I would like to replace the
+dataSource element in its registry extension with something using
+with the vocabulary (and then probably drop it in favour of the
+VODataService 1.3 dataSource, but that's a minor matter).
+
+The SimpleDALRegExt 1.2 ("SLAP1") content model is
+
+"observational/astrophysical", "observational/laboratory", "theoretical"
+
+-- and I really think we can't tell the line community to disregard
+the difference between the first two concepts.  Since there are
+(essentially) no live SLAP1 services left, we are free to rename
+them, but I think we have to keep the concepts.
+
+In a first stab, I've created #in-situ and #laboratory concepts,
+What do people think?  In particular look at the definitions.  I'm
+aware that you can construct things that violate the principle that
+something should be within one leaf concept only (think of robolabs
+onboard of spacecraft ), but at least I can't make the definitions
+such that these aren't ambiguous (for the record, I think the
+definitions should be written such that robolabs count as in-situ).
+
+Comments welcome, more welcome actually if they come early.
+
+I'd suggest followups should go to semantics.
+
+Thanks,
+
+           Markus
+
+

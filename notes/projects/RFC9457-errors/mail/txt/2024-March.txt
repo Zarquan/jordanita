@@ -1,0 +1,499 @@
+From msdemlei at ari.uni-heidelberg.de  Tue Mar  5 09:31:05 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 5 Mar 2024 09:31:05 +0100
+Subject: VEP-014: product-type#spatial-profile
+Message-ID: <20240305083105.vme3hgyev3roes3x@victor>
+
+Dear WGs concerned,
+
+We have a new VEP of the product-type vocabulary, coming out of the
+work on bringing more radio data into the VO, VEP-014 at
+https://github.com/ivoa-std/VEPs/blob/main/VEP-014.txt
+
+Here is the current text:
+
+  Vocabulary: http://www.ivoa.net/rdf/product-type
+  Author: Vincenzo Galluzzi <vincenzo.galluzzi at inaf.it>
+  Date: 2023-11-13
+
+  New Term: spatial-profile
+  Action: Addition
+  Label: Spatial Profile
+  Description: An observable obtained along a one-dimensional path.
+  Relationships: narrower than #spatially-resolved-dataset
+  Used-in: TBD
+
+  Rationale:
+  Spatial profiles are commonly used in single-dish radio observations,
+  where a cross of about five beams centered on the target object is
+  scanned for computing flux backgrounds or pointing
+  corrections.  Other profiles used in radio astronomy scan over elevation
+  to create opacity corrections.
+
+  Another case for spatial-profile would be when a planetary probe takes
+  measurements along its flight path.  Both sorts of data products clearly
+  need discovery modes of their own because they have analysis modes
+  rather distinct from other data product types.  Whether the different
+  sorts of profiles need further separation remains to be seen in usage.
+
+I would suggest that discussions on the concept itself should happen
+on the Radio IG's mailing list.  Any feedback is most welcome.
+
+Thanks,
+
+         Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Mar  5 09:31:05 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 5 Mar 2024 09:31:05 +0100
+Subject: VEP-014: product-type#spatial-profile
+Message-ID: <20240305083105.vme3hgyev3roes3x@victor>
+
+Dear WGs concerned,
+
+We have a new VEP of the product-type vocabulary, coming out of the
+work on bringing more radio data into the VO, VEP-014 at
+https://github.com/ivoa-std/VEPs/blob/main/VEP-014.txt
+
+Here is the current text:
+
+  Vocabulary: http://www.ivoa.net/rdf/product-type
+  Author: Vincenzo Galluzzi <vincenzo.galluzzi at inaf.it>
+  Date: 2023-11-13
+
+  New Term: spatial-profile
+  Action: Addition
+  Label: Spatial Profile
+  Description: An observable obtained along a one-dimensional path.
+  Relationships: narrower than #spatially-resolved-dataset
+  Used-in: TBD
+
+  Rationale:
+  Spatial profiles are commonly used in single-dish radio observations,
+  where a cross of about five beams centered on the target object is
+  scanned for computing flux backgrounds or pointing
+  corrections.  Other profiles used in radio astronomy scan over elevation
+  to create opacity corrections.
+
+  Another case for spatial-profile would be when a planetary probe takes
+  measurements along its flight path.  Both sorts of data products clearly
+  need discovery modes of their own because they have analysis modes
+  rather distinct from other data product types.  Whether the different
+  sorts of profiles need further separation remains to be seen in usage.
+
+I would suggest that discussions on the concept itself should happen
+on the Radio IG's mailing list.  Any feedback is most welcome.
+
+Thanks,
+
+         Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Mar  5 09:31:05 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 5 Mar 2024 09:31:05 +0100
+Subject: VEP-014: product-type#spatial-profile
+Message-ID: <20240305083105.vme3hgyev3roes3x@victor>
+
+Dear WGs concerned,
+
+We have a new VEP of the product-type vocabulary, coming out of the
+work on bringing more radio data into the VO, VEP-014 at
+https://github.com/ivoa-std/VEPs/blob/main/VEP-014.txt
+
+Here is the current text:
+
+  Vocabulary: http://www.ivoa.net/rdf/product-type
+  Author: Vincenzo Galluzzi <vincenzo.galluzzi at inaf.it>
+  Date: 2023-11-13
+
+  New Term: spatial-profile
+  Action: Addition
+  Label: Spatial Profile
+  Description: An observable obtained along a one-dimensional path.
+  Relationships: narrower than #spatially-resolved-dataset
+  Used-in: TBD
+
+  Rationale:
+  Spatial profiles are commonly used in single-dish radio observations,
+  where a cross of about five beams centered on the target object is
+  scanned for computing flux backgrounds or pointing
+  corrections.  Other profiles used in radio astronomy scan over elevation
+  to create opacity corrections.
+
+  Another case for spatial-profile would be when a planetary probe takes
+  measurements along its flight path.  Both sorts of data products clearly
+  need discovery modes of their own because they have analysis modes
+  rather distinct from other data product types.  Whether the different
+  sorts of profiles need further separation remains to be seen in usage.
+
+I would suggest that discussions on the concept itself should happen
+on the Radio IG's mailing list.  Any feedback is most welcome.
+
+Thanks,
+
+         Markus
+
+
+From ceccobapts at yahoo.fr  Tue Mar  5 10:30:21 2024
+From: ceccobapts at yahoo.fr (Baptiste Cecconi)
+Date: Tue, 5 Mar 2024 10:30:21 +0100
+Subject: VEP-014: product-type#spatial-profile
+In-Reply-To: <20240305083105.vme3hgyev3roes3x@victor>
+References: <20240305083105.vme3hgyev3roes3x@victor>
+Message-ID: <EB5470C9-AC7F-44BF-B907-2932240631E5@yahoo.fr>
+
+Hi all, 
+
+I think this new product-type is fine. There is an equivalent dataproduct-type in EPNcore called "profile", with the following definition:
+
+> Scalar or vectorial measurements along 1 spatial dimension, e.g., atmospheric profiles, atmospheric paths, sub-surface profiles, traverses...
+
+Both terms are clearly equivalent.
+
+I'd just update the description field as (adding "spatial"): 
+> Description: An observable obtained along a one-dimensional spatial path.
+
+
+Baptiste
+
+> Le 5 mars 2024 ? 09:31, Markus Demleitner via dal <dal at ivoa.net> a ?crit :
+> 
+> Dear WGs concerned,
+> 
+> We have a new VEP of the product-type vocabulary, coming out of the
+> work on bringing more radio data into the VO, VEP-014 at
+> https://github.com/ivoa-std/VEPs/blob/main/VEP-014.txt
+> 
+> Here is the current text:
+> 
+>  Vocabulary: http://www.ivoa.net/rdf/product-type
+>  Author: Vincenzo Galluzzi <vincenzo.galluzzi at inaf.it>
+>  Date: 2023-11-13
+> 
+>  New Term: spatial-profile
+>  Action: Addition
+>  Label: Spatial Profile
+>  Description: An observable obtained along a one-dimensional path.
+>  Relationships: narrower than #spatially-resolved-dataset
+>  Used-in: TBD
+> 
+>  Rationale:
+>  Spatial profiles are commonly used in single-dish radio observations,
+>  where a cross of about five beams centered on the target object is
+>  scanned for computing flux backgrounds or pointing
+>  corrections.  Other profiles used in radio astronomy scan over elevation
+>  to create opacity corrections.
+> 
+>  Another case for spatial-profile would be when a planetary probe takes
+>  measurements along its flight path.  Both sorts of data products clearly
+>  need discovery modes of their own because they have analysis modes
+>  rather distinct from other data product types.  Whether the different
+>  sorts of profiles need further separation remains to be seen in usage.
+> 
+> I would suggest that discussions on the concept itself should happen
+> on the Radio IG's mailing list.  Any feedback is most welcome.
+> 
+> Thanks,
+> 
+>         Markus
+> 
+
+
+From gregory.mantelet at astro.unistra.fr  Wed Mar 27 14:47:38 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Wed, 27 Mar 2024 14:47:38 +0100
+Subject: DAL Running Meeting #18 - SODA-next
+Message-ID: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+
+Dear DAL members,
+
+Here is an announcement for a new DAL Running Meeting.
+
+This time, the topic is SODA-next, followed by some other thoughts about 
+DAP(SIA), DataLink implementation and ProvTAP.
+
+    *Date??? :* 18^th April 2024
+    *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+    (Canberra), 10:00 PM PDT (Vancouver))/
+    *Duration:* 1 jour
+    *Location:
+    *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+
+
+    /*Meeting ID:* 967 2230 7540/
+
+    /*Passcode :* FbjtF3/
+
+
+Cheers,
+Gr?gory Mantelet & James Dempsey
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240327/78bffe6f/attachment.htm>
+
+From francois.bonnarel at astro.unistra.fr  Thu Mar 28 23:40:21 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Thu, 28 Mar 2024 23:40:21 +0100
+Subject: DAL Running Meeting #18 - SODA-next
+In-Reply-To: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+Message-ID: <324484ba-6478-4eff-b7a7-3ef8b5768ae7@astro.unistra.fr>
+
+Dear DALers
+
+Here is a teaser on what could be discussed during this meeting.
+
+SODA : there is a PR on github which I already modified after feedback 
+from Pat
+
+includes proposal for :
+
++ pixel cutouts (instead of world coordinates) on all axes are missing 
+(SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #3)
+
++ No possibility to control output WCS by regridding/rebinning exists in 
+SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>. (SODA 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #4)
+
++ It is not possible to query SODA 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> services by MOC (SODA 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #5)
+
++ SODA spec doesn't tell us how to provide dataproduct_type 
+transformation (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> 
+github issue #7)
+
++ Format transformation : FITS to png/jpeg, FITS to HiPS 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS>, HiPS 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS> to FITS etc (SODA 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #14)
+
++ Extracting metadata from the dataset (SODA 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #15)
+
+See github or also : https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA-1_0-Next
+
+Cheers
+
+Fran?ois
+
+Le 27/03/2024 ? 14:47, Gr?gory Mantelet via dal a ?crit?:
+> Dear DAL members,
+>
+> Here is an announcement for a new DAL Running Meeting.
+>
+> This time, the topic is SODA-next, followed by some other thoughts 
+> about DAP(SIA), DataLink implementation and ProvTAP.
+>
+>     *Date??? :* 18^th April 2024
+>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>     (Canberra), 10:00 PM PDT (Vancouver))/
+>     *Duration:* 1 jour
+>     *Location:
+>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>
+>
+>     /*Meeting ID:* 967 2230 7540/
+>
+>     /*Passcode :* FbjtF3/
+>
+>
+> Cheers,
+> Gr?gory Mantelet & James Dempsey
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240328/019190e8/attachment.htm>
+
+From francois.bonnarel at astro.unistra.fr  Fri Mar 29 19:14:23 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Fri, 29 Mar 2024 19:14:23 +0100
+Subject: DAL Running Meeting #18 - SODA-next
+In-Reply-To: <324484ba-6478-4eff-b7a7-3ef8b5768ae7@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <324484ba-6478-4eff-b7a7-3ef8b5768ae7@astro.unistra.fr>
+Message-ID: <fbbc420f-1918-42ad-948a-4630f7fb446e@astro.unistra.fr>
+
+Dear DALers,
+
+Other material that could be discussed in the next running meeting :
+
+*SIA-extended or DAP :*
+
+See https://github.com/ivoa-std/SIA for most issues below
+
+and https://github.com/ivoa-std/DAP for the DAP PR #3
+
+DAP is the extension of SIA to other dataproducts than images and cubes
+
++ input PARAMETERS with limited list of values : better description 
+(github SIA issue #1 <https://github.com/ivoa-std/SIA/issues/1>)
+
++ No input PARAMETER exists to select the RELEASE DATE (github SIA issue 
+#2 <https://github.com/ivoa-std/SIA/issues/2>)
+
++ No Wild-carding of the input PARAMETERS values exists (github SIA 
+issue #3 <https://github.com/ivoa-std/SIA/issues/3>)
+
++ input PARAMETERS values are case sensitive (github SIA issue #4 
+<https://github.com/ivoa-std/SIA/issues/4>)
+
++ 1 shot discovery (and then access) to cutouts was possible in SIA1 but 
+no more in SIA2 (github SIA issue #6 
+<https://github.com/ivoa-std/SIA/issues/6>)
+
++ SIA2 cannot discover rebinned data like SIA1 was able to do (github 
+SIA issue #8) + It is not possible to query SIA services by MOC (github 
+SIA issue #9 <https://github.com/ivoa-std/SIA/issues/9>)
+
++ Update matching in-progressDataLink 
+<https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>update? in examples
+
++ extension of SIA-style protocol usage outside the image/cube "camp" 
+(github SIA issue #10 <https://github.com/ivoa-std/SIA/issues/10>) ----> 
+see DAP PR #3
+
+Apart from github SIA and DAP repositories the discussion can 
+alternatively be read there : 
+https://wiki.ivoa.net/twiki/bin/view/IVOA/SIAP-2_0-Next
+
+*DataLink : *
+
+version 1.1 has been released
+
+There are still points which have been discussed and not integrated
+
+see : https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink-1_1-Next and 
+github repository
+
+  * service descriptor : URL could benefit go be templated (for example
+    to pick up part of the path from the user or from the table and not
+    only parameters). Proposals have been made but it was delayed to
+    next version until some service implement it. (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#27).
+    ProbablyDataLink <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0
+  * DataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>underlying data
+    model : is content_type, content_qualifier, semantiics triplet
+    enough. Should we distinguish conveyed "information" and conveyed
+    "realtionship" (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#44). This is a
+    discussion forDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0.
+  * Service descriptor inputParams enhancing distinction between
+    required and optional parameters (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#51). No obvious
+    solution has been found at the moment.
+  * Service Descriptor to be removed fromDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>and pushed to
+    VOTable (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#53). This is a
+    major revision ofDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>but also of
+    VOTable. Version 2.0. This may also be completed by introduction of
+    the templating mechanism or even more by the use of PDL inside
+    inputParams.
+  * content parameter in datalink mime type. (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#82). This is
+    apparently to be solved in VOTable beforeDataLink1
+    <https://wiki.ivoa.net/twiki/bin/edit/IVOA/DataLink1?topicparent=IVOA.DataLink-1_1-Next;nowysiwyg=0>.1
+    becomes a REC
+  * UCD for ID column in {links} service output . Is not the same as the
+    UCD of ID parameter in anySODA
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>service referring to
+    the ID column in the {links} table. Is that an issue ? apparently
+    not (issueDataLink
+    <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#89)
+
+And a new one (which may be solved by an erratum ?)
+
+  * inputParams could refer to PARAM as alternative to FIELD
+    (https://github.com/ivoa-std/DataLink/issues/115)
+
+*DataLink implementation note :*
+
+**
+
+**
+
+While finishing the DataLink recommendation process we decided to have 
+some non-normalized proposals for recognition in an Implementation Note 
+This is now here : https://github.com/ivoa/DataLinkRecImplNote
+
+And the draft can be read here : 
+https://github.com/ivoa/DataLinkRecImplNote/releases/download/auto-pdf-preview/DataLinkImp-draft.pdf 
+Cheers
+
+Fran?ois
+
+Le 28/03/2024 ? 23:40, BONNAREL FRANCOIS via dal a ?crit?:
+>
+> Dear DALers
+>
+> Here is a teaser on what could be discussed during this meeting.
+>
+> SODA : there is a PR on github which I already modified after feedback 
+> from Pat
+>
+> includes proposal for :
+>
+> + pixel cutouts (instead of world coordinates) on all axes are missing 
+> (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #3)
+>
+> + No possibility to control output WCS by regridding/rebinning exists 
+> in SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>. (SODA 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #4)
+>
+> + It is not possible to query SODA 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> services by MOC (SODA 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #5)
+>
+> + SODA spec doesn't tell us how to provide dataproduct_type 
+> transformation (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> 
+> github issue #7)
+>
+> + Format transformation : FITS to png/jpeg, FITS to HiPS 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS>, HiPS 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS> to FITS etc (SODA 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #14)
+>
+> + Extracting metadata from the dataset (SODA 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #15)
+>
+> See github or also : 
+> https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA-1_0-Next
+>
+> Cheers
+>
+> Fran?ois
+>
+> Le 27/03/2024 ? 14:47, Gr?gory Mantelet via dal a ?crit?:
+>> Dear DAL members,
+>>
+>> Here is an announcement for a new DAL Running Meeting.
+>>
+>> This time, the topic is SODA-next, followed by some other thoughts 
+>> about DAP(SIA), DataLink implementation and ProvTAP.
+>>
+>>     *Date??? :* 18^th April 2024
+>>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>>     (Canberra), 10:00 PM PDT (Vancouver))/
+>>     *Duration:* 1 jour
+>>     *Location:
+>>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>>
+>>
+>>     /*Meeting ID:* 967 2230 7540/
+>>
+>>     /*Passcode :* FbjtF3/
+>>
+>>
+>> Cheers,
+>> Gr?gory Mantelet & James Dempsey
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240329/22232123/attachment-0001.htm>
+

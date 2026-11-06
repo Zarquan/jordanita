@@ -1,0 +1,249 @@
+[
+  {
+    "seq": 1,
+    "date": "Thu, 18 Jun 2026 13:56:17 +0200",
+    "from": "msdemlei at ari.uni-heidelberg.de (Markus Demleitner)",
+    "subject": "SCS2: Non-VOTable errors?",
+    "message_id": "<lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>",
+    "in_reply_to": null,
+    "parent_seq": null,
+    "children_seq": [
+      2,
+      3
+    ],
+    "references_seq": [],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008883.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/01.txt"
+  },
+  {
+    "seq": 2,
+    "date": "Thu, 18 Jun 2026 08:01:10 -0700",
+    "from": "pdowler.cadc at gmail.com (Patrick Dowler)",
+    "subject": "SCS2: Non-VOTable errors?",
+    "message_id": "<CAFK8nrrHTrU5aK6xsPnOgX0pAR8tPiSNfsh2oN5Zwjc9hdaA3g@mail.gmail.com>",
+    "in_reply_to": "<lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>",
+    "parent_seq": 1,
+    "children_seq": [],
+    "references_seq": [
+      1
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008884.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/02.txt"
+  },
+  {
+    "seq": 3,
+    "date": "Thu, 18 Jun 2026 16:56:12 -0700",
+    "from": "stelios.voutsinas at noirlab.edu (Stelios Voutsinas)",
+    "subject": "SCS2: Non-VOTable errors?",
+    "message_id": "<CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>",
+    "in_reply_to": "<lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>",
+    "parent_seq": 1,
+    "children_seq": [
+      4
+    ],
+    "references_seq": [
+      1
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008885.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/03.txt"
+  },
+  {
+    "seq": 4,
+    "date": "Fri, 19 Jun 2026 11:59:18 +0200",
+    "from": "msdemlei at ari.uni-heidelberg.de (Markus Demleitner)",
+    "subject": "SCS2: Non-VOTable errors?",
+    "message_id": "<2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>",
+    "in_reply_to": "<CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>",
+    "parent_seq": 3,
+    "children_seq": [
+      5
+    ],
+    "references_seq": [
+      1,
+      3
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008886.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/04.txt"
+  },
+  {
+    "seq": 5,
+    "date": "Sun, 21 Jun 2026 06:38:14 +0000",
+    "from": "james.tocknell at mq.edu.au (James Tocknell)",
+    "subject": "SCS2: Non-VOTable errors?",
+    "message_id": "<MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>",
+    "in_reply_to": "<2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>",
+    "parent_seq": 4,
+    "children_seq": [
+      6
+    ],
+    "references_seq": [
+      1,
+      3,
+      4
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008887.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/05.txt"
+  },
+  {
+    "seq": 6,
+    "date": "Tue, 30 Jun 2026 14:58:35 +0200",
+    "from": "msdemlei at ari.uni-heidelberg.de (Markus Demleitner)",
+    "subject": "SCS2: Text error messages; New: VERB",
+    "message_id": "<xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>",
+    "in_reply_to": "<MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>",
+    "parent_seq": 5,
+    "children_seq": [
+      7,
+      9
+    ],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008889.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/06.txt"
+  },
+  {
+    "seq": 7,
+    "date": "Tue, 30 Jun 2026 15:41:48 +0100",
+    "from": "dave.morris at metagrid.co.uk (Dave Morris)",
+    "subject": "Text error messages",
+    "message_id": "<956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>",
+    "in_reply_to": "<xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>",
+    "parent_seq": 6,
+    "children_seq": [
+      8
+    ],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-June/008890.html",
+    "source_file": "2026-June.txt",
+    "text_file": "mail/thread/07.txt"
+  },
+  {
+    "seq": 8,
+    "date": "Wed, 1 Jul 2026 15:07:36 +0200",
+    "from": "msdemlei at ari.uni-heidelberg.de (Markus Demleitner)",
+    "subject": "Text error messages",
+    "message_id": "<jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>",
+    "in_reply_to": "<956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>",
+    "parent_seq": 7,
+    "children_seq": [
+      10
+    ],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-July/008891.html",
+    "source_file": "2026-July.txt",
+    "text_file": "mail/thread/08.txt"
+  },
+  {
+    "seq": 9,
+    "date": "Wed, 8 Jul 2026 13:37:51 +0100 (BST)",
+    "from": "m.b.taylor at bristol.ac.uk (Mark Taylor)",
+    "subject": "SCS2: Text error messages; New: VERB",
+    "message_id": "<9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>",
+    "in_reply_to": "<xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>",
+    "parent_seq": 6,
+    "children_seq": [
+      12
+    ],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-July/008892.html",
+    "source_file": "2026-July.txt",
+    "text_file": "mail/thread/09.txt"
+  },
+  {
+    "seq": 10,
+    "date": "Thu, 9 Jul 2026 13:12:59 +0100 (BST)",
+    "from": "m.b.taylor at bristol.ac.uk (Mark Taylor)",
+    "subject": "Text error messages",
+    "message_id": "<615545a-5d36-4de6-31ef-8b49c2e94499@andromeda.star.bris.ac.uk>",
+    "in_reply_to": "<jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>",
+    "parent_seq": 8,
+    "children_seq": [
+      11
+    ],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-July/008893.html",
+    "source_file": "2026-July.txt",
+    "text_file": "mail/thread/10.txt"
+  },
+  {
+    "seq": 11,
+    "date": "Wed, 30 Sep 2026 14:37:21 +0200",
+    "from": "msdemlei at ari.uni-heidelberg.de (Markus Demleitner)",
+    "subject": "Text error messages",
+    "message_id": "<ertxjvatbqn3vmk2o36ayf4qa3yvasuvofsre65popkhdrhuni@qzamffkomv7m>",
+    "in_reply_to": "<615545a-5d36-4de6-31ef-8b49c2e94499@andromeda.star.bris.ac.uk>",
+    "parent_seq": 10,
+    "children_seq": [],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-September/008922.html",
+    "source_file": "2026-September.txt",
+    "text_file": "mail/thread/11.txt"
+  },
+  {
+    "seq": 12,
+    "date": "Thu, 1 Oct 2026 10:48:25 +0200",
+    "from": "gregory.mantelet at astro.unistra.fr (Gregory Mantelet)",
+    "subject": "SCS2: Text error messages; New: VERB",
+    "message_id": "<3b08cdc1-1ff4-4657-9f14-d97c76b2b8ca@astro.unistra.fr>",
+    "in_reply_to": "<9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>",
+    "parent_seq": 9,
+    "children_seq": [],
+    "references_seq": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      9
+    ],
+    "url": "http://mail.ivoa.net/pipermail/dal/2026-October/008924.html",
+    "source_file": "2026-October.txt",
+    "text_file": "mail/thread/12.txt"
+  }
+]

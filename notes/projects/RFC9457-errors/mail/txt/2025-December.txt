@@ -1,0 +1,50 @@
+From msdemlei at ari.uni-heidelberg.de  Tue Dec 23 11:02:10 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 23 Dec 2025 11:02:10 +0100
+Subject: IVOA-science in Softid
+Message-ID: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+
+Dear Colleagues,
+
+As a small piece in the puzzle of how to deal with stupid crawlers
+overloading our services, I have occasionally suggested a small
+secret handshake between legitimate clients and our servers in hopes
+that might be enough to avoid the APIkeycopalypse.
+
+I am, indeed, rather convinced that "follow a standard" would already
+work pretty well to keep out most "AI crawlers", and that
+quasi-standard could be our note on operational identification
+of software components <http://ivoa.net/documents/Notes/softid/>
+(which has quite a few other use cases, too, so if you are writing VO
+clients or servers, please have a look).
+
+For clients, this note has the provision of an IVOA comment.  So far,
+the idea has been that validators would have something like
+
+  User-Agent: STILTS/3.1-4 (IVOA-test http://validators.org/results) Java/1.8.0_181
+
+in their request headers (crawlers would give IVOA-copy), and
+diligent beancounters would remove such requests (done for validation
+in this case) from their usage analyses (as questionable as these may
+be even then).
+
+So far, the standard said that "normal" usage should not give any
+purpose.  Now, giving "science" as a purpose would exactly be such a
+follow-the-standards handshake.
+
+I have now written up a proposal for how this would look like as
+a PR against softid: <https://github.com/ivoa/softid/pull/1>.
+
+What do people think?  As a client, would you adopt it?  As a server,
+can you imagine any use for IVOA-science in user agents?
+
+If sufficiently many people feel this is a good idea: Perhaps it's
+then time to try and get softid endorsed?
+
+Thanks[*],
+
+         Markus
+
+[*] Enjoy your holidays if you have them!
+
+

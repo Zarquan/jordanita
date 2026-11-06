@@ -1,0 +1,72 @@
+Date: Tue, 30 Jun 2026 15:41:48 +0100
+From: dave.morris at metagrid.co.uk (Dave Morris)
+Subject: Text error messages
+Message-ID: <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+In-Reply-To: <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+
+Hi all,
+
+On 2026-06-30 13:58, Markus Demleitner via dal wrote:
+> 
+> So... unless someone wants to seriously champion RFC 9457, I'd
+> hope for Pat's DALI-text spec and move on ...
+> 
+
+Challenge accepted :-)
+
+In the spirit of the P3T team. If there is an existing RFC with several 
+implementations behind it, we should at least evaluate it before we 
+invent our wheel.
+
+In addition to the Python framework that James cited, it looks like 
+there is a growing ecosystem around creating and consuming RFC-9457 
+messages.
+
+We have been talking about standardising our error messages for a while, 
+and at an initial glance RFC-9457 looks like it would be flexible enough 
+to handle the range of things we need to cover, while still being 
+structured enough for clients to handle.
+
+
+Java Spring
+Error Responses :: Spring Framework
+https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html
+
+Java Quarkus
+RFC 9457 Explained: The New Error Handling Standard for Java/Quarkus (vs 
+RFC 7807)
+https://www.the-main-thread.com/p/quarkus-rfc9457-api-error-handling
+
+Swagger OpenAPI
+Problem Details (RFC 9457): Getting Hands-On with API Error Handling
+https://swagger.io/blog/problem-details-rfc9457-api-error-handling/
+
+Swagger OpenAPI
+ProblemDetails | 1.0.0 | smartbear-public | Studio
+https://app.swaggerhub.com/domains/smartbear-public/ProblemDetails/1.0.0
+
+AI agents
+Slashing agent token costs by 98% with RFC 9457-compliant error 
+responses
+https://blog.cloudflare.com/rfc-9457-agent-error-pages/
+
+I think it is worth a look.
+
+Cheers,
+-- Dave
+
+--------
+Dave Morris
+Research Software Engineer
+UK SKA Regional Centre
+Department of Physics and Astronomy
+University of Manchester
+--------
+AIMetrics: []
+--------
+

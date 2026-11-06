@@ -1,0 +1,994 @@
+From gregory.mantelet at astro.unistra.fr  Wed Apr  1 14:57:00 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 1 Apr 2026 14:57:00 +0200
+Subject: Call for contributions to DAL WG session at June 2026 Interop
+Message-ID: <a48b1567-a32a-41c3-a494-565525da1b74@astro.unistra.fr>
+
+Dear DAL and IVOA?members,
+
+The June IVOA Interoperability Meeting 
+<https://indico.ict.inaf.it/event/3454/overview> will take place in 
+Strasbourg (France) from the 8th to the 12th of June 2026. Remote 
+attendance is supported.
+
+As a reminder, if you want to participate to this meeting, do not forget 
+to register on the meeting website 
+<https://indico.ict.inaf.it/event/3454/registrations/1551/> (even you 
+plan to attend remotely).
+
+With this email, Joshua and I invite you to contribute to DAL sessions 
+with a DAL related topic.
+
+    /DAL stands for Data Access Layer. This Working Group aims to define
+    standards and protocols to access data in an interoperable way. Here
+    are few examples of well-known DAL standards: (Simple) Cone Search,
+    SIA (image access), SSA (spectra access), TAP (Table Access
+    Protocol) and ADQL (SQL-like language to query a database). The full
+    list of DAL standards is available on the IVOA Documents page
+    <https://www.ivoa.net/documents/>./
+
+During this interop., you can contribute, remotely or in-person, with a 
+talk presenting implementations, sharing your experience as user, 
+presenting and discussing progress on a DAL standards, or presenting 
+use-cases.
+
+If you are interested, please send your contribution to 
+gregory.mantelet at astro.unistra.fr 
+<mailto:gregory.mantelet at astro.unistra.fr> and jfraustro at stsci.edu 
+<mailto:jfraustro at stsci.edu> with:
+
+  * a speaker name,
+  * a title,
+  * ideally an abstract.
+
+If you are unsure about the suitability of a talk, or are a first time 
+contributor, please get in contact with us.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260401/bb50d50b/attachment.htm>
+
+From paul.harrison at manchester.ac.uk  Thu Apr  2 09:34:46 2026
+From: paul.harrison at manchester.ac.uk (Paul Harrison)
+Date: Thu, 2 Apr 2026 07:34:46 +0000
+Subject: Call for contributions to DAL WG session at June 2026 Interop
+In-Reply-To: <a48b1567-a32a-41c3-a494-565525da1b74@astro.unistra.fr>
+References: <a48b1567-a32a-41c3-a494-565525da1b74@astro.unistra.fr>
+Message-ID: <EFD6252E-1300-4C25-9C4A-E702699C45BC@manchester.ac.uk>
+
+Hi,
+
+I am not sure if this is absolutely worth a talk, but it concerns you both - my group and I believe MAST have been working off a fork of the VOLLT library with the principal aim of using the most recent ADQLLib - which has been living off on a branch in the main repository - I have created https://github.com/Javastro/ADQLLib which has merged the branch and done a few minor cleanups, and most importantly deleted the UWS and TAP code to allow ADQLLib to evolve at its own pace - I would like to propose moving this to the https://github.com/ivoa organisation to allow greater collaboration and participation. There are some open questions such as
+
+* publishing to a maven repository
+* moving any existing documentation to be within the same repository.
+
+Regards,
+	Paul.
+
+> On 1 Apr 2026, at 13:57, Gregory MANTELET via interop <interop at ivoa.net> wrote:
+> 
+> Dear DAL and IVOA members,
+> 
+> The June IVOA Interoperability Meeting [indico.ict.inaf.it] <https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/overview__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w2afq3j_$> will take place in Strasbourg (France) from the 8th to the 12th of June 2026. Remote attendance is supported.
+> 
+> As a reminder, if you want to participate to this meeting, do not forget to register on the meeting website [indico.ict.inaf.it] <https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/registrations/1551/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w8dmueAo$> (even you plan to attend remotely).
+> 
+> With this email, Joshua and I invite you to contribute to DAL sessions with a DAL related topic.
+> 
+> DAL stands for Data Access Layer. This Working Group aims to define standards and protocols to access data in an interoperable way. Here are few examples of well-known DAL standards: (Simple) Cone Search, SIA (image access), SSA (spectra access), TAP (Table Access Protocol) and ADQL (SQL-like language to query a database). The full list of DAL standards is available on the IVOA Documents page [ivoa.net] <https://urldefense.com/v3/__https://www.ivoa.net/documents/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7wwlkDDit$>.
+> 
+> During this interop., you can contribute, remotely or in-person, with a talk presenting implementations, sharing your experience as user, presenting and discussing progress on a DAL standards, or presenting use-cases.
+> 
+> If you are interested, please send your contribution to gregory.mantelet at astro.unistra.fr <mailto:gregory.mantelet at astro.unistra.fr> and jfraustro at stsci.edu <mailto:jfraustro at stsci.edu> with:
+> 
+> a speaker name,
+> a title,
+> ideally an abstract.
+> If you are unsure about the suitability of a talk, or are a first time contributor, please get in contact with us.
+> 
+> Cheers,
+> Gr?gory Mantelet and Joshua Fraustro
+> 
+> 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260402/d8e84b4c/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 2893 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260402/d8e84b4c/attachment-0001.p7s>
+
+From dower at stsci.edu  Thu Apr  2 19:15:07 2026
+From: dower at stsci.edu (Theresa Dower)
+Date: Thu, 2 Apr 2026 17:15:07 +0000
+Subject: Call for contributions to DAL WG session at June 2026 Interop
+In-Reply-To: <EFD6252E-1300-4C25-9C4A-E702699C45BC@manchester.ac.uk>
+References: <a48b1567-a32a-41c3-a494-565525da1b74@astro.unistra.fr>
+ <EFD6252E-1300-4C25-9C4A-E702699C45BC@manchester.ac.uk>
+Message-ID: <PH0PR10MB70807D828BBCE89FD9F92487B551A@PH0PR10MB7080.namprd10.prod.outlook.com>
+
+Paul,
+
+Whether or not it's a session talk, I'd love to help MAST coordinate with you and Gr?gory on this.
+
+We (MAST, but also myself and Joshua directly) are indeed working from a fork of VOLLT, using only the ADQL library portion. The library runs only ADQL-to-database-specific query translation in a Java microservice in our otherwise Python-based TAP stack. No matter where the canonical upstream code lives, we'll probably have to keep working from a fork in the medium term (until we finish migrating away from MAST-specific spatial infrastructure in classes we include) but having a common base to work from separate from the other included libraries would be an improvement. I do like the idea of a codebase used across so many archives and integrated into reference implementations of IVOA standards having a home there if the primary author and github org maintainers support it.
+
+Cheers,
+--Tessa
+
+________________________________
+From: interop on behalf of Paul Harrison via interop
+Sent: Thursday, April 2, 2026 3:34 AM
+To: MANTELET Gr?gory (OBAS); Joshua Fraustro
+Cc: DAL WG; interop at ivoa.net
+Subject: Re: Call for contributions to DAL WG session at June 2026 Interop
+
+Hi,
+
+I am not sure if this is absolutely worth a talk, but it concerns you both - my group and I believe MAST have been working off a fork of the VOLLT library with the principal aim of using the most recent ADQLLib - which has been living off on a branch in the main repository - I have created https://github.com/Javastro/ADQLLib which has merged the branch and done a few minor cleanups, and most importantly deleted the UWS and TAP code to allow ADQLLib to evolve at its own pace - I would like to propose moving this to the https://github.com/ivoa organisation to allow greater collaboration and participation. There are some open questions such as
+
+* publishing to a maven repository
+* moving any existing documentation to be within the same repository.
+
+Regards,
+Paul.
+
+On 1 Apr 2026, at 13:57, Gregory MANTELET via interop <interop at ivoa.net> wrote:
+
+
+Dear DAL and IVOA members,
+
+The June IVOA Interoperability Meeting [indico.ict.inaf.it]<https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/overview__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w2afq3j_$> will take place in Strasbourg (France) from the 8th to the 12th of June 2026. Remote attendance is supported.
+
+As a reminder, if you want to participate to this meeting, do not forget to register on the meeting website [indico.ict.inaf.it]<https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/registrations/1551/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w8dmueAo$> (even you plan to attend remotely).
+
+With this email, Joshua and I invite you to contribute to DAL sessions with a DAL related topic.
+
+DAL stands for Data Access Layer. This Working Group aims to define standards and protocols to access data in an interoperable way. Here are few examples of well-known DAL standards: (Simple) Cone Search, SIA (image access), SSA (spectra access), TAP (Table Access Protocol) and ADQL (SQL-like language to query a database). The full list of DAL standards is available on the IVOA Documents page [ivoa.net]<https://urldefense.com/v3/__https://www.ivoa.net/documents/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7wwlkDDit$>.
+
+During this interop., you can contribute, remotely or in-person, with a talk presenting implementations, sharing your experience as user, presenting and discussing progress on a DAL standards, or presenting use-cases.
+
+If you are interested, please send your contribution to gregory.mantelet at astro.unistra.fr<mailto:gregory.mantelet at astro.unistra.fr> and jfraustro at stsci.edu<mailto:jfraustro at stsci.edu> with:
+
+  *   a speaker name,
+  *   a title,
+  *   ideally an abstract.
+
+If you are unsure about the suitability of a talk, or are a first time contributor, please get in contact with us.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260402/46d88323/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Mon Apr 13 14:45:28 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Mon, 13 Apr 2026 14:45:28 +0200
+Subject: Call for contributions to DAL WG session at June 2026 Interop
+In-Reply-To: <PH0PR10MB70807D828BBCE89FD9F92487B551A@PH0PR10MB7080.namprd10.prod.outlook.com>
+References: <a48b1567-a32a-41c3-a494-565525da1b74@astro.unistra.fr>
+ <EFD6252E-1300-4C25-9C4A-E702699C45BC@manchester.ac.uk>
+ <PH0PR10MB70807D828BBCE89FD9F92487B551A@PH0PR10MB7080.namprd10.prod.outlook.com>
+Message-ID: <ce8a066d-71f4-4b60-a2d5-bd5b47b82626@astro.unistra.fr>
+
+Paul, Theresa,
+
+Thank you for your ideas and contributions.
+
+Some answers, mostly to Paul's ideas:
+
+- About the separation of ADQL-Lib, UWS-Lib and TAP-Lib being all part 
+of VOLLT, I have started this split in the new branch `adql-2.1`. In my 
+plan, all libraries would still be in the same repository, but will be 
+in separate directories, each one corresponding to a Gradle sub-project. 
+This way, too, each library is independent. The advantages are code 
+independence (development in each library) and library dependence (the 
+dependency between TAP-Lib and the two others is explicitly written in 
+the Gradle build file). The drawback is that if you are interested by 
+only one library (as you do) you are forced to get everything. If you 
+are interested, we can still debate about the best solution during the 
+next interop in June in Strasbourg.
+
+- Publication in Maven: I have started this process. I now have the 
+organization `fr.unistra.cds`. I have pushed in there one version of 
+another library (ucidy 
+<https://central.sonatype.com/artifact/fr.unistra.cds/ucidy>). My next 
+step is to push old versions of ADQL-, UWS-, TAP-Lib libraries.
+
+- Documentation: we can split it into two parts: the Javadoc and the 
+tutorial/developer guide (guidelines, FAQ, examples, ...). My plan is to 
+put them both in GitHub instead of 
+https://cdsportal.cds.unistra.fr/adqltuto.
+
+It is not really visible for the moment, but I am close to a new version 
+of ADQL-Lib and TAP-Lib supporting resp. v2.1 and v1.1. I do really hope 
+having something for the Nov. interop this year. After this new version, 
+I'd like to open the development to other contributors than only me ; 
+then, I will write some contributor guidelines in the GitHub repository.
+
+About the DAL contribution, I don't really know whether it is worth 
+having a proper talk for this topic. What do you think having an 
+informal discussion between interested people during a splinter?
+
+Cheers,
+Gr?gory
+
+
+On 4/2/26 19:15, Theresa Dower wrote:
+> Paul,
+>
+> Whether or not it's a session talk, I'd love to help MAST coordinate 
+> with you and Gr?gory on this.
+>
+> We (MAST, but also myself and Joshua directly) are indeed working from 
+> a fork of VOLLT, using only the ADQL library portion. The library runs 
+> only ADQL-to-database-specific query translation in a Java 
+> microservice in our otherwise Python-based TAP stack. No matter where 
+> the canonical upstream code lives, we'll probably have to keep working 
+> from a fork in the medium term (until we finish migrating away from 
+> MAST-specific spatial infrastructure in classes we include) but having 
+> a common base to work from separate from the other included libraries 
+> would be an improvement. I do like the idea of a codebase used across 
+> so many archives and integrated into reference implementations of IVOA 
+> standards having a home there if the primary author and github org 
+> maintainers support it.
+>
+> Cheers,
+> --Tessa
+>
+> ------------------------------------------------------------------------
+> *From:*?interop on behalf of Paul Harrison via interop
+> *Sent:*?Thursday, April 2, 2026 3:34 AM
+> *To:*?MANTELET Gr?gory (OBAS); Joshua Fraustro
+> *Cc:*?DAL WG; interop at ivoa.net
+> *Subject:*?Re: Call for contributions to DAL WG session at June 2026 
+> Interop
+>
+> Hi,
+>
+> I am not sure if this is absolutely worth a talk, but it concerns you 
+> both - my group and I believe MAST have been working off a fork of the 
+> VOLLT library with the principal aim of using the most recent ADQLLib 
+> - which has been living off on a branch in the main repository - I 
+> have created https://github.com/Javastro/ADQLLib 
+> <https://github.com/Javastro/ADQLLib>?which has merged the branch and 
+> done a few minor cleanups, and most importantly deleted the UWS and 
+> TAP code to allow ADQLLib to evolve at its own pace - I would like to 
+> propose moving this to the https://github.com/ivoa 
+> <https://github.com/ivoa>?organisation to allow greater collaboration 
+> and participation. There are some open questions such as
+>
+> * publishing to a maven repository
+> * moving any existing documentation to be within the same repository.
+>
+> Regards,
+> Paul.
+>
+>     On 1 Apr 2026, at 13:57, Gregory MANTELET via interop
+>     <interop at ivoa.net> wrote:
+>
+>     Dear DAL and IVOA?members,
+>
+>     The June IVOA Interoperability Meeting [indico.ict.inaf.it]
+>     <https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/overview__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w2afq3j_$>?will
+>     take place in Strasbourg (France) from the 8th to the 12th of June
+>     2026. Remote attendance is supported.
+>
+>     As a reminder, if you want to participate to this meeting, do not
+>     forget to register on the meeting website [indico.ict.inaf.it]
+>     <https://urldefense.com/v3/__https://indico.ict.inaf.it/event/3454/registrations/1551/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7w8dmueAo$>?(even
+>     you plan to attend remotely).
+>
+>     With this email, Joshua and I invite you to contribute to DAL
+>     sessions with a DAL related topic.
+>
+>         /DAL stands for Data Access Layer. This Working Group aims to
+>         define standards and protocols to access data in an
+>         interoperable way. Here are few examples of well-known DAL
+>         standards: (Simple) Cone Search, SIA (image access), SSA
+>         (spectra access), TAP (Table Access Protocol) and ADQL
+>         (SQL-like language to query a database). The full list of DAL
+>         standards is available on the //IVOA Documents page
+>         [ivoa.net]/
+>         <https://urldefense.com/v3/__https://www.ivoa.net/documents/__;!!PDiH4ENfjr2_Jw!CuyXtJeX_qFTXMbstyNvxhqj4KVkHm0l7pUIo_PXTeo-rWdlpvVJ2N6J_FZtQBIeSg4qK4Kmk9A2ixG7wwlkDDit$>/./
+>
+>     During this interop., you can contribute, remotely or in-person,
+>     with a talk presenting implementations, sharing your experience as
+>     user, presenting and discussing progress on a DAL standards, or
+>     presenting use-cases.
+>
+>     If you are interested, please send your contribution to
+>     gregory.mantelet at astro.unistra.fr
+>     <mailto:gregory.mantelet at astro.unistra.fr>?and jfraustro at stsci.edu
+>     <mailto:jfraustro at stsci.edu>?with:
+>
+>       * a speaker name,
+>       * a title,
+>       * ideally an abstract.
+>
+>     If you are unsure about the suitability of a talk, or are a first
+>     time contributor, please get in contact with us.
+>
+>     Cheers,
+>     Gr?gory Mantelet and Joshua Fraustro
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260413/a8089c25/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Tue Apr 14 15:19:25 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 14 Apr 2026 15:19:25 +0200
+Subject: Proposition of Erratum for ADQL-2.1
+Message-ID: <3db066a4-95e2-4ddd-a8f5-e31d786d9362@astro.unistra.fr>
+
+Dear DAL members,
+
+Following the proposition made (hum...2 years ago) in the GitHub Issue 
+#78 <https://github.com/ivoa-std/ADQL/issues/78>,
+I propose an erratum for ADQL-2.1 in order to add 2 alternative versions 
+of the
+ADQL BNF grammar as auxiliary files:
+
+- textual version <https://github.com/ivoa-std/ADQL/blob/master/adql.bnf>
+ ? (which is actually the source of the grammar include in the ADQL 
+document)
+- HTML version <https://github.com/ivoa-std/ADQL/blob/master/adql-bnf.html>
+ ? (with links to easily navigate inside the BNF ; quite useful for easy and
+ ? quick discovery of this grammar)
+
+Both are only available in GitHub. The idea of this erratum is to make them
+also available through the IVOA Document Repository. Links toward these 
+files
+will then be added inside the Appendix A of the ADQL-2.1 document showing
+the entire BNF.
+
+I have already written the Erratum in the IVOA's twiki:
+
+https://wiki.ivoa.net/twiki/bin/view/IVOA/ADQL-2_1-Err-1
+
+I strongly encourage anyone interested into ADQL to take a look on this.
+
+If you agree or disagree with this erratum or want to comment or change
+anything, do not hesitate to answer to this email or to communicate through
+the GitHub Issue #78 <https://github.com/ivoa-std/ADQL/issues/78>.
+
+If no disagreement, I plan to present this erratum at the next TCG meeting
+in two weeks.
+
+Cheers,
+Gr?gory M.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260414/b3d72ad2/attachment.htm>
+
+From m.b.taylor at bristol.ac.uk  Tue Apr 14 15:24:06 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Tue, 14 Apr 2026 14:24:06 +0100 (BST)
+Subject: Proposition of Erratum for ADQL-2.1
+In-Reply-To: <3db066a4-95e2-4ddd-a8f5-e31d786d9362@astro.unistra.fr>
+References: <3db066a4-95e2-4ddd-a8f5-e31d786d9362@astro.unistra.fr>
+Message-ID: <1436e46e-f618-7daf-27d4-56aa84eed0fb@it076926>
+
+I support this!
+
+On Tue, 14 Apr 2026, Gregory MANTELET via dal wrote:
+
+> Dear DAL members,
+> 
+> Following the proposition made (hum...2 years ago) in the GitHub Issue #78
+> <https://github.com/ivoa-std/ADQL/issues/78>,
+> I propose an erratum for ADQL-2.1 in order to add 2 alternative versions of
+> the
+> ADQL BNF grammar as auxiliary files:
+> 
+> - textual version <https://github.com/ivoa-std/ADQL/blob/master/adql.bnf>
+> ? (which is actually the source of the grammar include in the ADQL document)
+> - HTML version <https://github.com/ivoa-std/ADQL/blob/master/adql-bnf.html>
+> ? (with links to easily navigate inside the BNF ; quite useful for easy and
+> ? quick discovery of this grammar)
+> 
+> Both are only available in GitHub. The idea of this erratum is to make them
+> also available through the IVOA Document Repository. Links toward these files
+> will then be added inside the Appendix A of the ADQL-2.1 document showing
+> the entire BNF.
+> 
+> I have already written the Erratum in the IVOA's twiki:
+> 
+> https://wiki.ivoa.net/twiki/bin/view/IVOA/ADQL-2_1-Err-1
+> 
+> I strongly encourage anyone interested into ADQL to take a look on this.
+> 
+> If you agree or disagree with this erratum or want to comment or change
+> anything, do not hesitate to answer to this email or to communicate through
+> the GitHub Issue #78 <https://github.com/ivoa-std/ADQL/issues/78>.
+> 
+> If no disagreement, I plan to present this erratum at the next TCG meeting
+> in two weeks.
+> 
+> Cheers,
+> Gr?gory M.
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From pdowler.cadc at gmail.com  Tue Apr 14 16:54:28 2026
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Tue, 14 Apr 2026 07:54:28 -0700
+Subject: Proposition of Erratum for ADQL-2.1
+In-Reply-To: <1436e46e-f618-7daf-27d4-56aa84eed0fb@it076926>
+References: <3db066a4-95e2-4ddd-a8f5-e31d786d9362@astro.unistra.fr>
+ <1436e46e-f618-7daf-27d4-56aa84eed0fb@it076926>
+Message-ID: <CAFK8nrpKMAndnQZ52BvS9==X0A__cECFoAvoou5cfEMhB8H=4A@mail.gmail.com>
+
+I also support this
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Tue, 14 Apr 2026 at 06:24, Mark Taylor via dal <dal at ivoa.net> wrote:
+>
+> I support this!
+>
+> On Tue, 14 Apr 2026, Gregory MANTELET via dal wrote:
+>
+> > Dear DAL members,
+> >
+> > Following the proposition made (hum...2 years ago) in the GitHub Issue #78
+> > <https://github.com/ivoa-std/ADQL/issues/78>,
+> > I propose an erratum for ADQL-2.1 in order to add 2 alternative versions of
+> > the
+> > ADQL BNF grammar as auxiliary files:
+> >
+> > - textual version <https://github.com/ivoa-std/ADQL/blob/master/adql.bnf>
+> >   (which is actually the source of the grammar include in the ADQL document)
+> > - HTML version <https://github.com/ivoa-std/ADQL/blob/master/adql-bnf.html>
+> >   (with links to easily navigate inside the BNF ; quite useful for easy and
+> >   quick discovery of this grammar)
+> >
+> > Both are only available in GitHub. The idea of this erratum is to make them
+> > also available through the IVOA Document Repository. Links toward these files
+> > will then be added inside the Appendix A of the ADQL-2.1 document showing
+> > the entire BNF.
+> >
+> > I have already written the Erratum in the IVOA's twiki:
+> >
+> > https://wiki.ivoa.net/twiki/bin/view/IVOA/ADQL-2_1-Err-1
+> >
+> > I strongly encourage anyone interested into ADQL to take a look on this.
+> >
+> > If you agree or disagree with this erratum or want to comment or change
+> > anything, do not hesitate to answer to this email or to communicate through
+> > the GitHub Issue #78 <https://github.com/ivoa-std/ADQL/issues/78>.
+> >
+> > If no disagreement, I plan to present this erratum at the next TCG meeting
+> > in two weeks.
+> >
+> > Cheers,
+> > Gr?gory M.
+> >
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From gregory.mantelet at astro.unistra.fr  Wed Apr 15 13:34:25 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 15 Apr 2026 13:34:25 +0200
+Subject: Proposition of Erratum for ADQL-2.1
+In-Reply-To: <CAFK8nrpKMAndnQZ52BvS9==X0A__cECFoAvoou5cfEMhB8H=4A@mail.gmail.com>
+References: <3db066a4-95e2-4ddd-a8f5-e31d786d9362@astro.unistra.fr>
+ <1436e46e-f618-7daf-27d4-56aa84eed0fb@it076926>
+ <CAFK8nrpKMAndnQZ52BvS9==X0A__cECFoAvoou5cfEMhB8H=4A@mail.gmail.com>
+Message-ID: <0ce0bc65-783f-417e-8160-4928cac3791a@astro.unistra.fr>
+
+Dear DAL members,
+
+Following some comments I have received, the Erratum wording has been
+a bit changed. I have also renamed the file for the textual form into
+`adql-bnf.txt` (instead of `adql.bnf`).
+
+Changes I want to apply once the Erratum if/will be approved are visible in
+the following Pull Request: #105 
+<https://github.com/ivoa-std/ADQL/pull/105>.
+
+Until now, there is no opposition to this Erratum ; only approvals.
+If it is still the case, I will proposed this to the TCG.
+
+Cheers,
+Gr?gory
+
+
+On 4/14/26 16:54, Patrick Dowler via dal wrote:
+> I also support this
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Tue, 14 Apr 2026 at 06:24, Mark Taylor via dal<dal at ivoa.net> wrote:
+>> I support this!
+>>
+>> On Tue, 14 Apr 2026, Gregory MANTELET via dal wrote:
+>>
+>>> Dear DAL members,
+>>>
+>>> Following the proposition made (hum...2 years ago) in the GitHub Issue #78
+>>> <https://github.com/ivoa-std/ADQL/issues/78>,
+>>> I propose an erratum for ADQL-2.1 in order to add 2 alternative versions of
+>>> the
+>>> ADQL BNF grammar as auxiliary files:
+>>>
+>>> - textual version<https://github.com/ivoa-std/ADQL/blob/master/adql.bnf>
+>>>    (which is actually the source of the grammar include in the ADQL document)
+>>> - HTML version<https://github.com/ivoa-std/ADQL/blob/master/adql-bnf.html>
+>>>    (with links to easily navigate inside the BNF ; quite useful for easy and
+>>>    quick discovery of this grammar)
+>>>
+>>> Both are only available in GitHub. The idea of this erratum is to make them
+>>> also available through the IVOA Document Repository. Links toward these files
+>>> will then be added inside the Appendix A of the ADQL-2.1 document showing
+>>> the entire BNF.
+>>>
+>>> I have already written the Erratum in the IVOA's twiki:
+>>>
+>>> https://wiki.ivoa.net/twiki/bin/view/IVOA/ADQL-2_1-Err-1
+>>>
+>>> I strongly encourage anyone interested into ADQL to take a look on this.
+>>>
+>>> If you agree or disagree with this erratum or want to comment or change
+>>> anything, do not hesitate to answer to this email or to communicate through
+>>> the GitHub Issue #78<https://github.com/ivoa-std/ADQL/issues/78>.
+>>>
+>>> If no disagreement, I plan to present this erratum at the next TCG meeting
+>>> in two weeks.
+>>>
+>>> Cheers,
+>>> Gr?gory M.
+>>>
+>> --
+>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260415/2fee7a73/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Wed Apr 15 15:14:06 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 15 Apr 2026 15:14:06 +0200
+Subject: "generated" as column/param flag
+Message-ID: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+
+Dear DAL, dear Registry,
+
+In the TAP issue https://github.com/ivoa-std/TAP/issues/11, Pat and I
+found that it would be really desirable to align the flags (indexed,
+std, principal, primary, nullable) we have for columns (in
+TAP_SCHEMA.columns) and TableParam-s (in VODataService tablesets).
+
+The immediate occasion was that we should have a way to signal "What
+you see on output in here is not necessarily what is in the database"
+or, in effect, "you cannot write constraints against this column".
+The classic use case from my end is that for most access_urls, DaCHS
+stores a relative path and produces an appropriate URL based on where
+it thinks it is running.  But there are many other use cases as well.
+
+To address that, I am proposing a flag in the sense of TAP issue #11
+for VODataService given it is nearing PR/RFC:
+<https://github.com/ivoa-std/VODataService/pull/17>.
+
+We were thinking about a good literal for this flag; I came up with
+"unconstrainable", but that's a lot of letters and perhaps a bit
+over-specific.  What I propose now is "generated".
+
+So... what do people think?
+
+Thanks,
+
+          Markus
+
+
+
+From pdowler.cadc at gmail.com  Wed Apr 15 15:58:39 2026
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Wed, 15 Apr 2026 06:58:39 -0700
+Subject: "generated" as column/param flag
+In-Reply-To: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+References: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+Message-ID: <CAFK8nrp1aGgyxBfNu-UU1ZJgUOtLzZmikzrTMkKBYBE=F1e82w@mail.gmail.com>
+
++1 for generated
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Wed, 15 Apr 2026 at 06:40, Markus Demleitner via dal <dal at ivoa.net> wrote:
+>
+> Dear DAL, dear Registry,
+>
+> In the TAP issue https://github.com/ivoa-std/TAP/issues/11, Pat and I
+> found that it would be really desirable to align the flags (indexed,
+> std, principal, primary, nullable) we have for columns (in
+> TAP_SCHEMA.columns) and TableParam-s (in VODataService tablesets).
+>
+> The immediate occasion was that we should have a way to signal "What
+> you see on output in here is not necessarily what is in the database"
+> or, in effect, "you cannot write constraints against this column".
+> The classic use case from my end is that for most access_urls, DaCHS
+> stores a relative path and produces an appropriate URL based on where
+> it thinks it is running.  But there are many other use cases as well.
+>
+> To address that, I am proposing a flag in the sense of TAP issue #11
+> for VODataService given it is nearing PR/RFC:
+> <https://github.com/ivoa-std/VODataService/pull/17>.
+>
+> We were thinking about a good literal for this flag; I came up with
+> "unconstrainable", but that's a lot of letters and perhaps a bit
+> over-specific.  What I propose now is "generated".
+>
+> So... what do people think?
+>
+> Thanks,
+>
+>           Markus
+>
+>
+
+From jfraustro at stsci.edu  Wed Apr 15 16:45:08 2026
+From: jfraustro at stsci.edu (Joshua Fraustro)
+Date: Wed, 15 Apr 2026 14:45:08 +0000
+Subject: "generated" as column/param flag
+In-Reply-To: <CAFK8nrp1aGgyxBfNu-UU1ZJgUOtLzZmikzrTMkKBYBE=F1e82w@mail.gmail.com>
+References: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+ <CAFK8nrp1aGgyxBfNu-UU1ZJgUOtLzZmikzrTMkKBYBE=F1e82w@mail.gmail.com>
+Message-ID: <CH2PR10MB434321F3612D9891C29E6F6DAE222@CH2PR10MB4343.namprd10.prod.outlook.com>
+
+I think this is a good idea, but I might offer that the first thing I thought of when seeing ?generated? is ?simulated/synthetic data?.
+
+The only things I could offer as alternatives, in order of quality, I think are:
+
+?computed?
+?derived?
+?dynamic?
+
+The problem with all three of those is something that we run into with a number of things in TAP_SCHEMA, which is the distinction between whether we?re actually describing the data or what a user can meaningfully do with it.
+
+If it?s about the data, the above might be a hair better. But if it?s simply about whether a user can filter? on the data, might I suggest just, filterable? ?
+
+From: registry <registry-bounces at ivoa.net> on behalf of Patrick Dowler via registry <registry at ivoa.net>
+Date: Wednesday, April 15, 2026 at 9:59?AM
+To: dal at ivoa.net <dal at ivoa.net>; registry at ivoa.net <registry at ivoa.net>
+Subject: Re: "generated" as column/param flag
+
+External Email - Use Caution
+
++1 for generated
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Wed, 15 Apr 2026 at 06:40, Markus Demleitner via dal <dal at ivoa.net> wrote:
+>
+> Dear DAL, dear Registry,
+>
+> In the TAP issue https://urldefense.com/v3/__https://github.com/ivoa-std/TAP/issues/11__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0NPj16JCZWyKwR44NKUjCNd3yTmk4xa5nGeafwhnWMJ2zaY9IP9iT2W05dVfpQOL6AlqgKUYQIyYVKUBsg$ , Pat and I
+> found that it would be really desirable to align the flags (indexed,
+> std, principal, primary, nullable) we have for columns (in
+> TAP_SCHEMA.columns) and TableParam-s (in VODataService tablesets).
+>
+> The immediate occasion was that we should have a way to signal "What
+> you see on output in here is not necessarily what is in the database"
+> or, in effect, "you cannot write constraints against this column".
+> The classic use case from my end is that for most access_urls, DaCHS
+> stores a relative path and produces an appropriate URL based on where
+> it thinks it is running.  But there are many other use cases as well.
+>
+> To address that, I am proposing a flag in the sense of TAP issue #11
+> for VODataService given it is nearing PR/RFC:
+> <https://urldefense.com/v3/__https://github.com/ivoa-std/VODataService/pull/17__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0NPj16JCZWyKwR44NKUjCNd3yTmk4xa5nGeafwhnWMJ2zaY9IP9iT2W05dVfpQOL6AlqgKUYQIxwclF2vw$ >.
+>
+> We were thinking about a good literal for this flag; I came up with
+> "unconstrainable", but that's a lot of letters and perhaps a bit
+> over-specific.  What I propose now is "generated".
+>
+> So... what do people think?
+>
+> Thanks,
+>
+>           Markus
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260415/a65a9152/attachment-0001.htm>
+
+From juaristi at uni-heidelberg.de  Wed Apr 15 17:13:54 2026
+From: juaristi at uni-heidelberg.de (Juaristi Campillo, Jon)
+Date: Wed, 15 Apr 2026 17:13:54 +0200
+Subject: "generated" as column/param flag
+In-Reply-To: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+References: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+Message-ID: <20260415171354.24eda9d8@uni-heidelberg.de>
+
+Dear Markus, DAL, and Registry,
+
+On 2026/04/15 15:14 +0200, Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+>Dear DAL, dear Registry,
+>
+>In the TAP issue https://github.com/ivoa-std/TAP/issues/11, Pat and I
+>found that it would be really desirable to align the flags (indexed,
+>std, principal, primary, nullable) we have for columns (in
+>TAP_SCHEMA.columns) and TableParam-s (in VODataService tablesets).
+>
+>The immediate occasion was that we should have a way to signal "What
+>you see on output in here is not necessarily what is in the database"
+>or, in effect, "you cannot write constraints against this column".
+>The classic use case from my end is that for most access_urls, DaCHS
+>stores a relative path and produces an appropriate URL based on where
+>it thinks it is running.  But there are many other use cases as well.
+>
+>To address that, I am proposing a flag in the sense of TAP issue #11
+>for VODataService given it is nearing PR/RFC:
+><https://github.com/ivoa-std/VODataService/pull/17>.
+>
+>We were thinking about a good literal for this flag; I came up with
+>"unconstrainable", but that's a lot of letters and perhaps a bit
+>over-specific.  What I propose now is "generated".
+>
+>So... what do people think?
+
+I will go against the current here, sorry.
+
+I think ?generated?, ?computed?, ?derived? and such give an
+impression that the column has been computed from others (as in
+conversions, for instance). At least that is the nomenclature some SQL
+tools use. Postgres, for instance:
+https://www.postgresql.org/docs/current/ddl-generated-columns.html
+
+What about ?immutable?/?mutable?? I think it carries the meaning of
+?What you see on output in here is not necessarily what is in the
+database" or viceversa.
+
+Best regards,
+   Jon
+
+From msdemlei at ari.uni-heidelberg.de  Thu Apr 16 10:32:33 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 16 Apr 2026 10:32:33 +0200
+Subject: "generated" as column/param flag
+In-Reply-To: <CH2PR10MB434321F3612D9891C29E6F6DAE222@CH2PR10MB4343.namprd10.prod.outlook.com>
+References: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+ <CAFK8nrp1aGgyxBfNu-UU1ZJgUOtLzZmikzrTMkKBYBE=F1e82w@mail.gmail.com>
+ <CH2PR10MB434321F3612D9891C29E6F6DAE222@CH2PR10MB4343.namprd10.prod.outlook.com>
+Message-ID: <4bw5r4qgvw7lahkx43aen3mw2bba6b4batx2o3w75pw3hrscrc@qh6qoqh7bimr>
+
+Dear Joshua,
+
+On Wed, Apr 15, 2026 at 02:45:08PM +0000, Joshua Fraustro via dal wrote:
+> The only things I could offer as alternatives, in order of quality,
+> I think are:
+>
+> ?computed?
+> ?derived?
+> ?dynamic?
+>
+> The problem with all three of those is something that we run into
+> with a number of things in TAP_SCHEMA, which is the distinction
+> between whether we?re actually describing the data or what a user
+> can meaningfully do with it.
+
+Right.  My approach to questions like this tends to be: "Take the
+user perspective".  This is because the VO is still dominated by data
+providers, and hence that perspective tends to be under-represented.
+More importantly, my experience with VO standards is that they
+are best when they are constructed from what the users are supposed
+to do with them and worst when data providers think about all the
+great things they would want to tell their users.
+
+That inspired my first suggestion, unconstrainable.
+
+> If it?s about the data, the above might be a hair better. But if
+> it?s simply about whether a user can filter? on the data,
+> might I suggest just, filterable? ?
+
+I don't like filterable much because that's the default and we'd have
+to put it into the flags of most columns, which I'd like to avoid.
+The special case hence would be "unfilterable", which is almost as
+long and ugly as unconstrainable but IMHO a bit less precise because
+it's constraints that you can't write (in ADQL), whereas I think
+"filter" just doesn't exist in VO lingo (outside of VOEvent?) yet.
+
+In the PR, the cute option "no-where" came up.  The more I think of it,
+the more I like it.  Admittedly, it's strongly geared towards
+SQL-like query languages, but I don't consider that a major wart, as
+that's the model for almost anything out there (cf. SPARQL).  And
+it's something that shouldn't cause any false associations.
+
+As to Jon's proposal ?immutable?/?mutable?...  Well, "mutable" has a
+strong meaning already that is quite a bit away from what we are
+struggling with here.  So I'd prefer generated over that.
+
+Well: I've updated the PR and rebased it to a previous VODataService
+PR that already had all the whitespace noise (thanks, Mark) so it's a
+lot more readable now.  I've kept "generated" as literal for now but
+changed the definition to Pat's proposal:
+
+  values in this column are generated during output and query
+  constraints cannot be used
+
+While I think that's *a bit* overspecific because I'd like to use
+this flag also when I, say, store some binary data in a database
+column and want to tell people there's no meaningful way to
+constraint that for the time being, it feels more understandable to
+me than my previous attempt.
+
+So... are there people who absolutely couldn't live with "generated"?
+And are the improvements on Pat's definition?
+
+Thanks,
+
+          Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Fri Apr 17 14:17:17 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Fri, 17 Apr 2026 14:17:17 +0200
+Subject: "generated" as column/param flag
+In-Reply-To: <4bw5r4qgvw7lahkx43aen3mw2bba6b4batx2o3w75pw3hrscrc@qh6qoqh7bimr>
+References: <yge5qp7eago5gy7gi2o76zkp5udrj5rmqxtlff7pgvkuswujsd@ctbyqauxkb4r>
+ <CAFK8nrp1aGgyxBfNu-UU1ZJgUOtLzZmikzrTMkKBYBE=F1e82w@mail.gmail.com>
+ <CH2PR10MB434321F3612D9891C29E6F6DAE222@CH2PR10MB4343.namprd10.prod.outlook.com>
+ <4bw5r4qgvw7lahkx43aen3mw2bba6b4batx2o3w75pw3hrscrc@qh6qoqh7bimr>
+Message-ID: <04e708ba-2c34-4fac-a691-e2732418cc28@astro.unistra.fr>
+
+Dear all,
+
+I like the intent of this new flag. It promises to be useful in some use 
+cases.
+
+First, let me copy paste here my comment in the Issue #11 
+<https://github.com/ivoa-std/TAP/issues/11>:
+
+> From the most preferred to the 
+> least:|no-where|,|unsearchable|,|generated|,
+> |unconstrainable|.
+>
+> What I like with|no-where|is that it is short and immediately 
+> meaningful for
+> users: you know that you should not use|WHERE|with it. The same for
+> |unsearchable|, although it is a bit too long and requires a bit more 
+> thinking.
+> |generated|is OK, but I tend to think it is a bit too specific....I 
+> don't have any
+> example in mind right now, but there may be other reasons why one should
+> not use|WHERE|with a given column other than it is generated.
+>
+> And similarly to |unsearchable|(actually, probably worse), a user have 
+> to think
+> about the consequence of a/generated column/. Here,/generated/is the 
+> way the
+> data has been provided, but you must have a minimum of database or 
+> computer
+> knowledge to imagine that a constraint on this column will be slower 
+> than any
+> other column. A user have to think about it. You do not have this 
+> whole thinking
+> when you read|no-where|; and actually, you do not have to know the 
+> reason why
+> you should not use this column in a|WHERE|.
+>
+
+Then, I agree with Markus about "mutable"/"immutable". For me, this conveys
+the idea of a data that can or not be changed. It is not natural for a 
+user to
+realize what that means in a context of TAP where no data can be changed
+anyway. And of course, it is not because a column can or not be changed that
+it can or not be constraint.
+
+I also agree with Joshua and Markus about "computed", "derived" and
+"dynamic" although this last one is comparable to "generated".
+
+In brief, I have no objection to `generated`, but I agree that better could
+probably be found, although I have no better proposition yet.
+
+Cheers,
+Gr?gory
+
+
+On 4/16/26 10:32, Markus Demleitner via dal wrote:
+> Dear Joshua,
+>
+> On Wed, Apr 15, 2026 at 02:45:08PM +0000, Joshua Fraustro via dal wrote:
+>> The only things I could offer as alternatives, in order of quality,
+>> I think are:
+>>
+>> ?computed?
+>> ?derived?
+>> ?dynamic?
+>>
+>> The problem with all three of those is something that we run into
+>> with a number of things in TAP_SCHEMA, which is the distinction
+>> between whether we?re actually describing the data or what a user
+>> can meaningfully do with it.
+> Right.  My approach to questions like this tends to be: "Take the
+> user perspective".  This is because the VO is still dominated by data
+> providers, and hence that perspective tends to be under-represented.
+> More importantly, my experience with VO standards is that they
+> are best when they are constructed from what the users are supposed
+> to do with them and worst when data providers think about all the
+> great things they would want to tell their users.
+>
+> That inspired my first suggestion, unconstrainable.
+>
+>> If it?s about the data, the above might be a hair better. But if
+>> it?s simply about whether a user can filter? on the data,
+>> might I suggest just, filterable? ?
+> I don't like filterable much because that's the default and we'd have
+> to put it into the flags of most columns, which I'd like to avoid.
+> The special case hence would be "unfilterable", which is almost as
+> long and ugly as unconstrainable but IMHO a bit less precise because
+> it's constraints that you can't write (in ADQL), whereas I think
+> "filter" just doesn't exist in VO lingo (outside of VOEvent?) yet.
+>
+> In the PR, the cute option "no-where" came up.  The more I think of it,
+> the more I like it.  Admittedly, it's strongly geared towards
+> SQL-like query languages, but I don't consider that a major wart, as
+> that's the model for almost anything out there (cf. SPARQL).  And
+> it's something that shouldn't cause any false associations.
+>
+> As to Jon's proposal ?immutable?/?mutable?...  Well, "mutable" has a
+> strong meaning already that is quite a bit away from what we are
+> struggling with here.  So I'd prefer generated over that.
+>
+> Well: I've updated the PR and rebased it to a previous VODataService
+> PR that already had all the whitespace noise (thanks, Mark) so it's a
+> lot more readable now.  I've kept "generated" as literal for now but
+> changed the definition to Pat's proposal:
+>
+>    values in this column are generated during output and query
+>    constraints cannot be used
+>
+> While I think that's *a bit* overspecific because I'd like to use
+> this flag also when I, say, store some binary data in a database
+> column and want to tell people there's no meaningful way to
+> constraint that for the time being, it feels more understandable to
+> me than my previous attempt.
+>
+> So... are there people who absolutely couldn't live with "generated"?
+> And are the improvements on Pat's definition?
+>
+> Thanks,
+>
+>            Markus
+>
+>
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260417/afc686d2/attachment.htm>
+

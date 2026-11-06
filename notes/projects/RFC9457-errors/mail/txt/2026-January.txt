@@ -1,0 +1,410 @@
+From m.b.taylor at bristol.ac.uk  Tue Jan  6 17:10:30 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Tue, 6 Jan 2026 16:10:30 +0000 (GMT)
+Subject: IVOA-science in Softid
+In-Reply-To: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+References: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+Message-ID: <e6d9b3c-7171-4bde-1a89-c92e9a3435a9@andromeda.star.bris.ac.uk>
+
+Markus,
+
+I think this is a good idea.  As you say it's not the answer to
+all the VO's unwanted crawler-related problems, but it may allow
+services to take some steps to work round problems of overloading
+and usage statistic distortion in this area.
+
+I've implemented it in prototype from the client side for topcat 
+and stilts:
+
+  https://www.star.bristol.ac.uk/mbt/releases/topcat/pre/topcat-full_softid.jar
+
+Depending on how this discussion goes I may merge this change into
+future public releases.
+
+Mark
+
+On Tue, 23 Dec 2025, Markus Demleitner via apps wrote:
+
+> Dear Colleagues,
+> 
+> As a small piece in the puzzle of how to deal with stupid crawlers
+> overloading our services, I have occasionally suggested a small
+> secret handshake between legitimate clients and our servers in hopes
+> that might be enough to avoid the APIkeycopalypse.
+> 
+> I am, indeed, rather convinced that "follow a standard" would already
+> work pretty well to keep out most "AI crawlers", and that
+> quasi-standard could be our note on operational identification
+> of software components <http://ivoa.net/documents/Notes/softid/>
+> (which has quite a few other use cases, too, so if you are writing VO
+> clients or servers, please have a look).
+> 
+> For clients, this note has the provision of an IVOA comment.  So far,
+> the idea has been that validators would have something like
+> 
+>   User-Agent: STILTS/3.1-4 (IVOA-test http://validators.org/results) Java/1.8.0_181
+> 
+> in their request headers (crawlers would give IVOA-copy), and
+> diligent beancounters would remove such requests (done for validation
+> in this case) from their usage analyses (as questionable as these may
+> be even then).
+> 
+> So far, the standard said that "normal" usage should not give any
+> purpose.  Now, giving "science" as a purpose would exactly be such a
+> follow-the-standards handshake.
+> 
+> I have now written up a proposal for how this would look like as
+> a PR against softid: <https://github.com/ivoa/softid/pull/1>.
+> 
+> What do people think?  As a client, would you adopt it?  As a server,
+> can you imagine any use for IVOA-science in user agents?
+> 
+> If sufficiently many people feel this is a good idea: Perhaps it's
+> then time to try and get softid endorsed?
+> 
+> Thanks[*],
+> 
+>          Markus
+> 
+> [*] Enjoy your holidays if you have them!
+> 
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Thu Jan  8 18:08:11 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 8 Jan 2026 18:08:11 +0100
+Subject: IVOA-science in Softid
+In-Reply-To: <e6d9b3c-7171-4bde-1a89-c92e9a3435a9@andromeda.star.bris.ac.uk>
+References: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+ <e6d9b3c-7171-4bde-1a89-c92e9a3435a9@andromeda.star.bris.ac.uk>
+Message-ID: <w6qwwgrdzaky26hmjcdh324kdumy67m4r6oyp4ih3hroy2l6pb@vzegvrrjxrwe>
+
+Dear Colleagues,
+
+On Tue, Jan 06, 2026 at 04:10:30PM +0000, Mark Taylor wrote:
+> I've implemented it in prototype from the client side for topcat
+> and stilts:
+>
+>   https://www.star.bristol.ac.uk/mbt/releases/topcat/pre/topcat-full_softid.jar
+
+Thanks a lot!  And also thanks for your comment
+<https://github.com/ivoa/softid/pull/1#pullrequestreview-3631477934>,
+in particular this part:
+
+> [Soft-id says:]
+>> +The access was done to directly support a science case.  This explicitly
+>> +includes education and training, in particular because we do not want to
+>> +suggest that software used in such settings -- which plausibly is going
+>> +to be the same as software used in pure research -- should be
+>> +reconfigured for them.
+
+And Mark says:
+
+> I'm not sure about "to directly support a science case"; I'd
+> suggest something a bit more woolly like "in support of science
+> usage" or "in the context of science usage".  I think the main
+> target here is to differentiate clients that understand the
+> VO/astronomy services they are engaging with from those that are
+> just hitting anything they can find.  From a practical point of
+> view, at least for clients like topcat and stilts, it's not likely
+> to be feasible to get them to present different user-agent headers
+> on the basis of the user intention for particular requests, only on
+> the basis of the tools in use.
+>
+> Given that I'm wondering if there's a different term than "science"
+> that should be used here, but I don't have great suggestions.
+> IVOA-voclient or just IVOA-client maybe?
+
+Well... I'm not a fan of "client" at all because validators are
+clients, too.  But on re-reading my original text, I don't like the
+part about "support a science case.  And then there's these other
+purposes, too, and anyway clients shouldn't need to guess whether
+something is a dry run or the real thing."  If it's not (only)
+distilled rocket science, we shouldn't use a term that might be
+understood in this way.
+
+I think what I want to convey is: "This is VO software intended for
+the end user (rather than infrastructure)" (and I think I'd like to
+fix the explanation to better express that, too).
+
+So, perhaps VO-user is less grandiose?  But then "user" is one of
+these words like "resource" that has come to mean far too many
+things.  Soooo... If some nice word more nearly expressing this
+"end-user query" concept just crossed your mind: By all means speak
+up.
+
+Thanks,
+
+           Markus
+
+
+From tcivera at cefca.es  Fri Jan  9 16:01:00 2026
+From: tcivera at cefca.es (Tamara Civera)
+Date: Fri, 9 Jan 2026 16:01:00 +0100
+Subject: IVOA-science in Softid
+In-Reply-To: <w6qwwgrdzaky26hmjcdh324kdumy67m4r6oyp4ih3hroy2l6pb@vzegvrrjxrwe>
+References: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+ <e6d9b3c-7171-4bde-1a89-c92e9a3435a9@andromeda.star.bris.ac.uk>
+ <w6qwwgrdzaky26hmjcdh324kdumy67m4r6oyp4ih3hroy2l6pb@vzegvrrjxrwe>
+Message-ID: <7073b4ca-5eb0-43d0-b2de-7dd0911d5738@cefca.es>
+
+Dear Colleagues,
+
+Thank you?Markus and Mark for your contributions and discussions on 
+client identification and SoftID. In fact, this is a topic I suggested 
+and included in the 2025B roadmap of the Operations group for this 
+semester, based on the discussions we had during the last IVOA 
+interoperability meeting, and which I wanted to start working on now. My 
+intention was to remind the community about the existing note on 
+User-Agent and server usage, and to see whether any updates to the note 
+might be needed, so thank you again for moving it forward.
+
+Regarding your idea of starting to use 'IVOA-science' or something 
+similar in the User-Agent, I think it?s a very good approach for exactly 
+the reasons you both mentioned. From my perspective as a data provider, 
+in our case it can help improve statistics and better distinguish VO 
+usage from other traffic, making it easier to identify VO clients. On 
+whether to use 'science' or 'client', I don?t have a strong opinion. 
+Another suggestion could be something like 'IVOA-datainquiry', although 
+honestly, I?m still not fully convinced either way.
+
+I would also mention that a few weeks ago I updated the information on 
+the SoftID web page (https://wiki.ivoa.net/twiki/bin/view/IVOA/SoftID). 
+So I would like to use this discussion to encourage clients and data 
+providers to update the page with the "User-Agent" and/or "Server" 
+header information they are currently using.
+
+Finally, I want to emphasize that the Operations group is fully 
+available to provide any support or assistance needed on this topic. 
+Please let us know if there is any way we can help, and I would also 
+like to encourage you to extend this discussion to the Ops mailing list.
+
+Best regards and thanks,
+
+Tamara Civera
+
+El 8/1/26 a las 18:08, Markus Demleitner via apps escribi?:
+> Dear Colleagues,
+>
+> On Tue, Jan 06, 2026 at 04:10:30PM +0000, Mark Taylor wrote:
+>> I've implemented it in prototype from the client side for topcat
+>> and stilts:
+>>
+>>    https://urldefense.com/v3/__https://www.star.bristol.ac.uk/mbt/releases/topcat/pre/topcat-full_softid.jar__;!!D9dNQwwGXtA!Sc_zzpvoRnjsF2neqG9Q0jVTg7QvSDfYwcya5y9EGYtVXezuDXjgZxXesZpEGkWqOMLXiDj10HU$  
+> Thanks a lot!  And also thanks for your comment
+> <https://urldefense.com/v3/__https://github.com/ivoa/softid/pull/1*pullrequestreview-3631477934__;Iw!!D9dNQwwGXtA!Sc_zzpvoRnjsF2neqG9Q0jVTg7QvSDfYwcya5y9EGYtVXezuDXjgZxXesZpEGkWqOMLX5UiV65A$ 
+> >,
+> in particular this part:
+>
+>> [Soft-id says:]
+>>> +The access was done to directly support a science case.  This explicitly
+>>> +includes education and training, in particular because we do not want to
+>>> +suggest that software used in such settings -- which plausibly is going
+>>> +to be the same as software used in pure research -- should be
+>>> +reconfigured for them.
+> And Mark says:
+>
+>> I'm not sure about "to directly support a science case"; I'd
+>> suggest something a bit more woolly like "in support of science
+>> usage" or "in the context of science usage".  I think the main
+>> target here is to differentiate clients that understand the
+>> VO/astronomy services they are engaging with from those that are
+>> just hitting anything they can find.  From a practical point of
+>> view, at least for clients like topcat and stilts, it's not likely
+>> to be feasible to get them to present different user-agent headers
+>> on the basis of the user intention for particular requests, only on
+>> the basis of the tools in use.
+>>
+>> Given that I'm wondering if there's a different term than "science"
+>> that should be used here, but I don't have great suggestions.
+>> IVOA-voclient or just IVOA-client maybe?
+> Well... I'm not a fan of "client" at all because validators are
+> clients, too.  But on re-reading my original text, I don't like the
+> part about "support a science case.  And then there's these other
+> purposes, too, and anyway clients shouldn't need to guess whether
+> something is a dry run or the real thing."  If it's not (only)
+> distilled rocket science, we shouldn't use a term that might be
+> understood in this way.
+>
+> I think what I want to convey is: "This is VO software intended for
+> the end user (rather than infrastructure)" (and I think I'd like to
+> fix the explanation to better express that, too).
+>
+> So, perhaps VO-user is less grandiose?  But then "user" is one of
+> these words like "resource" that has come to mean far too many
+> things.  Soooo... If some nice word more nearly expressing this
+> "end-user query" concept just crossed your mind: By all means speak
+> up.
+>
+> Thanks,
+>
+>             Markus
+>
+-- 
+Tamara Civera Lorenzo
+Scientific Database Engineer / IVOA Ops vice-chair
+Logotipo CEFCA 	*Centro de Estudios de F?sica del Cosmos de Arag?n*
+
+  * Plaza San Juan n? 1, piso 2?
+  * 44001 Teruel
+  * Tfno: +34978221266 - Ext: 1116
+  * Fax: +34978602334
+  * Email: tcivera at cefca.es
+  * Url: http://www.cefca.es
+
+Este correo electr?nico y, en su caso,?cualquier archivo adjunto al 
+mismo,?contiene informaci?n de car?cter?confidencial exclusivamente 
+dirigida a su?destinatario. Queda prohibida su?divulgaci?n, copia o 
+distribuci?n a terceros?sin la previa autorizaci?n escrita de?nuestra 
+entidad. En el caso de haber?recibido este correo electr?nico por 
+error,?por favor, elim?nelo de inmediato y?notifique esta circunstancia 
+al?remitente. En conformidad con lo establecido en las?normativas 
+vigentes de Protecci?n de?Datos a nivel nacional y europeo, 
+le?informamos que en la Fundaci?n CEFCA?tenemos un inter?s leg?timo para 
+tratar sus datos de contacto con la finalidad de informarle de?nuestras 
+actividades y?gestionar sus?peticiones. Sus datos no?ser?n cedidos 
+a?terceros, y los?conservaremos s?lo?mientras sea?necesario para 
+el?mantenimiento de?nuestra relaci?n o la?gesti?n de su?solicitud. Puede 
+ejercer sus derechos de acceso,?rectificaci?n y supresi?n de sus datos, 
+as??como los derechos de limitaci?n y?oposici?n a su tratamiento con 
+fines?promocionales, escribiendo a rgpd at cefca.es. Tambi?n?puede 
+dirigirse?a nuestro Delegado de?Protecci?n de?Datos para 
+cualquier?consulta relacionada?con nuestra pol?tica?de 
+privacidad,?escribiendo a dpd at cefca.es .
+------------------------------------------------------------------------
+This email and, when appropriate, any file attached to it, contains 
+confidential information exclusively addressed to its recipient. It is 
+forbidden the disclosure, copying or distribution of this email to third 
+parties without the prior written authorization of our entity. Should 
+you have received this email by mistake, please delete it immediately 
+and notify the sender of this circumstance. According to the provisions 
+of current Data Protection regulations at national and European level, 
+we inform you that at CEFCA we have a legitimate interest to process 
+your contact data in order to inform you of our activities and manage 
+your requests. Your data will not be transferred to third parties, and 
+we will keep it only as long as it is necessary for the maintenance of 
+our relationship or the management of your request. You can exercise 
+your rights of access, rectification and deletion of your data, as well 
+as the rights of limitation and opposition to its treatment for 
+promotional purposes, by writing to rgpd at cefca.es. You can also contact 
+our Data Protection Officer for any query related to our privacy policy, 
+writing to dpd at cefca.es .
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260109/4af14af3/attachment.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: logo.png
+Type: image/png
+Size: 3470 bytes
+Desc: not available
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260109/4af14af3/attachment.png>
+
+From thomas.boch at astro.unistra.fr  Fri Jan  9 16:11:46 2026
+From: thomas.boch at astro.unistra.fr (Thomas Boch)
+Date: Fri, 9 Jan 2026 16:11:46 +0100
+Subject: IVOA-science in Softid
+In-Reply-To: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+References: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+Message-ID: <1c8a8e17-c138-4f00-9098-cfdae7a61dc4@astro.unistra.fr>
+
+Hi Markus and all,
+
+thank you for this effort, I think it's a step in the right direction, 
+and we will adapt Aladin Desktop user agent accordingly, whatever is 
+ultimately decided.
+
+I'd like to bring up the topic of web-based clients (typically from 
+Javascript in the browser) such as Aladin Lite or web portals. As you 
+surely know, such clients don't have the freedom to override browser 
+user-agent and set up a custom user-agent header. I think it would be a 
+shame if this use case was not taken into account. Can we envisage to 
+have an alternative header keyword (X-User-agent?) that could be used 
+for web-based clients. It would of course the op-purpose syntax as the 
+one you suggest.
+
+Any comments on this?
+
+Thanks, have all a nice week-end.
+
+
+Thomas
+
+Le 23/12/2025 ? 11:02, Markus Demleitner via dal a ?crit?:
+> Dear Colleagues,
+>
+> As a small piece in the puzzle of how to deal with stupid crawlers
+> overloading our services, I have occasionally suggested a small
+> secret handshake between legitimate clients and our servers in hopes
+> that might be enough to avoid the APIkeycopalypse.
+>
+> I am, indeed, rather convinced that "follow a standard" would already
+> work pretty well to keep out most "AI crawlers", and that
+> quasi-standard could be our note on operational identification
+> of software components <http://ivoa.net/documents/Notes/softid/>
+> (which has quite a few other use cases, too, so if you are writing VO
+> clients or servers, please have a look).
+>
+> For clients, this note has the provision of an IVOA comment.  So far,
+> the idea has been that validators would have something like
+>
+>    User-Agent: STILTS/3.1-4 (IVOA-test http://validators.org/results) Java/1.8.0_181
+>
+> in their request headers (crawlers would give IVOA-copy), and
+> diligent beancounters would remove such requests (done for validation
+> in this case) from their usage analyses (as questionable as these may
+> be even then).
+>
+> So far, the standard said that "normal" usage should not give any
+> purpose.  Now, giving "science" as a purpose would exactly be such a
+> follow-the-standards handshake.
+>
+> I have now written up a proposal for how this would look like as
+> a PR against softid: <https://github.com/ivoa/softid/pull/1>.
+>
+> What do people think?  As a client, would you adopt it?  As a server,
+> can you imagine any use for IVOA-science in user agents?
+>
+> If sufficiently many people feel this is a good idea: Perhaps it's
+> then time to try and get softid endorsed?
+>
+> Thanks[*],
+>
+>           Markus
+>
+> [*] Enjoy your holidays if you have them!
+>
+>
+>
+>
+>
+
+From m.b.taylor at bristol.ac.uk  Fri Jan  9 18:53:39 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Fri, 9 Jan 2026 17:53:39 +0000 (GMT)
+Subject: IVOA-science in Softid
+In-Reply-To: <1c8a8e17-c138-4f00-9098-cfdae7a61dc4@astro.unistra.fr>
+References: <gsnsm6pv2b45bi2mpf732ykaz3tkaa4axjnkguyg4jipdimzwj@emxpd4yt65yl>
+ <1c8a8e17-c138-4f00-9098-cfdae7a61dc4@astro.unistra.fr>
+Message-ID: <4227b3e0-73bc-4034-488d-a6a35f7c5541@it076926>
+
+On Fri, 9 Jan 2026, Thomas Boch via apps wrote:
+
+> I'd like to bring up the topic of web-based clients (typically from Javascript
+> in the browser) such as Aladin Lite or web portals. As you surely know, such
+> clients don't have the freedom to override browser user-agent and set up a
+> custom user-agent header. I think it would be a shame if this use case was not
+> taken into account. Can we envisage to have an alternative header keyword
+> (X-User-agent?) that could be used for web-based clients. It would of course
+> the op-purpose syntax as the one you suggest.
+
+Sounds reasonable to me.
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+

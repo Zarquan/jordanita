@@ -1,0 +1,82 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this software. If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Success
+
+    Result:
+
+        Reconstructed the 2026 DAL error-handling thread.
+
+        12 messages, 2026-06-18 to 2026-10-01.
+        Thread root 008883, anchor 008922.
+        Start of thread reached, no messages before 2024,
+        limit of 100 not reached.
+
+        http://mail.ivoa.net/pipermail/dal/2026-September/008922.html
+
+        Files:
+
+            README.md
+            dal-error-thread.txt
+            dal-error-thread.json
+            mail/gz/
+            mail/txt/
+            mail/thread/
+
+# -----------------------------------------------------
+
+    Aims
+
+        Reconstruct the conversation about error handling
+        starting from Markus' 2026-09-30 message, following the
+        back references in the emails.
+
+        Stop at the start of the conversation, 100 emails,
+        or emails earlier than 2024.
+
+# -----------------------------------------------------
+
+    Outcome
+
+        The thread starts on 2026-06-18 with Markus' message
+        "SCS2: Non-VOTable errors?".
+
+        The conversation covers:
+
+        * Moving away from mandatory VOTable error bodies.
+        * Pat's text/plain "{vocab term}: {explanation}" proposal.
+        * Stelios' status-code-is-the-signal framing.
+        * The RFC 9457 proposal from James and Dave.
+        * Markus' and Mark's objections to RFC 9457.
+        * Keeping VERB as a non-binding hint.
+
+        The last message is Markus' review request for the
+        SCS2 text-error draft (PR #11, commit 8e366ae), and
+        Gregory's late +1 on VERB.
+
+# -----------------------------------------------------
+

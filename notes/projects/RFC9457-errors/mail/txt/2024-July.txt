@@ -1,0 +1,65 @@
+From francois.bonnarel at gmail.com  Mon Jul 29 09:33:14 2024
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Mon, 29 Jul 2024 09:33:14 +0200
+Subject: DataLink implementation note
+Message-ID: <f6ded72e-f866-4a23-bbb4-3c87719b7041@gmail.com>
+
+Dear DAL-ers,
+
+This email to inform you that the DataLink implementation note, with 
+some hints given on how to discover DataLink URL in various contexts and 
+on the usage of some FIELDS announced In a recent DAL running meeting 
+and in Sydney has been pushed on the document repository.
+
+https://www.ivoa.net/documents/Notes/DataLinkImp/
+
+If my co-authors or some of you want to prepare a new version you will 
+find the github repository here :
+
+https://github.com/ivoa/DataLinkRecImplNote/
+
+Cheers
+
+Fran?ois
+
+
+From francois.bonnarel at astro.unistra.fr  Mon Jul 29 10:22:14 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Mon, 29 Jul 2024 10:22:14 +0200
+Subject: Fwd: DataLink implementation note
+In-Reply-To: <f6ded72e-f866-4a23-bbb4-3c87719b7041@gmail.com>
+References: <f6ded72e-f866-4a23-bbb4-3c87719b7041@gmail.com>
+Message-ID: <df80b85f-5b11-48c1-8e46-7c8e1469de67@astro.unistra.fr>
+
+
+
+
+-------- Message transf?r? --------
+Sujet?: 	DataLink implementation note
+Date?: 	Mon, 29 Jul 2024 09:33:14 +0200
+De?: 	BONNAREL FRANCOIS gmail <francois.bonnarel at gmail.com>
+Pour?: 	IVOA DAL <dal at ivoa.net>
+
+
+
+Dear DAL-ers,
+
+This email to inform you that the DataLink implementation note, with 
+some hints given on how to discover DataLink URL in various contexts and 
+on the usage of some FIELDS announced In a recent DAL running meeting 
+and in Sydney has been pushed on the document repository.
+
+https://www.ivoa.net/documents/Notes/DataLinkImp/
+
+If my co-authors or some of you want to prepare a new version you will 
+find the github repository here :
+
+https://github.com/ivoa/DataLinkRecImplNote/
+
+Cheers
+
+Fran?ois
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240729/27b8163f/attachment.htm>
+

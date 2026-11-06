@@ -1,0 +1,1115 @@
+From laurent.michel at astro.unistra.fr  Thu Dec  5 16:01:30 2024
+From: laurent.michel at astro.unistra.fr (Laurent Michel)
+Date: Thu, 5 Dec 2024 16:01:30 +0100
+Subject: Mime type for annotated data
+Message-ID: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+
+Dear groups
+
+At the last interop, apps session, I showed a TAP service that annotates data with MIVOT, as long as you use 
+    FORMAT=application/mango.
+
+I was rightly told that this was probably the worst choice I could have made, even for a simple demonstrator.
+
+The question now is to construct a mime type, compatible with the RFCs and expressing the fact that the response to the request is a VOTable, whose data is mapped onto a model using the MIVOT syntax.
+
+I think the right solution is to use the parameters as defined in rfc2045
+
+There are two options:
+
+1- say the data is annotated with MIVOT and let the client find out which model it is.
+
+    application/x-votable+xml;mapping=mivot
+
+2- say the data is mapped to the MANGO model with MIVOT
+
+    application/x-votable+xml;mivot=mango
+
+This second solution highlights a particular model, but it may make sense for our use cases.
+
+Any suggestions or comments?
+
+All the best, 
+
+Laurent
+
+From m.b.taylor at bristol.ac.uk  Thu Dec  5 16:49:54 2024
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Thu, 5 Dec 2024 15:49:54 +0000 (GMT)
+Subject: Mime type for annotated data
+In-Reply-To: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+Message-ID: <7cf4d5d1-5b9d-79f2-fe5-46e568fb8530@andromeda.star.bris.ac.uk>
+
+Laurent,
+
+I don't necessarily disagree with these suggestions, but another
+alternative would just be to use a standard VOTable MIME type
+on its own (application/x-votable+xml).  MIME types are a fairly
+blunt instrument and don't usally say much about the content of
+resources, just rather basic information about the format.
+
+Can you say something about why it's useful to have the fact of
+MIVOT/MANGO annotation declared in the the MIME type, e.g. what
+client behaviour would benefit from it?
+
+Thanks
+
+Mark
+
+On Thu, 5 Dec 2024, Laurent Michel via apps wrote:
+
+> Dear groups
+> 
+> At the last interop, apps session, I showed a TAP service that annotates data with MIVOT, as long as you use 
+>     FORMAT=application/mango.
+> 
+> I was rightly told that this was probably the worst choice I could have made, even for a simple demonstrator.
+> 
+> The question now is to construct a mime type, compatible with the RFCs and expressing the fact that the response to the request is a VOTable, whose data is mapped onto a model using the MIVOT syntax.
+> 
+> I think the right solution is to use the parameters as defined in rfc2045
+> 
+> There are two options:
+> 
+> 1- say the data is annotated with MIVOT and let the client find out which model it is.
+> 
+>     application/x-votable+xml;mapping=mivot
+> 
+> 2- say the data is mapped to the MANGO model with MIVOT
+> 
+>     application/x-votable+xml;mivot=mango
+> 
+> This second solution highlights a particular model, but it may make sense for our use cases.
+> 
+> Any suggestions or comments?
+> 
+> All the best, 
+> 
+> Laurent
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From laurent.michel at astro.unistra.fr  Thu Dec  5 18:31:33 2024
+From: laurent.michel at astro.unistra.fr (Laurent Michel)
+Date: Thu, 5 Dec 2024 18:31:33 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <7cf4d5d1-5b9d-79f2-fe5-46e568fb8530@andromeda.star.bris.ac.uk>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <7cf4d5d1-5b9d-79f2-fe5-46e568fb8530@andromeda.star.bris.ac.uk>
+Message-ID: <87E569D8-3545-4AA4-A502-CEA41BA9C921@astro.unistra.fr>
+
+Mark,
+
+Honestly, I haven't considered using the VOTable mime type, but that might work.
+
+My motivation for suggesting this is twofold:
+1- An annotated VOTable is a VOTable that contains an XML block that obeys its own schema. In other words, it is something different from a regular VOTable. So having a specific mime type makes sense.
+2- More pragmatically, having a specific mime type allows clients to request annotated data via the &FORMAT TAP parameter as they could for any other format (JSON...).
+
+Laurent
+
+> On 5 Dec 2024, at 16:49, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+> 
+> Laurent,
+> 
+> I don't necessarily disagree with these suggestions, but another
+> alternative would just be to use a standard VOTable MIME type
+> on its own (application/x-votable+xml).  MIME types are a fairly
+> blunt instrument and don't usally say much about the content of
+> resources, just rather basic information about the format.
+> 
+> Can you say something about why it's useful to have the fact of
+> MIVOT/MANGO annotation declared in the the MIME type, e.g. what
+> client behaviour would benefit from it?
+> 
+> Thanks
+> 
+> Mark
+> 
+> On Thu, 5 Dec 2024, Laurent Michel via apps wrote:
+> 
+>> Dear groups
+>> 
+>> At the last interop, apps session, I showed a TAP service that annotates data with MIVOT, as long as you use 
+>>    FORMAT=application/mango.
+>> 
+>> I was rightly told that this was probably the worst choice I could have made, even for a simple demonstrator.
+>> 
+>> The question now is to construct a mime type, compatible with the RFCs and expressing the fact that the response to the request is a VOTable, whose data is mapped onto a model using the MIVOT syntax.
+>> 
+>> I think the right solution is to use the parameters as defined in rfc2045
+>> 
+>> There are two options:
+>> 
+>> 1- say the data is annotated with MIVOT and let the client find out which model it is.
+>> 
+>>    application/x-votable+xml;mapping=mivot
+>> 
+>> 2- say the data is mapped to the MANGO model with MIVOT
+>> 
+>>    application/x-votable+xml;mivot=mango
+>> 
+>> This second solution highlights a particular model, but it may make sense for our use cases.
+>> 
+>> Any suggestions or comments?
+>> 
+>> All the best, 
+>> 
+>> Laurent
+> 
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241205/e30e8e77/attachment.htm>
+
+From mdittmar at cfa.harvard.edu  Thu Dec  5 22:48:57 2024
+From: mdittmar at cfa.harvard.edu (CresitelloDittmar, Mark)
+Date: Thu, 5 Dec 2024 16:48:57 -0500
+Subject: Mime type for annotated data
+In-Reply-To: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+Message-ID: <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+
+Laurent,
+
+This is out of my wheelhouse so to speak, but..
+I'd be careful about #2 since there is the potential for the data to be
+mapped to more than one model.
+
+Mark
+
+
+
+
+On Thu, Dec 5, 2024 at 10:01?AM Laurent Michel via apps <apps at ivoa.net>
+wrote:
+
+> Dear groups
+>
+> At the last interop, apps session, I showed a TAP service that annotates
+> data with MIVOT, as long as you use
+>     FORMAT=application/mango.
+>
+> I was rightly told that this was probably the worst choice I could have
+> made, even for a simple demonstrator.
+>
+> The question now is to construct a mime type, compatible with the RFCs and
+> expressing the fact that the response to the request is a VOTable, whose
+> data is mapped onto a model using the MIVOT syntax.
+>
+> I think the right solution is to use the parameters as defined in rfc2045
+>
+> There are two options:
+>
+> 1- say the data is annotated with MIVOT and let the client find out which
+> model it is.
+>
+>     application/x-votable+xml;mapping=mivot
+>
+> 2- say the data is mapped to the MANGO model with MIVOT
+>
+>     application/x-votable+xml;mivot=mango
+>
+> This second solution highlights a particular model, but it may make sense
+> for our use cases.
+>
+> Any suggestions or comments?
+>
+> All the best,
+>
+> Laurent
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241205/e782c4e1/attachment-0001.htm>
+
+From pdowler.cadc at gmail.com  Fri Dec  6 20:04:23 2024
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Fri, 6 Dec 2024 11:04:23 -0800
+Subject: Mime type for annotated data
+In-Reply-To: <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+Message-ID: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+
+I have to second Mark's point about multiple model mappings...
+
+The prior art in this area is DataLink, where the mime-type is
+application/x-votable+xml;content=datalink and it means "the content
+of the table is a DataLink links table". How right or wrong would that
+be if there were multiple table resources and only one of them was the
+links table?
+
+For TAP (and other query services) we do not use the content parameter
+to indicate "query result" because it adds no value. I can see how
+having something to indicate that pivot mappings are included and (as
+mentioned) to request that they be included via RESPONSEFORMAT would
+be useful but I'm not sure if that's the best mechanism to do so.
+
+My interpretation of RFC2045, specifically this BNF:
+
+content := "Content-Type" ":" type "/" subtype
+                *(";" parameter)
+
+says one can add multiple parameters separated by semi-colon, so something like
+
+application/x-votable+xml;content=datalink;content=mivot
+
+appears to be a valid use and would re-use the content parameter to
+indicate "includes MIVOT annotation".
+
+That would seem to be sufficient to request MIVOT annotation and I
+guess tells clients that are going to read the VOTable that they
+should expect to find such content.
+
+aside: we did conclude at some point that the VOTable spec, where the
+mime-type is defined, should also define/specify allowed parameter
+names but that looks like something for 1.6...
+https://github.com/ivoa-std/VOTable/issues/26 ...
+
+still, if I was prototyping something, I would start with
+content=mivot and see if it's useful/sufficient/consistent. I know
+that in our service implementations if a caller requests
+RESPONSEFORMAT={something} we always make sure that exact mime-type is
+in the content-type header of the output... so if someone queries with
+RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+cannot map the QUERY to a data model, what would we do?
+- respond with a different content-type than requested (but more "correct")?
+- fail because we cannot provide content=mivot ??
+- respond with the  requested mime-type but put an empty mapping
+element in there??
+
+my 2c,
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+
+On Thu, 5 Dec 2024 at 13:49, CresitelloDittmar, Mark via dm <dm at ivoa.net> wrote:
+>
+> Laurent,
+>
+> This is out of my wheelhouse so to speak, but..
+> I'd be careful about #2 since there is the potential for the data to be mapped to more than one model.
+>
+> Mark
+>
+>
+>
+>
+> On Thu, Dec 5, 2024 at 10:01?AM Laurent Michel via apps <apps at ivoa.net> wrote:
+>>
+>> Dear groups
+>>
+>> At the last interop, apps session, I showed a TAP service that annotates data with MIVOT, as long as you use
+>>     FORMAT=application/mango.
+>>
+>> I was rightly told that this was probably the worst choice I could have made, even for a simple demonstrator.
+>>
+>> The question now is to construct a mime type, compatible with the RFCs and expressing the fact that the response to the request is a VOTable, whose data is mapped onto a model using the MIVOT syntax.
+>>
+>> I think the right solution is to use the parameters as defined in rfc2045
+>>
+>> There are two options:
+>>
+>> 1- say the data is annotated with MIVOT and let the client find out which model it is.
+>>
+>>     application/x-votable+xml;mapping=mivot
+>>
+>> 2- say the data is mapped to the MANGO model with MIVOT
+>>
+>>     application/x-votable+xml;mivot=mango
+>>
+>> This second solution highlights a particular model, but it may make sense for our use cases.
+>>
+>> Any suggestions or comments?
+>>
+>> All the best,
+>>
+>> Laurent
+
+From msdemlei at ari.uni-heidelberg.de  Mon Dec  9 10:01:03 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 9 Dec 2024 10:01:03 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+Message-ID: <20241209090103.ahfkkghjkm5i2wlq@victor>
+
+Dear Colleagues,
+
+On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> still, if I was prototyping something, I would start with
+> content=mivot and see if it's useful/sufficient/consistent. I know
+> that in our service implementations if a caller requests
+> RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> in the content-type header of the output... so if someone queries with
+> RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> cannot map the QUERY to a data model, what would we do?
+> - respond with a different content-type than requested (but more "correct")?
+> - fail because we cannot provide content=mivot ??
+> - respond with the  requested mime-type but put an empty mapping
+> element in there??
+
+For something like application/x-votable;serialisation=BINARY2 it
+seems evident to me that the client is just indicating it understands
+BINARY2, and I'm rather sure we'd be doing the users a disservice to
+fail.  Other than that, I'd say we should follow the rules for HTTP
+content negotiation (which we probably should have used in the first
+place, even if it *is* somewhat messier) as closely as we can:
+
+  If an Accept header field is present, and if the server cannot send
+  a response which is acceptable according to the combined Accept
+  field value, then the server SHOULD send a 406 (not acceptable)
+  response.
+
+Of course, "acceptable" is a much less dramatic word with the complex
+specifications in Accept versus the one-string thing in
+RESPONSEFORMAT...  But that's really tangential and would be another
+topic for DALI.
+
+For what we are talking about here, though, I am almost entirely
+certain that we do *not* want to indicate presence or absence of
+mivot blocks in the media type.  You see, the wide majority of
+VOTables out there will have coordinates, and since we kept COOSYS
+inadequate, pointing towards DM annotation for a comprehensive
+solution, these will *all* have to contain mivot annotation.
+Incidentally, similar considerations apply for time and photometry
+and many other things.
+
+Hence, having DM annotation necessarily needs to be the default
+(unless we fix COOSYS and friends, of course, which I'd still be in
+on), and adding some media type parameter to express "do what you
+need to do" seems unwise.  Against that, having a parameter to say
+"don't do DM annotation" seems unnecessary again, in particular
+because any compliant VOTable parser will grok annotated VOTables,
+just skipping the extra RESOURCE.
+
+I give you that *for development* it's nice to let service software
+spit out non-annotated VOTables by default for a time and then have
+some way to tell it "I'm experimenting, do give me your new-fangled
+things".
+
+But we don't need some sort of anointed practice for a secret
+handshake between bleeding-edge software and a freshly extended
+server.  DaCHS, for instance, is using
+application/x-votable+xml;version=1.6 to indicate "dump whatever you
+currently implement of MIVOT into this file".  I'd argue that ought
+to be fine as long as all parties agree this is for development and
+not for eternity.
+
+In operations, I am absolutely sure that servers should produce DM
+annotation when clients just request VOTables (with the reservations
+I made above, that is).
+
+           -- Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Mon Dec  9 10:01:03 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 9 Dec 2024 10:01:03 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+Message-ID: <20241209090103.ahfkkghjkm5i2wlq@victor>
+
+Dear Colleagues,
+
+On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> still, if I was prototyping something, I would start with
+> content=mivot and see if it's useful/sufficient/consistent. I know
+> that in our service implementations if a caller requests
+> RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> in the content-type header of the output... so if someone queries with
+> RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> cannot map the QUERY to a data model, what would we do?
+> - respond with a different content-type than requested (but more "correct")?
+> - fail because we cannot provide content=mivot ??
+> - respond with the  requested mime-type but put an empty mapping
+> element in there??
+
+For something like application/x-votable;serialisation=BINARY2 it
+seems evident to me that the client is just indicating it understands
+BINARY2, and I'm rather sure we'd be doing the users a disservice to
+fail.  Other than that, I'd say we should follow the rules for HTTP
+content negotiation (which we probably should have used in the first
+place, even if it *is* somewhat messier) as closely as we can:
+
+  If an Accept header field is present, and if the server cannot send
+  a response which is acceptable according to the combined Accept
+  field value, then the server SHOULD send a 406 (not acceptable)
+  response.
+
+Of course, "acceptable" is a much less dramatic word with the complex
+specifications in Accept versus the one-string thing in
+RESPONSEFORMAT...  But that's really tangential and would be another
+topic for DALI.
+
+For what we are talking about here, though, I am almost entirely
+certain that we do *not* want to indicate presence or absence of
+mivot blocks in the media type.  You see, the wide majority of
+VOTables out there will have coordinates, and since we kept COOSYS
+inadequate, pointing towards DM annotation for a comprehensive
+solution, these will *all* have to contain mivot annotation.
+Incidentally, similar considerations apply for time and photometry
+and many other things.
+
+Hence, having DM annotation necessarily needs to be the default
+(unless we fix COOSYS and friends, of course, which I'd still be in
+on), and adding some media type parameter to express "do what you
+need to do" seems unwise.  Against that, having a parameter to say
+"don't do DM annotation" seems unnecessary again, in particular
+because any compliant VOTable parser will grok annotated VOTables,
+just skipping the extra RESOURCE.
+
+I give you that *for development* it's nice to let service software
+spit out non-annotated VOTables by default for a time and then have
+some way to tell it "I'm experimenting, do give me your new-fangled
+things".
+
+But we don't need some sort of anointed practice for a secret
+handshake between bleeding-edge software and a freshly extended
+server.  DaCHS, for instance, is using
+application/x-votable+xml;version=1.6 to indicate "dump whatever you
+currently implement of MIVOT into this file".  I'd argue that ought
+to be fine as long as all parties agree this is for development and
+not for eternity.
+
+In operations, I am absolutely sure that servers should produce DM
+annotation when clients just request VOTables (with the reservations
+I made above, that is).
+
+           -- Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Mon Dec  9 10:01:03 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 9 Dec 2024 10:01:03 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+Message-ID: <20241209090103.ahfkkghjkm5i2wlq@victor>
+
+Dear Colleagues,
+
+On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> still, if I was prototyping something, I would start with
+> content=mivot and see if it's useful/sufficient/consistent. I know
+> that in our service implementations if a caller requests
+> RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> in the content-type header of the output... so if someone queries with
+> RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> cannot map the QUERY to a data model, what would we do?
+> - respond with a different content-type than requested (but more "correct")?
+> - fail because we cannot provide content=mivot ??
+> - respond with the  requested mime-type but put an empty mapping
+> element in there??
+
+For something like application/x-votable;serialisation=BINARY2 it
+seems evident to me that the client is just indicating it understands
+BINARY2, and I'm rather sure we'd be doing the users a disservice to
+fail.  Other than that, I'd say we should follow the rules for HTTP
+content negotiation (which we probably should have used in the first
+place, even if it *is* somewhat messier) as closely as we can:
+
+  If an Accept header field is present, and if the server cannot send
+  a response which is acceptable according to the combined Accept
+  field value, then the server SHOULD send a 406 (not acceptable)
+  response.
+
+Of course, "acceptable" is a much less dramatic word with the complex
+specifications in Accept versus the one-string thing in
+RESPONSEFORMAT...  But that's really tangential and would be another
+topic for DALI.
+
+For what we are talking about here, though, I am almost entirely
+certain that we do *not* want to indicate presence or absence of
+mivot blocks in the media type.  You see, the wide majority of
+VOTables out there will have coordinates, and since we kept COOSYS
+inadequate, pointing towards DM annotation for a comprehensive
+solution, these will *all* have to contain mivot annotation.
+Incidentally, similar considerations apply for time and photometry
+and many other things.
+
+Hence, having DM annotation necessarily needs to be the default
+(unless we fix COOSYS and friends, of course, which I'd still be in
+on), and adding some media type parameter to express "do what you
+need to do" seems unwise.  Against that, having a parameter to say
+"don't do DM annotation" seems unnecessary again, in particular
+because any compliant VOTable parser will grok annotated VOTables,
+just skipping the extra RESOURCE.
+
+I give you that *for development* it's nice to let service software
+spit out non-annotated VOTables by default for a time and then have
+some way to tell it "I'm experimenting, do give me your new-fangled
+things".
+
+But we don't need some sort of anointed practice for a secret
+handshake between bleeding-edge software and a freshly extended
+server.  DaCHS, for instance, is using
+application/x-votable+xml;version=1.6 to indicate "dump whatever you
+currently implement of MIVOT into this file".  I'd argue that ought
+to be fine as long as all parties agree this is for development and
+not for eternity.
+
+In operations, I am absolutely sure that servers should produce DM
+annotation when clients just request VOTables (with the reservations
+I made above, that is).
+
+           -- Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Mon Dec  9 10:01:03 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 9 Dec 2024 10:01:03 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+Message-ID: <20241209090103.ahfkkghjkm5i2wlq@victor>
+
+Dear Colleagues,
+
+On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> still, if I was prototyping something, I would start with
+> content=mivot and see if it's useful/sufficient/consistent. I know
+> that in our service implementations if a caller requests
+> RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> in the content-type header of the output... so if someone queries with
+> RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> cannot map the QUERY to a data model, what would we do?
+> - respond with a different content-type than requested (but more "correct")?
+> - fail because we cannot provide content=mivot ??
+> - respond with the  requested mime-type but put an empty mapping
+> element in there??
+
+For something like application/x-votable;serialisation=BINARY2 it
+seems evident to me that the client is just indicating it understands
+BINARY2, and I'm rather sure we'd be doing the users a disservice to
+fail.  Other than that, I'd say we should follow the rules for HTTP
+content negotiation (which we probably should have used in the first
+place, even if it *is* somewhat messier) as closely as we can:
+
+  If an Accept header field is present, and if the server cannot send
+  a response which is acceptable according to the combined Accept
+  field value, then the server SHOULD send a 406 (not acceptable)
+  response.
+
+Of course, "acceptable" is a much less dramatic word with the complex
+specifications in Accept versus the one-string thing in
+RESPONSEFORMAT...  But that's really tangential and would be another
+topic for DALI.
+
+For what we are talking about here, though, I am almost entirely
+certain that we do *not* want to indicate presence or absence of
+mivot blocks in the media type.  You see, the wide majority of
+VOTables out there will have coordinates, and since we kept COOSYS
+inadequate, pointing towards DM annotation for a comprehensive
+solution, these will *all* have to contain mivot annotation.
+Incidentally, similar considerations apply for time and photometry
+and many other things.
+
+Hence, having DM annotation necessarily needs to be the default
+(unless we fix COOSYS and friends, of course, which I'd still be in
+on), and adding some media type parameter to express "do what you
+need to do" seems unwise.  Against that, having a parameter to say
+"don't do DM annotation" seems unnecessary again, in particular
+because any compliant VOTable parser will grok annotated VOTables,
+just skipping the extra RESOURCE.
+
+I give you that *for development* it's nice to let service software
+spit out non-annotated VOTables by default for a time and then have
+some way to tell it "I'm experimenting, do give me your new-fangled
+things".
+
+But we don't need some sort of anointed practice for a secret
+handshake between bleeding-edge software and a freshly extended
+server.  DaCHS, for instance, is using
+application/x-votable+xml;version=1.6 to indicate "dump whatever you
+currently implement of MIVOT into this file".  I'd argue that ought
+to be fine as long as all parties agree this is for development and
+not for eternity.
+
+In operations, I am absolutely sure that servers should produce DM
+annotation when clients just request VOTables (with the reservations
+I made above, that is).
+
+           -- Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Mon Dec  9 10:01:03 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 9 Dec 2024 10:01:03 +0100
+Subject: Mime type for annotated data
+In-Reply-To: <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+Message-ID: <20241209090103.ahfkkghjkm5i2wlq@victor>
+
+Dear Colleagues,
+
+On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> still, if I was prototyping something, I would start with
+> content=mivot and see if it's useful/sufficient/consistent. I know
+> that in our service implementations if a caller requests
+> RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> in the content-type header of the output... so if someone queries with
+> RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> cannot map the QUERY to a data model, what would we do?
+> - respond with a different content-type than requested (but more "correct")?
+> - fail because we cannot provide content=mivot ??
+> - respond with the  requested mime-type but put an empty mapping
+> element in there??
+
+For something like application/x-votable;serialisation=BINARY2 it
+seems evident to me that the client is just indicating it understands
+BINARY2, and I'm rather sure we'd be doing the users a disservice to
+fail.  Other than that, I'd say we should follow the rules for HTTP
+content negotiation (which we probably should have used in the first
+place, even if it *is* somewhat messier) as closely as we can:
+
+  If an Accept header field is present, and if the server cannot send
+  a response which is acceptable according to the combined Accept
+  field value, then the server SHOULD send a 406 (not acceptable)
+  response.
+
+Of course, "acceptable" is a much less dramatic word with the complex
+specifications in Accept versus the one-string thing in
+RESPONSEFORMAT...  But that's really tangential and would be another
+topic for DALI.
+
+For what we are talking about here, though, I am almost entirely
+certain that we do *not* want to indicate presence or absence of
+mivot blocks in the media type.  You see, the wide majority of
+VOTables out there will have coordinates, and since we kept COOSYS
+inadequate, pointing towards DM annotation for a comprehensive
+solution, these will *all* have to contain mivot annotation.
+Incidentally, similar considerations apply for time and photometry
+and many other things.
+
+Hence, having DM annotation necessarily needs to be the default
+(unless we fix COOSYS and friends, of course, which I'd still be in
+on), and adding some media type parameter to express "do what you
+need to do" seems unwise.  Against that, having a parameter to say
+"don't do DM annotation" seems unnecessary again, in particular
+because any compliant VOTable parser will grok annotated VOTables,
+just skipping the extra RESOURCE.
+
+I give you that *for development* it's nice to let service software
+spit out non-annotated VOTables by default for a time and then have
+some way to tell it "I'm experimenting, do give me your new-fangled
+things".
+
+But we don't need some sort of anointed practice for a secret
+handshake between bleeding-edge software and a freshly extended
+server.  DaCHS, for instance, is using
+application/x-votable+xml;version=1.6 to indicate "dump whatever you
+currently implement of MIVOT into this file".  I'd argue that ought
+to be fine as long as all parties agree this is for development and
+not for eternity.
+
+In operations, I am absolutely sure that servers should produce DM
+annotation when clients just request VOTables (with the reservations
+I made above, that is).
+
+           -- Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Mon Dec  9 11:10:47 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Mon, 9 Dec 2024 11:10:47 +0100
+Subject: DAL Running Meeting #19 - Datalink and multiple locations
+Message-ID: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+
+Dear DAL members,
+
+Here is an announcement for the next DAL Running Meeting.
+
+Anyone who recently attended the DAL session in Malta may remember the first
+talks given by Anastasia Laity (pdf 
+<https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/DAL_at_IRSA_Laity.pdf>) 
+and Tess Jaffe (pdf 
+<https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/NAVO_cloud_DataLink_202411_interop.pdf>). 
+They raise an interesting
+question about ways to convey multiple locations for a single product 
+provided
+through Datalink. This question was raised and Tess suggested some 
+solutions ;
+see session notes 
+<https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/IVOA_Nov24_DAL.pdf>. 
+Unfortunately we did not have a lot of time for discussions.
+Hence this DAL Running Meeting.
+
+If you are interested by this question, here is the information about this
+Running Meeting:
+
+    *Date??? :*Dec 11, 2024
+    *Time??? :* 04:00 PM UTC
+    *Duration:* 1 hour
+    *Location:*
+    https://cnrs.zoom.us/j/92095660540?pwd=3dAHll6Na9X71S8HAgUnNtxzjo3r9v.1
+    /*Meeting ID:*//920 9566 0540/
+    */Passcode/**/? :/*/sjM0h4/
+
+
+Cheers,
+Gr?gory Mantelet & Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241209/11eaefed/attachment.htm>
+
+From pdowler.cadc at gmail.com  Mon Dec  9 21:42:10 2024
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Mon, 9 Dec 2024 12:42:10 -0800
+Subject: Mime type for annotated data
+In-Reply-To: <20241209090103.ahfkkghjkm5i2wlq@victor>
+References: <EC30BF03-AD68-40A2-BAAE-FBB7E3E5B0C4@astro.unistra.fr>
+ <CAH4enyMDTyL3CqQN5gmYqrx3+dtGJZkketEQ4ck+tyDELzoBxg@mail.gmail.com>
+ <CAFK8nrrupeCM+EbTdneqaaPOvwLQ6hYg8xgnC2zZHq3fgTuwSQ@mail.gmail.com>
+ <20241209090103.ahfkkghjkm5i2wlq@victor>
+Message-ID: <CAFK8nroe2UOWBd+D=Q0y1TVfbA2towBea=9d9aGUzyrUpjxyXw@mail.gmail.com>
+
+I cannot disagree with anything Markus said and feel pretty convinced
+that services *should* just include annotations in every VOTable.
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Mon, 9 Dec 2024 at 01:01, Markus Demleitner via dal <dal at ivoa.net> wrote:
+>
+> Dear Colleagues,
+>
+> On Fri, Dec 06, 2024 at 11:04:23AM -0800, Patrick Dowler via apps wrote:
+> > still, if I was prototyping something, I would start with
+> > content=mivot and see if it's useful/sufficient/consistent. I know
+> > that in our service implementations if a caller requests
+> > RESPONSEFORMAT={something} we always make sure that exact mime-type is
+> > in the content-type header of the output... so if someone queries with
+> > RESPONSEFORMAT=application/x-votable+xml;content=mivot and our service
+> > cannot map the QUERY to a data model, what would we do?
+> > - respond with a different content-type than requested (but more "correct")?
+> > - fail because we cannot provide content=mivot ??
+> > - respond with the  requested mime-type but put an empty mapping
+> > element in there??
+>
+> For something like application/x-votable;serialisation=BINARY2 it
+> seems evident to me that the client is just indicating it understands
+> BINARY2, and I'm rather sure we'd be doing the users a disservice to
+> fail.  Other than that, I'd say we should follow the rules for HTTP
+> content negotiation (which we probably should have used in the first
+> place, even if it *is* somewhat messier) as closely as we can:
+>
+>   If an Accept header field is present, and if the server cannot send
+>   a response which is acceptable according to the combined Accept
+>   field value, then the server SHOULD send a 406 (not acceptable)
+>   response.
+>
+> Of course, "acceptable" is a much less dramatic word with the complex
+> specifications in Accept versus the one-string thing in
+> RESPONSEFORMAT...  But that's really tangential and would be another
+> topic for DALI.
+>
+> For what we are talking about here, though, I am almost entirely
+> certain that we do *not* want to indicate presence or absence of
+> mivot blocks in the media type.  You see, the wide majority of
+> VOTables out there will have coordinates, and since we kept COOSYS
+> inadequate, pointing towards DM annotation for a comprehensive
+> solution, these will *all* have to contain mivot annotation.
+> Incidentally, similar considerations apply for time and photometry
+> and many other things.
+>
+> Hence, having DM annotation necessarily needs to be the default
+> (unless we fix COOSYS and friends, of course, which I'd still be in
+> on), and adding some media type parameter to express "do what you
+> need to do" seems unwise.  Against that, having a parameter to say
+> "don't do DM annotation" seems unnecessary again, in particular
+> because any compliant VOTable parser will grok annotated VOTables,
+> just skipping the extra RESOURCE.
+>
+> I give you that *for development* it's nice to let service software
+> spit out non-annotated VOTables by default for a time and then have
+> some way to tell it "I'm experimenting, do give me your new-fangled
+> things".
+>
+> But we don't need some sort of anointed practice for a secret
+> handshake between bleeding-edge software and a freshly extended
+> server.  DaCHS, for instance, is using
+> application/x-votable+xml;version=1.6 to indicate "dump whatever you
+> currently implement of MIVOT into this file".  I'd argue that ought
+> to be fine as long as all parties agree this is for development and
+> not for eternity.
+>
+> In operations, I am absolutely sure that servers should produce DM
+> annotation when clients just request VOTables (with the reservations
+> I made above, that is).
+>
+>            -- Markus
+>
+
+From gregory.mantelet at astro.unistra.fr  Wed Dec 11 10:32:19 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Wed, 11 Dec 2024 10:32:19 +0100
+Subject: [REMINDER] DAL Running Meeting #19 - Today at 4PM UTC
+In-Reply-To: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+References: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+Message-ID: <a5d303dd-b838-45a5-aa18-4dffbb815dc5@astro.unistra.fr>
+
+
+
+On 09/12/2024 11:10, Gr?gory Mantelet wrote:
+> Dear DAL members,
+>
+> Here is an announcement for the next DAL Running Meeting.
+>
+> Anyone who recently attended the DAL session in Malta may remember the 
+> first
+> talks given by Anastasia Laity (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/DAL_at_IRSA_Laity.pdf>) 
+> and Tess Jaffe (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/NAVO_cloud_DataLink_202411_interop.pdf>). 
+> They raise an interesting
+> question about ways to convey multiple locations for a single product 
+> provided
+> through Datalink. This question was raised and Tess suggested some 
+> solutions ;
+> see session notes 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/IVOA_Nov24_DAL.pdf>. 
+> Unfortunately we did not have a lot of time for discussions.
+> Hence this DAL Running Meeting.
+>
+> If you are interested by this question, here is the information about this
+> Running Meeting:
+>
+>     *Date??? :*Dec 11, 2024
+>     *Time??? :* 04:00 PM UTC
+>     *Duration:* 1 hour
+>     *Location:*
+>     https://cnrs.zoom.us/j/92095660540?pwd=3dAHll6Na9X71S8HAgUnNtxzjo3r9v.1
+>     /*Meeting ID:*//920 9566 0540/
+>     */Passcode/**/? :/*/sjM0h4/
+>
+>
+> Cheers,
+> Gr?gory Mantelet & Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241211/d494b098/attachment.htm>
+
+From francois.bonnarel at gmail.com  Wed Dec 11 16:33:18 2024
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Wed, 11 Dec 2024 16:33:18 +0100
+Subject: DAL Running Meeting #19 - Datalink and multiple locations
+In-Reply-To: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+References: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+Message-ID: <b3649cbe-f020-4573-8c67-818d24b8556e@gmail.com>
+
+Dear all,
+ ?? I will not attend the meeting, but here are my 2 cents on the 
+questions raised
+
+ ?? a ) DAL at IRSA :
+ ??????? - in Obscore there is a distinction between "observation" 
+identified by obs_id and the individual unit "dataset" identified by 
+obs_publisher_did
+This allows to group by a common obs_id several datasets considered to 
+belong to the same "observation". The definition of what is an 
+observation is actually provider dependent. SO in the mapping with CAOM 
+I guess that planeid is more aligned with obs_publisher_did and the 
+dataset concept.
+ ??????? - for "fast" DataLink as far as I understand the question, the 
+ID parameter? in the DataLink service is not required to be 
+obs_publisher_did, so any more direct index to the CAOM artifact table 
+can be used there.
+
+ ??? b ) How should ObsTAP+DataLink provide options to retrieve the same 
+product from multiple locations (including cloud)?
+
+ ???????????? - prefered provider : the DataLink access is not required 
+to be given by the access_url FIELD (or equivalent) in a data discovery 
+response. It can be provided through a DataLink service descriptor as a 
+secondary RESOURCE in the respeonse. In that case the access_url can 
+provide direct link to the preferred provider.
+ ???????????? - multi provider issue : with the current standard, I 
+think providing the provider tag in the local_semantics is the "less 
+bad" solution if not the better. local_semantics is a free text FIELD, 
+but should repeat the same strings for different datasets in the main 
+service in order to identify related or similar raws in the DataLink 
+response. So something like
+ ????????????????????????? ID = id1
+ ????????????????????????? semantics : #this
+ ????????????????????????? content_type : application/fits
+content_qualifier : image
+local_semantics : aws
+ ????????????????????????? ............
+ ????????????????????????? ID = id1
+ ? ? ? ? ? ? ? ? ? ? ? ? ? semantics : #this
+content_type : application/fits
+content_qualifier : image
+local_semantics : google
+.............
+ ????????????????????????? ID = id1
+ ????????????????????????? semantics : #progenitor
+content_type : application/fits
+content_qualifier : cube
+local_semantics : aws
+.............
+ ????????????????????????? ID = id1
+ ????????????????????????? semantics : #progenitor
+content_type : application/fits
+content_qualifier : cube
+local_semantics : google
+.............
+ ????????????????????????? ID = id1
+ ????????????????????????? semantics : #progenitor
+ ????????????????????????? content_type : hdf5
+ ????????????????????????? content_qualifier : cube
+ ????????????????????????? local_semantics : aws
+ ????????????????????????? .............
+ ????????????????????????? ID = id1
+ ????????????????????????? semantics : #progenitor
+ ????????????????????????? content_type : hdf5
+ ????????????????????????? content_qualifier : cube
+ ????????????????????????? local_semantics : google
+
+and then the same kind of answer for ID = id2
+
+will allow the client : to find out all accesses to the full (image ) 
+fits format dataset served by aws (or google or ...)
+ ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? to find out all accesses to the (cube) 
+progenitor in fits (or hdf5) served by google (or aws ...)
+etc....
+
+Cheers
+Fran?ois
+
+
+
+
+Le 09/12/2024 ? 11:10, Gr?gory Mantelet via dal a ?crit?:
+> Dear DAL members,
+>
+> Here is an announcement for the next DAL Running Meeting.
+>
+> Anyone who recently attended the DAL session in Malta may remember the 
+> first
+> talks given by Anastasia Laity (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/DAL_at_IRSA_Laity.pdf>) 
+> and Tess Jaffe (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/NAVO_cloud_DataLink_202411_interop.pdf>). 
+> They raise an interesting
+> question about ways to convey multiple locations for a single product 
+> provided
+> through Datalink. This question was raised and Tess suggested some 
+> solutions ;
+> see session notes 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/IVOA_Nov24_DAL.pdf>. 
+> Unfortunately we did not have a lot of time for discussions.
+> Hence this DAL Running Meeting.
+>
+> If you are interested by this question, here is the information about this
+> Running Meeting:
+>
+>     *Date??? :*Dec 11, 2024
+>     *Time??? :* 04:00 PM UTC
+>     *Duration:* 1 hour
+>     *Location:*
+>     https://cnrs.zoom.us/j/92095660540?pwd=3dAHll6Na9X71S8HAgUnNtxzjo3r9v.1
+>     /*Meeting ID:*//920 9566 0540/
+>     */Passcode/**/? :/*/sjM0h4/
+>
+>
+> Cheers,
+> Gr?gory Mantelet & Joshua Fraustro
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241211/19aff838/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Dec 12 11:35:46 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 12 Dec 2024 11:35:46 +0100
+Subject: DAL Running Meeting #19 - Datalink and multiple locations
+In-Reply-To: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+References: <32149a04-f222-41e4-91be-218aa12786fb@astro.unistra.fr>
+Message-ID: <7100b4fc-7300-4c67-8205-a4c8f12ee6b6@astro.unistra.fr>
+
+Dear DAL members,
+
+This running meeting went well and discussions were really active.
+Thank you to all participants for your time and your contribution.
+
+For people that could not attend this meeting and for the records,
+the minutes of this meeting are available on the Twiki:
+
+IVOA/IvoaDAL_RunningMeetings/DAL_Running_Meeting_19.pdf 
+<https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/DAL_Running_Meeting_19.pdf>
+
+FYI, a GitHub issue has been created in order to answer to a part
+of the raised question: Datalink#117 
+<https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/DAL_Running_Meeting_19.pdf>
+
+Cheers,
+Gr?gory and Joshua
+
+
+On 09/12/2024 11:10, Gr?gory Mantelet wrote:
+> Dear DAL members,
+>
+> Here is an announcement for the next DAL Running Meeting.
+>
+> Anyone who recently attended the DAL session in Malta may remember the 
+> first
+> talks given by Anastasia Laity (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/DAL_at_IRSA_Laity.pdf>) 
+> and Tess Jaffe (pdf 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/NAVO_cloud_DataLink_202411_interop.pdf>). 
+> They raise an interesting
+> question about ways to convey multiple locations for a single product 
+> provided
+> through Datalink. This question was raised and Tess suggested some 
+> solutions ;
+> see session notes 
+> <https://wiki.ivoa.net/internal/IVOA/InterOpNov2024DAL/IVOA_Nov24_DAL.pdf>. 
+> Unfortunately we did not have a lot of time for discussions.
+> Hence this DAL Running Meeting.
+>
+> If you are interested by this question, here is the information about this
+> Running Meeting:
+>
+>     *Date??? :*Dec 11, 2024
+>     *Time??? :* 04:00 PM UTC
+>     *Duration:* 1 hour
+>     *Location:*
+>     https://cnrs.zoom.us/j/92095660540?pwd=3dAHll6Na9X71S8HAgUnNtxzjo3r9v.1
+>     /*Meeting ID:*//920 9566 0540/
+>     */Passcode/**/? :/*/sjM0h4/
+>
+>
+> Cheers,
+> Gr?gory Mantelet & Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241212/9f007e9f/attachment.htm>
+

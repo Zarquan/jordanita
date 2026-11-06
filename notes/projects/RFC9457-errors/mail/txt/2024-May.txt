@@ -1,0 +1,647 @@
+From renaud.savalle at obspm.fr  Mon May  6 10:29:31 2024
+From: renaud.savalle at obspm.fr (Renaud Savalle)
+Date: Mon, 6 May 2024 10:29:31 +0200
+Subject: REMINDER Registry Running Meeting at 13:00 UTC today 2024-05-06 Re:
+ Poll for a Registry Running Meeting about linking capabilities with tablesets
+In-Reply-To: <bc4d7da3-e674-4722-9be8-adbb9093b1b1@obspm.fr>
+References: <ceb9b2e3-fa52-4bf7-b174-beef4d2a80bd@obspm.fr>
+ <bc4d7da3-e674-4722-9be8-adbb9093b1b1@obspm.fr>
+Message-ID: <8d65841a-df52-41ac-9e7d-99dde88ad233@obspm.fr>
+
+Dear Registry WG members, dear DAL and Apps WG members,
+
+This is a reminder about today's Registry Running Meeting:
+
+Topic: *Linking capabilities with tablesets*
+
+Notes: https://yopad.eu/p/IVOA_Reg_RM20240506
+
+Please join us on Zoom at 13:00 UTC today:
+
+https://cnrs.zoom.us/j/91455321058?pwd=ZHc3K3loOUpTWUJOQzh6Y08wUXdDZz09
+
+Thanks,
+
+Renaud.
+
+
+On 2024-04-11 14:59, Renaud Savalle via dal wrote:
+> Dear All,
+>
+> Thank you for your poll answers. According to the best date shown by 
+> the poll results, we will have this Registry Running Meeting on May 
+> 6th at 13:00 UTC.
+>
+> Following is the Zoom meeting link.
+>
+> See you then !
+>
+> Renaud.
+>
+>
+> Renaud Savalle is inviting you to a scheduled Zoom meeting.
+>
+> Join Zoom Meeting
+> https://cnrs.zoom.us/j/91455321058?pwd=ZHc3K3loOUpTWUJOQzh6Y08wUXdDZz09
+>
+> Meeting ID: 914 5532 1058
+> Passcode: inRT4q
+>
+> ---
+>
+>
+> On 2024-04-09 16:38, Renaud Savalle wrote:
+>> Dear All,
+>>
+>> Following the recent proposal and discussion on the Registry mailing 
+>> list about "linking capabilities with tablesets" (see 
+>> http://mail.ivoa.net/pipermail/registry/2024-March/005572.html and 
+>> replies) I would like to have a Registry Running Meeting next month 
+>> before the Sydney Interop. Linking capabilities with tablesets is a 
+>> important challenge for Registry publishers especially data providers 
+>> serving many interdependent resources. We'll explain the issue in 
+>> details and discuss the possible solutions and their impact.
+>>
+>> Besides Registry WG members, I'd like to invite the DAL WG (because 
+>> one possible solution relates to adding a parameter for Simple Cone 
+>> Search) and the Apps WG (as we may have to introduce significant 
+>> changes to our discovery patterns) to participate.
+>>
+>> Could you please indicate your availability in this doodle: 
+>> https://www.when2meet.com/?24534915-lvce9 , which features 3 slots on 
+>> Apr 30, May 6 and May 10, all at 13:00 UTC ?
+>>
+>> Thanks in advance,
+>>
+>> Renaud.
+>>
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240506/e3edd1aa/attachment.htm>
+
+From James.Dempsey at csiro.au  Tue May  7 10:17:23 2024
+From: James.Dempsey at csiro.au (Dempsey, James (IM&T, Black Mountain))
+Date: Tue, 7 May 2024 08:17:23 +0000
+Subject: DAL Call for contributions - May 2024 Interop
+In-Reply-To: <SYBPR01MB61103D7170CBE962902C4B4E893E2@SYBPR01MB6110.ausprd01.prod.outlook.com>
+References: <SYBPR01MB61103D7170CBE962902C4B4E893E2@SYBPR01MB6110.ausprd01.prod.outlook.com>
+Message-ID: <SYBPR01MB6110B4674C16B95B6C7F173B89E42@SYBPR01MB6110.ausprd01.prod.outlook.com>
+
+Dear Data Access Layer Working Group,
+
+We still have some available room for DAL talks at the upcoming Interop, so if you are considering presenting please get in contact with us as soon as you can.
+
+Cheers,
+James Dempsey and Gr?gory Mantelet
+
+
+From: Dempsey, James (IM&T, Black Mountain) <James.Dempsey at csiro.au>
+Date: Tuesday, 2 April 2024 at 10:30?PM
+To: IVOA DAL <dal at ivoa.net>, interop at ivoa.net <interop at ivoa.net>
+Subject: DAL Call for contributions - May 2024 Interop
+Dear Data Access Layer Working Group,
+The Northern Spring Interop Meeting<https://rds.org.au/events/ivoa-2024/> will take place in Sydney, Australia from 20 ? 24 May. Remote attendance will also be supported.
+
+We invite you to contribute discussions on DAL related topics for the interop. These could be discussions on DAL standards either established, in development or proposed. We also encourage implementation reports from data centres using and implementing the standards, and are particularly interested in your experiences whether you are using your own software or one of the existing implementations.
+
+Please send your contributions with a speaker name, title and abstract to james.dempsey at csiro.au<mailto:james.dempsey at csiro.au> and gregory.mantelet at astro.unistra.fr<mailto:gregory.mantelet at astro.unistra.fr>  . If you are unsure about the suitability of a talk, or are a first time contributor, please get in contact with us and we can discuss it.
+
+
+Cheers,
+James Dempsey an Gr?gory Mantelet
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240507/7599a762/attachment.htm>
+
+From m.b.taylor at bristol.ac.uk  Wed May 22 22:16:40 2024
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Wed, 22 May 2024 21:16:40 +0100 (BST)
+Subject: P3T
+Message-ID: <1b5ebc92-165-1094-fff9-1647e3f0384f@it076926>
+
+Dear colleagues,
+
+having let the P3T session yesterday sink in I wanted to make a few
+comments.
+
+[TL;DR: I've got reservations, but I'm not going to throw rocks in the way]
+
+This proposal will lead to some fragmentation of the VO ecosystem.
+ Up till now we have, with a few exceptions
+(e.g. PLASTIC->SAMP, SIA1->SIA2), been extremely conservative
+about breaking changes to the standards, e.g. Cone Search responses
+are still required to include UCD1s to the exclusion of UCD1+s that
+replaced UCD1 in around 2006.  The result has been that to a pretty
+large extent all the client and server software that has been written
+to date continues to interoperate.  For long-lived standards such
+as TAP and SCS new clients work with old services and old clients
+work with new services, though enhancements introduced in later
+versions of standards obviously are not available in those cases.
+As far as it goes, I'd say that is a pretty good thing.
+
+The current proposal lobs a cannonball into that approach so that
+there is no chance of client/server code written for existing
+standards interoperating as it stands with code implementing
+the new versions of those standards.  Similarly, client/server
+code written to target the new versions will not interoperate
+with existing implementations.  The scope is currently TAP and UWS
+but it looks like the thin end of a sizeable wedge;
+phase 3 will target other standards, and several comments made
+during the presentations seemed to indicate that we can expect
+another similar round of breaking changes when OpenAPI falls
+out of fashion in a few years time, and so on.
+
+The no-legacy-code-left-behind vs. move-fast-and-break-things
+difference between approaches is reminiscent to me of a comparison
+between development of the Java and Python platforms/languages;
+v1.1 of the Java application TOPCAT from 2004 runs happily under
+Java 21 from 2021, but running older python code on recent
+python platforms is typically much more problematic.
+Neither approach is absurd; each has its pros and cons.
+
+Gregory's presentation yesterday acknowledges the issue but I would
+say understates the impact a little bit.  Even assuming that the
+major clients are adapted to work with both old and new APIs,
+the existing "Informal client" sector will be unable to talk
+to new services, and existing services will be inaccessible
+from any new OpenAPI-based clients; Joshua was keen to point
+out that such new clients are now going to be easy to develop.
+
+I can see why the proposed changes appeal to large, well funded service
+providers.  But there are downsides from the point of view of legacy
+services; newly developed clients will not talk to them and the
+hurdle to take advantage of incremental changes in the standards
+becomes higher.  This model for standards development may come
+back to bite those projects which are currently well-resourced
+if they transition to maintenance-only mode in the future.
+
+So, I'm wary of this way forward and I think people should be aware
+of the impacts we can expect.  But, maybe the benefits outweigh
+the costs.  Judging from the institutional involvement in the P3T
+and from most of the audience response at yesterday's session
+it looks like the prevailing opinion is that this is the way
+we should go, and that it is going to happen.
+
+I wonder whether there is a middle way: rewrite the standards
+in terms of OpenAPI but do what we can to make them describe
+existing service behaviour, minimising breaking changes.
+There are two things being proposed here, and they are separable
+to a degree: firstly providing machine-readable (OpenAPI)
+definitions of the services, and secondly transitioning those
+services to behave in a more modern way.
+Page 8 of Joshua's presentation
+(https://wiki.ivoa.net/internal/IVOA/InterOpMay2024P3T/dal-openapi-tech-overview.pdf)
+mentions one thing that can't be done in OpenAPI: case-sensitivity
+of parameters.  The other protocol changes described there are
+more about how people would do things given a blank sheet of paper
+than simply enabling machine-readable interface definitions.
+Use of x-www-form-urlencoded parameters is said to be vulnerable to
+CSRF, but there was some discussion on zoom about whether this is
+really the case, I haven't looked into the details.
+Case sensitivity we could probably fudge if we wanted to
+(make a breaking but low-impact change to standards requiring no
+modification for most code that uses uppercase anyway).
+If the issue is really just about OpenAPI compatibility and
+machine-readable interface definitions then perhaps it could be
+done with significantly less impact than what's being suggested.
+If on the other hand the appetite is really to take the
+opportunity to update lots of things without regard to backward
+compability, that's a different matter.  But we should be clear
+about the goals.
+
+Whatever we do decide to do, I want the VO to work as well as possible
+for users, so I'd volunteer to prototype client code at an early
+stage in topcat and stilts.  I will mention another class of client
+that will need to be modified to work in dual mode: validators.
+The taplint validator that forms part of stilts is a complex
+tool widely used by TAP service deployers to check that their
+services are operating according to the specs (I'd be happy for
+others to develop a TAP validator, but nobody has), and if it
+doesn't work for OpenAPI-based services I predict service
+compliance and quality will drop significantly.
+It is true that off-the-shelf OpenAPI validators can be used to
+do part of the job of service validation in the new picture,
+but there's a lot that goes on in taplint that I don't think can be
+covered simply on the basis of understanding the OpenAPI contract.
+
+I think this is going to require a significant amount of development
+effort from client authors like me, but how much will depend on the
+details of the proposal, so I look forward to the development and
+results of the proposed Phase 1.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From francois.bonnarel at astro.unistra.fr  Thu May 23 04:30:07 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Thu, 23 May 2024 04:30:07 +0200
+Subject: DAL splinter at 2 PM
+Message-ID: <23661aa4-4c3a-4975-8039-3d906ea8800a@astro.unistra.fr>
+
+Dear all,
+
+Just in case I give you some links to available material on the topics 
+to be discussed during the splinter
+
+Slides of the last running meeting + notes :
+
+https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/SIA-DAPSODARunning.pdf
+
+https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/IVOA_DAL_RM18.pdf
+
+--------------------------------------------------------
+
+DataLink implementation Note : https://github.com/ivoa/DataLinkRecImplNote
+
+DAP last artefact Preview : 
+https://github.com/ivoa-std/DAP/actions/runs/9197393452
+
+SODA last artefact Preview : 
+https://github.com/ivoa-std/SODA/actions/runs/9198757666
+
+See you later
+
+Fran?ois
+
+
+
+From gregory.mantelet at astro.unistra.fr  Thu May 23 06:01:31 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 23 May 2024 06:01:31 +0200
+Subject: DAL splinter at 2 PM
+In-Reply-To: <23661aa4-4c3a-4975-8039-3d906ea8800a@astro.unistra.fr>
+References: <23661aa4-4c3a-4975-8039-3d906ea8800a@astro.unistra.fr>
+Message-ID: <a9b72262-bed8-4491-8221-ec19decc76d3@astro.unistra.fr>
+
+Dear all,
+
+I also add some comment here. The Etherpad of this session/splinter 
+<https://yopad.eu/p/IVOA_May24_SplinterDAP_SODA> already contains notes 
+(copied and pasted) from the last running meeting about DAP and SODA.
+
+See you now,
+Gr?gory
+
+
+On 23/05/2024 04:30, BONNAREL FRANCOIS via dal wrote:
+> Dear all,
+>
+> Just in case I give you some links to available material on the topics 
+> to be discussed during the splinter
+>
+> Slides of the last running meeting + notes :
+>
+> https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/SIA-DAPSODARunning.pdf 
+>
+>
+> https://wiki.ivoa.net/internal/IVOA/IvoaDAL_RunningMeetings/IVOA_DAL_RM18.pdf 
+>
+>
+> --------------------------------------------------------
+>
+> DataLink implementation Note : 
+> https://github.com/ivoa/DataLinkRecImplNote
+>
+> DAP last artefact Preview : 
+> https://github.com/ivoa-std/DAP/actions/runs/9197393452
+>
+> SODA last artefact Preview : 
+> https://github.com/ivoa-std/SODA/actions/runs/9198757666
+>
+> See you later
+>
+> Fran?ois
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240523/ccc85d0c/attachment.htm>
+
+From James.Dempsey at csiro.au  Thu May 23 12:43:24 2024
+From: James.Dempsey at csiro.au (Dempsey, James (IM&T, Black Mountain))
+Date: Thu, 23 May 2024 10:43:24 +0000
+Subject: P3T
+In-Reply-To: <1b5ebc92-165-1094-fff9-1647e3f0384f@it076926>
+References: <1b5ebc92-165-1094-fff9-1647e3f0384f@it076926>
+Message-ID: <SY6PR01MB7491106DEFC0E388E4A28F7D89F42@SY6PR01MB7491.ausprd01.prod.outlook.com>
+
+Hi Mark,
+
+Thank-you for raising this. The question of compatibility is an important one and something we are very keen to explore in phase 1. Examining concrete implementations and being able to assess the amount of change involved will be a key aspect of the assessment of phase 1 by the P3T team and the whole IVOA community when we report back. We hope to be able to work with the developers of clients in testing these proposals too. With a focus on prototypes and following the regular processes for changes to standards we are aiming to avoid the ?move-fast-and-break-things? approach.
+
+One of the aims of this work is to make it easier for standards to evolve in the future as web technology evolves. Our focus very much includes not just the current change but making sure we lay the pathways for future evolution of the standards. We feel that having a machine readable definition of the standards will assist with any future evolution. The question of how we might tackle the next evolution is something we have discussed a lot, and again hope to gain more clarity on in phase 1.
+
+The value of validators such as taplint have been mentioned numerous times in the P3T meetings (and in the presentations that motivated the effort). This is an area we hope to be able to contribute towards, but we understand that off the shelf tools only get us so far. However, tools such as client library generation may well make creation of validators for future standards a bit easier.
+
+We would very much appreciate your assistance with prototyping client and validator impacts as part of phase 1. Thank-you for the offer of help there.
+
+Cheers,
+James Dempsey
+Senior Developer  |  CSIRO
+james.dempsey at csiro.au<mailto:james.dempsey at csiro.au>  |  02 6214 2912
+
+
+From: dal <dal-bounces at ivoa.net> on behalf of Mark Taylor via dal <dal at ivoa.net>
+Date: Thursday, 23 May 2024 at 6:17?AM
+To: dal at ivoa.net <dal at ivoa.net>
+Subject: P3T
+Dear colleagues,
+
+having let the P3T session yesterday sink in I wanted to make a few
+comments.
+
+[TL;DR: I've got reservations, but I'm not going to throw rocks in the way]
+
+This proposal will lead to some fragmentation of the VO ecosystem.
+ Up till now we have, with a few exceptions
+(e.g. PLASTIC->SAMP, SIA1->SIA2), been extremely conservative
+about breaking changes to the standards, e.g. Cone Search responses
+are still required to include UCD1s to the exclusion of UCD1+s that
+replaced UCD1 in around 2006.  The result has been that to a pretty
+large extent all the client and server software that has been written
+to date continues to interoperate.  For long-lived standards such
+as TAP and SCS new clients work with old services and old clients
+work with new services, though enhancements introduced in later
+versions of standards obviously are not available in those cases.
+As far as it goes, I'd say that is a pretty good thing.
+
+The current proposal lobs a cannonball into that approach so that
+there is no chance of client/server code written for existing
+standards interoperating as it stands with code implementing
+the new versions of those standards.  Similarly, client/server
+code written to target the new versions will not interoperate
+with existing implementations.  The scope is currently TAP and UWS
+but it looks like the thin end of a sizeable wedge;
+phase 3 will target other standards, and several comments made
+during the presentations seemed to indicate that we can expect
+another similar round of breaking changes when OpenAPI falls
+out of fashion in a few years time, and so on.
+
+The no-legacy-code-left-behind vs. move-fast-and-break-things
+difference between approaches is reminiscent to me of a comparison
+between development of the Java and Python platforms/languages;
+v1.1 of the Java application TOPCAT from 2004 runs happily under
+Java 21 from 2021, but running older python code on recent
+python platforms is typically much more problematic.
+Neither approach is absurd; each has its pros and cons.
+
+Gregory's presentation yesterday acknowledges the issue but I would
+say understates the impact a little bit.  Even assuming that the
+major clients are adapted to work with both old and new APIs,
+the existing "Informal client" sector will be unable to talk
+to new services, and existing services will be inaccessible
+from any new OpenAPI-based clients; Joshua was keen to point
+out that such new clients are now going to be easy to develop.
+
+I can see why the proposed changes appeal to large, well funded service
+providers.  But there are downsides from the point of view of legacy
+services; newly developed clients will not talk to them and the
+hurdle to take advantage of incremental changes in the standards
+becomes higher.  This model for standards development may come
+back to bite those projects which are currently well-resourced
+if they transition to maintenance-only mode in the future.
+
+So, I'm wary of this way forward and I think people should be aware
+of the impacts we can expect.  But, maybe the benefits outweigh
+the costs.  Judging from the institutional involvement in the P3T
+and from most of the audience response at yesterday's session
+it looks like the prevailing opinion is that this is the way
+we should go, and that it is going to happen.
+
+I wonder whether there is a middle way: rewrite the standards
+in terms of OpenAPI but do what we can to make them describe
+existing service behaviour, minimising breaking changes.
+There are two things being proposed here, and they are separable
+to a degree: firstly providing machine-readable (OpenAPI)
+definitions of the services, and secondly transitioning those
+services to behave in a more modern way.
+Page 8 of Joshua's presentation
+(https://wiki.ivoa.net/internal/IVOA/InterOpMay2024P3T/dal-openapi-tech-overview.pdf)
+mentions one thing that can't be done in OpenAPI: case-sensitivity
+of parameters.  The other protocol changes described there are
+more about how people would do things given a blank sheet of paper
+than simply enabling machine-readable interface definitions.
+Use of x-www-form-urlencoded parameters is said to be vulnerable to
+CSRF, but there was some discussion on zoom about whether this is
+really the case, I haven't looked into the details.
+Case sensitivity we could probably fudge if we wanted to
+(make a breaking but low-impact change to standards requiring no
+modification for most code that uses uppercase anyway).
+If the issue is really just about OpenAPI compatibility and
+machine-readable interface definitions then perhaps it could be
+done with significantly less impact than what's being suggested.
+If on the other hand the appetite is really to take the
+opportunity to update lots of things without regard to backward
+compability, that's a different matter.  But we should be clear
+about the goals.
+
+Whatever we do decide to do, I want the VO to work as well as possible
+for users, so I'd volunteer to prototype client code at an early
+stage in topcat and stilts.  I will mention another class of client
+that will need to be modified to work in dual mode: validators.
+The taplint validator that forms part of stilts is a complex
+tool widely used by TAP service deployers to check that their
+services are operating according to the specs (I'd be happy for
+others to develop a TAP validator, but nobody has), and if it
+doesn't work for OpenAPI-based services I predict service
+compliance and quality will drop significantly.
+It is true that off-the-shelf OpenAPI validators can be used to
+do part of the job of service validation in the new picture,
+but there's a lot that goes on in taplint that I don't think can be
+covered simply on the basis of understanding the OpenAPI contract.
+
+I think this is going to require a significant amount of development
+effort from client authors like me, but how much will depend on the
+details of the proposal, so I look forward to the development and
+results of the proposed Phase 1.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240523/c671fae3/attachment-0001.htm>
+
+From Pierre.Fernique at astro.unistra.fr  Thu May 23 18:37:45 2024
+From: Pierre.Fernique at astro.unistra.fr (Pierre Fernique)
+Date: Thu, 23 May 2024 18:37:45 +0200
+Subject: P3T
+In-Reply-To: <1b5ebc92-165-1094-fff9-1647e3f0384f@it076926>
+References: <1b5ebc92-165-1094-fff9-1647e3f0384f@it076926>
+Message-ID: <e3466c2a-ed3c-46cf-a65a-caf45284d567@astro.unistra.fr>
+
+Hi all,
+
+I must say that I share many of the questions raised by Mark. I 
+understand and encourage this P3T OpenAPI initiative, which should help 
+reduce inconsistencies in our IVOA APIs. I'm more dubious about the 
+supposed development help provided by automatic code generation. And, 
+I'm very concerned about the risks on the backward compatibility. This 
+is one of the reasons for IVOA's long-term success. The more robust and 
+durable the interoperability is, the better IVOA will prosper. The 
+argument of using "modern" programming techniques doesn't seem very 
+solid (or I'm now too old to buy it). Twenty years ago, SOAP (industrial 
+& modern solution at this time) was presented (and implemented) with the 
+same justification. And Python is as old as Perl ; FITS is older than me ?
+
+It seems to me that the proposal to provide an OpenAPI description of 
+our standardized APIs should be seen in the same spirit as the BNF 
+grammars we now provide some times to normatively describe any syntaxes 
+we use. So not a "transition" on the IVOA standardization process, but a 
+desirable - if not required - addition for an unambiguous, 
+machine-readable description. With this in mind, I think it would still 
+be important not to lose human readers by simply replacing the normative 
+part for a JSON|YAML document. I'd see it more as a complement, an 
+appendix, just as we provide for decades the VOTable XSD schema (and DTD 
+before).
+
+I'd like to add that the presentation given at the P3T session may have 
+given the impression that all IVOA standards and tools would eventually 
+be impacted (modification of the standardization and validation process, 
+etc.). However, we have defined and use many standards that are not just 
+HTTP APIs. One of IVOA's strengths is that it has also defined data 
+formats (VOTable, HiPS, MOC), vocabularies (UCD, units), grammars 
+(STC-S, ADQL), data models and more. And the coding simplification hoped 
+for by code generators for APIs cannot replace the need to take these 
+formats/vocabularies/grammars/datamodels into account, and by 
+experience, the API part is often the easiest to code.
+
+Concerning the adaption of Aladin Desktop, fortunately I don't yet see 
+the real need. The work required to take over all of Aladin Desktop's 
+client IVOA APIs is difficult to quantify, and most certainly very 
+heavy, risky, and without immediate benefit, even risking introducing 
+inconveniences. A client such as Aladin " deals " with uncertain/partial 
+implementations of a standard. He won't necessary throw errors, but will 
+do the best he can. And for the benefit of the user. But again, I don't 
+see the need, since the implementation effort has already been made. Why 
+do this a second time. It would only be for new standards, and if 
+automatic code generation actually brings the expected benefit.
+
+My few comments after a short night (with a still very partial knowledge 
+of what OpenAPI Specification would allow).
+Have a nice day/night
+Pierre Fernique
+
+Le 22/05/2024 ? 22:16, Mark Taylor via dal a ?crit?:
+> Dear colleagues,
+>
+> having let the P3T session yesterday sink in I wanted to make a few
+> comments.
+>
+> [TL;DR: I've got reservations, but I'm not going to throw rocks in the way]
+>
+> This proposal will lead to some fragmentation of the VO ecosystem.
+>   Up till now we have, with a few exceptions
+> (e.g. PLASTIC->SAMP, SIA1->SIA2), been extremely conservative
+> about breaking changes to the standards, e.g. Cone Search responses
+> are still required to include UCD1s to the exclusion of UCD1+s that
+> replaced UCD1 in around 2006.  The result has been that to a pretty
+> large extent all the client and server software that has been written
+> to date continues to interoperate.  For long-lived standards such
+> as TAP and SCS new clients work with old services and old clients
+> work with new services, though enhancements introduced in later
+> versions of standards obviously are not available in those cases.
+> As far as it goes, I'd say that is a pretty good thing.
+>
+> The current proposal lobs a cannonball into that approach so that
+> there is no chance of client/server code written for existing
+> standards interoperating as it stands with code implementing
+> the new versions of those standards.  Similarly, client/server
+> code written to target the new versions will not interoperate
+> with existing implementations.  The scope is currently TAP and UWS
+> but it looks like the thin end of a sizeable wedge;
+> phase 3 will target other standards, and several comments made
+> during the presentations seemed to indicate that we can expect
+> another similar round of breaking changes when OpenAPI falls
+> out of fashion in a few years time, and so on.
+>
+> The no-legacy-code-left-behind vs. move-fast-and-break-things
+> difference between approaches is reminiscent to me of a comparison
+> between development of the Java and Python platforms/languages;
+> v1.1 of the Java application TOPCAT from 2004 runs happily under
+> Java 21 from 2021, but running older python code on recent
+> python platforms is typically much more problematic.
+> Neither approach is absurd; each has its pros and cons.
+>
+> Gregory's presentation yesterday acknowledges the issue but I would
+> say understates the impact a little bit.  Even assuming that the
+> major clients are adapted to work with both old and new APIs,
+> the existing "Informal client" sector will be unable to talk
+> to new services, and existing services will be inaccessible
+> from any new OpenAPI-based clients; Joshua was keen to point
+> out that such new clients are now going to be easy to develop.
+>
+> I can see why the proposed changes appeal to large, well funded service
+> providers.  But there are downsides from the point of view of legacy
+> services; newly developed clients will not talk to them and the
+> hurdle to take advantage of incremental changes in the standards
+> becomes higher.  This model for standards development may come
+> back to bite those projects which are currently well-resourced
+> if they transition to maintenance-only mode in the future.
+>
+> So, I'm wary of this way forward and I think people should be aware
+> of the impacts we can expect.  But, maybe the benefits outweigh
+> the costs.  Judging from the institutional involvement in the P3T
+> and from most of the audience response at yesterday's session
+> it looks like the prevailing opinion is that this is the way
+> we should go, and that it is going to happen.
+>
+> I wonder whether there is a middle way: rewrite the standards
+> in terms of OpenAPI but do what we can to make them describe
+> existing service behaviour, minimising breaking changes.
+> There are two things being proposed here, and they are separable
+> to a degree: firstly providing machine-readable (OpenAPI)
+> definitions of the services, and secondly transitioning those
+> services to behave in a more modern way.
+> Page 8 of Joshua's presentation
+> (https://wiki.ivoa.net/internal/IVOA/InterOpMay2024P3T/dal-openapi-tech-overview.pdf)
+> mentions one thing that can't be done in OpenAPI: case-sensitivity
+> of parameters.  The other protocol changes described there are
+> more about how people would do things given a blank sheet of paper
+> than simply enabling machine-readable interface definitions.
+> Use of x-www-form-urlencoded parameters is said to be vulnerable to
+> CSRF, but there was some discussion on zoom about whether this is
+> really the case, I haven't looked into the details.
+> Case sensitivity we could probably fudge if we wanted to
+> (make a breaking but low-impact change to standards requiring no
+> modification for most code that uses uppercase anyway).
+> If the issue is really just about OpenAPI compatibility and
+> machine-readable interface definitions then perhaps it could be
+> done with significantly less impact than what's being suggested.
+> If on the other hand the appetite is really to take the
+> opportunity to update lots of things without regard to backward
+> compability, that's a different matter.  But we should be clear
+> about the goals.
+>
+> Whatever we do decide to do, I want the VO to work as well as possible
+> for users, so I'd volunteer to prototype client code at an early
+> stage in topcat and stilts.  I will mention another class of client
+> that will need to be modified to work in dual mode: validators.
+> The taplint validator that forms part of stilts is a complex
+> tool widely used by TAP service deployers to check that their
+> services are operating according to the specs (I'd be happy for
+> others to develop a TAP validator, but nobody has), and if it
+> doesn't work for OpenAPI-based services I predict service
+> compliance and quality will drop significantly.
+> It is true that off-the-shelf OpenAPI validators can be used to
+> do part of the job of service validation in the new picture,
+> but there's a lot that goes on in taplint that I don't think can be
+> covered simply on the basis of understanding the OpenAPI contract.
+>
+> I think this is going to require a significant amount of development
+> effort from client authors like me, but how much will depend on the
+> details of the proposal, so I look forward to the development and
+> results of the proposed Phase 1.
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+

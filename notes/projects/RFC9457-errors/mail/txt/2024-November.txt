@@ -1,0 +1,853 @@
+From stephen.lloyd at manchester.ac.uk  Thu Nov  7 11:35:38 2024
+From: stephen.lloyd at manchester.ac.uk (Stephen Lloyd)
+Date: Thu, 7 Nov 2024 10:35:38 +0000
+Subject: TAP - Supported datatypes
+Message-ID: <LO2P265MB4584DC296EF0BED7386A57D8D75C2@LO2P265MB4584.GBRP265.PROD.OUTLOOK.COM>
+
+Hi,
+
+TLDR: Are Booleans acceptable data types in TAP and if not, should they be converted to another data type?
+
+I'm wondering if anyone can assist with either pointing me to the correct documentation containing a definitive list of supported data types for TAP please?
+
+I'm currently looking at the Vollt libraries and there seems to be a list of validated types<https://github.com/gmantele/vollt/blob/master/src/adql/db/DBType.java> SMALLINT, INTEGER, BIGINT, REAL, DOUBLE, BINARY, VARBINARY, CHAR, VARCHAR, BLOB, CLOB, TIMESTAMP, POINT, CIRCLE, POLYGON, REGION, UNKNOWN, UKNOWN_NUMERIC but no BOOLEAN. I have existing database tables/columns that have BOOLEAN data types but they get converted to UNKNOWN at runtime due to the validation in Vollt.
+Should TAP support BOOLEAN or should it be converted to say SMALLINT (as a 0/1)?
+
+Thanks,
+Stephen Lloyd
+
+Research Software Engineer
+University of Manchester
+UKSRC
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241107/dcda25ff/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Fri Nov  8 09:49:48 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Fri, 8 Nov 2024 09:49:48 +0100
+Subject: TAP - Supported datatypes
+In-Reply-To: <LO2P265MB4584DC296EF0BED7386A57D8D75C2@LO2P265MB4584.GBRP265.PROD.OUTLOOK.COM>
+References: <LO2P265MB4584DC296EF0BED7386A57D8D75C2@LO2P265MB4584.GBRP265.PROD.OUTLOOK.COM>
+Message-ID: <6a0084f1-9432-47d7-a514-cb20ffe3a39e@astro.unistra.fr>
+
+Hi Stephen,
+
+Actually, your question is half ADQL, half TAP.
+
+Speaking about ADQL, booleans are not yet supported. It means that you 
+can not write constraints like `a_column = TRUE`. Booleans exists only 
+as integer values 1 or 0. The best known example is the positional 
+cross-match syntax? `1=CONTAINS(POINT(...), CIRCLE(...))`. However, 
+there is a plan to support properly booleans in ADQL in a future version.
+
+In the TAP context, nothing really prevents a TAP service to return 
+boolean values. The datatype applied in such case is undefined in 
+TAP-1.0. However, in TAP-1.1, datatypes are now explicitly expressed as 
+VOTable datatypes. The latter provides an explicit `boolean` datatype. 
+So, if your service fully support TAP-1.1, you should already have the 
+possibility to return boolean values using this VOTable datatype.
+
+Now, as the developer of VOLLT, I'd like to add a comment about the 
+`validated types` you extracted. VOLLT/TAP-Lib does not yet support 
+TAP-1.1. But, I am working on it currently ; it is just a matter of time 
+; sorry for the long waiting. So, it is true that currently there is no 
+explicit BOOLEAN values. However, boolean extracted from the database 
+should be converted automatically by VOLLT into SMALLINT with only two 
+possible values: 1 and 0. To make this work, in the TAP_SCHEMA, any 
+boolean column should be defined as SMALLINT (instead of BOOLEAN). That 
+was the default strategy in VOLLT for TAP-1.0. Once I will have changed 
+the datatype system of VOLLT (which requires a lot of time and 
+precautions as it is a core part of my libraries...but it is almost 
+done), the `boolean` datatype of VOTable will be used automatically by 
+default. At that moment, the class you are pointing to as "the list of 
+validated types" will be deprecated and a lot more flexibility will be 
+possible regarding the datatypes by using the VOTable datatypes. Again, 
+sorry for this long waiting.
+
+I hope I answered your questions. Of course, anybody else is free to 
+comment or complete these answers. If you have other questions or 
+concerns, please, do not hesitate to share them.
+
+Cheers,
+Gr?gory M.
+
+
+On 07/11/2024 11:35, Stephen Lloyd via dal wrote:
+>
+> Hi,
+>
+> TLDR: Are Booleans acceptable data types in TAP and if not, should 
+> they be converted to another data type?
+>
+> I?m wondering if anyone can assist with either pointing me to the 
+> correct documentation containing a definitive list of supported data 
+> types for TAP please?
+>
+> I?m currently looking at the Vollt libraries and there seems to be a 
+> list of validated types 
+> <https://github.com/gmantele/vollt/blob/master/src/adql/db/DBType.java> 
+> /SMALLINT/, /INTEGER/, /BIGINT/, /REAL/, /DOUBLE/, /BINARY/, 
+> /VARBINARY/, /CHAR/, /VARCHAR/, /BLOB/, /CLOB/, /TIMESTAMP/, /POINT/, 
+> /CIRCLE/, /POLYGON/, /REGION/, /UNKNOWN/, UK/NOWN_NUMERIC/ but no 
+> BOOLEAN. I have existing database tables/columns that have BOOLEAN 
+> data types but they get converted to UNKNOWN at runtime due to the 
+> validation in Vollt.
+>
+> Should TAP support BOOLEAN or should it be converted to say SMALLINT 
+> (as a 0/1)?
+>
+> Thanks,
+>
+> Stephen Lloyd
+>
+> Research Software Engineer
+>
+> University of Manchester
+>
+> UKSRC
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241108/44300df4/attachment.htm>
+
+From francois.bonnarel at gmail.com  Fri Nov  8 22:26:22 2024
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Fri, 8 Nov 2024 22:26:22 +0100
+Subject: DAP protocol news
+Message-ID: <6e730084-95da-43cb-b3a2-3a84a10965e1@gmail.com>
+
+Dear DALers,
+
+Recently discussion occured? about DAP protocol which is planned to be 
+the next version of? SIA, extending the scope of the protocol beyond 
+images and cubes towards all kind of dataproducts.
+
+See https://github.com/ivoa-std/DAP,? Pull request #3
+
+Starting from this pull request there was a big discussion on two points
+
+This occurred both during a special session at May interop 
+(https://wiki.ivoa.net/internal/IVOA/InterOpMay2024DAL/DAL-2-notes) and 
+on github (issues + PR comments):
+
+ ????? a ) how? can we get a direct link to SODA cutouts as we had with 
+SIAV1 instead of going through DataLink + SODA service descriptor?? This 
+could be driven by a RETRIEVEMODE parameter with value = cutout versus 
+default archival value.
+
+ ???????? +? In that case there is a proposal? made by myself to get the 
+opaque cutout URL in the access_url FIELD of the ObsCore table.
+
+ ???????? + There is another proposal made by Pat to insert directly in 
+the DAP response the SODA service descriptor. The default values of the 
+parameters? could be inferred from the DAP query but the user is able to 
+change that.
+
+ ??????? -> After discussion I think we can have both : the opaque 
+cutout SODA url in acces_url FIELD and the SODA service descriptor for 
+customizing the cutout.
+
+ ???????? + Gregory Dubois-Felsmann came with a first issue. In case we 
+are using this RETRIEVEMODE=cutout mode and the service answers with a 
+DataLink how should #this be interpreted ?
+
+ ? ? ? ? -> Although I don't think it is a good idea to use this mode 
+with Datalink response in access_url, if we were to do it, I think #this 
+would refer to the cutout product and the archived dataproduct from 
+which it's extracted would wear a #progenitor semantic flag.
+
+ ? ? ? ?? + Gregory also came with another issue : SIA/DAP only works 
+with the SIAV1-like OVERLAP intersect mode which means that the common 
+part of the ROI and the spatial coverage of the dataset MAY be small and 
+marginal. So the cutout driven from the ROI could be not fitting?? the 
+user need. So the SIAV1-like "COVERS" intersect mode where the dataset 
+fully integrates the ROI could be more appropriate.
+
+ ????????????? ---> then comes the question should we reintroduce the 
+SIAV1 INTERSECT parameter with all (some of) its values ? or should we? 
+decide that implicitely the RETRIEVE = cutout mode is coupled with 
+COVERS mode ? Personally I Tend to prefer the first solution.
+
+ ? ? ? ? ?? Currently the RETRIEVEMODE section has been commented in the 
+Spec latex source because some more discussion is needed. But I Think we 
+need it in the future when we all agree.
+
+ ?????? b ) Other point, not related to the previous one : Gregory also 
+made the comment that the FORMAT parameter in the context of the huge 
+DataLink success we experimented in Discovery services generates? 
+strange results :
+
+ ????????????? Either we get a real format Mime type or every raw 
+displays the? DataLink mime type.
+
+ ?????????????? + So Should FORMAT drive the mime type of either the 
+direct link in access_url FIELD or the one of the #this item in DataLink 
+? (considering that the choice between direct link to the dataset or 
+Datalink url in the access_url is only made by? the data provider)
+
+ ?????????????????? --> Personally I think it's still interesting to 
+keep that
+
+ ? ? ? ? ? ? ? ? + Or should we simply drop FORMAT from the DAP spec ? 
+(mainly because if we really want several? ? formats of science data 
+this will probably be done by several #this items in a DataLink response).
+
+ ????????????????????? --> most of involved people tend to agree with that.
+
+ ??????????????????? What I did is to change the text of the FORMAT 
+section according first option, before everybody decides this has to be 
+dropped.
+
+
+I wish you all a good ADASS conference and a useful IVOA meeting in Malta
+
+Cheers
+
+Fran?ois
+
+
+
+
+From francois.bonnarel at gmail.com  Sat Nov  9 09:23:56 2024
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Sat, 9 Nov 2024 09:23:56 +0100
+Subject: DAP protocol news
+In-Reply-To: <6e730084-95da-43cb-b3a2-3a84a10965e1@gmail.com>
+References: <6e730084-95da-43cb-b3a2-3a84a10965e1@gmail.com>
+Message-ID: <55da25c0-f72f-4511-8797-ab559b2a14ca@gmail.com>
+
+Le 08/11/2024 ? 22:26, BONNAREL FRANCOIS gmail a ?crit?:
+> Dear DALers,
+>
+> Recently discussion occured? about DAP protocol which is planned to be 
+> the next version of? SIA, extending the scope of the protocol beyond 
+> images and cubes towards all kind of dataproducts.
+>
+> See https://github.com/ivoa-std/DAP,? Pull request #3
+>
+> Starting from this pull request there was a big discussion on two points
+>
+> This occurred both during a special session at May interop 
+> (https://wiki.ivoa.net/internal/IVOA/InterOpMay2024DAL/DAL-2-notes) 
+> and on github (issues + PR comments):
+>
+> ????? a ) how? can we get a direct link to SODA cutouts as we had with 
+> SIAV1 instead of going through DataLink + SODA service descriptor?? 
+> This could be driven by a RETRIEVEMODE parameter with value = cutout 
+> versus default archival value.
+>
+> ???????? +? In that case there is a proposal? made by myself to get 
+> the opaque cutout URL in the access_url FIELD of the ObsCore table.
+>
+> ???????? + There is another proposal made by Pat to insert directly in 
+> the DAP response the SODA service descriptor. The default values of 
+> the parameters? could be inferred from the DAP query but the user is 
+> able to change that.
+>
+> ??????? -> After discussion I think we can have both : the opaque 
+> cutout SODA url in acces_url FIELD and the SODA service descriptor for 
+> customizing the cutout.
+>
+> ???????? + Gregory Dubois-Felsmann came with a first issue. In case we 
+> are using this RETRIEVEMODE=cutout mode and the service answers with a 
+> DataLink how should #this be interpreted ?
+>
+> ? ? ? ? -> Although I don't think it is a good idea to use this mode 
+> with Datalink response in access_url, if we were to do it, I think 
+> #this would refer to the cutout product and the archived dataproduct 
+> from which it's extracted would wear a #progenitor semantic flag.
+>
+> ? ? ? ?? + Gregory also came with another issue : SIA/DAP only works 
+> with the SIAV1-like OVERLAP intersect mode which means that the common 
+> part of the ROI and the spatial coverage of the dataset MAY be small 
+> and marginal. So the cutout driven from the ROI could be not fitting?? 
+> the user need. So the SIAV1-like "COVERS" intersect mode where the 
+> dataset fully integrates the ROI could be more appropriate.
+>
+> ????????????? ---> then comes the question should we reintroduce the 
+> SIAV1 INTERSECT parameter with all (some of) its values ? or should 
+> we? decide that implicitely the RETRIEVE = cutout mode is coupled with 
+> COVERS mode ? Personally I Tend to prefer the first solution.
+>
+> ? ? ? ? ?? Currently the RETRIEVEMODE section has been commented in 
+> the Spec latex source because some more discussion is needed. But I 
+> Think we need it in the future when we all agree.
+>
+> ?????? b ) Other point, not related to the previous one : Gregory also 
+> made the comment that the FORMAT parameter in the context of the huge 
+> DataLink success we experimented in Discovery services generates? 
+> strange results :
+>
+> ????????????? Either we get a real format Mime type or every raw 
+> displays the? DataLink mime type.
+>
+> ?????????????? + So Should FORMAT drive the mime type of either the 
+> direct link in access_url FIELD or the one of the #this item in 
+> DataLink ? (considering that the choice between direct link to the 
+> dataset or Datalink url in the access_url is only made by? the data 
+> provider)
+>
+> ?????????????????? --> Personally I think it's still interesting to 
+> keep that
+>
+> ? ? ? ? ? ? ? ? + Or should we simply drop FORMAT from the DAP spec ? 
+> (mainly because if we really want several? ? formats of science data 
+> this will probably be done by several #this items in a DataLink 
+> response).
+>
+> ????????????????????? --> most of involved people tend to agree with 
+> that.
+>
+> ??????????????????? What I did is to change the text of the FORMAT 
+> section according first option, before everybody decides this has to 
+> be dropped.
+>
+>
+> I wish you all a good ADASS conference and a useful IVOA meeting in Malta
+>
+> Cheers
+>
+> Fran?ois
+>
+>
+>
+
+
+From pdowler.cadc at gmail.com  Sun Nov 10 19:21:15 2024
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Sun, 10 Nov 2024 10:21:15 -0800
+Subject: ivoa-std/TAP - main branch
+Message-ID: <CAFK8nrr=U8oYdYoveSUB9AeTmOfXq=pRHrhErK0-88fKOptXKQ@mail.gmail.com>
+
+FYI - I have changed master- > main in the TAP repo
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241110/81ce3cba/attachment.htm>
+
+From francois.bonnarel at gmail.com  Sun Nov 17 19:38:56 2024
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Sun, 17 Nov 2024 19:38:56 +0100
+Subject: SODA discussion in Sydney
+Message-ID: <0acd2911-4653-4e77-b5b4-62727783cf96@gmail.com>
+
+Dear DALers,
+
+ ??? Northern Fall interop is down since noon.
+
+ ??? I come back to some Sydney news !!! The DAL-2 session?? which 
+discussed extensively DAP and SODA unfortunately lost its live notes.
+
+ ?? I used an audio trasncription software and revisited it to identify 
+speakers, make some fixes , etc ...
+
+ ? ?? The DAP part was already online since a couple,of weeks. That's 
+now the case also for SODA in the same link:
+
+https://wiki.ivoa.net/internal/IVOA/InterOpMay2024DAL/DAL-2-notes
+
+ ?? As you can see this was a very lively discussion.
+
+ ??? I will come back to this in the coming days
+
+Cheers
+
+Fran?ois
+
+
+
+From gmantelet at astro.unistra.fr  Sun Nov 17 22:41:41 2024
+From: gmantelet at astro.unistra.fr (=?ISO-8859-1?Q?Gr=E9gory_Mantelet?=)
+Date: Sun, 17 Nov 2024 22:41:41 +0100
+Subject: SODA discussion in Sydney
+In-Reply-To: <0acd2911-4653-4e77-b5b4-62727783cf96@gmail.com>
+References: <0acd2911-4653-4e77-b5b4-62727783cf96@gmail.com>
+Message-ID: <631FFD47-3E9D-41B7-A5C8-79C64EE1F0EB@astro.unistra.fr>
+
+Dear Fran?ois,
+
+What an extraordinary work you just did by transcripting this whole session ?
+
+I had also realized recently these lost notes....I think we forgot to save them...I am really ashamed by that (lesson learnt ; yesterday I've already saved the notes of the DAL session in Malta)...but also very glad that you've resurrected them.
+
+Thank you so much. 
+
+Cheers,
+Gr?gory
+
+
+
+Le 17 novembre 2024 19:38:56 GMT+01:00, BONNAREL FRANCOIS gmail via dal <dal at ivoa.net> a ?crit?:
+>Dear DALers,
+>
+>??? Northern Fall interop is down since noon.
+>
+>??? I come back to some Sydney news !!! The DAL-2 session?? which discussed extensively DAP and SODA unfortunately lost its live notes.
+>
+>?? I used an audio trasncription software and revisited it to identify speakers, make some fixes , etc ...
+>
+>? ?? The DAP part was already online since a couple,of weeks. That's now the case also for SODA in the same link:
+>
+>https://wiki.ivoa.net/internal/IVOA/InterOpMay2024DAL/DAL-2-notes
+>
+>?? As you can see this was a very lively discussion.
+>
+>??? I will come back to this in the coming days
+>
+>Cheers
+>
+>Fran?ois
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241117/7e136cd2/attachment.htm>
+
+From jfraustro at stsci.edu  Tue Nov 26 17:10:01 2024
+From: jfraustro at stsci.edu (Joshua Fraustro)
+Date: Tue, 26 Nov 2024 16:10:01 +0000
+Subject: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+Message-ID: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+
+Hi Pat, DAL,
+
+At the Malta Interop, you mentioned in your presentation on user-managed tables that you were looking for a method to denote that the extended API operations were optional in the OpenAPI definition.
+
+As you pointed out, I don?t think there?s a built-in way to do so in the OpenAPI specification. This is likely because the concept of defining the ?possible existence? of a path operation isn?t quite in line with the intent of OpenAPI to begin with?to borrow Markus?s line: ?Optionality Considered Harmful.?
+
+That said, to mark the optional nature of the new endpoint operations, I suggest the following:
+
+  1.  Include an HTTP 501 ? Not Implemented response as one of the acceptable responses for the endpoint.
+  2.  Use verbiage in both the OpenAPI description of the operation and in the standards document to clarify that the operation is optionally supported by the server.
+
+For example:
+
+/tables:
+  get: ?
+  put:
+    summary: Upload a persistent table
+    description: >
+      This endpoint is optional and may not be implemented on all servers.
+      If not implemented, it should return a `501 Not Implemented`.
+    responses:
+      '200': ?
+      '501':
+        description: This feature is not implemented.
+
+Additionally, the standards document could include a statement like: ?Services that do not implement this operation must respond with an HTTP status code 501 Not Implemented when requests are made to the endpoint.?
+
+I think there are a few advantages to this approach, chiefly that it stays within established HTTP/OpenAPI practices. Additionally, validators will have a straightforward way to test and verify the implementation.
+
+I hesitate to even mention it, but another possibility would be defining an IVOA vendor-specific extension (e.g., x-optional-endpoint: true). However, I?d strongly discourage us from even considering this?part of my push for OpenAPI adoption is that we (IVOA) stop inventing bespoke ways of doing every little thing...
+
+Thanks,
+Joshua Fraustro
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241126/6464069a/attachment.htm>
+
+From pdowler.cadc at gmail.com  Wed Nov 27 04:14:39 2024
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Tue, 26 Nov 2024 19:14:39 -0800
+Subject: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+In-Reply-To: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+References: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+Message-ID: <CAFK8nrrxMfTdJAYv1dba2wDdCa=f9a=23pu-Qf4yZV7Dtc4rcA@mail.gmail.com>
+
+I was also thinking along those lines, but considered 405 "Method Not
+Allowed" which also seems to fit. I'd have to test, but I think web
+frameworks respond with a 405 if you do not configure/implement a specific
+method (eg PUT) so correct implementation could be achieved with zero
+effort. I expect 501 would require something be done.
+
+I will keep both in mind for when I get back to this.
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+
+On Tue, 26 Nov 2024 at 08:10, Joshua Fraustro <jfraustro at stsci.edu> wrote:
+
+> Hi Pat, DAL,
+>
+>
+>
+> At the Malta Interop, you mentioned in your presentation on user-managed
+> tables that you were looking for a method to denote that the extended API
+> operations were optional in the OpenAPI definition.
+>
+>
+>
+> As you pointed out, I don?t think there?s a built-in way to do so in the
+> OpenAPI specification. This is likely because the concept of defining the
+> ?possible existence? of a path operation isn?t quite in line with the
+> intent of OpenAPI to begin with?*to borrow Markus?s line: ?Optionality
+> Considered Harmful.?*
+>
+>
+>
+> That said, to mark the optional nature of the new endpoint operations, I
+> suggest the following:
+>
+>    1. Include an *HTTP 501 ? Not Implemented* response as one of the
+>    acceptable responses for the endpoint.
+>    2. Use verbiage in both the OpenAPI description of the operation and
+>    in the standards document to clarify that the operation is optionally
+>    supported by the server.
+>
+>
+>
+> For example:
+>
+>
+>
+> /tables:
+>   get: ?
+>
+>   put:
+>
+>     summary: Upload a persistent table
+>
+>     description: >
+>
+>       This endpoint is optional and may not be implemented on all servers.
+>
+>       If not implemented, it should return a `501 Not Implemented`.
+>
+>     responses:
+>
+>       '200': ?
+>
+>       '501':
+>
+>         description: This feature is not implemented.
+>
+>
+>
+> Additionally, the standards document could include a statement like:
+> ?Services that do not implement this operation must respond with an HTTP
+> status code 501 Not Implemented when requests are made to the endpoint.?
+>
+>
+>
+> I think there are a few advantages to this approach, chiefly that it stays
+> within established HTTP/OpenAPI practices. Additionally, validators will
+> have a straightforward way to test and verify the implementation.
+>
+>
+>
+> I hesitate to even mention it, but another possibility would be defining
+> an IVOA vendor-specific extension (e.g., *x-optional-endpoint: true*).
+> However, I?d strongly discourage us from even considering this?part of my
+> push for OpenAPI adoption is that we (IVOA) stop inventing bespoke ways of
+> doing every little thing...
+>
+>
+>
+> Thanks,
+> Joshua Fraustro
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241126/fe3a414a/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Fri Nov 29 15:49:38 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Fri, 29 Nov 2024 15:49:38 +0100
+Subject: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+In-Reply-To: <CAFK8nrrxMfTdJAYv1dba2wDdCa=f9a=23pu-Qf4yZV7Dtc4rcA@mail.gmail.com>
+References: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+ <CAFK8nrrxMfTdJAYv1dba2wDdCa=f9a=23pu-Qf4yZV7Dtc4rcA@mail.gmail.com>
+Message-ID: <c5a1cbc8-6336-4ce1-9dad-1bba961f3673@astro.unistra.fr>
+
+Hi Pat, Joshua
+
+I like this solution of describing the endpoint anyway, but declare that 
+it may not be implemented through a human text in the IVOA spec, but 
+also with the additional HTTP status code in the OpenAPI description.
+
+Then, about the status code, I have to say that I tend to prefer /HTTP 
+501 - Not implemented/.
+
+Firstly, because the feature is /really/ not implemented whereas 405 
+textually means that the client is not allowed to perform this action. 
+In our case, it is not a question of authorization, but really of "the 
+server is not capable to do that".
+
+Secondly, 4xx errors are errors due to something wrong in the request 
+sent by a client, whereas 5xx are errors due to a problem on 
+server-side. In our case, the client would not do anything wrong. So, a 
+5xx error seems more natural.
+
+Finally, if we refer to RFC 9110 
+<https://www.rfc-editor.org/rfc/rfc9110> we have the following texts:
+
+    ----
+>     15.5.6. 405 Method Not Allowed
+>     <https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed>
+>
+>     The 405 (Method Not Allowed) status code indicates that the method
+>     received in the *request-line is known by the origin server but
+>     not supported by the target resource.* The origin server MUST
+>     generate an Allow header field in a 405 response containing a list
+>     of the target resource's currently supported methods.
+
+>     15.6.2. 501 Not Implemented
+>     <https://www.rfc-editor.org/rfc/rfc9110#status.501>
+>
+>     The 501 (Not Implemented) status code indicates that the server
+>     does not support the functionality required to fulfill the
+>     request. This is the appropriate response when *the server does
+>     not recognize the request method and is not capable of supporting
+>     it for any resource*.
+
+>     9.1. Overview <https://www.rfc-editor.org/rfc/rfc9110#name-overview>
+>     [...]
+>     *An origin server that receives a request method that is
+>     unrecognized _or_ not implementedSHOULDrespond with the501 (Not
+>     Implemented)
+>     <https://www.rfc-editor.org/rfc/rfc9110#status.501>***status code.
+>     An origin server that receives a request method that is recognized
+>     and implemented, but not allowed for the target
+>     resource,SHOULDrespond with the405 (Method Not Allowed)
+>     <https://www.rfc-editor.org/rfc/rfc9110#status.405>status code.
+    ----
+
+
+Both status codes do seem OK for me, but for all these reasons 501 seems 
+to be the best match.
+Of course, this is my personal opinion here, so I now leave the final 
+decision to both of you.
+
+Cheers,
+Gr?gory M.
+
+
+On 27/11/2024 04:14, Patrick Dowler via dal wrote:
+> I was also thinking along those lines, but considered 405 "Method Not 
+> Allowed" which also seems to fit. I'd have to test, but I think web 
+> frameworks respond with a 405 if you do not configure/implement a 
+> specific method (eg PUT) so correct implementation could be achieved 
+> with zero effort. I expect 501 would require something be done.
+>
+> I will keep both in mind for when I get back to this.
+>
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+>
+> On Tue, 26 Nov 2024 at 08:10, Joshua Fraustro <jfraustro at stsci.edu> wrote:
+>
+>     Hi Pat, DAL,
+>
+>     At the Malta Interop, you mentioned in your presentation on
+>     user-managed tables that you were looking for a method to denote
+>     that the extended API operations were optional in the OpenAPI
+>     definition.
+>
+>     As you pointed out, I don?t think there?s a built-in way to do so
+>     in the OpenAPI specification. This is likely because the concept
+>     of defining the ?possible existence? of a path operation isn?t
+>     quite in line with the intent of OpenAPI to begin with?/to borrow
+>     Markus?s line: ?Optionality Considered Harmful.?/
+>
+>     That said, to mark the optional nature of the new endpoint
+>     operations, I suggest the following:
+>
+>      1. Include an *HTTP?501 ? Not Implemented*?response as one of the
+>         acceptable responses for the endpoint.
+>      2. Use verbiage in both the OpenAPI description of the operation
+>         and in the standards document to clarify that the operation is
+>         optionally supported by the server.
+>
+>     For example:
+>
+>     /tables:
+>     ? get: ?
+>
+>     ? put:
+>
+>     summary: Upload a persistent table
+>
+>     description: >
+>
+>     This endpoint is optional and may not be implemented on all servers.
+>
+>     ????? If not implemented, it should return a `501 Not Implemented`.
+>
+>     responses:
+>
+>     '200': ?
+>
+>     '501':
+>
+>     description: This feature is not implemented.
+>
+>     Additionally, the standards document could include a statement
+>     like: ?Services that do not implement this operation must respond
+>     with an HTTP status code?501 Not Implemented?when requests are
+>     made to the endpoint.?
+>
+>     I think there are a few advantages to this approach, chiefly that
+>     it stays within established HTTP/OpenAPI practices. Additionally,
+>     validators will have a straightforward way to test and verify the
+>     implementation.
+>
+>     I hesitate to even mention it, but another possibility would be
+>     defining an IVOA vendor-specific extension (e.g.,
+>     /x-optional-endpoint: true/). However, I?d strongly discourage us
+>     from even considering this?part of my push for OpenAPI adoption is
+>     that we (IVOA) stop inventing bespoke ways of doing every little
+>     thing...
+>
+>     Thanks,
+>     Joshua Fraustro
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241129/7427678d/attachment.htm>
+
+From m.b.taylor at bristol.ac.uk  Fri Nov 29 16:04:41 2024
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Fri, 29 Nov 2024 15:04:41 +0000 (GMT)
+Subject: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+In-Reply-To: <c5a1cbc8-6336-4ce1-9dad-1bba961f3673@astro.unistra.fr>
+References: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+ <CAFK8nrrxMfTdJAYv1dba2wDdCa=f9a=23pu-Qf4yZV7Dtc4rcA@mail.gmail.com>
+ <c5a1cbc8-6336-4ce1-9dad-1bba961f3673@astro.unistra.fr>
+Message-ID: <50806136-a790-d2-7d21-dc8dcbbb9e1@andromeda.star.bris.ac.uk>
+
+On Fri, 29 Nov 2024, Gregory MANTELET via dal wrote:
+
+> Finally, if we refer to RFC 9110 <https://www.rfc-editor.org/rfc/rfc9110> we
+> have the following texts:
+
+To me, these support use of 405 not 501 in this case.
+Joshua's example was use of PUT to /tables.
+ 
+> >     15.5.6. 405 Method Not Allowed
+> >     <https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed>
+> > 
+> >     The 405 (Method Not Allowed) status code indicates that the method
+> >     received in the *request-line is known by the origin server but
+> >     not supported by the target resource.* The origin server MUST
+> >     generate an Allow header field in a 405 response containing a list
+> >     of the target resource's currently supported methods.
+
+In this case PUT is an HTTP method known to the server,
+but not supported by the target resource (/tables), so 405 looks correct.
+
+> >     15.6.2. 501 Not Implemented
+> >     <https://www.rfc-editor.org/rfc/rfc9110#status.501>
+> > 
+> >     The 501 (Not Implemented) status code indicates that the server
+> >     does not support the functionality required to fulfill the
+> >     request. This is the appropriate response when *the server does
+> >     not recognize the request method and is not capable of supporting
+> >     it for any resource*.
+
+The server does recognise the HTTP PUT method and may well support it
+for other resources, just not /tables, so 501 is not suitable.
+
+My understanding is that 501 is for an HTTP method that's not
+recognised like "FOO" or "DELEET", or perhaps one that's just
+not implemented at all by the server.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From jfraustro at stsci.edu  Fri Nov 29 17:09:24 2024
+From: jfraustro at stsci.edu (Joshua Fraustro)
+Date: Fri, 29 Nov 2024 16:09:24 +0000
+Subject: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+In-Reply-To: <50806136-a790-d2-7d21-dc8dcbbb9e1@andromeda.star.bris.ac.uk>
+References: <2C28AC9F-09A2-4A3B-AE0B-21C242614CAE@stsci.edu>
+ <CAFK8nrrxMfTdJAYv1dba2wDdCa=f9a=23pu-Qf4yZV7Dtc4rcA@mail.gmail.com>
+ <c5a1cbc8-6336-4ce1-9dad-1bba961f3673@astro.unistra.fr>,
+ <50806136-a790-d2-7d21-dc8dcbbb9e1@andromeda.star.bris.ac.uk>
+Message-ID: <953530dcd1c6466a8b1cfb3a456da984@stsci.edu>
+
+This is a little sticky and I can definitely see how these could be read either way.
+
+For what it's worth, my go-to resource for these things, https://http.dev/501, also acknowledges the similarity between the two and includes this blurb:
+
+A 405 Method Not Allowed status code suggests that the HTTP request cannot be filled and that the functionality will not be available in the foreseeable future, whereas a 501 Not Implemented status code is used to suggest that it?s ?not yet implemented but will be", or ?this is something that you can do, once I am ready for you to do it". In this situation, the server can optionally supply a Retry-After HTTP header, suggesting a time for the client to try again.
+
+Reading back-and-forth between the two codes, and your replies, I'm actually starting to prefer 405, if a service isn't going to develop it at all.
+
+Out of curiosity, to confirm what Pat was saying with it being the default response, I did try a simple POST against our service, and 405 is the default response (for our stack, anyway), which is an advantage.
+>>> requests.post("https://mast.stsci.edu/vo-tap/api/v0.1/hsc", json={})
+<Response [405]>
+
+I appreciate people taking a look, and am glad there is some consensus on the idea at least. As long as we're consistent with it in the OpenAPI doc going forward, I suppose it doesn't matter much.
+
+________________________________
+From: Mark Taylor <m.b.taylor at bristol.ac.uk>
+Sent: Friday, November 29, 2024 10:04:41 AM
+To: Gregory MANTELET
+Cc: Patrick Dowler; Joshua Fraustro; dal at ivoa.net
+Subject: Re: Optional OpenAPI Endpoints for TAP 1.2 / User-managed Tables
+
+External Email - Use Caution
+
+On Fri, 29 Nov 2024, Gregory MANTELET via dal wrote:
+
+> Finally, if we refer to RFC 9110 <https://urldefense.com/v3/__https://www.rfc-editor.org/rfc/rfc9110__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0ApzGxXgA2HAdc3IVhcvThbKNytXvCPdpdQRoFsyk04P5CeqMWhaFREq8YtZgs4Y30wITC-0yghkSIR_ryLGKBuhito$ > we
+> have the following texts:
+
+To me, these support use of 405 not 501 in this case.
+Joshua's example was use of PUT to /tables.
+
+> >     15.5.6. 405 Method Not Allowed
+> >     <https://urldefense.com/v3/__https://www.rfc-editor.org/rfc/rfc9110*name-405-method-not-allowed__;Iw!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0ApzGxXgA2HAdc3IVhcvThbKNytXvCPdpdQRoFsyk04P5CeqMWhaFREq8YtZgs4Y30wITC-0yghkSIR_ryLGKBu_DXI$ >
+> >
+> >     The 405 (Method Not Allowed) status code indicates that the method
+> >     received in the *request-line is known by the origin server but
+> >     not supported by the target resource.* The origin server MUST
+> >     generate an Allow header field in a 405 response containing a list
+> >     of the target resource's currently supported methods.
+
+In this case PUT is an HTTP method known to the server,
+but not supported by the target resource (/tables), so 405 looks correct.
+
+> >     15.6.2. 501 Not Implemented
+> >     <https://urldefense.com/v3/__https://www.rfc-editor.org/rfc/rfc9110*status.501__;Iw!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0ApzGxXgA2HAdc3IVhcvThbKNytXvCPdpdQRoFsyk04P5CeqMWhaFREq8YtZgs4Y30wITC-0yghkSIR_ryLG4KQ8B24$ >
+> >
+> >     The 501 (Not Implemented) status code indicates that the server
+> >     does not support the functionality required to fulfill the
+> >     request. This is the appropriate response when *the server does
+> >     not recognize the request method and is not capable of supporting
+> >     it for any resource*.
+
+The server does recognise the HTTP PUT method and may well support it
+for other resources, just not /tables, so 501 is not suitable.
+
+My understanding is that 501 is for an HTTP method that's not
+recognised like "FOO" or "DELEET", or perhaps one that's just
+not implemented at all by the server.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://urldefense.com/v3/__https://www.star.bristol.ac.uk/mbt/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!0ApzGxXgA2HAdc3IVhcvThbKNytXvCPdpdQRoFsyk04P5CeqMWhaFREq8YtZgs4Y30wITC-0yghkSIR_ryLGdh0zR8A$
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241129/092e096a/attachment.htm>
+

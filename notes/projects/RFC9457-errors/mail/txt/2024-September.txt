@@ -1,0 +1,256 @@
+From gregory.mantelet at astro.unistra.fr  Wed Sep  4 15:25:46 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 4 Sep 2024 15:25:46 +0200
+Subject: PEN: UDF catalogue 1.2
+Message-ID: <9cdc49c6-f33c-4324-9a75-de962098c51f@astro.unistra.fr>
+
+Dear DAL members,
+
+This is a quick announcement for a minor revision of the
+UDF Catalogue Proposed Endorsed Note - version 1.2. This PEN is
+now released and may become an Endorsed Note at the next TCG meeting.
+
+So, if this is of some interest for you, please have a review very soon 
+as it
+may be voted at the next TCG meeting. For questions and comments, Markus 
+and Jon
+will be glad to collect and answer to them.
+
+For reminder, this note aims to gather ADQL user defined functions 
+recommended
+by the IVOA. Such functions must be implemented by at least two 
+implementations
+in order to appear in this note. Those functions are prefixed by `ivo_`.
+ADQL/TAP service providers are strongly encouraged to follow the 
+definition of
+functions listed there for a given feature if already covered by a 
+function of
+this document. The goal is to prevent the dissemination of variations of 
+similar
+functions by defining a single function signature and behavior.
+Example of UDF already endorsed: `ivo_healpix_index(hpxOrder, long, lat)`.
+
+The previous version was EN-1.1 
+<https://www.ivoa.net/documents/udf-catalogue/20231117/index.html> and 
+was released on the 10th of October 2023.
+
+In this PEN-1.2 /(see the IVOA doc. version -
+https://ivoa.net/documents/udf-catalogue/20240807/ - which matches
+the version on GitHub <https://github.com/ivoa-std/udf-catalogue>)/, Jon 
+and Markus have added the following functions:
+
+- `ivo_epoch_prop` and `ivo_geom_transform` as astrometry function
+- `ivo_simbadpoint` as convenience function
+- `ivo_normal_random` as a statistics function
+- `ivo_to_jd` and `ivo_to_mjd` as a datetime functions
+- `ivo_hms_to_degrees` and `ivo_dms_to_degrees` as a celestial 
+conversion functions
+
+Cheers,
+Gr?gory and Joshua
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240904/6228e7bb/attachment.htm>
+
+From Jos.De.Bruijne at esa.int  Wed Sep  4 16:12:12 2024
+From: Jos.De.Bruijne at esa.int (Jos De Bruijne)
+Date: Wed, 4 Sep 2024 14:12:12 +0000
+Subject: PEN: UDF catalogue 1.2
+In-Reply-To: <9cdc49c6-f33c-4324-9a75-de962098c51f@astro.unistra.fr>
+References: <9cdc49c6-f33c-4324-9a75-de962098c51f@astro.unistra.fr>
+Message-ID: <DB9PR05MB95997B822F87F7BE8AC091FECA9C2@DB9PR05MB9599.eurprd05.prod.outlook.com>
+
+Dear all,
+
+For the record, to avoid misunderstandings:
+
+  *   PEN-1.2 does not contain `ivo_epoch_prop`(the ESA implementation is not yet ready);
+  *   PEN-1.1 did contain the `ivo_epoch_prop_pos`simplified version and this UDF is accordingly part of the UDF Catalogue 1.1.
+
+Best wishes,
+
+Jos
+
+This e-mail might reach you during non-working hours. This is a matter of my personal work-life balance and travel schedule only. I do not expect to receive a reply outside of your usual working hours.
+
+From: dal <dal-bounces at ivoa.net> on behalf of Gregory MANTELET via dal <dal at ivoa.net>
+Date: Wednesday, 4 September 2024 at 15:26
+To: dal at ivoa.net <dal at ivoa.net>
+Subject: PEN: UDF catalogue 1.2
+Dear DAL members,
+
+This is a quick announcement for a minor revision of the
+UDF Catalogue Proposed Endorsed Note - version 1.2. This PEN is
+now released and may become an Endorsed Note at the next TCG meeting.
+
+So, if this is of some interest for you, please have a review very soon as it
+may be voted at the next TCG meeting. For questions and comments, Markus and Jon
+will be glad to collect and answer to them.
+
+For reminder, this note aims to gather ADQL user defined functions recommended
+by the IVOA. Such functions must be implemented by at least two implementations
+in order to appear in this note. Those functions are prefixed by `ivo_`.
+ADQL/TAP service providers are strongly encouraged to follow the definition of
+functions listed there for a given feature if already covered by a function of
+this document. The goal is to prevent the dissemination of variations of similar
+functions by defining a single function signature and behavior.
+Example of UDF already endorsed: `ivo_healpix_index(hpxOrder, long, lat)`.
+
+The previous version was EN-1.1<https://www.ivoa.net/documents/udf-catalogue/20231117/index.html> and was released on the 10th of October 2023.
+
+In this PEN-1.2 (see the IVOA doc. version -
+https://ivoa.net/documents/udf-catalogue/20240807/ - which matches
+the version on GitHub<https://github.com/ivoa-std/udf-catalogue>), Jon and Markus have added the following functions:
+
+- `ivo_epoch_prop` and `ivo_geom_transform` as astrometry function
+- `ivo_simbadpoint` as convenience function
+- `ivo_normal_random` as a statistics function
+- `ivo_to_jd` and `ivo_to_mjd` as a datetime functions
+- `ivo_hms_to_degrees` and `ivo_dms_to_degrees` as a celestial conversion functions
+
+Cheers,
+Gr?gory and Joshua
+This message is intended only for the recipient(s) named above. It may contain proprietary information and/or protected content. Any unauthorised disclosure, use, retention or dissemination is prohibited. If you have received this e-mail in error, please notify the sender immediately. ESA applies appropriate organisational measures to protect personal data, in case of data privacy queries, please contact the ESA Data Protection Officer (dpo at esa.int).
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240904/d6356ad8/attachment-0001.htm>
+
+From gregory.mantelet at astro.unistra.fr  Wed Sep  4 16:38:46 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 4 Sep 2024 16:38:46 +0200
+Subject: PEN: UDF catalogue 1.2
+In-Reply-To: <DB9PR05MB95997B822F87F7BE8AC091FECA9C2@DB9PR05MB9599.eurprd05.prod.outlook.com>
+References: <9cdc49c6-f33c-4324-9a75-de962098c51f@astro.unistra.fr>
+ <DB9PR05MB95997B822F87F7BE8AC091FECA9C2@DB9PR05MB9599.eurprd05.prod.outlook.com>
+Message-ID: <5692ae20-fa1f-45d7-ac12-a62e1eeaa571@astro.unistra.fr>
+
+Dear Jos,
+
+Yes, you're perfectly right. Sorry for this mistake. `ivo_epoch_prop` is 
+not yet part of the UDF Catalogue. This is the subject of the frozen 
+PullRequest #20 <https://github.com/ivoa-std/udf-catalogue/pull/20>. I 
+should have been more careful when sending this email. Thank you for 
+raising these points.
+
+Cheers,
+Gr?gory
+
+
+On 04/09/2024 16:12, Jos De Bruijne wrote:
+>
+> Dear all,
+>
+> For the record, to avoid misunderstandings:
+>
+>   * PEN-1.2 does *not* contain `ivo_epoch_prop`(the ESA implementation
+>     is not yet ready);
+>   * PEN-1.1 did contain the `ivo_epoch_prop_pos`simplified version and
+>     this UDF is accordingly part of the UDF Catalogue 1.1.
+>
+> Best wishes,
+>
+> Jos
+>
+> This e-mail might reach you during non-working hours. This is a 
+> matter?of my personal work-life balance and travel schedule only. I do 
+> not?expect to receive a reply outside of your usual working hours.
+>
+> *From: *dal <dal-bounces at ivoa.net> on behalf of Gregory MANTELET via 
+> dal <dal at ivoa.net>
+> *Date: *Wednesday, 4 September 2024 at 15:26
+> *To: *dal at ivoa.net <dal at ivoa.net>
+> *Subject: *PEN: UDF catalogue 1.2
+>
+> Dear DAL members,
+>
+> This is a quick announcement for a minor revision of the
+> UDF Catalogue Proposed Endorsed Note - version 1.2. This PEN is
+> now released and may become an Endorsed Note at the next TCG meeting.
+>
+> So, if this is of some interest for you, please have a review very 
+> soon as it
+> may be voted at the next TCG meeting. For questions and comments, 
+> Markus and Jon
+> will be glad to collect and answer to them.
+>
+> For reminder, this note aims to gather ADQL user defined functions 
+> recommended
+> by the IVOA. Such functions must be implemented by at least two 
+> implementations
+> in order to appear in this note. Those functions are prefixed by `ivo_`.
+> ADQL/TAP service providers are strongly encouraged to follow the 
+> definition of
+> functions listed there for a given feature if already covered by a 
+> function of
+> this document. The goal is to prevent the dissemination of variations 
+> of similar
+> functions by defining a single function signature and behavior.
+> Example of UDF already endorsed: `ivo_healpix_index(hpxOrder, long, lat)`.
+>
+> The previous version was EN-1.1 
+> <https://www.ivoa.net/documents/udf-catalogue/20231117/index.html> and 
+> was released on the 10th of October 2023.
+>
+> In this PEN-1.2 /(see the IVOA doc. version -
+> https://ivoa.net/documents/udf-catalogue/20240807/ - which matches
+> the version on GitHub <https://github.com/ivoa-std/udf-catalogue>)/, 
+> Jon and Markus have added the following functions:
+>
+> - `ivo_epoch_prop` and `ivo_geom_transform` as astrometry function
+> - `ivo_simbadpoint` as convenience function
+> - `ivo_normal_random` as a statistics function
+> - `ivo_to_jd` and `ivo_to_mjd` as a datetime functions
+> - `ivo_hms_to_degrees` and `ivo_dms_to_degrees` as a celestial 
+> conversion functions
+>
+> Cheers,
+> Gr?gory and Joshua
+>
+> This message is intended only for the recipient(s) named above. It may 
+> contain proprietary information and/or protected content. Any 
+> unauthorised disclosure, use, retention or dissemination is 
+> prohibited. If you have received this e-mail in error, please notify 
+> the sender immediately. ESA applies appropriate organisational 
+> measures to protect personal data, in case of data privacy queries, 
+> please contact the ESA Data Protection Officer (dpo at esa.int). 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240904/6b4d4299/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Sep 26 15:48:46 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 26 Sep 2024 15:48:46 +0200
+Subject: Call for contributions to DAL WG session at Nov. 2024 Interop
+Message-ID: <675d7e53-0fd5-4efd-8256-bd80c8b42016@astro.unistra.fr>
+
+Dear DAL members and IVOA,
+
+The November IVOA Interoperability Meeting 
+<https://indico.ict.inaf.it/event/2996/> will take place in La Valletta, 
+Malta from 14 - 17 November 2024. Remote attendance will also be supported.
+
+We invite you to contribute to the DAL session with a DAL related topic.
+
+For reminder, DAL stands for Data Access Layer. This Working Group aims 
+to define standards and protocols to access data in an interoperable 
+way. Here are few examples of well-known DAL standards: (Simple) Cone 
+Search, SIA (image access), SSA (spectra access), TAP (Table Access 
+Protocol) and ADQL (SQL-like language to query a database). The full 
+list of DAL standards is available on the IVOA Documents page 
+<https://www.ivoa.net/documents/>.
+
+During this interop., you can contribute, remotely or in-person, with a 
+talk presenting implementations, sharing your experience as user, 
+presenting and discussing progress on a DAL standards, or presenting 
+use-cases. If you are interested, please send your contribution (with a 
+speaker name, a title, and ideally an abstract) to 
+gregory.mantelet at astro.unistra.fr and jfraustro at stsci.edu. If you are 
+unsure about the suitability of a talk, or are a first time contributor, 
+please get in contact with us and we can discuss it.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240926/6f5405c5/attachment.htm>
+

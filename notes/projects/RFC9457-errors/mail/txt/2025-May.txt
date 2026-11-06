@@ -1,0 +1,375 @@
+From gregory.mantelet at astro.unistra.fr  Tue May  6 11:23:33 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 6 May 2025 11:23:33 +0200
+Subject: DAL Running Meeting #20 - Spectral lines
+In-Reply-To: <1b149a19-7f9c-4dc2-a115-6bb290ed2d28@astro.unistra.fr>
+References: <1b149a19-7f9c-4dc2-a115-6bb290ed2d28@astro.unistra.fr>
+Message-ID: <88389d04-e967-4eef-827e-4ae08853d4aa@astro.unistra.fr>
+
+Dear DAL members and DM chairs,
+
+Thanks you for your votes.
+
+Here are the info for the next DAL running meeting:
+
+    *Date???? :* Monday 12 May 2025
+    *Time???? :* 2:00 PM UTC
+    *Duration :* 1 hour
+    *Zoom link:*
+    https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1
+    <https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1>
+    /(//*Meeting ID:* 931 2347 8759 ; //*Passcode:* 85aNGH)/
+
+
+Best regards,
+Gr?gory and Joshua
+
+
+On 25/04/2025 16:16, Gregory MANTELET wrote:
+> Dear DAL members and DM chairs,
+>
+> In the IVOA and more specifically in DAL, we do not have yet a stable 
+> solution
+> to give access to spectral lines.
+>
+> For the record, REC-SLAP-1.0 
+> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vof7nqpG$> 
+> (Simple Line Access Protocol) was published in
+> 2010. Very few SLAP-1.0 services are available in the IVOA Registry. 
+> It seems
+> that the data model proposed by this protocol is not complete enough: 
+> SSLDM-1.0 
+> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vtjRWL8f$>.
+> With the help of VAMDC, a second version has been proposed: SLAP-2.0 
+> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20190409/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vnbPwp32$>. 
+> It is a
+> Working Draft since 2019. In parallel SSLDM-2.0 
+> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20190909/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vi9pVVfw$> 
+> (also in 2019) is a Proposed
+> Recommendation and reaches the RFC stage. Both have been frozen in 
+> order to
+> explore an alternative solution: LineTAP 
+> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/LineTAP/20241121/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vm3C8Fl8$>. 
+> It is based on TAP and defines a
+> different and independent data model.
+>
+> It is now time to decide which protocol is the most helpful from the 
+> point of
+> view of data providers and users. This is the goal of the DAL Running 
+> Meeting
+> that Joshua and I are now proposing. Note that, as the main actors for 
+> spectral
+> lines, I had recently a meeting with VAMDC and CASSIS developer in 
+> order to have
+> their point of view and see what would be their preferred solution and 
+> why. I
+> will start the running meeting by giving conclusions of this side meeting.
+>
+> @Mark, Mathieu: I invited both of you because providing spectral lines 
+> implies
+> data models and more specifically SSLDM. It would nice to have one of you
+> during this meeting.
+>
+> Anyway, in order to find the best possible date, please, answer to the 
+> following poll
+> before the 2nd of May:
+>
+> https://strawpoll.com/xVg716X0Qyr 
+> <https://urldefense.com/v3/__https:/strawpoll.com/xVg716X0Qyr__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vhVvE-8W$>
+>
+> As usual, this meeting will be one hour long and will be remote (using 
+> Zoom).
+>
+> Best regards,
+> Gr?gory and Joshua 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250506/12327b1b/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Tue May  6 16:08:12 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 6 May 2025 16:08:12 +0200
+Subject: [REMINDER] Call for contributions to DAL WG session at June 2025
+ Interop
+In-Reply-To: <99262849-0827-4bf9-b73a-b6d84e37851a@astro.unistra.fr>
+References: <99262849-0827-4bf9-b73a-b6d84e37851a@astro.unistra.fr>
+Message-ID: <c0e68899-6661-41b7-9821-2075e56645dc@astro.unistra.fr>
+
+
+
+On 10/04/2025 11:42, Gr?gory Mantelet wrote:
+> Dear DAL members and IVOA,
+>
+> The June IVOA Interoperability Meeting 
+> <https://indico.ict.inaf.it/event/3121/overview> will take place in 
+> the University of Maryland from the 2nd to the 6th of June 2025. 
+> Remote attendance is supported.
+> As a reminder, if you want to participate to this meeting, do not 
+> forget to register on the meeting website 
+> <https://indico.ict.inaf.it/event/3121/registrations/1444/> (even you 
+> plan to attend remotely).
+>
+> With this email, Joshua and I invite you to contribute to DAL sessions 
+> with a DAL related topic.
+>
+>     /DAL stands for Data Access Layer. This Working Group aims to
+>     define standards and protocols to access data in an interoperable
+>     way. Here are few examples of well-known DAL standards: (Simple)
+>     Cone Search, SIA (image access), SSA (spectra access), TAP (Table
+>     Access Protocol) and ADQL (SQL-like language to query a database).
+>     The full list of DAL standards is available on the IVOA Documents
+>     page <https://www.ivoa.net/documents/>./
+>
+>
+> During this interop., you can contribute, remotely or in-person, with 
+> a talk presenting implementations, sharing your experience as user, 
+> presenting and discussing progress on a DAL standards, or presenting 
+> use-cases.
+>
+> If you are interested, please send your contribution to 
+> gregory.mantelet at astro.unistra.fr and jfraustro at stsci.edu with:
+>
+>   * a speaker name,
+>   * a title,
+>   * ideally an abstract.
+>
+> If you are unsure about the suitability of a talk, or are a first time 
+> contributor, please get in contact with us.
+>
+> Cheers,
+> Gr?gory Mantelet and Joshua Fraustro 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250506/b4be1090/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Mon May 12 11:22:08 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Mon, 12 May 2025 11:22:08 +0200
+Subject: [REMINDER] DAL Running Meeting #20 - Spectral lines
+In-Reply-To: <88389d04-e967-4eef-827e-4ae08853d4aa@astro.unistra.fr>
+References: <1b149a19-7f9c-4dc2-a115-6bb290ed2d28@astro.unistra.fr>
+ <88389d04-e967-4eef-827e-4ae08853d4aa@astro.unistra.fr>
+Message-ID: <bb804ade-3738-48b8-ac63-c0c878f265fb@astro.unistra.fr>
+
+Hello,
+
+For all interested individuals, this is a reminder for the DAL Running 
+Meeting #20 about Spectral Lines.
+It is *today *at*2:00 PM UTC* /(see below for the Zoom link)/.
+
+Best regards,
+Gr?gory and Joshua
+
+
+On 06/05/2025 11:23, Gregory MANTELET wrote:
+> Dear DAL members and DM chairs,
+>
+> Thanks you for your votes.
+>
+> Here are the info for the next DAL running meeting:
+>
+>     *Date???? :* *Monday 12 May 2025*
+>     *Time???? :* *2:00 PM UTC*
+>     *Duration :* 1 hour
+>     *Zoom link:*
+>     https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1
+>     <https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1>
+>     /(//*Meeting ID:* 931 2347 8759 ; //*Passcode:* 85aNGH)/
+>
+>
+> Best regards,
+> Gr?gory and Joshua
+>
+>
+> On 25/04/2025 16:16, Gregory MANTELET wrote:
+>> Dear DAL members and DM chairs,
+>>
+>> In the IVOA and more specifically in DAL, we do not have yet a stable 
+>> solution
+>> to give access to spectral lines.
+>>
+>> For the record, REC-SLAP-1.0 
+>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vof7nqpG$> 
+>> (Simple Line Access Protocol) was published in
+>> 2010. Very few SLAP-1.0 services are available in the IVOA Registry. 
+>> It seems
+>> that the data model proposed by this protocol is not complete enough: 
+>> SSLDM-1.0 
+>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vtjRWL8f$>.
+>> With the help of VAMDC, a second version has been proposed: SLAP-2.0 
+>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20190409/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vnbPwp32$>. 
+>> It is a
+>> Working Draft since 2019. In parallel SSLDM-2.0 
+>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20190909/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vi9pVVfw$> 
+>> (also in 2019) is a Proposed
+>> Recommendation and reaches the RFC stage. Both have been frozen in 
+>> order to
+>> explore an alternative solution: LineTAP 
+>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/LineTAP/20241121/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vm3C8Fl8$>. 
+>> It is based on TAP and defines a
+>> different and independent data model.
+>>
+>> It is now time to decide which protocol is the most helpful from the 
+>> point of
+>> view of data providers and users. This is the goal of the DAL Running 
+>> Meeting
+>> that Joshua and I are now proposing. Note that, as the main actors 
+>> for spectral
+>> lines, I had recently a meeting with VAMDC and CASSIS developer in 
+>> order to have
+>> their point of view and see what would be their preferred solution 
+>> and why. I
+>> will start the running meeting by giving conclusions of this side 
+>> meeting.
+>>
+>> @Mark, Mathieu: I invited both of you because providing spectral 
+>> lines implies
+>> data models and more specifically SSLDM. It would nice to have one of you
+>> during this meeting.
+>>
+>> Anyway, in order to find the best possible date, please, answer to 
+>> the following poll
+>> before the 2nd of May:
+>>
+>> https://strawpoll.com/xVg716X0Qyr 
+>> <https://urldefense.com/v3/__https:/strawpoll.com/xVg716X0Qyr__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vhVvE-8W$>
+>>
+>> As usual, this meeting will be one hour long and will be remote 
+>> (using Zoom).
+>>
+>> Best regards,
+>> Gr?gory and Joshua 
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250512/3854a0a1/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Mon May 12 17:39:42 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Mon, 12 May 2025 17:39:42 +0200
+Subject: [NOTES] DAL Running Meeting #20 - Spectral lines
+In-Reply-To: <bb804ade-3738-48b8-ac63-c0c878f265fb@astro.unistra.fr>
+References: <1b149a19-7f9c-4dc2-a115-6bb290ed2d28@astro.unistra.fr>
+ <88389d04-e967-4eef-827e-4ae08853d4aa@astro.unistra.fr>
+ <bb804ade-3738-48b8-ac63-c0c878f265fb@astro.unistra.fr>
+Message-ID: <14eb6bb8-d8e6-40c8-a455-31296da82621@astro.unistra.fr>
+
+Dear DAL running participants and others,
+
+Thank you very much for this successful and efficient running meeting.
+It is good to finally see this spectral line case evolving. Of course, 
+there are
+still work to do (thank you in advance to Nicolas and Markus) but we now 
+have a
+clearer path to follow.
+
+I have just finished to update our notes:
+
+    https://yopad.eu/p/DAL_Running_Meeting_#20%20-%20Spectral%20lines
+
+
+For those who participated, don't hesitate to complete (or correct) them
+directly. I will keep, and then post on the wiki, a final frozen copy of 
+them
+next week.
+
+Best regards,
+Gr?gory
+
+
+On 12/05/2025 11:22, Gregory MANTELET wrote:
+> Hello,
+>
+> For all interested individuals, this is a reminder for the DAL Running 
+> Meeting #20 about Spectral Lines.
+> It is *today *at*2:00 PM UTC* /(see below for the Zoom link)/.
+>
+> Best regards,
+> Gr?gory and Joshua
+>
+>
+> On 06/05/2025 11:23, Gregory MANTELET wrote:
+>> Dear DAL members and DM chairs,
+>>
+>> Thanks you for your votes.
+>>
+>> Here are the info for the next DAL running meeting:
+>>
+>>     *Date???? :* *Monday 12 May 2025*
+>>     *Time???? :* *2:00 PM UTC*
+>>     *Duration :* 1 hour
+>>     *Zoom link:*
+>>     https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1
+>>     <https://cnrs.zoom.us/j/93123478759?pwd=CijFJxycChKygbAT97JG3eYrvzbMlG.1>
+>>     /(//*Meeting ID:* 931 2347 8759 ; //*Passcode:* 85aNGH)/
+>>
+>>
+>> Best regards,
+>> Gr?gory and Joshua
+>>
+>>
+>> On 25/04/2025 16:16, Gregory MANTELET wrote:
+>>> Dear DAL members and DM chairs,
+>>>
+>>> In the IVOA and more specifically in DAL, we do not have yet a 
+>>> stable solution
+>>> to give access to spectral lines.
+>>>
+>>> For the record, REC-SLAP-1.0 
+>>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vof7nqpG$> 
+>>> (Simple Line Access Protocol) was published in
+>>> 2010. Very few SLAP-1.0 services are available in the IVOA Registry. 
+>>> It seems
+>>> that the data model proposed by this protocol is not complete 
+>>> enough: SSLDM-1.0 
+>>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vtjRWL8f$>.
+>>> With the help of VAMDC, a second version has been proposed: SLAP-2.0 
+>>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20190409/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vnbPwp32$>. 
+>>> It is a
+>>> Working Draft since 2019. In parallel SSLDM-2.0 
+>>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20190909/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vi9pVVfw$> 
+>>> (also in 2019) is a Proposed
+>>> Recommendation and reaches the RFC stage. Both have been frozen in 
+>>> order to
+>>> explore an alternative solution: LineTAP 
+>>> <https://urldefense.com/v3/__https:/www.ivoa.net/documents/LineTAP/20241121/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vm3C8Fl8$>. 
+>>> It is based on TAP and defines a
+>>> different and independent data model.
+>>>
+>>> It is now time to decide which protocol is the most helpful from the 
+>>> point of
+>>> view of data providers and users. This is the goal of the DAL 
+>>> Running Meeting
+>>> that Joshua and I are now proposing. Note that, as the main actors 
+>>> for spectral
+>>> lines, I had recently a meeting with VAMDC and CASSIS developer in 
+>>> order to have
+>>> their point of view and see what would be their preferred solution 
+>>> and why. I
+>>> will start the running meeting by giving conclusions of this side 
+>>> meeting.
+>>>
+>>> @Mark, Mathieu: I invited both of you because providing spectral 
+>>> lines implies
+>>> data models and more specifically SSLDM. It would nice to have one 
+>>> of you
+>>> during this meeting.
+>>>
+>>> Anyway, in order to find the best possible date, please, answer to 
+>>> the following poll
+>>> before the 2nd of May:
+>>>
+>>> https://strawpoll.com/xVg716X0Qyr 
+>>> <https://urldefense.com/v3/__https:/strawpoll.com/xVg716X0Qyr__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vhVvE-8W$>
+>>>
+>>> As usual, this meeting will be one hour long and will be remote 
+>>> (using Zoom).
+>>>
+>>> Best regards,
+>>> Gr?gory and Joshua 
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250512/48ef925a/attachment.htm>
+

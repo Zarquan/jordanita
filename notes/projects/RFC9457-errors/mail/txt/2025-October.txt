@@ -1,0 +1,1556 @@
+From renaud.savalle at obspm.fr  Tue Oct  7 19:14:40 2025
+From: renaud.savalle at obspm.fr (Renaud Savalle)
+Date: Tue, 7 Oct 2025 19:14:40 +0200
+Subject: Call for contributions for the DAL-Registry joint session at November
+ 2025 Interop
+Message-ID: <5ed2c1d5-a923-431d-9ac7-c3a387e5b130@obspm.fr>
+
+Dear Registry and DAL Working Group members, dear IVOA,
+
+During the upcoming hybrid Northern Spring Interoperability Meeting [1] 
+[2] which will take place 13-16 Nov 2025 in?G?rlitz, Germany, we are 
+planning to organize a DAL-Registry joint session.
+
+We are now?soliciting input such as short presentations that you wish to 
+make and/or topics you wish to raise for discussion. *
+*
+
+During this session we'd like to focus on the registration and discovery 
+of DAL services, but we welcome other topics related to Registry and/or 
+DAL (cf our roadmaps [3] [4]).
+
+If you would like to present a topic, or if you want to raise a subject 
+for discussion, please contact us.
+
+Hope to see you in?G?rlitz !
+
+Regards,
+
+Renaud Savalle <renaud.savalle at obspm.fr> Tess Jaffe 
+<tess.jaffe at nasa.gov>, chairs of the Registry Working Group
+Gr?gory Mantelet <gregory.mantelet at astro.unistra.fr> and Joshua Faustro 
+<jfraustro at stsci.edu>, chairs of the DAL Working Group
+
+Links:
+[1] Meeting Page: https://indico.ict.inaf.it/event/3325/
+[2] [draft] Meeting Programme: 
+https://wiki.ivoa.net/twiki/bin/view/IVOA/InterOpNov2025
+[3] Registry Working Group 2025A Roadmap: 
+https://wiki.ivoa.net/twiki/bin/view/IVOA/2025ARoadmap#Registry%20WG
+[4] DAL Working Group 2025A Roadmap: 
+https://wiki.ivoa.net/twiki/bin/view/IVOA/2025ARoadmap#Data%20Access%20Layer%20WG 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20251007/ce004d08/attachment.htm>
+
+From jfraustro at stsci.edu  Tue Oct  7 22:34:33 2025
+From: jfraustro at stsci.edu (Joshua Fraustro)
+Date: Tue, 7 Oct 2025 20:34:33 +0000
+Subject: POST method in SIAv2
+Message-ID: <1F194C4C-1C87-4173-BA86-E1F86A55EF50@stsci.edu>
+
+Looking for a quick clarification on the proper implementation of the POST method for SIAv2.
+
+SIAv2.0's spec states the following:
+As a DALI-sync resource, the parameters for a request may be submitted using an HTTP GET (query string) or POST action.
+
+That?s the last the document speaks of it. Are the search parameters intended to be provided as form-data? I?d hope so, but I?ve seen crazier things.
+
+(I feel like I?m obligated to mention at this point, that questions like these are a great reason to have OpenAPI docs! ?)
+
+Thanks,
+Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20251007/a6aba166/attachment.htm>
+
+From pdowler.cadc at gmail.com  Wed Oct  8 07:30:17 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Tue, 7 Oct 2025 22:30:17 -0700
+Subject: POST method in SIAv2
+In-Reply-To: <1F194C4C-1C87-4173-BA86-E1F86A55EF50@stsci.edu>
+References: <1F194C4C-1C87-4173-BA86-E1F86A55EF50@stsci.edu>
+Message-ID: <CAFK8nroE9-i7i+avOYzCiBmGz76aqqLvbT+P4mZLx7K0874saA@mail.gmail.com>
+
+This has been clarified in WD-DALI-1.2 but the intent is that both
+form data and multipart are supported (the latter for when one of the
+params is an UPLOAD param with a separate inline table).
+
+And yeah, writing the openapi for this is an eye opener
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Tue, 7 Oct 2025 at 13:34, Joshua Fraustro via dal <dal at ivoa.net> wrote:
+>
+> Looking for a quick clarification on the proper implementation of the POST method for SIAv2.
+>
+> SIAv2.0's spec states the following:
+>
+> As a DALI-sync resource, the parameters for a request may be submitted using an HTTP GET (query string) or POST action.
+>
+>
+>
+> That?s the last the document speaks of it. Are the search parameters intended to be provided as form-data? I?d hope so, but I?ve seen crazier things.
+>
+> (I feel like I?m obligated to mention at this point, that questions like these are a great reason to have OpenAPI docs! ?)
+>
+> Thanks,
+> Joshua Fraustro
+
+From gregory.mantelet at astro.unistra.fr  Thu Oct  9 16:47:08 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 9 Oct 2025 16:47:08 +0200
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+Message-ID: <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+
+Hi Pat, Mark,
+
+As web client developer, I indeed appreciate when I can have something 
+else than a XML
+document to parse in case of query error. I already have the possibility 
+to get some errors in
+JSON, and apparently Rubin already accept text errors.
+
+On the other hand, I'd also understand if a service cannot supply the 
+error in multiple formats.
+It is not always easy or possible to do. Because of this, I agree with 
+the approach stating
+that the error documents /should/ be provided, /as much as possible/, in 
+the requested format.
+Then, we should probably say that the fallback standard format /must/ be 
+VOTable. This way,
+it is a safe format that a generic client can rely on. So, in a word, I 
+agree.
+
+Anyway, I am a bit lost. Where do you plan to apply a fix?
+DALI, TAP, UWS?
+If DALI, is it expected in the upcoming DALI-1.2?
+
+Cheers,
+Gr?gory
+
+
+On 17/09/2025 18:12, Mark Taylor via dal wrote:
+> The impossible-to-provide-VOTable point doesn't apply in this context.
+> TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+> which would lead to non-VOTable error responses, but the case I'm
+> talking about here is an error document retrieved from the UWS
+> error document endpoint /async/<jobid>/error:
+>
+>    "Error documents should be in a format that matches the requested format
+>     where possible; see DALI for details. If the error document is being
+>     retrieved from the /async/<jobid>/error resource (specified by UWS)
+>     after an asynchronous query, the HTTP status code should be 200."
+>
+> So where a VOTable result is implicitly or explicitly requested
+> it is possible to supply a VOTable response; the TAP 1.0->1.1
+> inconsistency is the "should" which used to be a "must".
+>
+>
+> On Wed, 17 Sep 2025, Patrick Dowler wrote:
+>
+>> At this point it has been written/advertised that way for years, so we
+>> should consider whether it is something to fix or just something to
+>> accept and adapt to... I know it is not always possible to adhere to
+>> the strict "error must be VOTable" because some errors happen before
+>> handling the request gets anywhere near the code that can feasibly
+>> write a VOTable.
+>> --
+>> Patrick Dowler
+>> Canadian Astronomy Data Centre
+>> Victoria, BC, Canada
+>>
+>> On Wed, 17 Sept 2025 at 02:51, Mark Taylor<m.b.taylor at bristol.ac.uk> wrote:
+>>> It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+>>> seem to allow a plain text error document, which is what Rubin are
+>>> currently doing, though I haven't encountered it in other services.
+>>>
+>>> So I think that means that clients and validators have to be prepared
+>>> for that (topcat and taplint currently are not; I don't know about
+>>> other TAP clients).
+>>>
+>>> Unless we consider this Erratum fodder?
+>>>
+>>> On Mon, 15 Sep 2025, Patrick Dowler wrote:
+>>>
+>>>> iirc, it was deliberate to change from "must be VOTable" to be able to
+>>>> play nice with other formats, so it probably should have been as close
+>>>> to "must be in the requested format" as possible. But of course, not
+>>>> all tabular output formats can carry error messages, so it gets kind
+>>>> of tricky in the details.
+>>>>
+>>>> The spirit is still definitely that if the client expects a VOTable
+>>>> response they get that for both success and error, but the DALI quote
+>>>> shown is much too vague... I think that is where the
+>>>> clarification/detail is needed.
+>>>>
+>>>> --
+>>>> Patrick Dowler
+>>>> Canadian Astronomy Data Centre
+>>>> Victoria, BC, Canada
+>>>>
+>>>> On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal<dal at ivoa.net> wrote:
+>>>>> Hi DAL.
+>>>>>
+>>>>> Following a taplint query by Stelios, I've just noticed the following
+>>>>> inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+>>>>> UWS error documents resulting from failed async TAP queries:
+>>>>>
+>>>>>     TAP 1.0 Sec 2.7.3:
+>>>>>        "Error documents for TAP errors must be VOTable documents;
+>>>>>         any result-format specified in the request is ignored."
+>>>>>
+>>>>>     TAP 1.1 Sec 3.3:
+>>>>>        "Error documents should be in a format that matches the requested
+>>>>>        format where possible; see DALI for details."
+>>>>>
+>>>>>     DALI 1.1 Sec 4.2:
+>>>>>        "An error document describing errors in use of the DAL service
+>>>>>         protocol may be a VOTable document (...) or a plain text document."
+>>>>>
+>>>>> For an expected VOTable result, this is effectively a downgrade of a
+>>>>> MUST to a SHOULD for VOTable as the format of the error document.
+>>>>>
+>>>>> So a TAP 1.0 client will expect a VOTable error document from a failed
+>>>>> async TAP query, but may get tripped up by receiving instead a plain
+>>>>> text error document.  This change is not explicitly noted in
+>>>>> Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+>>>>> though A.1 says, somewhat misleadingly, "Removed text that duplicates
+>>>>> material from DALI.".
+>>>>>
+>>>>> This looks to me like an oversight since it is (from the client's
+>>>>> point of view) a backwardly incompatible behaviour change from TAP 1.0
+>>>>> to TAP 1.1.
+>>>>>
+>>>>> Has anybody come across this before, or remember whether it was
+>>>>> deliberate?
+>>>>>
+>>>>> Mark
+>>>>>
+>>>>> --
+>>>>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>>>>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>>> --
+>>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20251009/8594d6f4/attachment.htm>
+
+From pdowler.cadc at gmail.com  Thu Oct  9 22:08:23 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Thu, 9 Oct 2025 13:08:23 -0700
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+ <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+Message-ID: <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+
+In my view the TAP-1.1 text is about as good/correct as possible;
+TAP-1.0 was too strict given that we allowed other output formats. The
+main problem is that DALI-1.1 is too vague, but I'd also hate for this
+to become too complicated.
+
+essentially:
+if request is VOTable: error response should be VOTable
+if request is csv or tsv: error response in text/plain should be fine
+if request is parquet (aka VOParquet):  error response is ???
+
+We currently use text/plain in the last case (prototype) and I don't
+see any other choice as viable... to be clear, I think even this is
+too much to write in DALI because other services are working with say
+xml and json serialisation formats.
+
+I don't want to go so far as to say it was a mistake to ever put error
+messages into VOTable, but to be honest text/plain is almost always
+easier and better for the client...
+
+So the fix is nominally in DALI, TAP-1.2 could make a more careful
+statement aligning with DALI... if we can agree on it we can get it
+into 1.2
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Thu, 9 Oct 2025 at 07:47, Gr?gory Mantelet
+<gregory.mantelet at astro.unistra.fr> wrote:
+>
+> Hi Pat, Mark,
+>
+> As web client developer, I indeed appreciate when I can have something else than a XML
+> document to parse in case of query error. I already have the possibility to get some errors in
+> JSON, and apparently Rubin already accept text errors.
+>
+> On the other hand, I'd also understand if a service cannot supply the error in multiple formats.
+> It is not always easy or possible to do. Because of this, I agree with the approach stating
+> that the error documents should be provided, as much as possible, in the requested format.
+> Then, we should probably say that the fallback standard format must be VOTable. This way,
+> it is a safe format that a generic client can rely on. So, in a word, I agree.
+>
+> Anyway, I am a bit lost. Where do you plan to apply a fix?
+> DALI, TAP, UWS?
+> If DALI, is it expected in the upcoming DALI-1.2?
+>
+> Cheers,
+> Gr?gory
+>
+>
+> On 17/09/2025 18:12, Mark Taylor via dal wrote:
+>
+> The impossible-to-provide-VOTable point doesn't apply in this context.
+> TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+> which would lead to non-VOTable error responses, but the case I'm
+> talking about here is an error document retrieved from the UWS
+> error document endpoint /async/<jobid>/error:
+>
+>   "Error documents should be in a format that matches the requested format
+>    where possible; see DALI for details. If the error document is being
+>    retrieved from the /async/<jobid>/error resource (specified by UWS)
+>    after an asynchronous query, the HTTP status code should be 200."
+>
+> So where a VOTable result is implicitly or explicitly requested
+> it is possible to supply a VOTable response; the TAP 1.0->1.1
+> inconsistency is the "should" which used to be a "must".
+>
+>
+> On Wed, 17 Sep 2025, Patrick Dowler wrote:
+>
+> At this point it has been written/advertised that way for years, so we
+> should consider whether it is something to fix or just something to
+> accept and adapt to... I know it is not always possible to adhere to
+> the strict "error must be VOTable" because some errors happen before
+> handling the request gets anywhere near the code that can feasibly
+> write a VOTable.
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+>
+> It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+> seem to allow a plain text error document, which is what Rubin are
+> currently doing, though I haven't encountered it in other services.
+>
+> So I think that means that clients and validators have to be prepared
+> for that (topcat and taplint currently are not; I don't know about
+> other TAP clients).
+>
+> Unless we consider this Erratum fodder?
+>
+> On Mon, 15 Sep 2025, Patrick Dowler wrote:
+>
+> iirc, it was deliberate to change from "must be VOTable" to be able to
+> play nice with other formats, so it probably should have been as close
+> to "must be in the requested format" as possible. But of course, not
+> all tabular output formats can carry error messages, so it gets kind
+> of tricky in the details.
+>
+> The spirit is still definitely that if the client expects a VOTable
+> response they get that for both success and error, but the DALI quote
+> shown is much too vague... I think that is where the
+> clarification/detail is needed.
+>
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+>
+> Hi DAL.
+>
+> Following a taplint query by Stelios, I've just noticed the following
+> inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> UWS error documents resulting from failed async TAP queries:
+>
+>    TAP 1.0 Sec 2.7.3:
+>       "Error documents for TAP errors must be VOTable documents;
+>        any result-format specified in the request is ignored."
+>
+>    TAP 1.1 Sec 3.3:
+>       "Error documents should be in a format that matches the requested
+>       format where possible; see DALI for details."
+>
+>    DALI 1.1 Sec 4.2:
+>       "An error document describing errors in use of the DAL service
+>        protocol may be a VOTable document (...) or a plain text document."
+>
+> For an expected VOTable result, this is effectively a downgrade of a
+> MUST to a SHOULD for VOTable as the format of the error document.
+>
+> So a TAP 1.0 client will expect a VOTable error document from a failed
+> async TAP query, but may get tripped up by receiving instead a plain
+> text error document.  This change is not explicitly noted in
+> Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> material from DALI.".
+>
+> This looks to me like an oversight since it is (from the client's
+> point of view) a backwardly incompatible behaviour change from TAP 1.0
+> to TAP 1.1.
+>
+> Has anybody come across this before, or remember whether it was
+> deliberate?
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+>
+
+From m.b.taylor at bristol.ac.uk  Fri Oct 10 09:56:11 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Fri, 10 Oct 2025 08:56:11 +0100 (BST)
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+ <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+ <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+Message-ID: <7413208c-7c7e-bc6b-5493-5eae7d3a9dc@andromeda.star.bris.ac.uk>
+
+Pat,
+
+I generally agree with that.  So a fix in DALI could look like
+changing text in the DALI 1.2 current WD section 5.2 from:
+
+   "An error document describing errors in use of the DAL service 
+    protocol may be a VOTable document [ref] or a plain text document."
+
+to
+
+   "An error document describing errors in use of the DAL service
+    protocol must be a VOTable document [ref] if the client is 
+    expecting a VOTable response; in other cases it should usually
+    be a plain text document."
+
+The phrase before the semicolon would supply what I've been
+complaining about here.  The second part could be written more
+prescriptively, but I've put "should usually" instead of "must"
+to leave open the possibility of JSON or whatever that somebody
+mentioned, I don't know if that's really a good idea or should
+be tightened up.
+
+Although I agree that text/plain is generally easier for clients,
+what's not easier is having to examine the content-type and adjust
+the parsing on the basis of that - you want to know what to expect.
+
+Relevant: since I brought this up the Rubin service has now been
+changed to work as expected (error document is VOTable not plain text),
+which I believe is how all other services do it, so in practice this
+isn't so much of a problem for me (I'm probably not going to make
+code changes unless it comes up again).
+
+Mark
+
+On Thu, 9 Oct 2025, Patrick Dowler wrote:
+
+> In my view the TAP-1.1 text is about as good/correct as possible;
+> TAP-1.0 was too strict given that we allowed other output formats. The
+> main problem is that DALI-1.1 is too vague, but I'd also hate for this
+> to become too complicated.
+> 
+> essentially:
+> if request is VOTable: error response should be VOTable
+> if request is csv or tsv: error response in text/plain should be fine
+> if request is parquet (aka VOParquet):  error response is ???
+> 
+> We currently use text/plain in the last case (prototype) and I don't
+> see any other choice as viable... to be clear, I think even this is
+> too much to write in DALI because other services are working with say
+> xml and json serialisation formats.
+> 
+> I don't want to go so far as to say it was a mistake to ever put error
+> messages into VOTable, but to be honest text/plain is almost always
+> easier and better for the client...
+> 
+> So the fix is nominally in DALI, TAP-1.2 could make a more careful
+> statement aligning with DALI... if we can agree on it we can get it
+> into 1.2
+> 
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+> 
+> On Thu, 9 Oct 2025 at 07:47, Gr?gory Mantelet
+> <gregory.mantelet at astro.unistra.fr> wrote:
+> >
+> > Hi Pat, Mark,
+> >
+> > As web client developer, I indeed appreciate when I can have something else than a XML
+> > document to parse in case of query error. I already have the possibility to get some errors in
+> > JSON, and apparently Rubin already accept text errors.
+> >
+> > On the other hand, I'd also understand if a service cannot supply the error in multiple formats.
+> > It is not always easy or possible to do. Because of this, I agree with the approach stating
+> > that the error documents should be provided, as much as possible, in the requested format.
+> > Then, we should probably say that the fallback standard format must be VOTable. This way,
+> > it is a safe format that a generic client can rely on. So, in a word, I agree.
+> >
+> > Anyway, I am a bit lost. Where do you plan to apply a fix?
+> > DALI, TAP, UWS?
+> > If DALI, is it expected in the upcoming DALI-1.2?
+> >
+> > Cheers,
+> > Gr?gory
+> >
+> >
+> > On 17/09/2025 18:12, Mark Taylor via dal wrote:
+> >
+> > The impossible-to-provide-VOTable point doesn't apply in this context.
+> > TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+> > which would lead to non-VOTable error responses, but the case I'm
+> > talking about here is an error document retrieved from the UWS
+> > error document endpoint /async/<jobid>/error:
+> >
+> >   "Error documents should be in a format that matches the requested format
+> >    where possible; see DALI for details. If the error document is being
+> >    retrieved from the /async/<jobid>/error resource (specified by UWS)
+> >    after an asynchronous query, the HTTP status code should be 200."
+> >
+> > So where a VOTable result is implicitly or explicitly requested
+> > it is possible to supply a VOTable response; the TAP 1.0->1.1
+> > inconsistency is the "should" which used to be a "must".
+> >
+> >
+> > On Wed, 17 Sep 2025, Patrick Dowler wrote:
+> >
+> > At this point it has been written/advertised that way for years, so we
+> > should consider whether it is something to fix or just something to
+> > accept and adapt to... I know it is not always possible to adhere to
+> > the strict "error must be VOTable" because some errors happen before
+> > handling the request gets anywhere near the code that can feasibly
+> > write a VOTable.
+> > --
+> > Patrick Dowler
+> > Canadian Astronomy Data Centre
+> > Victoria, BC, Canada
+> >
+> > On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+> >
+> > It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+> > seem to allow a plain text error document, which is what Rubin are
+> > currently doing, though I haven't encountered it in other services.
+> >
+> > So I think that means that clients and validators have to be prepared
+> > for that (topcat and taplint currently are not; I don't know about
+> > other TAP clients).
+> >
+> > Unless we consider this Erratum fodder?
+> >
+> > On Mon, 15 Sep 2025, Patrick Dowler wrote:
+> >
+> > iirc, it was deliberate to change from "must be VOTable" to be able to
+> > play nice with other formats, so it probably should have been as close
+> > to "must be in the requested format" as possible. But of course, not
+> > all tabular output formats can carry error messages, so it gets kind
+> > of tricky in the details.
+> >
+> > The spirit is still definitely that if the client expects a VOTable
+> > response they get that for both success and error, but the DALI quote
+> > shown is much too vague... I think that is where the
+> > clarification/detail is needed.
+> >
+> > --
+> > Patrick Dowler
+> > Canadian Astronomy Data Centre
+> > Victoria, BC, Canada
+> >
+> > On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+> >
+> > Hi DAL.
+> >
+> > Following a taplint query by Stelios, I've just noticed the following
+> > inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> > UWS error documents resulting from failed async TAP queries:
+> >
+> >    TAP 1.0 Sec 2.7.3:
+> >       "Error documents for TAP errors must be VOTable documents;
+> >        any result-format specified in the request is ignored."
+> >
+> >    TAP 1.1 Sec 3.3:
+> >       "Error documents should be in a format that matches the requested
+> >       format where possible; see DALI for details."
+> >
+> >    DALI 1.1 Sec 4.2:
+> >       "An error document describing errors in use of the DAL service
+> >        protocol may be a VOTable document (...) or a plain text document."
+> >
+> > For an expected VOTable result, this is effectively a downgrade of a
+> > MUST to a SHOULD for VOTable as the format of the error document.
+> >
+> > So a TAP 1.0 client will expect a VOTable error document from a failed
+> > async TAP query, but may get tripped up by receiving instead a plain
+> > text error document.  This change is not explicitly noted in
+> > Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> > though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> > material from DALI.".
+> >
+> > This looks to me like an oversight since it is (from the client's
+> > point of view) a backwardly incompatible behaviour change from TAP 1.0
+> > to TAP 1.1.
+> >
+> > Has anybody come across this before, or remember whether it was
+> > deliberate?
+> >
+> > Mark
+> >
+> > --
+> > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> >
+> > --
+> > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> >
+> > --
+> > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> >
+> >
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From gregory.mantelet at astro.unistra.fr  Fri Oct 10 15:11:20 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Fri, 10 Oct 2025 15:11:20 +0200
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <7413208c-7c7e-bc6b-5493-5eae7d3a9dc@andromeda.star.bris.ac.uk>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+ <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+ <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+ <7413208c-7c7e-bc6b-5493-5eae7d3a9dc@andromeda.star.bris.ac.uk>
+Message-ID: <8ccd91d3-7cf5-48fd-a0de-ad1b185e0a4c@astro.unistra.fr>
+
+Mark,
+
+I prefer your version because of the change from "may" to "must".
+
+However, I'd prefer something saying that VOTable is currently the only
+standard format defined by the IVOA in order to convey errors. It must 
+always
+be supported. So, if no format is explicitly requested or if the asked 
+one is not
+supported, a VOTable format should be returned by default. On the contrary,
+if the one asked by the user is supported by the service, the error may be
+returned in this format. This way, a generic client knows that it can 
+rely on
+a unique format (whatever happen): VOTable, in this case.
+
+That could maybe be written as such in DALI:
+
+    "An error document describing errors in use of the DAL
+    service protocol must be a VOTable document. If supported,
+    other formats may be used when explicitly asked by a client.
+    If a format is not supported, the service must fallback to
+    the VOTable format."
+
+
+I do not really know how to write that in a correct english way, but I 
+hope you
+get my idea. Then, is it a good idea? Is it to strict? I don't know.
+
+Anyway, what I do not like with saying /VOTable or plain text/ is that 
+it is too
+restrictive. Besides, there are probably more than one way to write an 
+error in
+a plain text document (e.g. just the raw error message, a message + an error
+code, a message + more details, ...). At least, if we mention the plain text
+document, we should probably say that it is limited just to the raw error
+message ; no structure or other kind of information is expected.
+
+Moreover, explicitly giving another error format will probably lead to
+a future where one would ask to update this sentence in order to add
+another format (e.g. JSON), and then another one. If the new formats are
+standardized by the IVOA, it is fine, but otherwise, I think we should 
+probably
+avoid this.
+
+Cheers,
+Gr?gory
+
+
+On 10/10/2025 09:56, Mark Taylor wrote:
+> Pat,
+>
+> I generally agree with that.  So a fix in DALI could look like
+> changing text in the DALI 1.2 current WD section 5.2 from:
+>
+>     "An error document describing errors in use of the DAL service
+>      protocol may be a VOTable document [ref] or a plain text document."
+>
+> to
+>
+>     "An error document describing errors in use of the DAL service
+>      protocol must be a VOTable document [ref] if the client is
+>      expecting a VOTable response; in other cases it should usually
+>      be a plain text document."
+>
+> The phrase before the semicolon would supply what I've been
+> complaining about here.  The second part could be written more
+> prescriptively, but I've put "should usually" instead of "must"
+> to leave open the possibility of JSON or whatever that somebody
+> mentioned, I don't know if that's really a good idea or should
+> be tightened up.
+>
+> Although I agree that text/plain is generally easier for clients,
+> what's not easier is having to examine the content-type and adjust
+> the parsing on the basis of that - you want to know what to expect.
+>
+> Relevant: since I brought this up the Rubin service has now been
+> changed to work as expected (error document is VOTable not plain text),
+> which I believe is how all other services do it, so in practice this
+> isn't so much of a problem for me (I'm probably not going to make
+> code changes unless it comes up again).
+>
+> Mark
+>
+> On Thu, 9 Oct 2025, Patrick Dowler wrote:
+>
+>> In my view the TAP-1.1 text is about as good/correct as possible;
+>> TAP-1.0 was too strict given that we allowed other output formats. The
+>> main problem is that DALI-1.1 is too vague, but I'd also hate for this
+>> to become too complicated.
+>>
+>> essentially:
+>> if request is VOTable: error response should be VOTable
+>> if request is csv or tsv: error response in text/plain should be fine
+>> if request is parquet (aka VOParquet):  error response is ???
+>>
+>> We currently use text/plain in the last case (prototype) and I don't
+>> see any other choice as viable... to be clear, I think even this is
+>> too much to write in DALI because other services are working with say
+>> xml and json serialisation formats.
+>>
+>> I don't want to go so far as to say it was a mistake to ever put error
+>> messages into VOTable, but to be honest text/plain is almost always
+>> easier and better for the client...
+>>
+>> So the fix is nominally in DALI, TAP-1.2 could make a more careful
+>> statement aligning with DALI... if we can agree on it we can get it
+>> into 1.2
+>>
+>> --
+>> Patrick Dowler
+>> Canadian Astronomy Data Centre
+>> Victoria, BC, Canada
+>>
+>> On Thu, 9 Oct 2025 at 07:47, Gr?gory Mantelet
+>> <gregory.mantelet at astro.unistra.fr> wrote:
+>>> Hi Pat, Mark,
+>>>
+>>> As web client developer, I indeed appreciate when I can have something else than a XML
+>>> document to parse in case of query error. I already have the possibility to get some errors in
+>>> JSON, and apparently Rubin already accept text errors.
+>>>
+>>> On the other hand, I'd also understand if a service cannot supply the error in multiple formats.
+>>> It is not always easy or possible to do. Because of this, I agree with the approach stating
+>>> that the error documents should be provided, as much as possible, in the requested format.
+>>> Then, we should probably say that the fallback standard format must be VOTable. This way,
+>>> it is a safe format that a generic client can rely on. So, in a word, I agree.
+>>>
+>>> Anyway, I am a bit lost. Where do you plan to apply a fix?
+>>> DALI, TAP, UWS?
+>>> If DALI, is it expected in the upcoming DALI-1.2?
+>>>
+>>> Cheers,
+>>> Gr?gory
+>>>
+>>>
+>>> On 17/09/2025 18:12, Mark Taylor via dal wrote:
+>>>
+>>> The impossible-to-provide-VOTable point doesn't apply in this context.
+>>> TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+>>> which would lead to non-VOTable error responses, but the case I'm
+>>> talking about here is an error document retrieved from the UWS
+>>> error document endpoint /async/<jobid>/error:
+>>>
+>>>    "Error documents should be in a format that matches the requested format
+>>>     where possible; see DALI for details. If the error document is being
+>>>     retrieved from the /async/<jobid>/error resource (specified by UWS)
+>>>     after an asynchronous query, the HTTP status code should be 200."
+>>>
+>>> So where a VOTable result is implicitly or explicitly requested
+>>> it is possible to supply a VOTable response; the TAP 1.0->1.1
+>>> inconsistency is the "should" which used to be a "must".
+>>>
+>>>
+>>> On Wed, 17 Sep 2025, Patrick Dowler wrote:
+>>>
+>>> At this point it has been written/advertised that way for years, so we
+>>> should consider whether it is something to fix or just something to
+>>> accept and adapt to... I know it is not always possible to adhere to
+>>> the strict "error must be VOTable" because some errors happen before
+>>> handling the request gets anywhere near the code that can feasibly
+>>> write a VOTable.
+>>> --
+>>> Patrick Dowler
+>>> Canadian Astronomy Data Centre
+>>> Victoria, BC, Canada
+>>>
+>>> On Wed, 17 Sept 2025 at 02:51, Mark Taylor<m.b.taylor at bristol.ac.uk> wrote:
+>>>
+>>> It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+>>> seem to allow a plain text error document, which is what Rubin are
+>>> currently doing, though I haven't encountered it in other services.
+>>>
+>>> So I think that means that clients and validators have to be prepared
+>>> for that (topcat and taplint currently are not; I don't know about
+>>> other TAP clients).
+>>>
+>>> Unless we consider this Erratum fodder?
+>>>
+>>> On Mon, 15 Sep 2025, Patrick Dowler wrote:
+>>>
+>>> iirc, it was deliberate to change from "must be VOTable" to be able to
+>>> play nice with other formats, so it probably should have been as close
+>>> to "must be in the requested format" as possible. But of course, not
+>>> all tabular output formats can carry error messages, so it gets kind
+>>> of tricky in the details.
+>>>
+>>> The spirit is still definitely that if the client expects a VOTable
+>>> response they get that for both success and error, but the DALI quote
+>>> shown is much too vague... I think that is where the
+>>> clarification/detail is needed.
+>>>
+>>> --
+>>> Patrick Dowler
+>>> Canadian Astronomy Data Centre
+>>> Victoria, BC, Canada
+>>>
+>>> On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal<dal at ivoa.net> wrote:
+>>>
+>>> Hi DAL.
+>>>
+>>> Following a taplint query by Stelios, I've just noticed the following
+>>> inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+>>> UWS error documents resulting from failed async TAP queries:
+>>>
+>>>     TAP 1.0 Sec 2.7.3:
+>>>        "Error documents for TAP errors must be VOTable documents;
+>>>         any result-format specified in the request is ignored."
+>>>
+>>>     TAP 1.1 Sec 3.3:
+>>>        "Error documents should be in a format that matches the requested
+>>>        format where possible; see DALI for details."
+>>>
+>>>     DALI 1.1 Sec 4.2:
+>>>        "An error document describing errors in use of the DAL service
+>>>         protocol may be a VOTable document (...) or a plain text document."
+>>>
+>>> For an expected VOTable result, this is effectively a downgrade of a
+>>> MUST to a SHOULD for VOTable as the format of the error document.
+>>>
+>>> So a TAP 1.0 client will expect a VOTable error document from a failed
+>>> async TAP query, but may get tripped up by receiving instead a plain
+>>> text error document.  This change is not explicitly noted in
+>>> Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+>>> though A.1 says, somewhat misleadingly, "Removed text that duplicates
+>>> material from DALI.".
+>>>
+>>> This looks to me like an oversight since it is (from the client's
+>>> point of view) a backwardly incompatible behaviour change from TAP 1.0
+>>> to TAP 1.1.
+>>>
+>>> Has anybody come across this before, or remember whether it was
+>>> deliberate?
+>>>
+>>> Mark
+>>>
+>>> --
+>>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>>>
+>>> --
+>>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>>>
+>>> --
+>>> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+>>> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>>>
+>>>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20251010/5a8ecebf/attachment.htm>
+
+From pdowler.cadc at gmail.com  Fri Oct 10 18:50:12 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Fri, 10 Oct 2025 09:50:12 -0700
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <8ccd91d3-7cf5-48fd-a0de-ad1b185e0a4c@astro.unistra.fr>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+ <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+ <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+ <7413208c-7c7e-bc6b-5493-5eae7d3a9dc@andromeda.star.bris.ac.uk>
+ <8ccd91d3-7cf5-48fd-a0de-ad1b185e0a4c@astro.unistra.fr>
+Message-ID: <CAFK8nroMn4c1fk9xhzNq=Rzon_248zcESY9f3GJFGtb==o-92Q@mail.gmail.com>
+
+Error handling is hard. Specification is probably harder.
+
+This sounds fine to me, with one caveat. If we are talking about an
+async error document nominally returned by accessing the UWS job, then
+all the kinds of errors that could be captured there are from inside
+the service and it is feasible to provide those in any chosen form (eg
+VOTable for an invalid TAP query using default output format, ot
+text/plain if the caller asked for tsv, etc). But: there are other
+kinds of errors that happen outside the service-specific code and it's
+easy to forget about those because they are not really an issue for
+async... they are for  any sync DAL service though. Some of these
+other errors are covered by other work (eg A&A things will be covered
+by AuthVO) and some are just low-level infrastructure (eg you get a
+503 response with a fragment of html from a front-end haproxy service
+because it cannot forward the request to the back end)... or some
+error handling behaviour of a kubernetes ingress controller outputs
+text/plain or application/json or something like that.
+
+So I am just a little uneasy about saying "must" and having that be a
+compliance issue and/or having that prohibit some good implementation
+choices we haven't considered.  The TAP-1.0 language used the phrase
+"a TAP error" which was (iirc) supposed to mean the subset of errors
+that happen inside the TAP service code itself (so most but not all
+possible errors)... that was vague and misunderstood and the fix was
+to defer to DALI (which came after TAP-1.0), but the idea was a little
+more flexible than "must".
+
+I am finding it really hard to tweak this text from Mark to convey
+that. Just changing "must" to "should" is too far... but we can't say
+"should+" or "must - epsilon" :-)
+
+"An error document describing errors in use of the DAL service
+    protocol must be a VOTable document [ref] if the client is
+    expecting a VOTable response; in other cases it should usually
+    be a plain text document."
+
+Maybe we do have to clarify the kinds of errors where it is "must":
+invalid job description, error executing job, ... (with some
+examples).
+Should we also give some examples where it is not strictly "must":
+auth related errors, ...
+
+and clearly without being definitive in either list
+
+I think it is important to address this so I would like to get some
+improvement into DALI-1.2 before we go to RFC (which is otherwise
+ready to go)...
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Fri, 10 Oct 2025 at 06:11, Gregory MANTELET
+<gregory.mantelet at astro.unistra.fr> wrote:
+>
+> Mark,
+>
+> I prefer your version because of the change from "may" to "must".
+>
+> However, I'd prefer something saying that VOTable is currently the only
+> standard format defined by the IVOA in order to convey errors. It must always
+> be supported. So, if no format is explicitly requested or if the asked one is not
+> supported, a VOTable format should be returned by default. On the contrary,
+> if the one asked by the user is supported by the service, the error may be
+> returned in this format. This way, a generic client knows that it can rely on
+> a unique format (whatever happen): VOTable, in this case.
+>
+> That could maybe be written as such in DALI:
+>
+> "An error document describing errors in use of the DAL
+> service protocol must be a VOTable document. If supported,
+> other formats may be used when explicitly asked by a client.
+> If a format is not supported, the service must fallback to
+> the VOTable format."
+>
+>
+> I do not really know how to write that in a correct english way, but I hope you
+> get my idea. Then, is it a good idea? Is it to strict? I don't know.
+>
+> Anyway, what I do not like with saying VOTable or plain text is that it is too
+> restrictive. Besides, there are probably more than one way to write an error in
+> a plain text document (e.g. just the raw error message, a message + an error
+> code, a message + more details, ...). At least, if we mention the plain text
+> document, we should probably say that it is limited just to the raw error
+> message ; no structure or other kind of information is expected.
+>
+> Moreover, explicitly giving another error format will probably lead to
+> a future where one would ask to update this sentence in order to add
+> another format (e.g. JSON), and then another one. If the new formats are
+> standardized by the IVOA, it is fine, but otherwise, I think we should probably
+> avoid this.
+>
+> Cheers,
+> Gr?gory
+>
+>
+> On 10/10/2025 09:56, Mark Taylor wrote:
+>
+> Pat,
+>
+> I generally agree with that.  So a fix in DALI could look like
+> changing text in the DALI 1.2 current WD section 5.2 from:
+>
+>    "An error document describing errors in use of the DAL service
+>     protocol may be a VOTable document [ref] or a plain text document."
+>
+> to
+>
+>    "An error document describing errors in use of the DAL service
+>     protocol must be a VOTable document [ref] if the client is
+>     expecting a VOTable response; in other cases it should usually
+>     be a plain text document."
+>
+> The phrase before the semicolon would supply what I've been
+> complaining about here.  The second part could be written more
+> prescriptively, but I've put "should usually" instead of "must"
+> to leave open the possibility of JSON or whatever that somebody
+> mentioned, I don't know if that's really a good idea or should
+> be tightened up.
+>
+> Although I agree that text/plain is generally easier for clients,
+> what's not easier is having to examine the content-type and adjust
+> the parsing on the basis of that - you want to know what to expect.
+>
+> Relevant: since I brought this up the Rubin service has now been
+> changed to work as expected (error document is VOTable not plain text),
+> which I believe is how all other services do it, so in practice this
+> isn't so much of a problem for me (I'm probably not going to make
+> code changes unless it comes up again).
+>
+> Mark
+>
+> On Thu, 9 Oct 2025, Patrick Dowler wrote:
+>
+> In my view the TAP-1.1 text is about as good/correct as possible;
+> TAP-1.0 was too strict given that we allowed other output formats. The
+> main problem is that DALI-1.1 is too vague, but I'd also hate for this
+> to become too complicated.
+>
+> essentially:
+> if request is VOTable: error response should be VOTable
+> if request is csv or tsv: error response in text/plain should be fine
+> if request is parquet (aka VOParquet):  error response is ???
+>
+> We currently use text/plain in the last case (prototype) and I don't
+> see any other choice as viable... to be clear, I think even this is
+> too much to write in DALI because other services are working with say
+> xml and json serialisation formats.
+>
+> I don't want to go so far as to say it was a mistake to ever put error
+> messages into VOTable, but to be honest text/plain is almost always
+> easier and better for the client...
+>
+> So the fix is nominally in DALI, TAP-1.2 could make a more careful
+> statement aligning with DALI... if we can agree on it we can get it
+> into 1.2
+>
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Thu, 9 Oct 2025 at 07:47, Gr?gory Mantelet
+> <gregory.mantelet at astro.unistra.fr> wrote:
+>
+> Hi Pat, Mark,
+>
+> As web client developer, I indeed appreciate when I can have something else than a XML
+> document to parse in case of query error. I already have the possibility to get some errors in
+> JSON, and apparently Rubin already accept text errors.
+>
+> On the other hand, I'd also understand if a service cannot supply the error in multiple formats.
+> It is not always easy or possible to do. Because of this, I agree with the approach stating
+> that the error documents should be provided, as much as possible, in the requested format.
+> Then, we should probably say that the fallback standard format must be VOTable. This way,
+> it is a safe format that a generic client can rely on. So, in a word, I agree.
+>
+> Anyway, I am a bit lost. Where do you plan to apply a fix?
+> DALI, TAP, UWS?
+> If DALI, is it expected in the upcoming DALI-1.2?
+>
+> Cheers,
+> Gr?gory
+>
+>
+> On 17/09/2025 18:12, Mark Taylor via dal wrote:
+>
+> The impossible-to-provide-VOTable point doesn't apply in this context.
+> TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+> which would lead to non-VOTable error responses, but the case I'm
+> talking about here is an error document retrieved from the UWS
+> error document endpoint /async/<jobid>/error:
+>
+>   "Error documents should be in a format that matches the requested format
+>    where possible; see DALI for details. If the error document is being
+>    retrieved from the /async/<jobid>/error resource (specified by UWS)
+>    after an asynchronous query, the HTTP status code should be 200."
+>
+> So where a VOTable result is implicitly or explicitly requested
+> it is possible to supply a VOTable response; the TAP 1.0->1.1
+> inconsistency is the "should" which used to be a "must".
+>
+>
+> On Wed, 17 Sep 2025, Patrick Dowler wrote:
+>
+> At this point it has been written/advertised that way for years, so we
+> should consider whether it is something to fix or just something to
+> accept and adapt to... I know it is not always possible to adhere to
+> the strict "error must be VOTable" because some errors happen before
+> handling the request gets anywhere near the code that can feasibly
+> write a VOTable.
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+>
+> It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+> seem to allow a plain text error document, which is what Rubin are
+> currently doing, though I haven't encountered it in other services.
+>
+> So I think that means that clients and validators have to be prepared
+> for that (topcat and taplint currently are not; I don't know about
+> other TAP clients).
+>
+> Unless we consider this Erratum fodder?
+>
+> On Mon, 15 Sep 2025, Patrick Dowler wrote:
+>
+> iirc, it was deliberate to change from "must be VOTable" to be able to
+> play nice with other formats, so it probably should have been as close
+> to "must be in the requested format" as possible. But of course, not
+> all tabular output formats can carry error messages, so it gets kind
+> of tricky in the details.
+>
+> The spirit is still definitely that if the client expects a VOTable
+> response they get that for both success and error, but the DALI quote
+> shown is much too vague... I think that is where the
+> clarification/detail is needed.
+>
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+>
+> On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+>
+> Hi DAL.
+>
+> Following a taplint query by Stelios, I've just noticed the following
+> inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> UWS error documents resulting from failed async TAP queries:
+>
+>    TAP 1.0 Sec 2.7.3:
+>       "Error documents for TAP errors must be VOTable documents;
+>        any result-format specified in the request is ignored."
+>
+>    TAP 1.1 Sec 3.3:
+>       "Error documents should be in a format that matches the requested
+>       format where possible; see DALI for details."
+>
+>    DALI 1.1 Sec 4.2:
+>       "An error document describing errors in use of the DAL service
+>        protocol may be a VOTable document (...) or a plain text document."
+>
+> For an expected VOTable result, this is effectively a downgrade of a
+> MUST to a SHOULD for VOTable as the format of the error document.
+>
+> So a TAP 1.0 client will expect a VOTable error document from a failed
+> async TAP query, but may get tripped up by receiving instead a plain
+> text error document.  This change is not explicitly noted in
+> Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> material from DALI.".
+>
+> This looks to me like an oversight since it is (from the client's
+> point of view) a backwardly incompatible behaviour change from TAP 1.0
+> to TAP 1.1.
+>
+> Has anybody come across this before, or remember whether it was
+> deliberate?
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+>
+>
+
+From gpdf at ipac.caltech.edu  Fri Oct 10 21:38:40 2025
+From: gpdf at ipac.caltech.edu (Dubois-Felsmann, Gregory P.)
+Date: Fri, 10 Oct 2025 19:38:40 +0000
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <8ccd91d3-7cf5-48fd-a0de-ad1b185e0a4c@astro.unistra.fr>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+ <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+ <fbb24dda-dfa3-4643-8745-22fc8d8d5f4e@astro.unistra.fr>
+ <CAFK8nrqoJW7_nzHHC5daKyoKU9jCaV7ZUOLXNEMFssR4XGNvGg@mail.gmail.com>
+ <7413208c-7c7e-bc6b-5493-5eae7d3a9dc@andromeda.star.bris.ac.uk>
+ <8ccd91d3-7cf5-48fd-a0de-ad1b185e0a4c@astro.unistra.fr>
+Message-ID: <BYAPR03MB3560A0FFCD57B56382B5A1B8F4EFA@BYAPR03MB3560.namprd03.prod.outlook.com>
+
+I'm bringing a SPHEREx perspective today, and a perspective specific to building asynchronous UWS services that perform complex and long-running operations.  For SPHEREx, currently that means creating on-the-fly cutouts, and performing spectral extractions on the data via forced photometry.  The spectrophotometry service exists today (as a soft launch, currently only used internally by the IRSA web application for SPHEREx a/k/a Firefly, but intended for eventual public use, and we are in middle of implementing the cutout/mosaic service.
+
+I realize that the ostensible focus of this thread is TAP, but there are plenty of more generic mentions of DALI up-thread, and I do very much care about building DALI-flavored services wherever possible even when the actual service is mission/project-specific, with no available standard to cover its specific details.
+
+In this context (async UWS) the means for reflecting errors back to the user are:
+* The UWS job going to a PHASE = ERROR state
+* Providing a <uws:errorSummary> element in the <job> object for the task, including:
+  + an ErrorType ("transient" or "fatal")
+  + a (presumably) short string description of the error via the <uws:message> element
+  + a hasDetail indicator, with "true" indicating that there is additional information at the /error endpoint
+* Providing details at the /error endpoint
+
+Note that for one of our services the normal /result is a FITS file, and for the other the normal result is a VOTable (with VOParquet as a future option).
+
+When there is an error in these services, it's typically either a parameter constraint violation, for which a short message is sufficient response, or something much more serious, and that often involves a stack trace or other verbose logging.
+
+This is the sort of information we want to pass back as the /error object, then, so that the user has something that they can either interpret themselves, or go to a help desk with and ask for assistance.  Constructing a FITS or VOTable container for this information does not seem to make sense.
+
+UWS seems to overtly support this:
+
+Quoting from UWS 2.1.7:
+> The error object gives a human-readable error message for the underlying job. This object is intended to be a detailed error message, and consequently might be a large piece of text such as a stack trace. When there is an error running a job, a summary of the error should also be given using the optional errorSummary element of the Job element.
+
+and from UWS 2.2.2.5:
+> When an error occurs in a job the UWS must signal this at a minimum by setting the PHASE to error. In addition the <errorSummary> element, giving a brief summary of the error, should be included within the <job> element. The UWS may include a more detailed error message for example an execution log or stack trace by providing such a resource at the /{jobs}/{job-id}/error URI. It is the responsibility of the implementing service to specify the form that such an error message may take.
+
+Does the IVOA want to define a standard for the inclusion of, for example, stack traces in VOTables?  Because without that, trying to comply with the proposed stringencies seems like it will do more harm than good.
+
+(In the context of TAP I think we can live with what's been discussed, but I'm really concerned about pushing it upstream toward DALI.)
+
+Gregory
+
+________________________________________
+From: dal <dal-bounces at ivoa.net> on behalf of Gregory MANTELET via dal <dal at ivoa.net>
+Sent: Friday, October 10, 2025 06:11
+To: Mark Taylor; Patrick Dowler
+Cc: dal at ivoa.net
+Subject: Re: TAP 1.0/1.1 inconsistency: error document format
+
+Mark,
+
+I prefer your version because of the change from "may" to "must".
+
+However, I'd prefer something saying that VOTable is currently the only
+standard format defined by the IVOA in order to convey errors. It must always
+be supported. So, if no format is explicitly requested or if the asked one is not
+supported, a VOTable format should be returned by default. On the contrary,
+if the one asked by the user is supported by the service, the error may be
+returned in this format. This way, a generic client knows that it can rely on
+a unique format (whatever happen): VOTable, in this case.
+
+That could maybe be written as such in DALI:
+
+
+"An error document describing errors in use of the DAL
+service protocol must be a VOTable document. If supported,
+other formats may be used when explicitly asked by a client.
+If a format is not supported, the service must fallback to
+the VOTable format."
+
+I do not really know how to write that in a correct english way, but I hope you
+get my idea. Then, is it a good idea? Is it to strict? I don't know.
+
+Anyway, what I do not like with saying VOTable or plain text is that it is too
+restrictive. Besides, there are probably more than one way to write an error in
+a plain text document (e.g. just the raw error message, a message + an error
+code, a message + more details, ...). At least, if we mention the plain text
+document, we should probably say that it is limited just to the raw error
+message ; no structure or other kind of information is expected.
+
+Moreover, explicitly giving another error format will probably lead to
+a future where one would ask to update this sentence in order to add
+another format (e.g. JSON), and then another one. If the new formats are
+standardized by the IVOA, it is fine, but otherwise, I think we should probably
+avoid this.
+
+Cheers,
+Gr?gory
+
+
+On 10/10/2025 09:56, Mark Taylor wrote:
+
+Pat,
+
+I generally agree with that.  So a fix in DALI could look like
+changing text in the DALI 1.2 current WD section 5.2 from:
+
+   "An error document describing errors in use of the DAL service
+    protocol may be a VOTable document [ref] or a plain text document."
+
+to
+
+   "An error document describing errors in use of the DAL service
+    protocol must be a VOTable document [ref] if the client is
+    expecting a VOTable response; in other cases it should usually
+    be a plain text document."
+
+The phrase before the semicolon would supply what I've been
+complaining about here.  The second part could be written more
+prescriptively, but I've put "should usually" instead of "must"
+to leave open the possibility of JSON or whatever that somebody
+mentioned, I don't know if that's really a good idea or should
+be tightened up.
+
+Although I agree that text/plain is generally easier for clients,
+what's not easier is having to examine the content-type and adjust
+the parsing on the basis of that - you want to know what to expect.
+
+Relevant: since I brought this up the Rubin service has now been
+changed to work as expected (error document is VOTable not plain text),
+which I believe is how all other services do it, so in practice this
+isn't so much of a problem for me (I'm probably not going to make
+code changes unless it comes up again).
+
+Mark
+
+On Thu, 9 Oct 2025, Patrick Dowler wrote:
+
+
+
+In my view the TAP-1.1 text is about as good/correct as possible;
+TAP-1.0 was too strict given that we allowed other output formats. The
+main problem is that DALI-1.1 is too vague, but I'd also hate for this
+to become too complicated.
+
+essentially:
+if request is VOTable: error response should be VOTable
+if request is csv or tsv: error response in text/plain should be fine
+if request is parquet (aka VOParquet):  error response is ???
+
+We currently use text/plain in the last case (prototype) and I don't
+see any other choice as viable... to be clear, I think even this is
+too much to write in DALI because other services are working with say
+xml and json serialisation formats.
+
+I don't want to go so far as to say it was a mistake to ever put error
+messages into VOTable, but to be honest text/plain is almost always
+easier and better for the client...
+
+So the fix is nominally in DALI, TAP-1.2 could make a more careful
+statement aligning with DALI... if we can agree on it we can get it
+into 1.2
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Thu, 9 Oct 2025 at 07:47, Gr?gory Mantelet
+<gregory.mantelet at astro.unistra.fr><mailto:gregory.mantelet at astro.unistra.fr> wrote:
+
+
+
+Hi Pat, Mark,
+
+As web client developer, I indeed appreciate when I can have something else than a XML
+document to parse in case of query error. I already have the possibility to get some errors in
+JSON, and apparently Rubin already accept text errors.
+
+On the other hand, I'd also understand if a service cannot supply the error in multiple formats.
+It is not always easy or possible to do. Because of this, I agree with the approach stating
+that the error documents should be provided, as much as possible, in the requested format.
+Then, we should probably say that the fallback standard format must be VOTable. This way,
+it is a safe format that a generic client can rely on. So, in a word, I agree.
+
+Anyway, I am a bit lost. Where do you plan to apply a fix?
+DALI, TAP, UWS?
+If DALI, is it expected in the upcoming DALI-1.2?
+
+Cheers,
+Gr?gory
+
+
+On 17/09/2025 18:12, Mark Taylor via dal wrote:
+
+The impossible-to-provide-VOTable point doesn't apply in this context.
+TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+which would lead to non-VOTable error responses, but the case I'm
+talking about here is an error document retrieved from the UWS
+error document endpoint /async/<jobid>/error:
+
+  "Error documents should be in a format that matches the requested format
+   where possible; see DALI for details. If the error document is being
+   retrieved from the /async/<jobid>/error resource (specified by UWS)
+   after an asynchronous query, the HTTP status code should be 200."
+
+So where a VOTable result is implicitly or explicitly requested
+it is possible to supply a VOTable response; the TAP 1.0->1.1
+inconsistency is the "should" which used to be a "must".
+
+
+On Wed, 17 Sep 2025, Patrick Dowler wrote:
+
+At this point it has been written/advertised that way for years, so we
+should consider whether it is something to fix or just something to
+accept and adapt to... I know it is not always possible to adhere to
+the strict "error must be VOTable" because some errors happen before
+handling the request gets anywhere near the code that can feasibly
+write a VOTable.
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk><mailto:m.b.taylor at bristol.ac.uk> wrote:
+
+It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+seem to allow a plain text error document, which is what Rubin are
+currently doing, though I haven't encountered it in other services.
+
+So I think that means that clients and validators have to be prepared
+for that (topcat and taplint currently are not; I don't know about
+other TAP clients).
+
+Unless we consider this Erratum fodder?
+
+On Mon, 15 Sep 2025, Patrick Dowler wrote:
+
+iirc, it was deliberate to change from "must be VOTable" to be able to
+play nice with other formats, so it probably should have been as close
+to "must be in the requested format" as possible. But of course, not
+all tabular output formats can carry error messages, so it gets kind
+of tricky in the details.
+
+The spirit is still definitely that if the client expects a VOTable
+response they get that for both success and error, but the DALI quote
+shown is much too vague... I think that is where the
+clarification/detail is needed.
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net><mailto:dal at ivoa.net> wrote:
+
+Hi DAL.
+
+Following a taplint query by Stelios, I've just noticed the following
+inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+UWS error documents resulting from failed async TAP queries:
+
+   TAP 1.0 Sec 2.7.3:
+      "Error documents for TAP errors must be VOTable documents;
+       any result-format specified in the request is ignored."
+
+   TAP 1.1 Sec 3.3:
+      "Error documents should be in a format that matches the requested
+      format where possible; see DALI for details."
+
+   DALI 1.1 Sec 4.2:
+      "An error document describing errors in use of the DAL service
+       protocol may be a VOTable document (...) or a plain text document."
+
+For an expected VOTable result, this is effectively a downgrade of a
+MUST to a SHOULD for VOTable as the format of the error document.
+
+So a TAP 1.0 client will expect a VOTable error document from a failed
+async TAP query, but may get tripped up by receiving instead a plain
+text error document.  This change is not explicitly noted in
+Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+though A.1 says, somewhat misleadingly, "Removed text that duplicates
+material from DALI.".
+
+This looks to me like an oversight since it is (from the client's
+point of view) a backwardly incompatible behaviour change from TAP 1.0
+to TAP 1.1.
+
+Has anybody come across this before, or remember whether it was
+deliberate?
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk<mailto:m.b.taylor at bristol.ac.uk>          https://www.star.bristol.ac.uk/mbt/
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk<mailto:m.b.taylor at bristol.ac.uk>          https://www.star.bristol.ac.uk/mbt/
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk<mailto:m.b.taylor at bristol.ac.uk>          https://www.star.bristol.ac.uk/mbt/
+
+
+
+
+
+
+
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk<mailto:m.b.taylor at bristol.ac.uk>          https://www.star.bristol.ac.uk/mbt/
+
+
+
+

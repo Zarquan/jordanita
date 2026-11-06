@@ -1,0 +1,77 @@
+Date: Thu, 1 Oct 2026 10:48:25 +0200
+From: gregory.mantelet at astro.unistra.fr (Gregory Mantelet)
+Subject: SCS2: Text error messages; New: VERB
+Message-ID: <3b08cdc1-1ff4-4657-9f14-d97c76b2b8ca@astro.unistra.fr>
+In-Reply-To: <9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>
+
+
+
+Le 08/07/2026 ? 14:37, Mark Taylor via dal a ?crit?:
+> On Tue, 30 Jun 2026, Markus Demleitner via dal wrote:
+>
+>> hope for Pat's DALI-text spec and move on to the next item in
+>> Stelios' list:
+>>
+>>> 4. VERB semantics
+>>>
+>>> The spec says VERB must be "supported" but then says: "It is legal
+>>> to always return the same set of columns independent of the value
+>>> of VERB." which seems to undermine the parameter's usefulness.
+>>>
+>>> If implementations can treat VERB=1 and VERB=3 identically, clients
+>>> cannot rely on VERB to reduce response size.
+>>>
+>>> How about specifying the minimum column requirements per VERB level
+>>> (e.g., VERB=1 MUST include at least the three core columns, VERB=3
+>>> MUST return all columns the service holds) and specifying that the
+>>> default when VERB is absent is equivalent to VERB=2?
+>>>
+>>> Either that or why don't we just deprecate VERB entirely?
+>> Well, I would have liked to drop VERB, as I don't think there have
+>> been many conscious uses of it.
+>>
+>> On the other hand, I found the objection at the Interop convincing
+>> that modern large-scale catalogues tend to have hundreds of columns
+>> and having a way to control the chattyness *for them* would really be
+>> useful.
+>>
+>> I buy that (although I can only encourage everyone to adopt arrays,
+>> which often help keep metadata schema sizes sane).
+>>
+>> So, turning this around: Is it bad if clients "cannot rely on VERB to
+>> reduce response size"?  What could they do if the could?  If you are
+>> retrieving a catalogue that only has 10 columns, would you care?
+>>
+>> If you'd like to make this a bit more formal, one could formulate a
+>> monotonicity condition: "Services must return all columns present in
+>> VERB-1 at VERB (and may add more)" or something like this.  But even
+>> there I'm couldn't give a strong reason to require this
+>> (cf. <http://blog.g-vo.org/requirements-and-validators.html>).
+>>
+>> So... perhaps we can leave VERB as it is?
+> +1 on leaving it as it is.  Yes VERB is ignored by some services,
+> but nothing breaks in that case.  It's useful as a non-binding hint.
+> I don't think anything would be gained (except keeping the validator
+> authors in work :-]) by imposing hard requirements on how services
+> have to interpret it.
+
++1 on keeping VERB. Sorry to answer so late.
+I agree on two things based on my experience with Simbad, a bit of 
+VizieR and Gaia:
+1/ as user, being able to control the "chattyness of large-scale tables" 
+becomes more and more important ; so, according to me, we definitely 
+want to keep this feature,
+2/ as a service developer, I agree that supporting 3 levels of verbosity 
+is a supplementary burden, but it also helps to preserve the health of 
+our database by limiting by default (VERB=2) the number of returned 
+columns ; so, it worth it.
+
+Gr?gory M.
+
+

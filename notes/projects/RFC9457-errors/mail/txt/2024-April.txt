@@ -1,0 +1,819 @@
+From gregory.mantelet at astro.unistra.fr  Tue Apr  2 11:00:34 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 2 Apr 2024 11:00:34 +0200
+Subject: DAL Running Meeting #18 - SODA-next
+In-Reply-To: <fbbc420f-1918-42ad-948a-4630f7fb446e@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <324484ba-6478-4eff-b7a7-3ef8b5768ae7@astro.unistra.fr>
+ <fbbc420f-1918-42ad-948a-4630f7fb446e@astro.unistra.fr>
+Message-ID: <a7108c53-25a3-463b-8207-11b5ea58d9cc@astro.unistra.fr>
+
+FYI, the Etherpad for this upcoming DAL running meeting has been updated 
+with all the notes given by Fran?ois.
+
+Cheers,
+Gr?gory
+
+
+
+On 29/03/2024 19:14, BONNAREL FRANCOIS wrote:
+>
+> Dear DALers,
+>
+> Other material that could be discussed in the next running meeting :
+>
+> *SIA-extended or DAP :*
+>
+> See https://github.com/ivoa-std/SIA for most issues below
+>
+> and https://github.com/ivoa-std/DAP for the DAP PR #3
+>
+> DAP is the extension of SIA to other dataproducts than images and cubes
+>
+> + input PARAMETERS with limited list of values : better description 
+> (github SIA issue #1 <https://github.com/ivoa-std/SIA/issues/1>)
+>
+> + No input PARAMETER exists to select the RELEASE DATE (github SIA 
+> issue #2 <https://github.com/ivoa-std/SIA/issues/2>)
+>
+> + No Wild-carding of the input PARAMETERS values exists (github SIA 
+> issue #3 <https://github.com/ivoa-std/SIA/issues/3>)
+>
+> + input PARAMETERS values are case sensitive (github SIA issue #4 
+> <https://github.com/ivoa-std/SIA/issues/4>)
+>
+> + 1 shot discovery (and then access) to cutouts was possible in SIA1 
+> but no more in SIA2 (github SIA issue #6 
+> <https://github.com/ivoa-std/SIA/issues/6>)
+>
+> + SIA2 cannot discover rebinned data like SIA1 was able to do (github 
+> SIA issue #8) + It is not possible to query SIA services by MOC 
+> (github SIA issue #9 <https://github.com/ivoa-std/SIA/issues/9>)
+>
+> + Update matching in-progressDataLink 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>update? in examples
+>
+> + extension of SIA-style protocol usage outside the image/cube "camp" 
+> (github SIA issue #10 <https://github.com/ivoa-std/SIA/issues/10>) 
+> ----> see DAP PR #3
+>
+> Apart from github SIA and DAP repositories the discussion can 
+> alternatively be read there : 
+> https://wiki.ivoa.net/twiki/bin/view/IVOA/SIAP-2_0-Next
+>
+> *DataLink : *
+>
+> version 1.1 has been released
+>
+> There are still points which have been discussed and not integrated
+>
+> see : https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink-1_1-Next and 
+> github repository
+>
+>   * service descriptor : URL could benefit go be templated (for
+>     example to pick up part of the path from the user or from the
+>     table and not only parameters). Proposals have been made but it
+>     was delayed to next version until some service implement it.
+>     (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#27).
+>     ProbablyDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0
+>   * DataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>underlying
+>     data model : is content_type, content_qualifier, semantiics
+>     triplet enough. Should we distinguish conveyed "information" and
+>     conveyed "realtionship" (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#44). This is
+>     a discussion forDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0.
+>   * Service descriptor inputParams enhancing distinction between
+>     required and optional parameters (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#51). No
+>     obvious solution has been found at the moment.
+>   * Service Descriptor to be removed fromDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>and pushed to
+>     VOTable (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#53). This is
+>     a major revision ofDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>but also of
+>     VOTable. Version 2.0. This may also be completed by introduction
+>     of the templating mechanism or even more by the use of PDL inside
+>     inputParams.
+>   * content parameter in datalink mime type. (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#82). This is
+>     apparently to be solved in VOTable beforeDataLink1
+>     <https://wiki.ivoa.net/twiki/bin/edit/IVOA/DataLink1?topicparent=IVOA.DataLink-1_1-Next;nowysiwyg=0>.1
+>     becomes a REC
+>   * UCD for ID column in {links} service output . Is not the same as
+>     the UCD of ID parameter in anySODA
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>service referring
+>     to the ID column in the {links} table. Is that an issue ?
+>     apparently not (issueDataLink
+>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#89)
+>
+> And a new one (which may be solved by an erratum ?)
+>
+>   * inputParams could refer to PARAM as alternative to FIELD
+>     (https://github.com/ivoa-std/DataLink/issues/115)
+>
+> *DataLink implementation note :*
+>
+> **
+>
+> **
+>
+> While finishing the DataLink recommendation process we decided to have 
+> some non-normalized proposals for recognition in an Implementation 
+> Note This is now here : https://github.com/ivoa/DataLinkRecImplNote
+>
+> And the draft can be read here : 
+> https://github.com/ivoa/DataLinkRecImplNote/releases/download/auto-pdf-preview/DataLinkImp-draft.pdf 
+> Cheers
+>
+> Fran?ois
+>
+> Le 28/03/2024 ? 23:40, BONNAREL FRANCOIS via dal a ?crit?:
+>>
+>> Dear DALers
+>>
+>> Here is a teaser on what could be discussed during this meeting.
+>>
+>> SODA : there is a PR on github which I already modified after 
+>> feedback from Pat
+>>
+>> includes proposal for :
+>>
+>> + pixel cutouts (instead of world coordinates) on all axes are 
+>> missing (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github 
+>> issue #3)
+>>
+>> + No possibility to control output WCS by regridding/rebinning exists 
+>> in SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>. (SODA 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #4)
+>>
+>> + It is not possible to query SODA 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> services by MOC 
+>> (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #5)
+>>
+>> + SODA spec doesn't tell us how to provide dataproduct_type 
+>> transformation (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> 
+>> github issue #7)
+>>
+>> + Format transformation : FITS to png/jpeg, FITS to HiPS 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS>, HiPS 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS> to FITS etc (SODA 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #14)
+>>
+>> + Extracting metadata from the dataset (SODA 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #15)
+>>
+>> See github or also : 
+>> https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA-1_0-Next
+>>
+>> Cheers
+>>
+>> Fran?ois
+>>
+>> Le 27/03/2024 ? 14:47, Gr?gory Mantelet via dal a ?crit?:
+>>> Dear DAL members,
+>>>
+>>> Here is an announcement for a new DAL Running Meeting.
+>>>
+>>> This time, the topic is SODA-next, followed by some other thoughts 
+>>> about DAP(SIA), DataLink implementation and ProvTAP.
+>>>
+>>>     *Date??? :* 18^th April 2024
+>>>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>>>     (Canberra), 10:00 PM PDT (Vancouver))/
+>>>     *Duration:* 1 jour
+>>>     *Location:
+>>>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>>>
+>>>
+>>>     /*Meeting ID:* 967 2230 7540/
+>>>
+>>>     /*Passcode :* FbjtF3/
+>>>
+>>>
+>>> Cheers,
+>>> Gr?gory Mantelet & James Dempsey
+>>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240402/15c0ecf7/attachment-0001.htm>
+
+From gregory.mantelet at astro.unistra.fr  Tue Apr  2 11:01:09 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 2 Apr 2024 11:01:09 +0200
+Subject: DAL Running Meeting #18 - SODA-next
+In-Reply-To: <a7108c53-25a3-463b-8207-11b5ea58d9cc@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <324484ba-6478-4eff-b7a7-3ef8b5768ae7@astro.unistra.fr>
+ <fbbc420f-1918-42ad-948a-4630f7fb446e@astro.unistra.fr>
+ <a7108c53-25a3-463b-8207-11b5ea58d9cc@astro.unistra.fr>
+Message-ID: <001d0091-095d-4885-bddd-3a2bdd1387da@astro.unistra.fr>
+
+On 02/04/2024 11:00, Gregory MANTELET wrote:
+> FYI, the Etherpad for this upcoming DAL running meeting has been 
+> updated with all the notes given by Fran?ois.
+
+https://yopad.eu/p/IVOA_DAL_RM18
+
+>
+> Cheers,
+> Gr?gory
+>
+>
+>
+> On 29/03/2024 19:14, BONNAREL FRANCOIS wrote:
+>>
+>> Dear DALers,
+>>
+>> Other material that could be discussed in the next running meeting :
+>>
+>> *SIA-extended or DAP :*
+>>
+>> See https://github.com/ivoa-std/SIA for most issues below
+>>
+>> and https://github.com/ivoa-std/DAP for the DAP PR #3
+>>
+>> DAP is the extension of SIA to other dataproducts than images and cubes
+>>
+>> + input PARAMETERS with limited list of values : better description 
+>> (github SIA issue #1 <https://github.com/ivoa-std/SIA/issues/1>)
+>>
+>> + No input PARAMETER exists to select the RELEASE DATE (github SIA 
+>> issue #2 <https://github.com/ivoa-std/SIA/issues/2>)
+>>
+>> + No Wild-carding of the input PARAMETERS values exists (github SIA 
+>> issue #3 <https://github.com/ivoa-std/SIA/issues/3>)
+>>
+>> + input PARAMETERS values are case sensitive (github SIA issue #4 
+>> <https://github.com/ivoa-std/SIA/issues/4>)
+>>
+>> + 1 shot discovery (and then access) to cutouts was possible in SIA1 
+>> but no more in SIA2 (github SIA issue #6 
+>> <https://github.com/ivoa-std/SIA/issues/6>)
+>>
+>> + SIA2 cannot discover rebinned data like SIA1 was able to do (github 
+>> SIA issue #8) + It is not possible to query SIA services by MOC 
+>> (github SIA issue #9 <https://github.com/ivoa-std/SIA/issues/9>)
+>>
+>> + Update matching in-progressDataLink 
+>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>update? in examples
+>>
+>> + extension of SIA-style protocol usage outside the image/cube "camp" 
+>> (github SIA issue #10 <https://github.com/ivoa-std/SIA/issues/10>) 
+>> ----> see DAP PR #3
+>>
+>> Apart from github SIA and DAP repositories the discussion can 
+>> alternatively be read there : 
+>> https://wiki.ivoa.net/twiki/bin/view/IVOA/SIAP-2_0-Next
+>>
+>> *DataLink : *
+>>
+>> version 1.1 has been released
+>>
+>> There are still points which have been discussed and not integrated
+>>
+>> see : https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink-1_1-Next and 
+>> github repository
+>>
+>>   * service descriptor : URL could benefit go be templated (for
+>>     example to pick up part of the path from the user or from the
+>>     table and not only parameters). Proposals have been made but it
+>>     was delayed to next version until some service implement it.
+>>     (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#27).
+>>     ProbablyDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0
+>>   * DataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>underlying
+>>     data model : is content_type, content_qualifier, semantiics
+>>     triplet enough. Should we distinguish conveyed "information" and
+>>     conveyed "realtionship" (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#44). This is
+>>     a discussion forDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>2.0.
+>>   * Service descriptor inputParams enhancing distinction between
+>>     required and optional parameters (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#51). No
+>>     obvious solution has been found at the moment.
+>>   * Service Descriptor to be removed fromDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>and pushed to
+>>     VOTable (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#53). This is
+>>     a major revision ofDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>but also of
+>>     VOTable. Version 2.0. This may also be completed by introduction
+>>     of the templating mechanism or even more by the use of PDL inside
+>>     inputParams.
+>>   * content parameter in datalink mime type. (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#82). This is
+>>     apparently to be solved in VOTable beforeDataLink1
+>>     <https://wiki.ivoa.net/twiki/bin/edit/IVOA/DataLink1?topicparent=IVOA.DataLink-1_1-Next;nowysiwyg=0>.1
+>>     becomes a REC
+>>   * UCD for ID column in {links} service output . Is not the same as
+>>     the UCD of ID parameter in anySODA
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>service referring
+>>     to the ID column in the {links} table. Is that an issue ?
+>>     apparently not (issueDataLink
+>>     <https://wiki.ivoa.net/twiki/bin/view/IVOA/DataLink>#89)
+>>
+>> And a new one (which may be solved by an erratum ?)
+>>
+>>   * inputParams could refer to PARAM as alternative to FIELD
+>>     (https://github.com/ivoa-std/DataLink/issues/115)
+>>
+>> *DataLink implementation note :*
+>>
+>> **
+>>
+>> **
+>>
+>> While finishing the DataLink recommendation process we decided to 
+>> have some non-normalized proposals for recognition in an 
+>> Implementation Note This is now here : 
+>> https://github.com/ivoa/DataLinkRecImplNote
+>>
+>> And the draft can be read here : 
+>> https://github.com/ivoa/DataLinkRecImplNote/releases/download/auto-pdf-preview/DataLinkImp-draft.pdf 
+>> Cheers
+>>
+>> Fran?ois
+>>
+>> Le 28/03/2024 ? 23:40, BONNAREL FRANCOIS via dal a ?crit?:
+>>>
+>>> Dear DALers
+>>>
+>>> Here is a teaser on what could be discussed during this meeting.
+>>>
+>>> SODA : there is a PR on github which I already modified after 
+>>> feedback from Pat
+>>>
+>>> includes proposal for :
+>>>
+>>> + pixel cutouts (instead of world coordinates) on all axes are 
+>>> missing (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> 
+>>> github issue #3)
+>>>
+>>> + No possibility to control output WCS by regridding/rebinning 
+>>> exists in SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA>. 
+>>> (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #4)
+>>>
+>>> + It is not possible to query SODA 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> services by MOC 
+>>> (SODA <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #5)
+>>>
+>>> + SODA spec doesn't tell us how to provide dataproduct_type 
+>>> transformation (SODA 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #7)
+>>>
+>>> + Format transformation : FITS to png/jpeg, FITS to HiPS 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS>, HiPS 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/HiPS> to FITS etc (SODA 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #14)
+>>>
+>>> + Extracting metadata from the dataset (SODA 
+>>> <https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA> github issue #15)
+>>>
+>>> See github or also : 
+>>> https://wiki.ivoa.net/twiki/bin/view/IVOA/SODA-1_0-Next
+>>>
+>>> Cheers
+>>>
+>>> Fran?ois
+>>>
+>>> Le 27/03/2024 ? 14:47, Gr?gory Mantelet via dal a ?crit?:
+>>>> Dear DAL members,
+>>>>
+>>>> Here is an announcement for a new DAL Running Meeting.
+>>>>
+>>>> This time, the topic is SODA-next, followed by some other thoughts 
+>>>> about DAP(SIA), DataLink implementation and ProvTAP.
+>>>>
+>>>>     *Date??? :* 18^th April 2024
+>>>>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>>>>     (Canberra), 10:00 PM PDT (Vancouver))/
+>>>>     *Duration:* 1 jour
+>>>>     *Location:
+>>>>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>>>>
+>>>>
+>>>>     /*Meeting ID:* 967 2230 7540/
+>>>>
+>>>>     /*Passcode :* FbjtF3/
+>>>>
+>>>>
+>>>> Cheers,
+>>>> Gr?gory Mantelet & James Dempsey
+>>>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240402/800af3a2/attachment-0001.htm>
+
+From James.Dempsey at csiro.au  Tue Apr  2 13:30:31 2024
+From: James.Dempsey at csiro.au (Dempsey, James (IM&T, Black Mountain))
+Date: Tue, 2 Apr 2024 11:30:31 +0000
+Subject: DAL Call for contributions - May 2024 Interop
+Message-ID: <SYBPR01MB61103D7170CBE962902C4B4E893E2@SYBPR01MB6110.ausprd01.prod.outlook.com>
+
+Dear Data Access Layer Working Group,
+The Northern Spring Interop Meeting<https://rds.org.au/events/ivoa-2024/> will take place in Sydney, Australia from 20 ? 24 May. Remote attendance will also be supported.
+
+We invite you to contribute discussions on DAL related topics for the interop. These could be discussions on DAL standards either established, in development or proposed. We also encourage implementation reports from data centres using and implementing the standards, and are particularly interested in your experiences whether you are using your own software or one of the existing implementations.
+Please send your contributions with a speaker name, title and abstract to james.dempsey at csiro.au<mailto:james.dempsey at csiro.au> and gregory.mantelet at astro.unistra.fr<mailto:gregory.mantelet at astro.unistra.fr>  . If you are unsure about the suitability of a talk, or are a first time contributor, please get in contact with us and we can discuss it.
+Please provide contribution details by Friday, 26 April to allow us time to organise the talks.
+
+Cheers,
+James Dempsey an Gr?gory Mantelet
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240402/2a355f79/attachment.htm>
+
+From renaud.savalle at obspm.fr  Tue Apr  9 16:38:37 2024
+From: renaud.savalle at obspm.fr (Renaud Savalle)
+Date: Tue, 9 Apr 2024 16:38:37 +0200
+Subject: Poll for a Registry Running Meeting about linking capabilities with
+ tablesets
+Message-ID: <ceb9b2e3-fa52-4bf7-b174-beef4d2a80bd@obspm.fr>
+
+Dear All,
+
+Following the recent proposal and discussion on the Registry mailing 
+list about "linking capabilities with tablesets" (see 
+http://mail.ivoa.net/pipermail/registry/2024-March/005572.html and 
+replies) I would like to have a Registry Running Meeting next month 
+before the Sydney Interop. Linking capabilities with tablesets is a 
+important challenge for Registry publishers especially data providers 
+serving many interdependent resources. We'll explain the issue in 
+details and discuss the possible solutions and their impact.
+
+Besides Registry WG members, I'd like to invite the DAL WG (because one 
+possible solution relates to adding a parameter for Simple Cone Search) 
+and the Apps WG (as we may have to introduce significant changes to our 
+discovery patterns) to participate.
+
+Could you please indicate your availability in this doodle: 
+https://www.when2meet.com/?24534915-lvce9 , which features 3 slots on 
+Apr 30, May 6 and May 10, all at 13:00 UTC ?
+
+Thanks in advance,
+
+Renaud.
+
+
+
+From renaud.savalle at obspm.fr  Thu Apr 11 14:59:18 2024
+From: renaud.savalle at obspm.fr (Renaud Savalle)
+Date: Thu, 11 Apr 2024 14:59:18 +0200
+Subject: Poll for a Registry Running Meeting about linking capabilities
+ with tablesets
+In-Reply-To: <ceb9b2e3-fa52-4bf7-b174-beef4d2a80bd@obspm.fr>
+References: <ceb9b2e3-fa52-4bf7-b174-beef4d2a80bd@obspm.fr>
+Message-ID: <bc4d7da3-e674-4722-9be8-adbb9093b1b1@obspm.fr>
+
+Dear All,
+
+Thank you for your poll answers. According to the best date shown by the 
+poll results, we will have this Registry Running Meeting on May 6th at 
+13:00 UTC.
+
+Following is the Zoom meeting link.
+
+See you then !
+
+Renaud.
+
+
+Renaud Savalle is inviting you to a scheduled Zoom meeting.
+
+Join Zoom Meeting
+https://cnrs.zoom.us/j/91455321058?pwd=ZHc3K3loOUpTWUJOQzh6Y08wUXdDZz09
+
+Meeting ID: 914 5532 1058
+Passcode: inRT4q
+
+---
+
+
+On 2024-04-09 16:38, Renaud Savalle wrote:
+> Dear All,
+>
+> Following the recent proposal and discussion on the Registry mailing 
+> list about "linking capabilities with tablesets" (see 
+> http://mail.ivoa.net/pipermail/registry/2024-March/005572.html and 
+> replies) I would like to have a Registry Running Meeting next month 
+> before the Sydney Interop. Linking capabilities with tablesets is a 
+> important challenge for Registry publishers especially data providers 
+> serving many interdependent resources. We'll explain the issue in 
+> details and discuss the possible solutions and their impact.
+>
+> Besides Registry WG members, I'd like to invite the DAL WG (because 
+> one possible solution relates to adding a parameter for Simple Cone 
+> Search) and the Apps WG (as we may have to introduce significant 
+> changes to our discovery patterns) to participate.
+>
+> Could you please indicate your availability in this doodle: 
+> https://www.when2meet.com/?24534915-lvce9 , which features 3 slots on 
+> Apr 30, May 6 and May 10, all at 13:00 UTC ?
+>
+> Thanks in advance,
+>
+> Renaud.
+>
+>
+
+From gregory.mantelet at astro.unistra.fr  Wed Apr 17 14:30:35 2024
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Wed, 17 Apr 2024 14:30:35 +0200
+Subject: REMINDER - DAL Running Meeting #18 - SODA-next
+In-Reply-To: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+Message-ID: <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+
+Dear DAL members,
+
+Here is a reminder for the next DAL running meeting /tomorrow morning/ 
+(18th April 2024 - 5:00 AM UTC) on Zoom (see below).
+
+See you tomorrow,
+Gr?gory Mantelet & James Dempsey
+
+
+On 27/03/2024 14:47, Gr?gory Mantelet wrote:
+> Dear DAL members,
+>
+> Here is an announcement for a new DAL Running Meeting.
+>
+> This time, the topic is SODA-next, followed by some other thoughts 
+> about DAP(SIA), DataLink implementation and ProvTAP.
+>
+>     *Date??? :* 18^th April 2024
+>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>     (Canberra), 10:00 PM PDT (Vancouver))/
+>     *Duration:* 1 jour
+>     *Location:
+>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>
+>
+>     /*Meeting ID:* 967 2230 7540/
+>
+>     /*Passcode :* FbjtF3/
+>
+> *Etherpad:* https://yopad.eu/p/IVOA_DAL_RM18
+> **
+> Cheers,
+> Gr?gory Mantelet & James Dempsey
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240417/064a2941/attachment.htm>
+
+From mdittmar at cfa.harvard.edu  Wed Apr 17 22:42:44 2024
+From: mdittmar at cfa.harvard.edu (CresitelloDittmar, Mark)
+Date: Wed, 17 Apr 2024 16:42:44 -0400
+Subject: REMINDER - DAL Running Meeting #18 - SODA-next
+In-Reply-To: <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+Message-ID: <CAH4enyMT3CtjOQ7n0p1fb3OveWrvZaV=g14EK1BAaO1GHH=FKw@mail.gmail.com>
+
+Hi,
+
+I'm afraid that I won't be able to attend this meeting (too late/early for
+me), but I'm excited to see the SODA-next items on the agenda.
+In lieu of my attendance, I'd just like to pass along this statement
+regarding the connection of these items to the Cube data model.
+
+Many of the new services are directly connected to the original motivation
+for working on the Cube model and its subcomponents.
+They are supposed to give the data model support behind the services:
+   * image cutouts in WCS and/or Pixels => Coords and Transforms
+   * dataset metadata transfer => Dataset DM
+
+I would like to make sure there is a component to this project which
+relates the services and implementations back to the data models to make
+sure this goal is satisfied.
+It also ties into the discussion for the Joint session at the interop...
+   * how will the implementations tag the information in the query and
+response to the application.. associating the interface arguments with the
+model elements.?
+
+Let me know how we can help!
+Mark
+
+
+On Wed, Apr 17, 2024 at 8:30?AM Gr?gory Mantelet via dal <dal at ivoa.net>
+wrote:
+
+> Dear DAL members,
+>
+> Here is a reminder for the next DAL running meeting *tomorrow morning*
+> (18th April 2024 - 5:00 AM UTC) on Zoom (see below).
+>
+> See you tomorrow,
+> Gr?gory Mantelet & James Dempsey
+>
+>
+> On 27/03/2024 14:47, Gr?gory Mantelet wrote:
+>
+> Dear DAL members,
+>
+> Here is an announcement for a new DAL Running Meeting.
+>
+> This time, the topic is SODA-next, followed by some other thoughts about
+> DAP(SIA), DataLink implementation and ProvTAP.
+>
+> *Date    :* 18th April 2024
+> *Time    : *5:00 AM UTC *(7:00 AM CET (Paris), 3:00 PM AEDT (Canberra),
+> 10:00 PM PDT (Vancouver))*
+> *Duration:* 1 jour
+> *Location: *
+> https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>
+> *Meeting ID: 967 2230 7540*
+>
+> * Passcode : FbjtF3*
+>
+>     *Etherpad:* https://yopad.eu/p/IVOA_DAL_RM18
+> <https://yopad.eu/p/IVOA_DAL_RM18>
+> Cheers,
+> Gr?gory Mantelet & James Dempsey
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240417/9b08d3e0/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Apr 18 13:53:04 2024
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Thu, 18 Apr 2024 13:53:04 +0200
+Subject: REMINDER - DAL Running Meeting #18 - SODA-next
+In-Reply-To: <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+Message-ID: <a824b910-7bc4-45ff-b764-c49cabc1137a@astro.unistra.fr>
+
+Dear DAL members,
+
+The slides used by Fran?ois Bonnarel during this running meeting are now 
+available on the Twiki page:
+
+    https://wiki.ivoa.net/twiki/bin/view/IVOA/IvoaDAL_RunningMeetings#RM18
+
+
+The Etherpad (https://yopad.eu/p/IVOA_DAL_RM18) is still open, if you 
+have additional questions/comments.
+
+Thank you again to all attendees.
+
+I also would like to apologize for the typo in the below /Duration/ 
+field. It was a one hour meeting and not a one day (=jour in French) 
+meeting.
+
+Cheers,
+Gr?gory
+
+
+On 17/04/2024 14:30, Gr?gory Mantelet wrote:
+> Dear DAL members,
+>
+> Here is a reminder for the next DAL running meeting /tomorrow morning/ 
+> (18th April 2024 - 5:00 AM UTC) on Zoom (see below).
+>
+> See you tomorrow,
+> Gr?gory Mantelet & James Dempsey
+>
+>
+> On 27/03/2024 14:47, Gr?gory Mantelet wrote:
+>> Dear DAL members,
+>>
+>> Here is an announcement for a new DAL Running Meeting.
+>>
+>> This time, the topic is SODA-next, followed by some other thoughts 
+>> about DAP(SIA), DataLink implementation and ProvTAP.
+>>
+>>     *Date??? :* 18^th April 2024
+>>     *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>>     (Canberra), 10:00 PM PDT (Vancouver))/
+>>     *Duration:* 1 jour hour
+>>     *Location:
+>>     *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>>
+>>
+>>     /*Meeting ID:* 967 2230 7540/
+>>
+>>     /*Passcode :* FbjtF3/
+>>
+>> *Etherpad:* https://yopad.eu/p/IVOA_DAL_RM18
+>>
+>> Cheers,
+>> Gr?gory Mantelet & James Dempsey
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240418/50befddc/attachment.htm>
+
+From francois.bonnarel at astro.unistra.fr  Thu Apr 18 18:51:51 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Thu, 18 Apr 2024 18:51:51 +0200
+Subject: REMINDER - DAL Running Meeting #18 - SODA-next
+In-Reply-To: <CAH4enyMT3CtjOQ7n0p1fb3OveWrvZaV=g14EK1BAaO1GHH=FKw@mail.gmail.com>
+References: <3e6d485c-eab0-4c9b-83ff-253a33f82563@astro.unistra.fr>
+ <16edf1b3-d1fb-46ac-8b31-c9e4b337da69@astro.unistra.fr>
+ <CAH4enyMT3CtjOQ7n0p1fb3OveWrvZaV=g14EK1BAaO1GHH=FKw@mail.gmail.com>
+Message-ID: <21fb9591-3ee0-4866-8291-b4e691b97e36@astro.unistra.fr>
+
+Dear Mark, all
+
+Le 17/04/2024 ? 22:42, CresitelloDittmar, Mark via dal a ?crit?:
+> Hi,
+>
+> I'm afraid that I won't be able to attend this meeting (too late/early 
+> for me), but I'm excited to see the SODA-next items on the agenda.
+> In lieu of my attendance, I'd just like to pass along this statement 
+> regarding the connection of these items to the Cube data model.
+>
+> Many of the?new services are directly connected to the original 
+> motivation for working on the Cube model and its subcomponents.
+> They are supposed to give the data model support behind the services:
+> ? ?* image cutouts in WCS and/or Pixels => Coords and Transforms
+> ? ?* dataset metadata transfer => Dataset DM
+>
+For the "metadata" feature we can indeed imagine that the serialization 
+of datamodels such as datasetDM, transform, CAOM, ProvDM could be 
+released (for example using mIVOT on top of a VOtable)
+
+For the data extraction? itself it was already the case in SODA1.0 and 
+will be more in SODA1.1 (with resampling for example) that what SODA 
+does is actually forcing the response to match some ObsCore 
+characterization features.
+
+In other words you are demanding the service to build from the original 
+dataset a new dataset which will have 
+s_ra,s_dec,s_fov,su_resolution,em_min,em_max,etc.... such and such.
+
+I don't know yet if other datamodels than ObsCore could play the same role
+
+Cheers
+
+Fran?ois
+
+> I would like to make sure there is a component to this project which 
+> relates?the services and implementations back to the data models to 
+> make sure this?goal is satisfied.
+> It also ties into the discussion for the Joint session at the interop...
+> ? ?* how will the?implementations tag the information in the query and 
+> response to the application.. associating the interface arguments with 
+> the model elements.?
+>
+> Let me know how we can help!
+> Mark
+>
+>
+> On Wed, Apr 17, 2024 at 8:30?AM Gr?gory Mantelet via dal 
+> <dal at ivoa.net> wrote:
+>
+>     Dear DAL members,
+>
+>     Here is a reminder for the next DAL running meeting /tomorrow
+>     morning/ (18th April 2024 - 5:00 AM UTC) on Zoom (see below).
+>
+>     See you tomorrow,
+>     Gr?gory Mantelet & James Dempsey
+>
+>
+>     On 27/03/2024 14:47, Gr?gory Mantelet wrote:
+>>     Dear DAL members,
+>>
+>>     Here is an announcement for a new DAL Running Meeting.
+>>
+>>     This time, the topic is SODA-next, followed by some other
+>>     thoughts about DAP(SIA), DataLink implementation and ProvTAP.
+>>
+>>         *Date??? :* 18^th April 2024
+>>         *Time??? : *5:00 AM UTC /(7:00 AM CET (Paris), 3:00 PM AEDT
+>>         (Canberra), 10:00 PM PDT (Vancouver))/
+>>         *Duration:* 1 jour
+>>         *Location:
+>>         *https://cnrs.zoom.us/j/96722307540?pwd=VUxJRmdwcVF0akpnejJnZkFEelZNdz09
+>>
+>>
+>>         /*Meeting ID:* 967 2230 7540/
+>>
+>>         /*Passcode :* FbjtF3/
+>>
+>>     *Etherpad:* https://yopad.eu/p/IVOA_DAL_RM18
+>>     <https://yopad.eu/p/IVOA_DAL_RM18>
+>>     Cheers,
+>>     Gr?gory Mantelet & James Dempsey
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20240418/6cfde164/attachment.htm>
+

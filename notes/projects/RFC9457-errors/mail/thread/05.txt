@@ -1,0 +1,153 @@
+Date: Sun, 21 Jun 2026 06:38:14 +0000
+From: james.tocknell at mq.edu.au (James Tocknell)
+Subject: SCS2: Non-VOTable errors?
+Message-ID: <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+In-Reply-To: <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+
+Hi All
+
+I'd suggest moving to https://www.rfc-editor.org/rfc/rfc9457.html if there's going to be a structured format (which I'd argue is a good idea, rather than arbitrary text, and there are existing libraries to do the error handling in that format, e.g. https://pypi.org/project/fastapi-problem/).
+
+Regards
+James
+
+________________________________________
+From: dal <dal-bounces at ivoa.net> on behalf of Markus Demleitner via dal <dal at ivoa.net>
+Sent: Friday, 19 June 2026 7:59 PM
+To: dal at ivoa.net
+Subject: Re: SCS2: Non-VOTable errors?
+
+Dear Stelios, Dear Pat,
+
+On Thu, Jun 18, 2026 at 04:56:12PM -0700, Stelios Voutsinas via dal wrote:
+> What the spec tolerates is a separate question: what a service can return
+> while remaining compatible, with the understanding that it may not provide
+> the optimal user experience.
+
+Let me suggest an addition here: "What a *working* (if possibly
+broken) service can return while remaining compatible".  Let's keep
+network outages, machines on fire, misconfigurations and all that out
+of this discussion.  It is clear that no spec in the world can do
+anything about that.  Also, in general the users won't be able to fix
+it, either, so precise diagnostics aren't as important in these
+cases.  "It's broken, and it's not your fault" is about the best we
+can do.
+
+> A FastAPI service that emits a 422 with `{"detail": [...]}` shouldn't be
+> treated as broken. It's just not returning an error in a structured way
+> that clients can parse a message from. The body is advisory text. Clients
+> can display whatever they get (show the JSON as-is, or even ignore the body
+> and show something based on the status code). Only the HTTP status code
+> triggers any  branching logic. JSON in this framing isn't a third parsing
+> path and displaying the raw body is valid client behaviour.
+
+...and that's something I would like to avoid for something as plain
+as "bad-arguments: You forgot to pass an RA parameter".  I have no
+issue with the 422 response; I think back in the day of QUERY_STATUS,
+the concern was that HTTP libraries would just raise an exception for
+non-200 and nobody would ever see the error message.
+
+I agree with Pat that that was not a good idea; I remember having
+been seriously dismayed when I first saw this, and hence I'm all in
+favour of properly using HTTP status codes going forward (DALI
+already says about as much).
+
+What I find myself disagreeing with the stronger the longer I think
+about it is that we are cavalier about the payloads.  In >40 years of
+dealing with computers, I have rarely been cursing worse than when
+something fails but doesn't say why.
+
+Ok, you say 'but I do say why, just with some [}}"{[}"[}{ sprinkled
+in'.  That may be true in your case (if marginally so: I imagine a
+message box with a bunch of JSON in it and find that almost as
+disgusting as [sorry, Mark] the "reg.g-vo.org" that TOPCAT's TAP
+window shows when there's no network), but it's definitely nothing
+that a validator can check.
+
+But I think a clear diagnostic "You didn't pass a required
+parameter" is a so fundamental aspect of a protocol that a validator
+just *has to* check it and has to have a chance to run a halfway
+meaningful test against it.
+
+And that's why I'm sure we have to say "If you get a chance to
+produce any error at all, do it like this".  Ok, a validator probably
+still won't be able to figure out if the message like '"duff" doesn't
+parse as RA (it's decimal degrees of right ascension)' is any good,
+but a parameter-syntax-error: (or whatever) it can check for.  And
+that's still a lot better than allowing any old junk.
+
+> The language that might capture this: the body MAY be any human-readable
+> format where producing the specified format would require unreasonable
+> effort from the framework or infrastructure.
+> That would cover FastAPI 422s, Pydantic validation errors and anything else
+> the framework generates before application code runs, without endorsing any
+> specific JSON schema as something clients need to parse.
+
+Can't we just file bugs against frameworks that don't let you
+override their message-producing code with reasonable effort?
+
+> The machine-readable signal is the status code and that's what's
+> authoritative (400 means bad parameters, 422 means invalid values, 503 try
+> again later)
+
+I'd also like to avoid error messsage boxes that just say "invalid
+values" (and nothing more), frankly.  Helping users when they got it
+wrong is *really* important.
+
+> The body is context for a human and I would say mandating a specific format
+> for it is only justified if some client behaviour depends on parsing it,
+> and to my understanding clients just display it. (Though client writers can
+> chime in and disagree if this is incorrect)
+
+I claim user experience depends on that property, at least for common
+error paths.
+
+> To give a reference point from the implementation side, in our SIA service
+> producing VOTable errors came out to around 200 lines across the exception
+> handler and template:
+>
+> https://github.com/lsst-sqre/sia/blob/main/src/sia/templates/votable_error.xml
+> https://github.com/lsst-sqre/sia/blob/main/src/sia/errors.py#L25
+> https://github.com/lsst-sqre/sia/blob/main/src/sia/main.py#L88
+
+Well... if you take away the template (that you wouldn't need with
+plain text) and the logging code (that you'd have or not have
+regardless of the output format), that's a whole lot less than 200
+lines, which seems a really modest price to pay for validatable error
+behaviour to me.
+
+> None of it is hard to write, but it's code every service author has to
+> produce independently, has to test, and can go wrong in ways that are at
+> times hard to catch.
+
+But assuming you share my sentiment that specific, readable
+diagnostics are essential for good user experience, I'd argue that
+it's still simpler to catch them on the server side than in a client
+or, even worse, in our users.
+
+
+So, I end up remaining more and more convinced that Pat's suggestion
+and the datalink model, a machine-readable string for validatability,
+and free text for services to send advice to users, in a text/plain
+payload, is a very reasonable compromise between server-side effort
+and a nice offer to clients.
+
+Pat, if you find the time to write your proposal up for the current
+DALI PR, I'd be *very* grateful and offer my SCS2 prototype for a
+quick PoC implementation.  I'm trying to convince myself that that
+wouldn't mean undue delay for the RFC.
+
+But I'd be happy to draft this in SCS2, probably with a statement
+like "This should really be in DALI".  Just let me know.
+
+There is the related question of what to do with the QUERY_STATUS
+INFO.  I have no strong opinion on this, and I think there's little
+harm in keeping it in; it works for overflow signalling, and we can
+declare the ERROR value as legacy.
+
+         -- Markus
+
+

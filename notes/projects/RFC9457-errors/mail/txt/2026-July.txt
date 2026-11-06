@@ -1,0 +1,376 @@
+From msdemlei at ari.uni-heidelberg.de  Wed Jul  1 15:07:36 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 1 Jul 2026 15:07:36 +0200
+Subject: Text error messages
+In-Reply-To: <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+Message-ID: <jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>
+
+Hi again,
+
+On Tue, Jun 30, 2026 at 03:41:48PM +0100, Dave Morris via dal wrote:
+> On 2026-06-30 13:58, Markus Demleitner via dal wrote:
+> > So... unless someone wants to seriously champion RFC 9457, I'd
+> > hope for Pat's DALI-text spec and move on ...
+>
+> Challenge accepted :-)
+
+Ok, so... what would become possible or noticeably simpler if we did
+adopt RFC 9457 into DALI as compared to adopting the SODA errors
+<https://ivoa.net/documents/SODA/20170517/REC-SODA-1.0.html#tth_sEc5.2>
+into DALI?
+
+And is that benefit really proportional to incurring the load of an
+extra library?  Or the effort of parsing the JSON and XML oneself?
+
+> In the spirit of the P3T team. If there is an existing RFC with several
+> implementations behind it, we should at least evaluate it before we invent
+> our wheel.
+
+The trouble is: We already have (at least) two wheels (VOTable
+QUERY_STATUS and SODA/Datalink plain text).  Pulling in another two
+wheels (RFC 9457 in XML and JSON) and telling people: "Oh, the other
+two wheels suck, and they'll go away in less than 20 years" is
+possible but needs a more than a gut feeling to justify.
+
+> In addition to the Python framework that James cited, it looks like there is
+> a growing ecosystem around creating and consuming RFC-9457 messages.
+
+"Growing" is a word that usually gives me the creeps when I think
+about tech that's supposed to last 20 years.  Few things survive 20
+years of growth.
+
+> I think it is worth a look.
+
+Sure.  But after a (superficial, ok) look I've not come up with a
+credible scenario in which the extra complication over SODA-like
+text/plain messages is worth it.
+
+Thanks,
+
+            Markus
+
+
+From m.b.taylor at bristol.ac.uk  Wed Jul  8 14:37:51 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Wed, 8 Jul 2026 13:37:51 +0100 (BST)
+Subject: SCS2: Text error messages; New: VERB
+In-Reply-To: <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+Message-ID: <9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>
+
+On Tue, 30 Jun 2026, Markus Demleitner via dal wrote:
+
+> hope for Pat's DALI-text spec and move on to the next item in
+> Stelios' list:
+> 
+> > 4. VERB semantics
+> >
+> > The spec says VERB must be "supported" but then says: "It is legal
+> > to always return the same set of columns independent of the value
+> > of VERB." which seems to undermine the parameter's usefulness.
+> >
+> > If implementations can treat VERB=1 and VERB=3 identically, clients
+> > cannot rely on VERB to reduce response size.
+> >
+> > How about specifying the minimum column requirements per VERB level
+> > (e.g., VERB=1 MUST include at least the three core columns, VERB=3
+> > MUST return all columns the service holds) and specifying that the
+> > default when VERB is absent is equivalent to VERB=2?
+> >
+> > Either that or why don't we just deprecate VERB entirely?
+> 
+> Well, I would have liked to drop VERB, as I don't think there have
+> been many conscious uses of it.
+> 
+> On the other hand, I found the objection at the Interop convincing
+> that modern large-scale catalogues tend to have hundreds of columns
+> and having a way to control the chattyness *for them* would really be
+> useful.
+> 
+> I buy that (although I can only encourage everyone to adopt arrays,
+> which often help keep metadata schema sizes sane).
+> 
+> So, turning this around: Is it bad if clients "cannot rely on VERB to
+> reduce response size"?  What could they do if the could?  If you are
+> retrieving a catalogue that only has 10 columns, would you care?
+> 
+> If you'd like to make this a bit more formal, one could formulate a
+> monotonicity condition: "Services must return all columns present in
+> VERB-1 at VERB (and may add more)" or something like this.  But even
+> there I'm couldn't give a strong reason to require this
+> (cf. <http://blog.g-vo.org/requirements-and-validators.html>).
+> 
+> So... perhaps we can leave VERB as it is?
+
++1 on leaving it as it is.  Yes VERB is ignored by some services, 
+but nothing breaks in that case.  It's useful as a non-binding hint.
+I don't think anything would be gained (except keeping the validator 
+authors in work :-]) by imposing hard requirements on how services
+have to interpret it.
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From m.b.taylor at bristol.ac.uk  Thu Jul  9 14:12:59 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Thu, 9 Jul 2026 13:12:59 +0100 (BST)
+Subject: Text error messages
+In-Reply-To: <jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+ <jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>
+Message-ID: <615545a-5d36-4de6-31ef-8b49c2e94499@andromeda.star.bris.ac.uk>
+
+Weighing in late on this thread:
+
+On Thu, 18 Jun 2026, Patrick Dowler via dal wrote:
+
+> In my opinion, the "errors in VOTable" were a simple but bad idea and
+> we should figure out how to stop requiring it.
+
+I agree with this; requiring services to format errors as VOTables
+is unneccessarily burdensome and a bit pointless too, since
+clients are going to have to make sense of error messages that
+get generated by non-VO-aware communication layers as well as
+whatever VO standards dictate.  So I would support moving away
+from requiring VOTable formatting in error messages.
+
+On Thu, 18 Jun 2026, Stelios Voutsinas via dal wrote:
+
+> The machine-readable signal is the status code and that's what's
+> authoritative (400 means bad parameters, 422 means invalid values, 503 try
+> again later)
+> The body is context for a human and I would say mandating a specific format
+> for it is only justified if some client behaviour depends on parsing it,
+> and to my understanding clients just display it. (Though client writers can
+> chime in and disagree if this is incorrect)
+
+I also agree with this.  As a client writer, the main thing I want
+is a human-readable message I can present to the user.
+Additional machine-readable coding is not something that topcat
+is likely to act upon.
+
+There are a few exceptions to that, but I think(?) they are
+all covered by existing 4xx/5xx HTTP response codes,
+e.g. A+A (401/403) and Not Found (404).  But in most cases
+topcat/stilts treats any 4xx/5xx code the same: it's an error,
+pass on relevant information, including server-generated human-readable
+text if any, to the user.
+
+RFC9457 seems to be addressed to the situation where clients
+can perform problem-detail-specific actions based on problem
+details supplied in an error response.  Such error responses
+have to be associated with semantics defined by a "type" member
+which is either from the IANA registry at
+https://www.iana.org/assignments/http-problem-types/http-problem-types.xhtml
+- none of them look much use to us - or which we'd have to define
+ourselves.  I am interested in what kind of client behaviour the
+advocates of using RFC9457 expect it to be used to initiate.
+If the answer is none, this looks like an additional standardisation,
+generation and parsing burden without much benefit.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Thu Jul  9 17:45:56 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 9 Jul 2026 17:45:56 +0200
+Subject: SCS2: Current state, POST support
+Message-ID: <ejky6mxgnzt2fyusrqcxw73pfhbjyus26f2mtlz2s6fvjobfs4@no6e7tfpbelw>
+
+Dear DAL community,
+
+In my loose series of community polling on Stelios' comments on
+SCS2[1], I think the current status is:
+
+* VERB stays in pretty much as it is
+* We're doing to do text-based error messages and hoping for DALI to
+  define these.
+
+If you disagree stronly enough to bother, please speak up now.
+
+Stelios' next topic was:
+
+> 5. POST support is not clearly required or optional
+>
+> The spec describes GET semantics in detail but there isn't any
+> mention of POST.  Does this inherit the support from DALI 1.2 (SHOULD
+> support POST)?  If so would it be better just to explicitly state
+> whether POST (with application/x-www-form-urlencoded body) is MUST,
+> SHOULD, or MAY to avoid readers having to cross-reference to another
+> doc for this?
+
+I'm rather sure SCS needs to special treatment here; it should do
+what S-protocols in the VO have traditionally done, which is treat
+GET and POST identically.  DALI 1.2 is now explicit on requiring
+support for both urlencoded and multipart request bodies.
+
+I would argue the question is conclusively settled in DALI 1.2's sect
+2.2, where it says on sync endpoints:
+
+  Synchronous requests can be made using either the HTTP GET or POST
+  method.
+
+I think the subtext is "and both should yield the same results for
+the same parameters, at least in the successful case and disregarding
+the possibility of intervening caches".
+
+Am I missing something?
+
+Thanks,
+
+         Markus
+
+[1] Still at
+https://github.com/msdemlei/scs2-original-deleteme/issues/2 because
+I'm unable to move it to the new repo.
+
+
+From francois.bonnarel at gmail.com  Fri Jul 10 11:08:55 2026
+From: francois.bonnarel at gmail.com (BONNAREL FRANCOIS gmail)
+Date: Fri, 10 Jul 2026 11:08:55 +0200
+Subject: DAL roadmap review
+In-Reply-To: <ff370262-2c02-4260-8a85-85653e1316b8@astro.unistra.fr>
+References: <ff370262-2c02-4260-8a85-85653e1316b8@astro.unistra.fr>
+Message-ID: <c054a77c-2299-4efe-a364-ec3a79d922da@gmail.com>
+
+Dear all,
+Thanks Joshua and Gregory
+
+In the secondary section I have two comments
+
+- Datalink
+ ??? There is also a proposal to add a TAP interface for the {links} 
+endpoint (proposal made in my last interop document.
+- DAP and SODA : there was an interesting discussion in Sydney on these 
+topics. Nothing seems to have happened since then. These discussions are 
+available on Sydney interop page, but I will provide a summary during 
+summer.
+
+Cheers
+Fran?ois *
+*
+*
+*
+Le 29/06/2026 ? 14:25, Gregory MANTELET via dal a ?crit?:
+> Dear DAL members,
+>
+> First of all, I forgot to do so during the DAL closing remarks, I am 
+> sorry for that, but I would like to warmly thank all speakers and 
+> participants during the Strasbourg's Interop ?
+>
+> According to me, our sessions (joint or not) went very well and 
+> clearly show what we should focus on for the next months.
+>
+> About that, Joshua and I have updated the DAL roadmap for the next 5-6 
+> months (until the next IVOA Interop. Meeting):
+>
+> https://wiki.ivoa.net/twiki/bin/view/IVOA/2026ARoadmap 
+> <https://wiki.ivoa.net/twiki/bin/view/IVOA/2026ARoadmap#Data%20Access%20Layer%20WG>
+>
+> I strongly encourage DAL standards editors (and authors) to review 
+> this roadmap. Please tell Joshua and I whether it is too optimistic, 
+> pessimistic or incorrect and, more importantly, tell us if it is OK 
+> for you, when it is the case.
+>
+> Thank you for your help,
+> Joshua and Gr?gory 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260710/af739f27/attachment.htm>
+
+From pdowler.cadc at gmail.com  Tue Jul 14 00:15:34 2026
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Mon, 13 Jul 2026 15:15:34 -0700
+Subject: proposed DALI update to case-sensitive parameter names
+Message-ID: <CAFK8nrqemmMLv0W__HNO=zhue=ihyLJAgKq+oOtP6gO4M7ev_A@mail.gmail.com>
+
+Hi all,
+
+https://github.com/ivoa-std/DALI/pull/75 will look like it has
+wideaspread impact and might be a crazy idea, so please give it some
+thought and help to refine it, kill it, or make everything 2.0 ...
+
+my 2c: I think this is the biggest source of friction between legacy
+IVOA and modern (OpenAPI) and it is clear we need to do something
+
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+From msdemlei at ari.uni-heidelberg.de  Mon Jul 27 14:39:41 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 27 Jul 2026 14:39:41 +0200
+Subject: SCS2 Migration Plan
+Message-ID: <o5np2ducamunktj4pefh7rt6qs444yndqwrwckvksd46nqvwxf@7pvfrtd5vphu>
+
+Dear DAL folks,
+
+In my loose series of community polling on Stelios' comments on
+SCS2[1], I'd say the last question (Jul 9th) on POST support is
+settled in DALI 1.2.  So, let's move on to:
+
+  7. Migration plan
+
+  I think it's less than ideal and an unnecessary hurdle to have to
+  require all SCS2 services (including new service creators) to be
+  accompanied by ConeSearch-1.0 interfaces.
+  Also, I don't know if it is clear how registry records should be
+  structured for a service that implements both 1.1 and 2.0
+  simultaneously (One record or two? Should VOSI capabilities list
+  both capability types?)
+  I'd be in favor of exempting new SCS2 ConeSearch implementors of
+  having to write implementations for both.
+
+On the requirement of parallel implementations... well, this is a
+consequence of the original desideratum "No VO splits" from the
+College Park talk
+<https://wiki.ivoa.net/internal/IVOA/InterOpJune2025MVT/lecture-notes.pdf>.
+
+Something's got to give, sure, and perhaps it's acceptable if legacy
+clients don't see the most recent services.  I *would* like to say
+that until we offcially pull ConeSearch-1, the differences should be
+as small as possible.  I'd say the minimal language should be "If you
+already run a ConeSearch-1 service, don't pull it until the
+transition team tells you to."  I am very grateful for suggestions
+what to write.
+
+The Registry records... well, at least for legacy services they stay
+as they are, including their granularity, except there will be an
+extra capability with the SCS2 standardID.  That means that sure, as
+long as it's there, the VOSI capabilities will have both ConeSearch-1
+and SCS2 capabilities.  The PoC record:
+
+http://dc.g-vo.org/oai.xml?verb=GetRecord&metadataPrefix=ivo_vor&identifier=ivo://org.gavo.dc/gaia/q3/cone
+
+shows how it's supposed to look like (or at least I hope so:-).
+
+Thanks,
+
+           Markus
+
+
+[1] https://github.com/msdemlei/scs2-original-deleteme/issues/2
+
+

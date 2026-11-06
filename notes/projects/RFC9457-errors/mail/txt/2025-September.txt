@@ -1,0 +1,1427 @@
+From gregory.mantelet at astro.unistra.fr  Mon Sep  1 15:22:36 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Mon, 1 Sep 2025 15:22:36 +0200
+Subject: DAL Running Meeting #21 - Cone Search 1.1
+In-Reply-To: <d5c8ee16-3d6c-465d-b485-cfe9dd9605ba@astro.unistra.fr>
+References: <d5c8ee16-3d6c-465d-b485-cfe9dd9605ba@astro.unistra.fr>
+Message-ID: <e2bfc833-0d82-479b-9cd1-6d09e263cbbd@astro.unistra.fr>
+
+Dear IVOA members,
+
+This is to announce the result of the submitted poll about the date of the
+next DAL running meeting:
+
+*Thursday, 4th September 2025 at 1pm UTC*
+
+This meeting will be 1 hour long and will happen on Zoom with the
+following link:
+
+    *Link????? :*
+    https://cnrs.zoom.us/j/95997178315?pwd=P6bbx9iWo9WwDk0gfie9TvaGpkRodt.1
+    *Meeting ID:* 959 9717 8315
+    *Passcode? :* aUsb27
+
+
+Notes will be taken (as best as possible) and shared on the DAL webpage
+and by email to all of you.
+
+Cheers,
+Gr?gory
+
+
+On 17/07/2025 12:13, Gr?gory Mantelet wrote:
+> Dear IVOA members,
+>
+> As you may already know, the Simple Cone Search protocol has not been
+> updated for years. Marco is now in charge of editing this document and has
+> already started to collect ideas for the next versions (see GitHub 
+> Issues <https://github.com/ivoa-std/ConeSearch/issues>).
+>
+> Some issues have already been fixed with the intention to release a minor
+> revision: 1.1. The idea of this version is to align it as much as 
+> possible with
+> UCD1+ and DALI (e.g. MAXREC, RESPONSEFORMAT). More features are of
+> course planned for future versions (major?).
+>
+> Marco, Joshua and I would like to start this discussion with as many 
+> people as possible, because this is one of the most used DAL 
+> protocols. To find the best
+> date for this DAL Running Meeting, please, fill the following poll:
+>
+> https://strawpoll.com/X3nkPpw5LgE
+>
+> There are 3 possible dates (in early September), each with only one 
+> time. If
+> none of these dates and times are good for you, please let us know by
+> proposing an alternative in comment or by email to Joshua or myself.
+>
+> The final date for this meeting will be announced on the 1st of September.
+>
+> Cheers,
+> Gr?gory
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250901/4a1a98be/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Sep  4 15:10:31 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 4 Sep 2025 15:10:31 +0200
+Subject: DAL Running Meeting #21 - Cone Search 1.1
+In-Reply-To: <e2bfc833-0d82-479b-9cd1-6d09e263cbbd@astro.unistra.fr>
+References: <d5c8ee16-3d6c-465d-b485-cfe9dd9605ba@astro.unistra.fr>
+ <e2bfc833-0d82-479b-9cd1-6d09e263cbbd@astro.unistra.fr>
+Message-ID: <42e8f410-851f-4c3c-ab46-ffc571c41e58@astro.unistra.fr>
+
+Dear IVOA members,
+
+The DAL running meeting about Cone Search 1.1 is starting now.
+
+Cheers,
+Gr?gory
+
+
+On 01/09/2025 15:22, Gregory MANTELET wrote:
+> Dear IVOA members,
+>
+> This is to announce the result of the submitted poll about the date of the
+> next DAL running meeting:
+>
+> *Thursday, 4th September 2025 at 1pm UTC*
+>
+> This meeting will be 1 hour long and will happen on Zoom with the
+> following link:
+>
+>     *Link????? :*
+>     https://cnrs.zoom.us/j/95997178315?pwd=P6bbx9iWo9WwDk0gfie9TvaGpkRodt.1
+>     *Meeting ID:* 959 9717 8315
+>     *Passcode? :* aUsb27
+>
+>
+> Notes will be taken (as best as possible) and shared on the DAL webpage
+> and by email to all of you.
+>
+> Cheers,
+> Gr?gory
+>
+>
+> On 17/07/2025 12:13, Gr?gory Mantelet wrote:
+>> Dear IVOA members,
+>>
+>> As you may already know, the Simple Cone Search protocol has not been
+>> updated for years. Marco is now in charge of editing this document 
+>> and has
+>> already started to collect ideas for the next versions (see GitHub 
+>> Issues <https://github.com/ivoa-std/ConeSearch/issues>).
+>>
+>> Some issues have already been fixed with the intention to release a minor
+>> revision: 1.1. The idea of this version is to align it as much as 
+>> possible with
+>> UCD1+ and DALI (e.g. MAXREC, RESPONSEFORMAT). More features are of
+>> course planned for future versions (major?).
+>>
+>> Marco, Joshua and I would like to start this discussion with as many 
+>> people as possible, because this is one of the most used DAL 
+>> protocols. To find the best
+>> date for this DAL Running Meeting, please, fill the following poll:
+>>
+>> https://strawpoll.com/X3nkPpw5LgE
+>>
+>> There are 3 possible dates (in early September), each with only one 
+>> time. If
+>> none of these dates and times are good for you, please let us know by
+>> proposing an alternative in comment or by email to Joshua or myself.
+>>
+>> The final date for this meeting will be announced on the 1st of 
+>> September.
+>>
+>> Cheers,
+>> Gr?gory
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250904/1451cdc2/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Mon Sep 15 10:08:20 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 15 Sep 2025 10:08:20 +0200
+Subject: TAPRegExt PR: per-mode limits
+Message-ID: <20250915080820.uyxd5j2be4bbnzyh@victor>
+
+Dear DAL, dear Apps,
+
+In pyVO bug #685 <https://github.com/astropy/pyvo/issues/685>, we
+figured it's finally time to be a bit less cavalier about the limits
+that TAP services report to their clients (e.g., how long can you
+take?  How large can your uploads be? etc).
+
+In TAPRegExt PR #8, <https://github.com/ivoa-std/TAPRegExt/pull/8>, I
+am proposing such a mechanism.  I'd be grateful for a review, both
+technically and content-wise.
+
+As to the latter, I am now convinced that the per-mode limits are
+necessary.  But one might speculate whether we should allow even more
+per-mode variation: Should we allow UDFs to only become available in
+certain modes?  Or perhaps upload formats?  My current take is: no.
+But if these were use cases, perhaps we need a different
+architecture.
+
+Also, the starting point of the discussion was whether services
+should be allowed to say: "Please prefer async on this service" or
+so.  That's not yet part of this proposal, mainly because Mark was
+not convinced that's a useful thing to have.  Does anyone disagree?
+
+And then there is the question whether the modes should be enumerated
+in the schema (and thus are more or less fixed) or whether more or
+other modes are conceivable (or useful).
+
+Well: Any contributions are welcome.
+
+Thanks,
+
+          Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Mon Sep 15 11:03:02 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Mon, 15 Sep 2025 11:03:02 +0200
+Subject: TAPRegExt PR: per-mode limits
+In-Reply-To: <20250915080820.uyxd5j2be4bbnzyh@victor>
+References: <20250915080820.uyxd5j2be4bbnzyh@victor>
+Message-ID: <cadb36e9-5f39-42c5-a598-5c90ae63aeb3@astro.unistra.fr>
+
+Dear Markus, DAL and Apps,
+
+
+On 15/09/2025 10:08, Markus Demleitner via dal wrote:
+> Dear DAL, dear Apps,
+>
+> In pyVO bug #685 <https://github.com/astropy/pyvo/issues/685>, we
+> figured it's finally time to be a bit less cavalier about the limits
+> that TAP services report to their clients (e.g., how long can you
+> take?  How large can your uploads be? etc).
+>
+> In TAPRegExt PR #8, <https://github.com/ivoa-std/TAPRegExt/pull/8>, I
+> am proposing such a mechanism.  I'd be grateful for a review, both
+> technically and content-wise.
+>
+> As to the latter, I am now convinced that the per-mode limits are
+> necessary.  But one might speculate whether we should allow even more
+> per-mode variation: Should we allow UDFs to only become available in
+> certain modes?  Or perhaps upload formats?  My current take is: no.
+> But if these were use cases, perhaps we need a different
+> architecture.
+
+
+I'd say no too. Unless a use case demonstrates this need, I would not
+complicate too much the usage of TAP by making async and sync that
+much different.
+
+
+> Also, the starting point of the discussion was whether services
+> should be allowed to say: "Please prefer async on this service" or
+> so.  That's not yet part of this proposal, mainly because Mark was
+> not convinced that's a useful thing to have.  Does anyone disagree?
+
+
+I join Mark's point of view here by being not convinced about this 
+possibility.
+
+The way to access and interact with each mode/endpoint is clearly
+different. For me, it should be a choice of the user depending on the
+needs and preference. Also, this choice could generally be hidden by the
+used TAP client (if one is used which is not always the case). One may
+prefer to run all queries using the async mode by default, as it allows
+longer execution times and some kind of history (thanks to the jobs list).
+On the other hand, the sync mode is interesting for a simple usage
+(through cURL or so) or to query very quickly a database through a Web
+page.
+
+Depending on whether you are on server or client side, the preferred mode
+does not have the same meaning. The server will generally have
+performance or resource reason to prefer one mode or another. A client
+may prefer to use only one mode for simplicity (only one mode to
+technically support) or another mode because it would allow more features.
+And a user, depending on how he/she needs to query the service may
+prefer a mode instead on the other ; and it might change from one day to
+another in function of the data to get or anything else. For all these
+reasons, I am not in favor of encouraging a particular mode.
+
+Here is my point of view (for the moment).
+
+Cheers,
+Gr?gory
+
+
+> And then there is the question whether the modes should be enumerated
+> in the schema (and thus are more or less fixed) or whether more or
+> other modes are conceivable (or useful).
+>
+> Well: Any contributions are welcome.
+>
+> Thanks,
+>
+>            Markus
+>
+
+
+From m.b.taylor at bristol.ac.uk  Mon Sep 15 15:41:03 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Mon, 15 Sep 2025 14:41:03 +0100 (BST)
+Subject: TAP 1.0/1.1 inconsistency: error document format
+Message-ID: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+
+Hi DAL.
+
+Following a taplint query by Stelios, I've just noticed the following
+inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+UWS error documents resulting from failed async TAP queries:
+
+   TAP 1.0 Sec 2.7.3:
+      "Error documents for TAP errors must be VOTable documents;
+       any result-format specified in the request is ignored."
+
+   TAP 1.1 Sec 3.3:
+      "Error documents should be in a format that matches the requested
+      format where possible; see DALI for details."
+
+   DALI 1.1 Sec 4.2:
+      "An error document describing errors in use of the DAL service
+       protocol may be a VOTable document (...) or a plain text document."
+
+For an expected VOTable result, this is effectively a downgrade of a
+MUST to a SHOULD for VOTable as the format of the error document.
+
+So a TAP 1.0 client will expect a VOTable error document from a failed
+async TAP query, but may get tripped up by receiving instead a plain 
+text error document.  This change is not explicitly noted in
+Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+though A.1 says, somewhat misleadingly, "Removed text that duplicates
+material from DALI.".
+
+This looks to me like an oversight since it is (from the client's 
+point of view) a backwardly incompatible behaviour change from TAP 1.0
+to TAP 1.1.
+
+Has anybody come across this before, or remember whether it was
+deliberate?
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From pdowler.cadc at gmail.com  Mon Sep 15 22:31:35 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Mon, 15 Sep 2025 13:31:35 -0700
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+Message-ID: <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+
+iirc, it was deliberate to change from "must be VOTable" to be able to
+play nice with other formats, so it probably should have been as close
+to "must be in the requested format" as possible. But of course, not
+all tabular output formats can carry error messages, so it gets kind
+of tricky in the details.
+
+The spirit is still definitely that if the client expects a VOTable
+response they get that for both success and error, but the DALI quote
+shown is much too vague... I think that is where the
+clarification/detail is needed.
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+>
+> Hi DAL.
+>
+> Following a taplint query by Stelios, I've just noticed the following
+> inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> UWS error documents resulting from failed async TAP queries:
+>
+>    TAP 1.0 Sec 2.7.3:
+>       "Error documents for TAP errors must be VOTable documents;
+>        any result-format specified in the request is ignored."
+>
+>    TAP 1.1 Sec 3.3:
+>       "Error documents should be in a format that matches the requested
+>       format where possible; see DALI for details."
+>
+>    DALI 1.1 Sec 4.2:
+>       "An error document describing errors in use of the DAL service
+>        protocol may be a VOTable document (...) or a plain text document."
+>
+> For an expected VOTable result, this is effectively a downgrade of a
+> MUST to a SHOULD for VOTable as the format of the error document.
+>
+> So a TAP 1.0 client will expect a VOTable error document from a failed
+> async TAP query, but may get tripped up by receiving instead a plain
+> text error document.  This change is not explicitly noted in
+> Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> material from DALI.".
+>
+> This looks to me like an oversight since it is (from the client's
+> point of view) a backwardly incompatible behaviour change from TAP 1.0
+> to TAP 1.1.
+>
+> Has anybody come across this before, or remember whether it was
+> deliberate?
+>
+> Mark
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From m.b.taylor at bristol.ac.uk  Wed Sep 17 11:51:31 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Wed, 17 Sep 2025 10:51:31 +0100 (BST)
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+Message-ID: <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+
+It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does 
+seem to allow a plain text error document, which is what Rubin are
+currently doing, though I haven't encountered it in other services.  
+
+So I think that means that clients and validators have to be prepared
+for that (topcat and taplint currently are not; I don't know about
+other TAP clients).
+
+Unless we consider this Erratum fodder?
+
+On Mon, 15 Sep 2025, Patrick Dowler wrote:
+
+> iirc, it was deliberate to change from "must be VOTable" to be able to
+> play nice with other formats, so it probably should have been as close
+> to "must be in the requested format" as possible. But of course, not
+> all tabular output formats can carry error messages, so it gets kind
+> of tricky in the details.
+> 
+> The spirit is still definitely that if the client expects a VOTable
+> response they get that for both success and error, but the DALI quote
+> shown is much too vague... I think that is where the
+> clarification/detail is needed.
+> 
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+> 
+> On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+> >
+> > Hi DAL.
+> >
+> > Following a taplint query by Stelios, I've just noticed the following
+> > inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> > UWS error documents resulting from failed async TAP queries:
+> >
+> >    TAP 1.0 Sec 2.7.3:
+> >       "Error documents for TAP errors must be VOTable documents;
+> >        any result-format specified in the request is ignored."
+> >
+> >    TAP 1.1 Sec 3.3:
+> >       "Error documents should be in a format that matches the requested
+> >       format where possible; see DALI for details."
+> >
+> >    DALI 1.1 Sec 4.2:
+> >       "An error document describing errors in use of the DAL service
+> >        protocol may be a VOTable document (...) or a plain text document."
+> >
+> > For an expected VOTable result, this is effectively a downgrade of a
+> > MUST to a SHOULD for VOTable as the format of the error document.
+> >
+> > So a TAP 1.0 client will expect a VOTable error document from a failed
+> > async TAP query, but may get tripped up by receiving instead a plain
+> > text error document.  This change is not explicitly noted in
+> > Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> > though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> > material from DALI.".
+> >
+> > This looks to me like an oversight since it is (from the client's
+> > point of view) a backwardly incompatible behaviour change from TAP 1.0
+> > to TAP 1.1.
+> >
+> > Has anybody come across this before, or remember whether it was
+> > deliberate?
+> >
+> > Mark
+> >
+> > --
+> > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Wed Sep 17 12:36:52 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 17 Sep 2025 12:36:52 +0200
+Subject: SCS2
+Message-ID: <20250917103652.q4574rvo5icbrvls@victor>
+
+Dear DAL folks,
+
+I have procrastinated my College Park homework for a bit too long
+already, but now I just have to carve out some time for it: Cone
+Search 2.
+
+The main purpose of this will be to test strategies for major version
+transitions, but it is also a nice opportunity to explore how to
+opimally re-use what we already have in DALI, and of course SCS2
+itself should be (slight) progress over SCS1, too.
+
+I have just pushed a first commit drafting out the protocol itself,
+remaining as close to SCS1 (in concept) as possible (but not actually
+re-using significant amounts of texts):
+<https://github.com/msdemlei/scs2>.
+
+I am planning to write, over the next few weeks, sections on:
+
+* Registry aspects (stressing the importance of tablesets, also
+  mentioning the possibility of having auxiliary SCS capabilities)
+* Appendix A: Non-normative recommendations for clients
+* Appendix B: A transition plan
+
+Until that's done, I plan to not move this into ivoa-std und directly
+commit to main.  You'd be welcome to do the same; let me know and
+I'll add you as a collaborator.
+
+Once the basic text is there, I will of course move to ivoa-std and
+follow its rules.
+
+Still, even at this stage, collaborators and reviewers are most
+welcome.
+
+Thanks,
+
+          Markus
+
+
+From pdowler.cadc at gmail.com  Wed Sep 17 17:01:12 2025
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Wed, 17 Sep 2025 08:01:12 -0700
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+Message-ID: <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+
+At this point it has been written/advertised that way for years, so we
+should consider whether it is something to fix or just something to
+accept and adapt to... I know it is not always possible to adhere to
+the strict "error must be VOTable" because some errors happen before
+handling the request gets anywhere near the code that can feasibly
+write a VOTable.
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+>
+> It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+> seem to allow a plain text error document, which is what Rubin are
+> currently doing, though I haven't encountered it in other services.
+>
+> So I think that means that clients and validators have to be prepared
+> for that (topcat and taplint currently are not; I don't know about
+> other TAP clients).
+>
+> Unless we consider this Erratum fodder?
+>
+> On Mon, 15 Sep 2025, Patrick Dowler wrote:
+>
+> > iirc, it was deliberate to change from "must be VOTable" to be able to
+> > play nice with other formats, so it probably should have been as close
+> > to "must be in the requested format" as possible. But of course, not
+> > all tabular output formats can carry error messages, so it gets kind
+> > of tricky in the details.
+> >
+> > The spirit is still definitely that if the client expects a VOTable
+> > response they get that for both success and error, but the DALI quote
+> > shown is much too vague... I think that is where the
+> > clarification/detail is needed.
+> >
+> > --
+> > Patrick Dowler
+> > Canadian Astronomy Data Centre
+> > Victoria, BC, Canada
+> >
+> > On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+> > >
+> > > Hi DAL.
+> > >
+> > > Following a taplint query by Stelios, I've just noticed the following
+> > > inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> > > UWS error documents resulting from failed async TAP queries:
+> > >
+> > >    TAP 1.0 Sec 2.7.3:
+> > >       "Error documents for TAP errors must be VOTable documents;
+> > >        any result-format specified in the request is ignored."
+> > >
+> > >    TAP 1.1 Sec 3.3:
+> > >       "Error documents should be in a format that matches the requested
+> > >       format where possible; see DALI for details."
+> > >
+> > >    DALI 1.1 Sec 4.2:
+> > >       "An error document describing errors in use of the DAL service
+> > >        protocol may be a VOTable document (...) or a plain text document."
+> > >
+> > > For an expected VOTable result, this is effectively a downgrade of a
+> > > MUST to a SHOULD for VOTable as the format of the error document.
+> > >
+> > > So a TAP 1.0 client will expect a VOTable error document from a failed
+> > > async TAP query, but may get tripped up by receiving instead a plain
+> > > text error document.  This change is not explicitly noted in
+> > > Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> > > though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> > > material from DALI.".
+> > >
+> > > This looks to me like an oversight since it is (from the client's
+> > > point of view) a backwardly incompatible behaviour change from TAP 1.0
+> > > to TAP 1.1.
+> > >
+> > > Has anybody come across this before, or remember whether it was
+> > > deliberate?
+> > >
+> > > Mark
+> > >
+> > > --
+> > > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> >
+>
+> --
+> Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From m.b.taylor at bristol.ac.uk  Wed Sep 17 18:12:54 2025
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Wed, 17 Sep 2025 17:12:54 +0100 (BST)
+Subject: TAP 1.0/1.1 inconsistency: error document format
+In-Reply-To: <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+References: <e9de3060-4091-9c46-e199-3853399418b@andromeda.star.bris.ac.uk>
+ <CAFK8nrpBeTSRgpdbq4=EURkq1aL=x+wjmB6cZCW08rgOiM6adQ@mail.gmail.com>
+ <a6ab6ed7-2f54-a3ca-8db2-edc358d05acc@andromeda.star.bris.ac.uk>
+ <CAFK8nrro840x=wPcRzZeVeV2yJwiFDGedSf=y-cBH70i4qtJbg@mail.gmail.com>
+Message-ID: <3852fd55-7988-819-dabe-ce67e39b1ad0@andromeda.star.bris.ac.uk>
+
+The impossible-to-provide-VOTable point doesn't apply in this context.
+TAP 1.1 sec 3.3 does talk about errors in the use of the HTTP protocol,
+which would lead to non-VOTable error responses, but the case I'm
+talking about here is an error document retrieved from the UWS
+error document endpoint /async/<jobid>/error:
+
+  "Error documents should be in a format that matches the requested format
+   where possible; see DALI for details. If the error document is being
+   retrieved from the /async/<jobid>/error resource (specified by UWS)
+   after an asynchronous query, the HTTP status code should be 200."
+
+So where a VOTable result is implicitly or explicitly requested
+it is possible to supply a VOTable response; the TAP 1.0->1.1
+inconsistency is the "should" which used to be a "must".
+
+
+On Wed, 17 Sep 2025, Patrick Dowler wrote:
+
+> At this point it has been written/advertised that way for years, so we
+> should consider whether it is something to fix or just something to
+> accept and adapt to... I know it is not always possible to adhere to
+> the strict "error must be VOTable" because some errors happen before
+> handling the request gets anywhere near the code that can feasibly
+> write a VOTable.
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+> 
+> On Wed, 17 Sept 2025 at 02:51, Mark Taylor <m.b.taylor at bristol.ac.uk> wrote:
+> >
+> > It might be the spirit, but between TAP 1.1 and DALI 1.1 the text does
+> > seem to allow a plain text error document, which is what Rubin are
+> > currently doing, though I haven't encountered it in other services.
+> >
+> > So I think that means that clients and validators have to be prepared
+> > for that (topcat and taplint currently are not; I don't know about
+> > other TAP clients).
+> >
+> > Unless we consider this Erratum fodder?
+> >
+> > On Mon, 15 Sep 2025, Patrick Dowler wrote:
+> >
+> > > iirc, it was deliberate to change from "must be VOTable" to be able to
+> > > play nice with other formats, so it probably should have been as close
+> > > to "must be in the requested format" as possible. But of course, not
+> > > all tabular output formats can carry error messages, so it gets kind
+> > > of tricky in the details.
+> > >
+> > > The spirit is still definitely that if the client expects a VOTable
+> > > response they get that for both success and error, but the DALI quote
+> > > shown is much too vague... I think that is where the
+> > > clarification/detail is needed.
+> > >
+> > > --
+> > > Patrick Dowler
+> > > Canadian Astronomy Data Centre
+> > > Victoria, BC, Canada
+> > >
+> > > On Mon, 15 Sept 2025 at 06:41, Mark Taylor via dal <dal at ivoa.net> wrote:
+> > > >
+> > > > Hi DAL.
+> > > >
+> > > > Following a taplint query by Stelios, I've just noticed the following
+> > > > inconsistency between TAP 1.0 and TAP 1.1 as regards the format of
+> > > > UWS error documents resulting from failed async TAP queries:
+> > > >
+> > > >    TAP 1.0 Sec 2.7.3:
+> > > >       "Error documents for TAP errors must be VOTable documents;
+> > > >        any result-format specified in the request is ignored."
+> > > >
+> > > >    TAP 1.1 Sec 3.3:
+> > > >       "Error documents should be in a format that matches the requested
+> > > >       format where possible; see DALI for details."
+> > > >
+> > > >    DALI 1.1 Sec 4.2:
+> > > >       "An error document describing errors in use of the DAL service
+> > > >        protocol may be a VOTable document (...) or a plain text document."
+> > > >
+> > > > For an expected VOTable result, this is effectively a downgrade of a
+> > > > MUST to a SHOULD for VOTable as the format of the error document.
+> > > >
+> > > > So a TAP 1.0 client will expect a VOTable error document from a failed
+> > > > async TAP query, but may get tripped up by receiving instead a plain
+> > > > text error document.  This change is not explicitly noted in
+> > > > Appendix A of TAP 1.1 "Changes from TAP-1.0 to TAP-1.1",
+> > > > though A.1 says, somewhat misleadingly, "Removed text that duplicates
+> > > > material from DALI.".
+> > > >
+> > > > This looks to me like an oversight since it is (from the client's
+> > > > point of view) a backwardly incompatible behaviour change from TAP 1.0
+> > > > to TAP 1.1.
+> > > >
+> > > > Has anybody come across this before, or remember whether it was
+> > > > deliberate?
+> > > >
+> > > > Mark
+> > > >
+> > > > --
+> > > > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > > > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> > >
+> >
+> > --
+> > Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+> > m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From gilles.landais at astro.unistra.fr  Thu Sep 18 11:13:34 2025
+From: gilles.landais at astro.unistra.fr (gilles landais)
+Date: Thu, 18 Sep 2025 11:13:34 +0200
+Subject: SCS2
+In-Reply-To: <20250917103652.q4574rvo5icbrvls@victor>
+References: <20250917103652.q4574rvo5icbrvls@victor>
+Message-ID: <34d9522d-3d76-46c2-96bc-30c0a3e0f4f8@astro.unistra.fr>
+
+Hi all,
+
+Thank you Markus for this initiative! I agree with DALI and Registry 
+topics (and with P3T interface too).
+I submit some of my first feedbacks.
+
+
+Complying SCS with DALI is natural, but I think, we should also adapt 
+(or focus) with the Simple and position Search Contexts.
+
+First because implementing capabilities such as UPLOAD and asynchronous 
+queries may become complex. Complex for users and complex for implementers.
+
+For instance the Upload is a nice feature with possible optimization in 
+case of multiples queries.
+In an other hand, UPLOAD impacts the server architecture. It's an option 
+in DALI : do we have to encourage this option ?
+
+I am skeptical about using the asynchronous query for SCS. Indeed, 
+cannot we expect for this kind of requests to be executed fast? Is async 
+mandatory in DALI?
+
+I would like also to ask for a bit of provenance in the output as 
+specified in the DataOrigin Note. This feature is not currently in DALI 
+- may be it should ?
+
+Finally, position search is sometimes frustrating because the epoch. I 
+suggest to find a way to provide the epoch (when applicable) of the 
+datasets in output but also in the capabilities metadata (for instance 
+in /tables).
+
+use case: get a position from outside (for instance 2MASS in J2000) and 
+then reuse position for gaia (in 2015.5). The information allows the 
+user to make the change of coordinate system.
+
+
+Regards,
+
+Gilles Landais (CDS)
+
+
+Le 17/09/2025 ? 12:36, Markus Demleitner via dal a ?crit?:
+> Dear DAL folks,
+>
+> I have procrastinated my College Park homework for a bit too long
+> already, but now I just have to carve out some time for it: Cone
+> Search 2.
+>
+> The main purpose of this will be to test strategies for major version
+> transitions, but it is also a nice opportunity to explore how to
+> opimally re-use what we already have in DALI, and of course SCS2
+> itself should be (slight) progress over SCS1, too.
+>
+> I have just pushed a first commit drafting out the protocol itself,
+> remaining as close to SCS1 (in concept) as possible (but not actually
+> re-using significant amounts of texts):
+> <https://github.com/msdemlei/scs2>.
+>
+> I am planning to write, over the next few weeks, sections on:
+>
+> * Registry aspects (stressing the importance of tablesets, also
+>    mentioning the possibility of having auxiliary SCS capabilities)
+> * Appendix A: Non-normative recommendations for clients
+> * Appendix B: A transition plan
+>
+> Until that's done, I plan to not move this into ivoa-std und directly
+> commit to main.  You'd be welcome to do the same; let me know and
+> I'll add you as a collaborator.
+>
+> Once the basic text is there, I will of course move to ivoa-std and
+> follow its rules.
+>
+> Still, even at this stage, collaborators and reviewers are most
+> welcome.
+>
+> Thanks,
+>
+>            Markus
+>
+
+From marco.molinaro at inaf.it  Thu Sep 18 11:49:30 2025
+From: marco.molinaro at inaf.it (Molinaro, Marco)
+Date: Thu, 18 Sep 2025 11:49:30 +0200
+Subject: SCS2
+In-Reply-To: <20250917103652.q4574rvo5icbrvls@victor>
+References: <20250917103652.q4574rvo5icbrvls@victor>
+Message-ID: <CAFtRUxK77O2re7eCeJoRjc_OrWMwtT3sg8c0Ntidh4YtCwePTw@mail.gmail.com>
+
+Hi Markus,
+
+I'm lost (in a glass of water, citing italian
+metrics on getting lost) into a
+
+! LaTeX Error: Environment longdescription undefined
+
+I cannot find what latex package or definition my box
+is missing to go further in the make...
+
+Do you have any hint?
+
+Thanks in advance
+Cheers
+    Marco
+
+Il giorno mer 17 set 2025 alle ore 14:55 Markus Demleitner via dal <
+dal at ivoa.net> ha scritto:
+
+> Dear DAL folks,
+>
+> I have procrastinated my College Park homework for a bit too long
+> already, but now I just have to carve out some time for it: Cone
+> Search 2.
+>
+> The main purpose of this will be to test strategies for major version
+> transitions, but it is also a nice opportunity to explore how to
+> opimally re-use what we already have in DALI, and of course SCS2
+> itself should be (slight) progress over SCS1, too.
+>
+> I have just pushed a first commit drafting out the protocol itself,
+> remaining as close to SCS1 (in concept) as possible (but not actually
+> re-using significant amounts of texts):
+> <https://github.com/msdemlei/scs2>.
+>
+> I am planning to write, over the next few weeks, sections on:
+>
+> * Registry aspects (stressing the importance of tablesets, also
+>   mentioning the possibility of having auxiliary SCS capabilities)
+> * Appendix A: Non-normative recommendations for clients
+> * Appendix B: A transition plan
+>
+> Until that's done, I plan to not move this into ivoa-std und directly
+> commit to main.  You'd be welcome to do the same; let me know and
+> I'll add you as a collaborator.
+>
+> Once the basic text is there, I will of course move to ivoa-std and
+> follow its rules.
+>
+> Still, even at this stage, collaborators and reviewers are most
+> welcome.
+>
+> Thanks,
+>
+>           Markus
+>
+>
+
+-- 
+Marco Molinaro
+INAF - Istituto Nazionale di AstroFisica
+Osservatorio Astronomico di Trieste
+email marco.molinaro at inaf.it
+tel. [+39] 333 33 20 564 [also Telegram]
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250918/3bb91296/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Thu Sep 18 12:30:53 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 18 Sep 2025 12:30:53 +0200
+Subject: SCS2
+In-Reply-To: <34d9522d-3d76-46c2-96bc-30c0a3e0f4f8@astro.unistra.fr>
+References: <20250917103652.q4574rvo5icbrvls@victor>
+ <34d9522d-3d76-46c2-96bc-30c0a3e0f4f8@astro.unistra.fr>
+Message-ID: <20250918103053.srarcowe4urbdfpe@victor>
+
+Dear Gilles,
+
+On Thu, Sep 18, 2025 at 11:13:34AM +0200, gilles landais via dal wrote:
+> First because implementing capabilities such as UPLOAD and asynchronous
+> queries may become complex. Complex for users and complex for implementers.
+>
+> For instance the Upload is a nice feature with possible optimization in case
+> of multiples queries.
+> In an other hand, UPLOAD impacts the server architecture. It's an option in
+> DALI : do we have to encourage this option ?
+
+No.  I'm happy to purge it again if there are no champions arguing
+for it.  I don't like optional features anyway, and certainly UPLOAD
+as proposed is too complex to *require* it in *S*CS.
+
+I put it in to illustrate what I think is sane way to support
+multicone searches.  I don't think we have an overriding use case for
+these, but it would certainly be a nice touch if we had them in SCS.
+On the other hand, TAP provides a very natural way to do multicones,
+and so it's not as if SCS2 *had* to offer them to enable that feature
+in general.
+
+> I am skeptical about using the asynchronous query for SCS. Indeed, cannot we
+> expect for this kind of requests to be executed fast? Is async mandatory in
+> DALI?
+
+It's not, and we should very definitely not require (or even
+encourage) async in *S*CS.  If you need async, you probably need TAP as
+well.
+
+> I would like also to ask for a bit of provenance in the output as specified
+> in the DataOrigin Note. This feature is not currently in DALI - may be it
+> should ?
+
+I will require a few things that are optional in more general
+standards later, in particular tableset and input parameters in the
+interface declaration for the Registry.  So, I'd say we *can* require
+things that are in some sense "optional" somewhere else.
+
+But then data origin doesn't have many must-s to begin with, and thus
+takeup would probably just mean "encouraging" some of the INFOs.  We
+could do that even when data origin is just a note, I think.  Then
+again, DALI would probably be the more natural place to have
+normative text distilled from data origin.
+
+> Finally, position search is sometimes frustrating because the epoch. I
+> suggest to find a way to provide the epoch (when applicable) of the datasets
+> in output but also in the capabilities metadata (for instance in /tables).
+
+Ok, that's fair, I think.  I'd like to see a use case amended to
+motivate that, though.  It's obvious that on output, you want COOSYS
+(or, sigh, something better) with epoch (and the current draft tries
+to require it when applicable).
+
+At discovery time it's harder to motivate that, because you can't
+normally epoch-propagate your cone (unless it happens to be "vicinity
+of <star>").  But you *can* expand the cone based on the epoch
+difference, so that may be the use case to derive that requirement
+from.
+
+What I think we should not do is offer epoch propagation on the
+server side.  That's not "simple" any more and could be fairly
+time-consuming when you SCS2-query tables with millions or billions
+of sources (and you'd have to explain what should happen for
+catalogues without PMs).
+
+> use case: get a position from outside (for instance 2MASS in J2000) and then
+> reuse position for gaia (in 2015.5). The information allows the user to make
+> the change of coordinate system.
+
+Hm... not trivially, I think, in particular because 2MASS doesn't
+have proper motions.  My suspicion is that in most cases it's really
+just the "errors" (or search radii) that you can use to react to
+known epoch differences.
+
+Thanks,
+
+            Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Fri Sep 19 17:52:48 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Fri, 19 Sep 2025 17:52:48 +0200
+Subject: SCS2
+In-Reply-To: <20250917103652.q4574rvo5icbrvls@victor>
+References: <20250917103652.q4574rvo5icbrvls@victor>
+Message-ID: <20250919155248.lx2yvipn757dfi7n@victor>
+
+Dear DAL, dear Registry,
+
+On Wed, Sep 17, 2025 at 12:36:52PM +0200, Markus Demleitner wrote:
+> I have procrastinated my College Park homework for a bit too long
+> already, but now I just have to carve out some time for it: Cone
+> Search 2.
+>
+[...]
+>
+> I have just pushed a first commit drafting out the protocol itself,
+> remaining as close to SCS1 (in concept) as possible (but not actually
+> re-using significant amounts of texts):
+> <https://github.com/msdemlei/scs2>.
+>
+> I am planning to write, over the next few weeks, sections on:
+>
+> * Registry aspects (stressing the importance of tablesets, also
+>   mentioning the possibility of having auxiliary SCS capabilities)
+> * Appendix A: Non-normative recommendations for clients
+> * Appendix B: A transition plan
+
+I've actually put in drafts for these now.  If you have an interest
+in the Registry aspects or the transition plan (that in particular;
+spoiler: the optimistic scenario is for shutting down ConeSearch-1 in
+the summer of 2031), I'd encourage you to have a look now.  If there
+are rather fundamental concerns, I'd do another round of edits in my
+private repo.  Otherwise, I'd ask Pat to move it to ivoa-std next
+week and we'd switch to edits via PRs.
+
+Thanks,
+
+         Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Wed Sep 24 11:23:32 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 24 Sep 2025 11:23:32 +0200
+Subject: Call for contributions to DAL WG session at November 2025 Interop
+Message-ID: <4c7eafb4-883e-434a-aad4-b1d42c5a17ea@astro.unistra.fr>
+
+Dear DAL members,
+
+The November IVOA Interoperability Meeting 
+<https://indico.ict.inaf.it/event/3325/>will take place in G?rlitz (in
+Germany) from the 14th to the 16th of November 2025 (2.5 days).
+Remote attendance is accepted.
+
+As a reminder, if you want to participate to this meeting, do not forget to
+register on the meeting website 
+<https://indico.ict.inaf.it/event/3325/registrations/1489/>(even you 
+plan to attend remotely), ideally
+by the 30th of September.
+
+With this email, Joshua and I invite you to contribute to DAL sessions 
+with a
+DAL related topic.
+
+    /DAL stands for Data Access Layer.
+
+    This Working Group aims to define standards and protocols to access data
+    in an interoperable way.
+
+    Here are few examples of well-known DAL standards: (Simple) Cone Search,
+    SIA (image access), SSA (spectra access), TAP (Table Access
+    Protocol) and
+    ADQL (SQL-like language to query a database).
+
+    The full list of DAL standards is available on the IVOA Documents
+    page <https://www.ivoa.net/documents/>./
+
+
+During this interop., you can contribute, remotely or in-person, with a talk
+presenting implementations, sharing your experience as user, presenting and
+discussing progress on a DAL standards, or presenting use-cases.
+
+If you are interested, please send your contribution to
+gregory.mantelet at astro.unistra.fr 
+<mailto:gregory.mantelet at astro.unistra.fr>and jfraustro at stsci.edu 
+<mailto:jfraustro at stsci.edu>with:
+
+  * a speaker name,
+  * a title,
+  * ideally an abstract.
+
+If you are unsure about the suitability of a talk, or are a first time 
+contributor,
+please get in contact with us.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250924/9a4a061a/attachment.htm>
+
+From SVoutsinas at lsst.org  Wed Sep 24 20:03:24 2025
+From: SVoutsinas at lsst.org (Stelios Voutsinas)
+Date: Wed, 24 Sep 2025 18:03:24 +0000
+Subject: TAPRegExt PR: per-mode limits
+In-Reply-To: <cadb36e9-5f39-42c5-a598-5c90ae63aeb3@astro.unistra.fr>
+References: <20250915080820.uyxd5j2be4bbnzyh@victor>,
+ <cadb36e9-5f39-42c5-a598-5c90ae63aeb3@astro.unistra.fr>
+Message-ID: <e3c44acc57c94671bccb0dce7f7eb205@lsst.org>
+
+Dear Markus, Gregory, DAL & Apps,
+
+
+Firstly thank you for the much welcomed work on adding limits to TAPRegExt.
+
+Regarding your question on allowing services to specify a preferred execution mode, I'm on the side (may be a lonely side!) of believe this would be a useful addition.
+
+The primary benefit I see is improved user experience through better client/service interaction for services which are genuinely optimized for async execution (e.g. result size limits, execution durations).
+
+Currently many tools (Topcat, pyvo, etc.) default to sync mode, so for users of async-optimized services this can potentially add a bit of friction to their experience.
+It is true that users can override these defaults,  but how this is done isn't always obvious and some users may not be aware of sync & async.
+
+This can lead to confusion when queries fail due to sync limitations, or require additional manual steps each time they interact with the service.  Even experienced users who understand the modes need to remember to specify their preference repeatedly.
+
+A <preferredMode> element would address this by allowing services to communicate their optimization to clients. The preference as I see it would be advisory rather than prescriptive so clients could choose to honor the preference, ignore it entirely or make it configurable.
+The preference wouldn't override explicit user choices but would be used just to inform default behavior (e.g., what search() does in pyvo).
+
+That said, I don't view this as critical functionality, as services can already guide users toward appropriate execution modes through documentation or error messages.
+But I do think that having this capability would be a plus and improve the out-of-the-box experience for users interacting with services that have clear mode preferences based on their operational characteristics.
+
+
+Cheers,
+
+Stelios
+
+
+________________________________
+From: dal <dal-bounces at ivoa.net> on behalf of Gregory MANTELET via dal <dal at ivoa.net>
+Sent: Monday, September 15, 2025 2:03:02 AM
+To: dal at ivoa.net; apps at ivoa.net
+Subject: Re: TAPRegExt PR: per-mode limits
+
+Dear Markus, DAL and Apps,
+
+
+On 15/09/2025 10:08, Markus Demleitner via dal wrote:
+> Dear DAL, dear Apps,
+>
+> In pyVO bug #685 <https://github.com/astropy/pyvo/issues/685>, we
+> figured it's finally time to be a bit less cavalier about the limits
+> that TAP services report to their clients (e.g., how long can you
+> take?  How large can your uploads be? etc).
+>
+> In TAPRegExt PR #8, <https://github.com/ivoa-std/TAPRegExt/pull/8>, I
+> am proposing such a mechanism.  I'd be grateful for a review, both
+> technically and content-wise.
+>
+> As to the latter, I am now convinced that the per-mode limits are
+> necessary.  But one might speculate whether we should allow even more
+> per-mode variation: Should we allow UDFs to only become available in
+> certain modes?  Or perhaps upload formats?  My current take is: no.
+> But if these were use cases, perhaps we need a different
+> architecture.
+
+
+I'd say no too. Unless a use case demonstrates this need, I would not
+complicate too much the usage of TAP by making async and sync that
+much different.
+
+
+> Also, the starting point of the discussion was whether services
+> should be allowed to say: "Please prefer async on this service" or
+> so.  That's not yet part of this proposal, mainly because Mark was
+> not convinced that's a useful thing to have.  Does anyone disagree?
+
+
+I join Mark's point of view here by being not convinced about this
+possibility.
+
+The way to access and interact with each mode/endpoint is clearly
+different. For me, it should be a choice of the user depending on the
+needs and preference. Also, this choice could generally be hidden by the
+used TAP client (if one is used which is not always the case). One may
+prefer to run all queries using the async mode by default, as it allows
+longer execution times and some kind of history (thanks to the jobs list).
+On the other hand, the sync mode is interesting for a simple usage
+(through cURL or so) or to query very quickly a database through a Web
+page.
+
+Depending on whether you are on server or client side, the preferred mode
+does not have the same meaning. The server will generally have
+performance or resource reason to prefer one mode or another. A client
+may prefer to use only one mode for simplicity (only one mode to
+technically support) or another mode because it would allow more features.
+And a user, depending on how he/she needs to query the service may
+prefer a mode instead on the other ; and it might change from one day to
+another in function of the data to get or anything else. For all these
+reasons, I am not in favor of encouraging a particular mode.
+
+Here is my point of view (for the moment).
+
+Cheers,
+Gr?gory
+
+
+> And then there is the question whether the modes should be enumerated
+> in the schema (and thus are more or less fixed) or whether more or
+> other modes are conceivable (or useful).
+>
+> Well: Any contributions are welcome.
+>
+> Thanks,
+>
+>            Markus
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250924/981485f1/attachment.htm>
+
+From gregory.mantelet at astro.unistra.fr  Thu Sep 25 09:46:15 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 25 Sep 2025 09:46:15 +0200
+Subject: TAPRegExt PR: per-mode limits
+In-Reply-To: <e3c44acc57c94671bccb0dce7f7eb205@lsst.org>
+References: <20250915080820.uyxd5j2be4bbnzyh@victor>
+ <cadb36e9-5f39-42c5-a598-5c90ae63aeb3@astro.unistra.fr>
+ <e3c44acc57c94671bccb0dce7f7eb205@lsst.org>
+Message-ID: <ffdb4704-af19-43da-9612-777c5ba1e2fb@astro.unistra.fr>
+
+Dear Stelios,
+
+I perfectly understand your point of view. As an individual user, either you
+prefer to use one specific mode (for whatever reason) or you know that for
+a specific service it is more efficient to directly run a synchronous query.
+
+ From my point of view, being both user and provider, my preference changes
+in function of the query I have to run. Because, as you say, I am aware of
+the different execution modes. And this, is my personal way to use the 
+service
+as your personal way is to use the async mode by default. Then, I assume
+that other users have a different way to use a TAP service. For 
+instance, some
+may just start with a sync execution, and then go for an async one if 
+the query
+execution times out too quickly. Others would prefer to use the async mode
+combined with authentication to keep some kind of history of their queries.
+Some others would prefer the sync mode to get immediately the result
+without going through all the UWS madness ; especially if you run your query
+from command line.
+
+In brief, there are many use cases and I don't think that forcing a default
+execution mode for all users of a given TAP service is a good solution 
+to your
+problem.
+
+Actually, I keep thinking that the issue is on the client side. Clients are
+choosing by default the sync mode, but no standard says that sync should be
+the default one. From my point of view, the best solution would be that
+clients let users choose their preferred execution mode, either for all 
+services
+or individually for each one. I am quite sure that can be done 
+relatively quickly
+on the most used clients (e.g. TOPCAT, PyVO), but I let clients developers
+gives their feeling about this, especially if I am wrong.
+
+Cheers,
+Gr?gory
+
+
+On 24/09/2025 20:03, Stelios Voutsinas via dal wrote:
+> Dear Markus, Gregory, DAL & Apps,
+>
+>
+> Firstly thank you for the much welcomed work on adding limits to 
+> TAPRegExt.
+>
+> Regarding your question on allowing services to specify a preferred 
+> execution mode, I'm on the side (may be a lonely side!) of believe 
+> this would be a useful addition.
+>
+> The primary benefit I see is improved user experience through better 
+> client/service interaction for services which are genuinely optimized 
+> for async execution (e.g.?result size limits, execution durations).
+>
+> Currently many tools (Topcat, pyvo, etc.) default to sync mode, so for 
+> users of async-optimized services this can potentially add a bit of 
+> friction to their experience.
+> It is true that users can override these defaults,? but how this is 
+> done isn't always obvious and some users may not be aware of?sync & 
+> async.
+>
+> This can lead to confusion when queries fail due to sync limitations, 
+> or require additional manual steps each time they interact with the 
+> service.? Even experienced users who understand the modes need to 
+> remember to specify their preference repeatedly.
+>
+> A <preferredMode> element would address this by allowing services to 
+> communicate their optimization to clients. The preference as I see it 
+> would be advisory rather than prescriptive so clients could choose to 
+> honor the preference, ignore it entirely or make it configurable.
+> The preference wouldn't override explicit user choices but would be 
+> used just to inform default behavior (e.g., what search() does in pyvo).
+>
+> That said, I don't view this as critical functionality, as services 
+> can already guide users toward appropriate execution modes through 
+> documentation or error messages.
+> But I do think that having this capability would be a plus?and improve 
+> the out-of-the-box experience for users interacting with services that 
+> have clear mode preferences based on their operational characteristics.
+>
+>
+> Cheers,
+>
+> Stelios
+>
+> ------------------------------------------------------------------------
+> *From:* dal <dal-bounces at ivoa.net> on behalf of Gregory MANTELET via 
+> dal <dal at ivoa.net>
+> *Sent:* Monday, September 15, 2025 2:03:02 AM
+> *To:* dal at ivoa.net; apps at ivoa.net
+> *Subject:* Re: TAPRegExt PR: per-mode limits
+> Dear Markus, DAL and Apps,
+>
+>
+> On 15/09/2025 10:08, Markus Demleitner via dal wrote:
+> > Dear DAL, dear Apps,
+> >
+> > In pyVO bug #685 <https://github.com/astropy/pyvo/issues/685>, we
+> > figured it's finally time to be a bit less cavalier about the limits
+> > that TAP services report to their clients (e.g., how long can you
+> > take?? How large can your uploads be? etc).
+> >
+> > In TAPRegExt PR #8, <https://github.com/ivoa-std/TAPRegExt/pull/8>, I
+> > am proposing such a mechanism.? I'd be grateful for a review, both
+> > technically and content-wise.
+> >
+> > As to the latter, I am now convinced that the per-mode limits are
+> > necessary.? But one might speculate whether we should allow even more
+> > per-mode variation: Should we allow UDFs to only become available in
+> > certain modes?? Or perhaps upload formats?? My current take is: no.
+> > But if these were use cases, perhaps we need a different
+> > architecture.
+>
+>
+> I'd say no too. Unless a use case demonstrates this need, I would not
+> complicate too much the usage of TAP by making async and sync that
+> much different.
+>
+>
+> > Also, the starting point of the discussion was whether services
+> > should be allowed to say: "Please prefer async on this service" or
+> > so.? That's not yet part of this proposal, mainly because Mark was
+> > not convinced that's a useful thing to have.? Does anyone disagree?
+>
+>
+> I join Mark's point of view here by being not convinced about this
+> possibility.
+>
+> The way to access and interact with each mode/endpoint is clearly
+> different. For me, it should be a choice of the user depending on the
+> needs and preference. Also, this choice could generally be hidden by the
+> used TAP client (if one is used which is not always the case). One may
+> prefer to run all queries using the async mode by default, as it allows
+> longer execution times and some kind of history (thanks to the jobs list).
+> On the other hand, the sync mode is interesting for a simple usage
+> (through cURL or so) or to query very quickly a database through a Web
+> page.
+>
+> Depending on whether you are on server or client side, the preferred mode
+> does not have the same meaning. The server will generally have
+> performance or resource reason to prefer one mode or another. A client
+> may prefer to use only one mode for simplicity (only one mode to
+> technically support) or another mode because it would allow more features.
+> And a user, depending on how he/she needs to query the service may
+> prefer a mode instead on the other ; and it might change from one day to
+> another in function of the data to get or anything else. For all these
+> reasons, I am not in favor of encouraging a particular mode.
+>
+> Here is my point of view (for the moment).
+>
+> Cheers,
+> Gr?gory
+>
+>
+> > And then there is the question whether the modes should be enumerated
+> > in the schema (and thus are more or less fixed) or whether more or
+> > other modes are conceivable (or useful).
+> >
+> > Well: Any contributions are welcome.
+> >
+> > Thanks,
+> >
+> >??????????? Markus
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250925/c22ed791/attachment-0001.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Tue Sep 30 14:37:43 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 30 Sep 2025 14:37:43 +0200
+Subject: TAPRegExt PR: per-mode limits
+In-Reply-To: <20250915080820.uyxd5j2be4bbnzyh@victor>
+References: <20250915080820.uyxd5j2be4bbnzyh@victor>
+Message-ID: <20250930123743.u7wgc475bsb5u27m@victor>
+
+Dear DAL, dear Apps,
+
+Remember two weeks ago?
+
+On Mon, Sep 15, 2025 at 10:08:20AM +0200, Markus Demleitner via dal wrote:
+> In pyVO bug #685 <https://github.com/astropy/pyvo/issues/685>, we
+> figured it's finally time to be a bit less cavalier about the limits
+> that TAP services report to their clients (e.g., how long can you
+> take?  How large can your uploads be? etc).
+>
+> In TAPRegExt PR #8, <https://github.com/ivoa-std/TAPRegExt/pull/8>, I
+> am proposing such a mechanism.  I'd be grateful for a review, both
+> technically and content-wise.
+
+Quite a bit of extra discussion has been happening in the meantime in
+PR #8, and I am almost convinced that the original proposal with
+
+  <executionDuration>...
+  <limits mode="async">
+    <executionDuration ...
+
+was indeed not optimal.  Against that, there is now
+<https://github.com/ivoa-std/TAPRegExt/pull/10>; this now defines a
+mode attribute on several elements (including outputFormat, for which
+a use case has been brought up).  Would you have a look at that, too?
+
+If nobody champions the limit element from PR #8, I'll close that PR,
+and I'd propose we go on with #10.
+
+Thanks,
+
+             Markus
+
+

@@ -1,0 +1,84 @@
+Date: Tue, 30 Jun 2026 14:58:35 +0200
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Subject: SCS2: Text error messages; New: VERB
+Message-ID: <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+In-Reply-To: <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+
+Dear Colleagues,
+
+On Sun, Jun 21, 2026 at 06:38:14AM +0000, James Tocknell via dal wrote:
+> I'd suggest moving to https://www.rfc-editor.org/rfc/rfc9457.html
+> if there's going to be a structured format (which I'd argue is a
+> good idea, rather than arbitrary text, and there are existing
+> libraries to do the error handling in that format, e.g.
+> https://pypi.org/project/fastapi-problem/).
+
+Hm.  Frankly, to me "there's a library for that" is more a liability
+than a benefit: every dependency that you have is an extra thing that
+can break your project, not to mention something that some prankster
+can take over or that some kind soul will have to package for the
+distribution of your choice.
+
+And I'm particularly underwhelmed by RFC 9457 because it doesn't say
+"do it like this" but rather "you can do it like this or like this".
+
+I'd be a bit less skeptical if this wasn't about something rather
+trivial ("give clients a reliable way to get something to show to the
+user for a useful subset of server hiccups") that, I think, can be
+addressed credibly by plain text.
+
+Something like fastapi-problem could be written for DALI-text errors,
+too, no?  And it doesn't even seem like a lot of effort.
+
+So... unless someone wants to seriously champion RFC 9457, I'd
+hope for Pat's DALI-text spec and move on to the next item in
+Stelios' list:
+
+> 4. VERB semantics
+>
+> The spec says VERB must be "supported" but then says: "It is legal
+> to always return the same set of columns independent of the value
+> of VERB." which seems to undermine the parameter's usefulness.
+>
+> If implementations can treat VERB=1 and VERB=3 identically, clients
+> cannot rely on VERB to reduce response size.
+>
+> How about specifying the minimum column requirements per VERB level
+> (e.g., VERB=1 MUST include at least the three core columns, VERB=3
+> MUST return all columns the service holds) and specifying that the
+> default when VERB is absent is equivalent to VERB=2?
+>
+> Either that or why don't we just deprecate VERB entirely?
+
+Well, I would have liked to drop VERB, as I don't think there have
+been many conscious uses of it.
+
+On the other hand, I found the objection at the Interop convincing
+that modern large-scale catalogues tend to have hundreds of columns
+and having a way to control the chattyness *for them* would really be
+useful.
+
+I buy that (although I can only encourage everyone to adopt arrays,
+which often help keep metadata schema sizes sane).
+
+So, turning this around: Is it bad if clients "cannot rely on VERB to
+reduce response size"?  What could they do if the could?  If you are
+retrieving a catalogue that only has 10 columns, would you care?
+
+If you'd like to make this a bit more formal, one could formulate a
+monotonicity condition: "Services must return all columns present in
+VERB-1 at VERB (and may add more)" or something like this.  But even
+there I'm couldn't give a strong reason to require this
+(cf. <http://blog.g-vo.org/requirements-and-validators.html>).
+
+So... perhaps we can leave VERB as it is?
+
+Thanks,
+
+           Markus
+
+

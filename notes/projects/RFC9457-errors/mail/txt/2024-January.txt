@@ -1,0 +1,29 @@
+From francois.bonnarel at astro.unistra.fr  Sat Jan  6 21:52:40 2024
+From: francois.bonnarel at astro.unistra.fr (BONNAREL FRANCOIS)
+Date: Sat, 6 Jan 2024 21:52:40 +0100
+Subject: DataLink 1.1 is a REC
+Message-ID: <7bf6bc9c-4a0a-408e-a07a-6398a3cc534b@astro.unistra.fr>
+
+Dear all,
+
+
+8.5 years after 1.0, DataLink 1.1 approved by the IVOA exec became a REC 
+on December the 15th.
+
+ ?https://ivoa.net/documents/DataLink/20231215/index.html
+
+There is also an ongoing implementation/recognition note. Please 
+contribute :
+
+https://github.com/ivoa/DataLinkRecImplNote
+
+Happy new year, full succes for 2024 !!!
+
+Cheers
+
+Fran?ois
+
+
+
+
+

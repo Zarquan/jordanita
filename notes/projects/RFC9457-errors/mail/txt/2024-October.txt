@@ -1,0 +1,381 @@
+From msdemlei at ari.uni-heidelberg.de  Mon Oct 14 16:59:04 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Mon, 14 Oct 2024 16:59:04 +0200
+Subject: Persistent TAP uploads
+Message-ID: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+
+Dear Colleagues,
+
+I have lobbied for persistent uploads -- i.e., you upload a table as
+with UPLOAD, but the table remains server-side after the request,
+which it doesn't for DALI UPLOADs -- in TAP for a long while now, but
+always procrastinated on it because it *somehow* needs federated auth
+to be any fun.
+
+Well... by now I figured *something* is better than nothing at all,
+and so I went ahead and put a (functional) sketch of persistent
+uploads into DaCHS.  In that scheme, somewhat inspired by Pat's
+2018 youcat talk
+(https://wiki.ivoa.net/internal/IVOA/InterOpNov2018DAL/tap-youcat.pdf;
+but that's more a publication interface than the user facility I have
+in mind), there is a sibling endpoint to /capabilities, /tables,
+/sync, and /async, and you can PUT or DELETE tables which then appear
+in or disappear from a magic schema TAP_USER; GET requests there
+return VOSI-style table metadata, and the proposal would be that both
+/tables and TAP_SCHEMA are unaffected by user uploads.  I think I
+have good reasons for that, such as: Clients need *some* changes to
+support persistent uploads anyway; keeping your user tables out of
+the potentially long public table listings is probably a nice
+service; you don't want to make people reload /tables too often,
+because it's a fairly large beast on several interesting services.
+
+The implementation also features an ADQL extension: you can prefix a
+query with CREATE TABLE <name> AS and create a table in TAP_USER,
+too.  Whether that would be a standard facility I can't judge; that
+particular thing was relatively messy in implementation, because
+suddenly the ADQL parser needs to know the requesting user, which in
+DaCHS it so far has not.
+
+Anyway, I have prepared a blog post with a few more details; I might
+build that into an IVOA note after Malta depending on feedback there.
+Meanwhile:
+<https://blog.g-vo.org/a-proposal-for-persistent-tap-uploads.html>;
+there's also a Jupyter notebook in there that you use to play around
+with the existing uploads (note, however, that the server has a
+planned downtime on Wednesday morning CEST).
+
+In the post, I am also giving two points on where I see the most
+pressing open issues:
+
+(a) management interfaces: extending table lifetimes (probably easy);
+letting users create indexes (probably pretty hard).
+
+(b) authz: Should we mandate a facility through which users can share
+their tables with other users?
+
+On (b), my assessment is that this is so much trouble -- including
+GDPR trouble in case we let people discover who else has accounts
+where -- that I'd tell people: "Well, do a select * from tap_user and
+mail your colleague the result; or just send them your credentials."
+
+But then I admit I tend to have little patience for that kind of
+thing, and so I'd be grateful for proposals on authz.  But I'd be
+much more grateful for a good interface to requesting indexes.  Does
+anyone perhaps even have such an interface already?
+
+Thanks,
+
+            Markus
+
+
+From pdowler.cadc at gmail.com  Tue Oct 15 18:31:44 2024
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Tue, 15 Oct 2024 09:31:44 -0700
+Subject: Persistent TAP uploads
+In-Reply-To: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+References: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+Message-ID: <CAFK8nrpaYHvNELT59cfbdmwv3a1oWXUAc0fePJ6iKoPVJC3MXw@mail.gmail.com>
+
+I like the ideas (uses case) here and it will be interesting to
+compare/contrast
+this with the approaches we took in youcat (mainly catalogue publishing).
+
+On the create index, which we discussed a bit already, we did implement
+that and
+
+(i) it really needs to be an async (uws) job if the tables might be
+large-ish and/or
+the service wants to constrain load on the database
+
+(ii) our very simplistic parameter-based solution allows for single column
+indices
+(unique optional) and while it seems very underwhelming on the surface it
+has been
+"good enough" for the youcat use cases.
+
+Since TAP (tap_schema) is also  too simple to describe a multi-column index
+correctly,
+it seems like extending this will grow in scope/complexity.
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+
+On Mon, 14 Oct 2024 at 07:59, Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+> Dear Colleagues,
+>
+> I have lobbied for persistent uploads -- i.e., you upload a table as
+> with UPLOAD, but the table remains server-side after the request,
+> which it doesn't for DALI UPLOADs -- in TAP for a long while now, but
+> always procrastinated on it because it *somehow* needs federated auth
+> to be any fun.
+>
+> Well... by now I figured *something* is better than nothing at all,
+> and so I went ahead and put a (functional) sketch of persistent
+> uploads into DaCHS.  In that scheme, somewhat inspired by Pat's
+> 2018 youcat talk
+> (https://wiki.ivoa.net/internal/IVOA/InterOpNov2018DAL/tap-youcat.pdf;
+> but that's more a publication interface than the user facility I have
+> in mind), there is a sibling endpoint to /capabilities, /tables,
+> /sync, and /async, and you can PUT or DELETE tables which then appear
+> in or disappear from a magic schema TAP_USER; GET requests there
+> return VOSI-style table metadata, and the proposal would be that both
+> /tables and TAP_SCHEMA are unaffected by user uploads.  I think I
+> have good reasons for that, such as: Clients need *some* changes to
+> support persistent uploads anyway; keeping your user tables out of
+> the potentially long public table listings is probably a nice
+> service; you don't want to make people reload /tables too often,
+> because it's a fairly large beast on several interesting services.
+>
+> The implementation also features an ADQL extension: you can prefix a
+> query with CREATE TABLE <name> AS and create a table in TAP_USER,
+> too.  Whether that would be a standard facility I can't judge; that
+> particular thing was relatively messy in implementation, because
+> suddenly the ADQL parser needs to know the requesting user, which in
+> DaCHS it so far has not.
+>
+> Anyway, I have prepared a blog post with a few more details; I might
+> build that into an IVOA note after Malta depending on feedback there.
+> Meanwhile:
+> <https://blog.g-vo.org/a-proposal-for-persistent-tap-uploads.html>;
+> there's also a Jupyter notebook in there that you use to play around
+> with the existing uploads (note, however, that the server has a
+> planned downtime on Wednesday morning CEST).
+>
+> In the post, I am also giving two points on where I see the most
+> pressing open issues:
+>
+> (a) management interfaces: extending table lifetimes (probably easy);
+> letting users create indexes (probably pretty hard).
+>
+> (b) authz: Should we mandate a facility through which users can share
+> their tables with other users?
+>
+> On (b), my assessment is that this is so much trouble -- including
+> GDPR trouble in case we let people discover who else has accounts
+> where -- that I'd tell people: "Well, do a select * from tap_user and
+> mail your colleague the result; or just send them your credentials."
+>
+> But then I admit I tend to have little patience for that kind of
+> thing, and so I'd be grateful for proposals on authz.  But I'd be
+> much more grateful for a good interface to requesting indexes.  Does
+> anyone perhaps even have such an interface already?
+>
+> Thanks,
+>
+>             Markus
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20241015/7e6dc362/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Wed Oct 16 08:57:55 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 16 Oct 2024 08:57:55 +0200
+Subject: Persistent TAP uploads
+In-Reply-To: <CAFK8nrpaYHvNELT59cfbdmwv3a1oWXUAc0fePJ6iKoPVJC3MXw@mail.gmail.com>
+References: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+ <CAFK8nrpaYHvNELT59cfbdmwv3a1oWXUAc0fePJ6iKoPVJC3MXw@mail.gmail.com>
+Message-ID: <20241016065755.22b4ftaq5sqeqoqz@victor>
+
+Hi Pat,
+
+On Tue, Oct 15, 2024 at 09:31:44AM -0700, Patrick Dowler via dal wrote:
+> (ii) our very simplistic parameter-based solution allows for single
+> column indices (unique optional) and while it seems very
+> underwhelming on the surface it has been "good enough" for the
+> youcat use cases.
+
+Well, I'm always in favour of taking step after step, doing what's
+simple and immediately doable.  But spatial indexes are *so*
+fundamental to what our users do that I'm sure we need that
+from the start.  Actually, as a legacy of what I do for conventional
+TAP uploads, DaCHS will currently automatically create a spatial
+index if there's a (pos.eq.dec, pos.eq.ra) pair with a meta.main
+qualifier.
+
+But that feels too implicit to me to make it into a standard.
+
+Perhaps we should have an endpoint create_index below the table URI,
+to which you can post one or more COLUMN parameter(s) for a (possibly
+multi-column, but I don't expect that to be something many people
+will do) "normal" (in Postgres: B-Tree, I suppose) index and
+SPATIALCOLUMNS for the preferred sort of 2d spherical index that the
+data centre has?
+
+For reference, postgres' create index has this syntax:
+
+  CREATE [ UNIQUE ] INDEX [ CONCURRENTLY ] [ [ IF NOT EXISTS ] name ] ON [ ONLY ] table_name [ USING method ]
+      ( { column_name | ( expression ) } [ COLLATE collation ] [ opclass [ ( opclass_parameter = value [, ... ] ) ] ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
+      [ INCLUDE ( column_name [, ...] ) ]
+      [ NULLS [ NOT ] DISTINCT ]
+      [ WITH ( storage_parameter [= value] [, ... ] ) ]
+      [ TABLESPACE tablespace_name ]
+      [ WHERE predicate ]
+
+-- with this proposal, only
+
+  CREATE INDEX (col1, ...)
+
+would be left (i.e., in particular no partial indexes, which might
+sometimes make sense; but then that's really large-table stuff), with
+a dash of USING via SPATIALCOLUMNS.
+
+For now, this feels like a simplification that's good for the
+overwhelming majority of what we want with TAP user uploads.
+
+> Since TAP (tap_schema) is also  too simple to describe a
+> multi-column index correctly, it seems like extending this will
+> grow in scope/complexity.
+
+Introspectability seems rather less urgent to me; at least for the
+sort of ephemeral tables I have in mind here, I think people can
+remember what they just did.  And of course, presenting the sort of
+information required to help them exploit the indexes in a way that
+works across DB engines and is understandable without a lot of
+service-specific knowledge *is* rather daunting.
+
+In practice, though, I have to say almost all my user-visible indexes
+are one of four kinds:
+
+* Single-column numeric
+* Single-column for some sort of string operation (ok, there's simple
+  patterns vs. full-text, IR-kind; that distinction actually would be
+  relevant to work out what queries to write; hm...)
+* Two-column spatial
+* One-column geometry.
+
+I don't think I actually do partial indexes anywhere.
+
+If that's halfway typical, I could imagine figuring out some
+non-magic description of indexes that help people write good queries.
+
+Thanks,
+
+         Markus
+
+
+From m.b.taylor at bristol.ac.uk  Wed Oct 16 23:56:55 2024
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Wed, 16 Oct 2024 23:56:55 +0200 (CEST)
+Subject: Persistent TAP uploads
+In-Reply-To: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+References: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+Message-ID: <1469c8e6-b425-9392-e9b-6adf42939036@it076926>
+
+Markus,
+
+On Mon, 14 Oct 2024, Markus Demleitner via dal wrote:
+
+> Well... by now I figured *something* is better than nothing at all,
+> and so I went ahead and put a (functional) sketch of persistent
+> uploads into DaCHS.
+
+looks fun.
+
+I *probably* won't implement any client code before I see you next,
+but just in case I get bored on a train: what about capability
+discoverability?
+
+This almost answers itself: a HEAD request to tap-url/user_tables
+returns:
+
+   404: unsupported
+   403: supported (but you're not authenticated)
+   200: supported (and you are authenticated)
+
+But I don't see a natural way for an unauthenticated user to find out
+if unauthenticated persistent uploads are permitted.  However the idea
+of an unauthenticated persistent upload is a bit wacky.
+
+Maybe this should just be handled by TAPRegExt - but perhaps a bit
+harder to prototype (taplint might give you a hard time?).
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Thu Oct 17 09:47:24 2024
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 17 Oct 2024 09:47:24 +0200
+Subject: Persistent TAP uploads
+In-Reply-To: <1469c8e6-b425-9392-e9b-6adf42939036@it076926>
+References: <20241014145904.c7zkhhrkc2wb7v3r@victor>
+ <1469c8e6-b425-9392-e9b-6adf42939036@it076926>
+Message-ID: <20241017074724.voz2s2dexqdf5rqk@victor>
+
+Hi Mark,
+
+On Wed, Oct 16, 2024 at 11:56:55PM +0200, Mark Taylor wrote:
+> On Mon, 14 Oct 2024, Markus Demleitner via dal wrote:
+> I *probably* won't implement any client code before I see you next,
+> but just in case I get bored on a train: what about capability
+> discoverability?
+>
+> This almost answers itself: a HEAD request to tap-url/user_tables
+> returns:
+>
+>    404: unsupported
+>    403: supported (but you're not authenticated)
+>    200: supported (and you are authenticated)
+
+I can't say I like it *too* much, but if we specify it like that, I
+think that's more or less safe.
+
+> But I don't see a natural way for an unauthenticated user to find out
+> if unauthenticated persistent uploads are permitted.  However the idea
+> of an unauthenticated persistent upload is a bit wacky.
+
+Yeah, perhaps it *is* a bit wacky, but I suspect it might work out
+reasonably well, so at least offering it as something people *might*
+want to implement sounds like a worthwhile effort.
+
+> Maybe this should just be handled by TAPRegExt - but perhaps a bit
+> harder to prototype (taplint might give you a hard time?).
+
+I think the *right* way to do this would be via something like the
+DALIInterface type I've proposed with caproles:
+
+https://ivoa.net/documents/caproles/20190315/NOTE-caproles-1.0-20190315.html#tth_sEc3.1
+
+Then, the basic declaration would be
+
+  <interface xsi:type="vs:DALIInterface">
+    <accessURL>http://example.edu/tap</accessURL>
+    <endpoint>sync</endpoint>
+    [...]
+    <endpoint>user_tables</endpoint>
+  </interface>
+
+At some point (that I cannot find any more) we had discussed adding a
+facility to attach RDF-like triples to DALIInterface, and with that
+the availability of anonymous persistent uploads would be in
+something like
+
+  <option property="ivo://ivoa.net/std/tapregext#anonoymous-persistent-uploads"/>
+
+(or use a vocabulary rather than the Stdregext record to list the
+available properties)...
+
+(or, with a bow to the recent discussion over on the semantics list,
+perhaps
+
+  <option property="[...]anonoymous-persistent-uploads" value="True"/>).
+
+Ok:  We don't have DALIInterface, but since IMHO we'll need that
+anyway one day, we could use this as an excuse to start designing it
+in earnest.  VODataService is going to go into WD soon-ish anyway
+(for productType)...
+
+Thanks,
+
+          Markus
+
+

@@ -1,0 +1,565 @@
+From gregory.mantelet at astro.unistra.fr  Thu Oct  1 10:48:25 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory Mantelet)
+Date: Thu, 1 Oct 2026 10:48:25 +0200
+Subject: SCS2: Text error messages; New: VERB
+In-Reply-To: <9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <9c3fc2c-68fb-2b7e-1756-643d8b44089@andromeda.star.bris.ac.uk>
+Message-ID: <3b08cdc1-1ff4-4657-9f14-d97c76b2b8ca@astro.unistra.fr>
+
+
+
+Le 08/07/2026 ? 14:37, Mark Taylor via dal a ?crit?:
+> On Tue, 30 Jun 2026, Markus Demleitner via dal wrote:
+>
+>> hope for Pat's DALI-text spec and move on to the next item in
+>> Stelios' list:
+>>
+>>> 4. VERB semantics
+>>>
+>>> The spec says VERB must be "supported" but then says: "It is legal
+>>> to always return the same set of columns independent of the value
+>>> of VERB." which seems to undermine the parameter's usefulness.
+>>>
+>>> If implementations can treat VERB=1 and VERB=3 identically, clients
+>>> cannot rely on VERB to reduce response size.
+>>>
+>>> How about specifying the minimum column requirements per VERB level
+>>> (e.g., VERB=1 MUST include at least the three core columns, VERB=3
+>>> MUST return all columns the service holds) and specifying that the
+>>> default when VERB is absent is equivalent to VERB=2?
+>>>
+>>> Either that or why don't we just deprecate VERB entirely?
+>> Well, I would have liked to drop VERB, as I don't think there have
+>> been many conscious uses of it.
+>>
+>> On the other hand, I found the objection at the Interop convincing
+>> that modern large-scale catalogues tend to have hundreds of columns
+>> and having a way to control the chattyness *for them* would really be
+>> useful.
+>>
+>> I buy that (although I can only encourage everyone to adopt arrays,
+>> which often help keep metadata schema sizes sane).
+>>
+>> So, turning this around: Is it bad if clients "cannot rely on VERB to
+>> reduce response size"?  What could they do if the could?  If you are
+>> retrieving a catalogue that only has 10 columns, would you care?
+>>
+>> If you'd like to make this a bit more formal, one could formulate a
+>> monotonicity condition: "Services must return all columns present in
+>> VERB-1 at VERB (and may add more)" or something like this.  But even
+>> there I'm couldn't give a strong reason to require this
+>> (cf. <http://blog.g-vo.org/requirements-and-validators.html>).
+>>
+>> So... perhaps we can leave VERB as it is?
+> +1 on leaving it as it is.  Yes VERB is ignored by some services,
+> but nothing breaks in that case.  It's useful as a non-binding hint.
+> I don't think anything would be gained (except keeping the validator
+> authors in work :-]) by imposing hard requirements on how services
+> have to interpret it.
+
++1 on keeping VERB. Sorry to answer so late.
+I agree on two things based on my experience with Simbad, a bit of 
+VizieR and Gaia:
+1/ as user, being able to control the "chattyness of large-scale tables" 
+becomes more and more important ; so, according to me, we definitely 
+want to keep this feature,
+2/ as a service developer, I agree that supporting 3 levels of verbosity 
+is a supplementary burden, but it also helps to preserve the health of 
+our database by limiting by default (VERB=2) the number of returned 
+columns ; so, it worth it.
+
+Gr?gory M.
+
+
+From msdemlei at ari.uni-heidelberg.de  Thu Oct  1 10:58:53 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 1 Oct 2026 10:58:53 +0200
+Subject: SCS2: Stelios' last two items
+Message-ID: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+
+Dear DAL WG,
+
+Sorry for the flood of SCS2-related messages, but I'd finally like to
+push out the WD.  And from Stelios' Big Bug Issue
+<https://github.com/ivoa-std/SCS2/issues/7>, there are still two
+items left that I'd like to bring up here to give everyone a chance
+to contradict me:
+
+Stelios wrote:
+
+> 9. The query endpoint path /scs2
+>
+> The current document mandates that the sync query endpoint must be
+> at the path <base-url>/scs2.
+>
+> This feels like a move from what is done with other IVOA standards,
+> which leave the internal path structure to the implementer.
+
+As to a departure... that depends; for instance, sync and async are
+fixed in TAP, and I feel that makes clients' lives a good deal
+easier.
+
+> Should we not be allowing a service to call its query endpoint
+> whatever they want, like /query, /search?
+> This constraint makes deployment under URL hierarchies with
+> versioning awkward (e.g., /v2/query) as we'd have to use /v2/scs2.
+
+Part of why I'm doing the exercise with SCS2 is that I think we
+absolutely need to avoid any expectations that multiple major (or
+otherwise) versions will live next to each other.  I am really,
+really sure that we'd be doing our users a huge disservice if we
+didn't make it so there is only one version of a standard at any time
+except for painful times of transitions.
+
+[Ahem: we *are* doing our users a disservice by the current mess of
+SIA1 and SIA2 in parallel]
+
+> I think we should allow any endpoint name for the query endpoint
+> and instead require services to advertise the full query URL in the
+> capabilities document via <accessURL use="base">.
+
+We already do this right now.  For a while I was convinced ParamHTTP
+with full query endpoint URLs are a bad pattern given we have all the
+compound interfaces (e.g., with examples endpoints; tables and
+capabilities, fortunately, are now resource-global again).  I'm no
+longer that sure.
+
+But that's only mildly related to having predictable last URL
+segments (.../capabilities, /tables, and then /scs2).
+
+> Can clients just discover the query URL from capabilities without
+> relying on path naming conventions?
+
+They can, but as long as we don't see a major downside to fixing the
+names, the fewer freedoms service implementors have the better for
+the client writers, which is what I'm concerned about first and
+foremost.
+
+
+And here's the last piece of Stelios' feedback:
+
+> 10. The meta.id;meta.main char array requirement
+>
+> For providers that have Integer ID columns they'll have to convert
+> to VARCHAR at query time which I suspect will be easy to miss and a
+> potential source of compatibility issues.
+
+Well, that's why there are automatic validators.  They'll easily pick
+that up.
+
+> Perhaps worth provide guidance on whether services are expected to
+> cast the identifier, or whether clients should handle integer-typed
+> meta.id;meta.main fields as valid even if technically
+> non-conformant?
+
+:-).  Well, my take is that it helps clients a great deal if they
+know that the id (that they'll want to do all kinds of operations
+with) is always a string.  If that's true, we'll have to go after
+services that return something else.
+
+At least in DaCHS' implementation (that, full disclosure, didn't do
+that in the beginning for ConeSearch-1 and then was caught by
+validators) it turned out that fixing things to always return strings
+in the ID column was surprisingly simple.  So, I'm against
+downgrading the string requirement to a SHOULD (which basically is
+what Stelios suggests here).
+
+
+Disagreements?
+
+Again: Stelios, thanks for your feedback.  The SCS2 WD is going to be
+a lot better for it, I believe.
+
+And please add your reviews to all of
+<https://github.com/ivoa-std/SCS2/pulls>.
+
+Thanks!
+
+       Markus
+
+
+From m.b.taylor at bristol.ac.uk  Tue Oct  6 13:50:22 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Tue, 6 Oct 2026 12:50:22 +0100 (BST)
+Subject: SCS2: Stelios' last two items
+In-Reply-To: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+References: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+Message-ID: <f88152f-da24-7216-a51d-88dde7ab95@andromeda.star.bris.ac.uk>
+
+On Thu, 1 Oct 2026, Markus Demleitner via dal wrote:
+
+> Stelios wrote:
+> 
+> > 9. The query endpoint path /scs2
+> >
+> > The current document mandates that the sync query endpoint must be
+> > at the path <base-url>/scs2.
+> >
+> > This feels like a move from what is done with other IVOA standards,
+> > which leave the internal path structure to the implementer.
+> > ...
+> > Should we not be allowing a service to call its query endpoint
+> > whatever they want, like /query, /search?
+> > This constraint makes deployment under URL hierarchies with
+> > versioning awkward (e.g., /v2/query) as we'd have to use /v2/scs2.
+> > ...
+> > Can clients just discover the query URL from capabilities without
+> > relying on path naming conventions?
+> 
+> They can, but as long as we don't see a major downside to fixing the
+> names, the fewer freedoms service implementors have the better for
+> the client writers, which is what I'm concerned about first and
+> foremost.
+
+Agreed clients should be able to submit a query without having to go
+first to capabilities and parse that to locate the correct endpoint.
+That's especially true where somebody is just hacking together a
+DIY cone search client in bash or python.
+
+However, that doesn't necessarily mean you have to have a fixed
+name component ("/scs2"), it depends on what the client knows about
+the service.  As long as the capabilities and tables endpoints are
+siblings of the service URL, as described in Section 3,
+then humans or machines can pass round the service URL and it can
+be used directly.  I'm not really against fixing the "scs2" name,
+but I don't see a major benefit; however I may be missing relevant
+usage scenarios.
+
+> > 10. The meta.id;meta.main char array requirement
+> >
+> > For providers that have Integer ID columns they'll have to convert
+> > to VARCHAR at query time which I suspect will be easy to miss and a
+> > potential source of compatibility issues.
+> ...
+> 
+> :-).  Well, my take is that it helps clients a great deal if they
+> know that the id (that they'll want to do all kinds of operations
+> with) is always a string.  If that's true, we'll have to go after
+> services that return something else.
+
+I don't agree.  If a client wants an ID that's of string type,
+it can take whatever's there and convert it to a string.
+In Java that's probably just toString(), but I imagine it's
+pretty straightforward in any language?
+
+I think it would make more sense to let the service use whatever
+ID type is most suitable.  This might also be more compact
+(e.g. a long is 8 bytes or <=20 characters) and provide something
+that's more useful to the end user, for instance if they want to
+take the ID and upload-match it against a TAP service that uses
+the same ID values.
+
+Mark
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Wed Oct  7 14:06:17 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 7 Oct 2026 14:06:17 +0200
+Subject: SCS2: Stelios' last two items
+In-Reply-To: <f88152f-da24-7216-a51d-88dde7ab95@andromeda.star.bris.ac.uk>
+References: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+ <f88152f-da24-7216-a51d-88dde7ab95@andromeda.star.bris.ac.uk>
+Message-ID: <ewavmncd5pojfhwhd5gz4ytzax2r6pnfmjmwn4bic73mtvwhtp@o62ljjx7ipyo>
+
+On Tue, Oct 06, 2026 at 12:50:22PM +0100, Mark Taylor wrote:
+> be used directly.  I'm not really against fixing the "scs2" name,
+> but I don't see a major benefit; however I may be missing relevant
+> usage scenarios.
+
+We've talked about that at yesterday's running meeting; my claim was
+that it's wise for a standard to define what can reasonably be
+defined, and little details like this sometimes help (example: let
+clients guess with some confidence what protocol to speak when all
+they have is just an access URL; a fixed name would also be great if
+we ever do something like DALIInterface).
+
+On the other hand, the benefit is certainly not large enough to
+warrant major implementation pain.
+
+So, we ended up with the compromise that we'll leave the fixed name
+in for the next WD and if implementors actually have a hard time
+because of it, we'll drop it.
+
+And then:
+
+> I don't agree.  If a client wants an ID that's of string type,
+> it can take whatever's there and convert it to a string.
+> In Java that's probably just toString(), but I imagine it's
+> pretty straightforward in any language?
+
+It was also brought forward that string casting is painful when you
+later do a TAP upload and want to match the ids with the ids that are
+in the database table.
+
+I guess that outweighs the small load on clients that want to do
+interesting things with these ids that perhaps need to transform them
+locally.
+
+I'll drop the char requirement in SCS2, then; I think quite a few
+ConeSearch-1 (that has that requirement, too) services have been in
+violation already, and I've admittedly never seen anyone complain.
+
+Thanks,
+
+        Markus
+
+
+From stelios.voutsinas at noirlab.edu  Wed Oct  7 16:30:35 2026
+From: stelios.voutsinas at noirlab.edu (Stelios Voutsinas)
+Date: Wed, 7 Oct 2026 07:30:35 -0700
+Subject: SCS2: Stelios' last two items
+In-Reply-To: <ewavmncd5pojfhwhd5gz4ytzax2r6pnfmjmwn4bic73mtvwhtp@o62ljjx7ipyo>
+References: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+ <f88152f-da24-7216-a51d-88dde7ab95@andromeda.star.bris.ac.uk>
+ <ewavmncd5pojfhwhd5gz4ytzax2r6pnfmjmwn4bic73mtvwhtp@o62ljjx7ipyo>
+Message-ID: <CAPx=0xOCgW_CntWu8mfjtf4MOD13eW=XA1mZ4auOzzVtYyMKTA@mail.gmail.com>
+
+Hello,
+
+Happy to go with the majority on all these, and thanks again, Markus, for
+raising these points and going through them in detail.
+
+I think this all sounds reasonable, though I am still wondering if "/scs2"
+is the right fixed name to land on. Essentially we are including the major
+version in the path, which I feel goes against the argument that only one
+version should be around at any time. If we later introduce a SCS version 3
+does the path become "/scs3"? So I'm wondering if a plain "/scs" would
+work? Clients can still guess the protocol from the access URL but we are
+then not tying the protocol version to the URL.
+
+It's not a big deal either way; I just wanted to raise it before the WD
+goes out just in case.
+
+Thanks,
+Stelios Voutsinas
+
+On Wed, Oct 7, 2026 at 5:16?AM Markus Demleitner via dal <dal at ivoa.net>
+wrote:
+
+> On Tue, Oct 06, 2026 at 12:50:22PM +0100, Mark Taylor wrote:
+> > be used directly.  I'm not really against fixing the "scs2" name,
+> > but I don't see a major benefit; however I may be missing relevant
+> > usage scenarios.
+>
+> We've talked about that at yesterday's running meeting; my claim was
+> that it's wise for a standard to define what can reasonably be
+> defined, and little details like this sometimes help (example: let
+> clients guess with some confidence what protocol to speak when all
+> they have is just an access URL; a fixed name would also be great if
+> we ever do something like DALIInterface).
+>
+> On the other hand, the benefit is certainly not large enough to
+> warrant major implementation pain.
+>
+> So, we ended up with the compromise that we'll leave the fixed name
+> in for the next WD and if implementors actually have a hard time
+> because of it, we'll drop it.
+>
+> And then:
+>
+> > I don't agree.  If a client wants an ID that's of string type,
+> > it can take whatever's there and convert it to a string.
+> > In Java that's probably just toString(), but I imagine it's
+> > pretty straightforward in any language?
+>
+> It was also brought forward that string casting is painful when you
+> later do a TAP upload and want to match the ids with the ids that are
+> in the database table.
+>
+> I guess that outweighs the small load on clients that want to do
+> interesting things with these ids that perhaps need to transform them
+> locally.
+>
+> I'll drop the char requirement in SCS2, then; I think quite a few
+> ConeSearch-1 (that has that requirement, too) services have been in
+> violation already, and I've admittedly never seen anyone complain.
+>
+> Thanks,
+>
+>         Markus
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20261007/4a1333ab/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Thu Oct  8 09:55:44 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 8 Oct 2026 09:55:44 +0200
+Subject: SCS2: Stelios' last two items
+In-Reply-To: <CAPx=0xOCgW_CntWu8mfjtf4MOD13eW=XA1mZ4auOzzVtYyMKTA@mail.gmail.com>
+References: <mk53cmdqa47poogbzvumxmu7yzhcaik7evlr4kghoqvjrglgcx@i2hevuxnqo7q>
+ <f88152f-da24-7216-a51d-88dde7ab95@andromeda.star.bris.ac.uk>
+ <ewavmncd5pojfhwhd5gz4ytzax2r6pnfmjmwn4bic73mtvwhtp@o62ljjx7ipyo>
+ <CAPx=0xOCgW_CntWu8mfjtf4MOD13eW=XA1mZ4auOzzVtYyMKTA@mail.gmail.com>
+Message-ID: <inhynhlham3eh4roc5lhishiny52dor2hl6rmedly5beddswlz@mrzkejb5ocfi>
+
+Hi Stelios,
+
+On Wed, Oct 07, 2026 at 07:30:35AM -0700, Stelios Voutsinas wrote:
+> I think this all sounds reasonable, though I am still wondering if "/scs2"
+> is the right fixed name to land on. Essentially we are including the major
+> version in the path, which I feel goes against the argument that only one
+> version should be around at any time. If we later introduce a SCS version 3
+> does the path become "/scs3"? So I'm wondering if a plain "/scs" would
+> work? Clients can still guess the protocol from the access URL but we are
+> then not tying the protocol version to the URL.
+
+My outlook has been for a long time that different major versions are
+essentially independent standards, which includes separate
+repositiories for the text, different standards records (which in
+particular implies that the standard ids have different base URIs
+as in ivo://ivoa.net/scs2#query-2.0 rather than
+ivo://ivoa.net/scs#query-2.0), different rows in the document
+repository, etc.
+
+This makes several things a bit simpler; as a weak indicator why this
+is the saner design, think of the VOResource metadata of different
+major versions: from authors to description, it is likely that
+different major versions will differ greatly.
+
+I'll admit that we *could* design this differently without *too* much
+trouble.  But with this design, different major versions need
+different short names.  The least confusing thing to form these
+different short names is IMHO to just include a numeric major
+version, and hence in this case we'll get scs2.  To a computer,
+that's conceptually opaque, though.  It's just the name of the
+standard, and if we were as easy-going as the designers of UEFI, we
+chould as well use aa1305b9-01f3-4afb-920e-c9b979a852fd.
+
+Once you buy all that, using "scs" instead of "scs2" would be about
+as odd as using "siap": scs2 is just the short name of the standard.
+And yes, if we ever did a major version 3, we'd probably use scs3 as
+its short name and use that string whereever we want to identify
+something belonging to the standard.
+
+But then, who knows, there could be a new renaissance and people
+would find a liking for roman numerals.  Me, I'd certainly not veto
+scs-iii (I would veto scs-III, though, because mixed-case is evil
+when you have case insensitivity, which we regrettably have in
+ivoids).
+
+Thanks,
+
+            Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Thu Oct  8 10:40:05 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory Mantelet)
+Date: Thu, 8 Oct 2026 10:40:05 +0200
+Subject: Second Call for contributions to DAL WG session at November 2026
+ Interop
+In-Reply-To: <5f348021-5839-47c0-91c8-41e860f5c2c3@astro.unistra.fr>
+References: <5f348021-5839-47c0-91c8-41e860f5c2c3@astro.unistra.fr>
+Message-ID: <8f2d8d88-25c2-43d8-9654-764b2f825599@astro.unistra.fr>
+
+Deal DAL and IVOA members,
+
+Here is a reminder if you want to contribute to the DAL session at the 
+Nov. Interoperability Meeting in Perth (or remotely).
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+
+
+Le 23/09/2026 ? 14:51, Gregory MANTELET a ?crit?:
+>
+> Dear DAL and IVOA?members,
+>
+> The November IVOA Interoperability Meeting 
+> <https://adass2026.icrar.org/ivoa-2026>?will take place in Perth 
+> (Australia) from the 6th to the 8th of November 2026. Remote 
+> attendance is supported.
+>
+> As a reminder, if you want to participate to this meeting, do not 
+> forget to register on the meeting website 
+> <https://events.humanitix.com/perth-ivoa-interoperability-meeting> 
+> (even you plan to attend remotely).
+>
+> With this email, Joshua and I invite you to contribute to DAL sessions 
+> with a DAL related topic.
+>
+>     /DAL stands for Data Access Layer. This Working Group aims to
+>     define standards and protocols to access data in an interoperable
+>     way. Here are few examples of well-known DAL standards: (Simple)
+>     Cone Search, SIA (image access), SSA (spectra access), TAP (Table
+>     Access Protocol) and ADQL (SQL-like language to query a database).
+>     The full list of DAL standards is available on the IVOA Documents
+>     page <https://www.ivoa.net/documents/>./
+>
+> During this interop., you can contribute, remotely or in-person, with 
+> a talk presenting implementations, sharing your experience as user, 
+> presenting and discussing progress on a DAL standards, or presenting 
+> use-cases.
+>
+> If you are interested, please send your contribution to 
+> gregory.mantelet at astro.unistra.fr 
+> <mailto:gregory.mantelet at astro.unistra.fr> and jfraustro at stsci.edu 
+> <mailto:jfraustro at stsci.edu> with:
+>
+>   * a speaker name,
+>   * a title,
+>   * ideally an abstract.
+>
+> If you are unsure about the suitability of a talk, or are a first time 
+> contributor, please get in contact with us.
+>
+> Cheers,
+> Gr?gory Mantelet and Joshua Fraustro
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20261008/c771be14/attachment-0001.htm>
+
+From marco.molinaro at inaf.it  Thu Oct 15 17:27:36 2026
+From: marco.molinaro at inaf.it (Molinaro, Marco)
+Date: Thu, 15 Oct 2026 17:27:36 +0200
+Subject: ConeSearch-1.1 Working Draft is out for WG review
+Message-ID: <CAFtRUxJB3Uvh-snAR37mTD-pf6QNUSArSrDwJbwH5oOX7s4ebg@mail.gmail.com>
+
+Dear DAL,
+
+an updated WD for ConeSearch-1.1 is available
+on the IVOA Documents Repository:
+
+https://ivoa.net/documents/ConeSearch/20260609/index.html
+
+as well as on the github repo where it gets developed
+
+https://github.com/ivoa-std/ConeSearch
+
+It should have fixed all issues related to
+the 1.1 features expected, apart from having
+a proper OpenAPI document attached to it
+(working on it).
+
+Please, review the out-coming specification,
+comment here in thread, or add new issues
+on the github repo. There might be time to
+discuss way forward in Perth.
+
+If nothing controversial comes up, it will
+be brought to the attention of the interop
+community in PR form to finalise the steps.
+
+Thanks in advance
+    Marco
+
+-- 
+Marco Molinaro
+INAF - Istituto Nazionale di AstroFisica
+Osservatorio Astronomico di Trieste
+email marco.molinaro at inaf.it
+tel. [+39] 333 33 20 564 [also Telegram]
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20261015/d94b746f/attachment.htm>
+

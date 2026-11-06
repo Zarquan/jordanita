@@ -1,0 +1,15 @@
+From jfraustro at stsci.edu  Fri Nov 14 01:19:07 2025
+From: jfraustro at stsci.edu (Joshua Fraustro)
+Date: Fri, 14 Nov 2025 00:19:07 +0000
+Subject: Draft Python parser / validator for VOEvent 2.0
+Message-ID: <DM6PR10MB4347A2BD5362EDCBD342C6BBAECAA@DM6PR10MB4347.namprd10.prod.outlook.com>
+
+In a recent TCG meeting there was some discussion about the desire for a parser / validator / generator for the VOEvent 2.0 schema for this Interop.
+
+For those familiar with my vo-models package, I have added draft support for the VOEvent schema in a development branch available here: https://github.com/spacetelescope/vo-models/tree/VOEvent
+
+Tests and documentation still need to be written, but for folks who are already familiar with the package and its use, I encourage you to give it a quick try. I am hopeful to support finished and published sometime during or immediately after the Interop.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20251114/1a8f7f42/attachment.htm>
+

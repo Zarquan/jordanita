@@ -1,0 +1,1387 @@
+From msdemlei at ari.uni-heidelberg.de  Thu Sep  3 12:01:52 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Thu, 3 Sep 2026 12:01:52 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+Message-ID: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+
+Dear DAL,
+
+In the next installment of me bringing some of Stelios' points from
+his (finally migrated) SCS2 bug
+<https://github.com/ivoa-std/SCS2/issues/7>[1] is this:
+
+> Supporting both POS and RA/DEC/SR as alternatives adds meaningful
+> complexity on both the service and client side, and I'm wondering
+> if the benefit justifies it.
+
+> Clients can discover whether POS is supported by fetching
+> /capabilities and inspecting the declared parameters, but the
+> spec's own appendix says simple clients don't need to fetch
+> capabilities at all.
+>
+> Those clients will probably always use RA/DEC/SR right, and then
+> sophisticated clients would probably just be using TAP anyways?
+
+Possibly, yes, provided the table is available via TAP.
+
+> On the service side, supporting both creates an awkward
+> discriminated-union input that static schema validation cannot
+> express.
+> RA/DEC/SR must be typed as optional to allow POS as an alternative,
+> and the mutual-exclusivity check requires runtime logic outside the
+> framework's validation pipeline:
+
+I'd count that as a minor annoyance, but yes, that is evidence
+against supporting POS.
+
+> Either drop POS and keep RA/DEC/SR (simple, familiar), or make POS
+> the canonical interface?
+> I think either is preferable to requiring implementations to handle
+> both indefinitely. Or perhaps worth clarifying the tradeoff in the
+> spec?
+
+I've always been rather uncertain about POS; on the one hand, it is
+nice to have the same parameter as SIAv2, on the other hand, the
+polygon thing (and perhaps MOC later) is a pain to implement without
+something like pgsphere in the backend.
+
+I remain neutral and would simply throw out POS given any amount of
+opposition if it weren't for voices in Strasbourg that said they have
+huge catalogues that they may not want to open up to all the
+complexities of TAP (and perhaps don't even keep in an RDB) but for
+which they'd like to have more expressive geometry types than just
+the cone.
+
+So... opinions?
+
+Thanks,
+
+          Markus
+
+
+From pdowler.cadc at gmail.com  Fri Sep  4 00:11:27 2026
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Thu, 3 Sep 2026 15:11:27 -0700
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+Message-ID: <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+
+The main argument for POS (vs 3 separate params) in SIAv2 is that it
+is easier to support a list of values just by submitting multiple
+POS={value} pairs in the query. Yes, there is the OR semantics but
+that's still a lot simpler than specifying and implementing table
+upload for multi-position queries in an S-protocol. (It was easier to
+specify in TAP because we just had to be clear on how table would be
+named for use in ADQL and the rest was up to the user writing the
+correct ADQL)
+
+So my 2c is that POS is superior to RA+DEC+SR. And this is version 2.0 ...
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Thu, 3 Sept 2026 at 03:02, Markus Demleitner via dal <dal at ivoa.net> wrote:
+>
+> Dear DAL,
+>
+> In the next installment of me bringing some of Stelios' points from
+> his (finally migrated) SCS2 bug
+> <https://github.com/ivoa-std/SCS2/issues/7>[1] is this:
+>
+> > Supporting both POS and RA/DEC/SR as alternatives adds meaningful
+> > complexity on both the service and client side, and I'm wondering
+> > if the benefit justifies it.
+>
+> > Clients can discover whether POS is supported by fetching
+> > /capabilities and inspecting the declared parameters, but the
+> > spec's own appendix says simple clients don't need to fetch
+> > capabilities at all.
+> >
+> > Those clients will probably always use RA/DEC/SR right, and then
+> > sophisticated clients would probably just be using TAP anyways?
+>
+> Possibly, yes, provided the table is available via TAP.
+>
+> > On the service side, supporting both creates an awkward
+> > discriminated-union input that static schema validation cannot
+> > express.
+> > RA/DEC/SR must be typed as optional to allow POS as an alternative,
+> > and the mutual-exclusivity check requires runtime logic outside the
+> > framework's validation pipeline:
+>
+> I'd count that as a minor annoyance, but yes, that is evidence
+> against supporting POS.
+>
+> > Either drop POS and keep RA/DEC/SR (simple, familiar), or make POS
+> > the canonical interface?
+> > I think either is preferable to requiring implementations to handle
+> > both indefinitely. Or perhaps worth clarifying the tradeoff in the
+> > spec?
+>
+> I've always been rather uncertain about POS; on the one hand, it is
+> nice to have the same parameter as SIAv2, on the other hand, the
+> polygon thing (and perhaps MOC later) is a pain to implement without
+> something like pgsphere in the backend.
+>
+> I remain neutral and would simply throw out POS given any amount of
+> opposition if it weren't for voices in Strasbourg that said they have
+> huge catalogues that they may not want to open up to all the
+> complexities of TAP (and perhaps don't even keep in an RDB) but for
+> which they'd like to have more expressive geometry types than just
+> the cone.
+>
+> So... opinions?
+>
+> Thanks,
+>
+>           Markus
+>
+
+From gpdf at ipac.caltech.edu  Fri Sep  4 00:30:35 2026
+From: gpdf at ipac.caltech.edu (Dubois-Felsmann, Gregory P.)
+Date: Thu, 3 Sep 2026 22:30:35 +0000
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+Message-ID: <BYAPR03MB35602B4ECED6DAC30F0F3D38F4B62@BYAPR03MB3560.namprd03.prod.outlook.com>
+
+I like POS for the reason Pat described.
+
+I like RA/DEC for a different reason: it makes it *very* easy to invoke SCS via service descriptor links from a table.  From a UI perspective this is a very nice feature: a data publisher can serve up a catalog table and include DataLink annotations for ?search Gaia around this point?, and so on.
+
+This feature could be provided with the POS interface if service descriptors could do general templating, but with the current DataLink, there has to be a 1:1 match between columns and service parameters.
+
+Gregory
+
+--
+Gregory Dubois-Felsmann, Ph.D. | Senior Staff Scientist | Caltech/IPAC
+Science Platform Scientist, Vera C. Rubin Observatory
+Pipeline System Designer, NASA SPHEREx mission
+Mail Code MR 100-22 | Pasadena, CA 91125-2200 | gpdf at ipac.caltech.edu
+
+________________________________
+From: dal <dal-bounces at ivoa.net> on behalf of Patrick Dowler via dal <dal at ivoa.net>
+Sent: Thursday, 03 September 2026 15:11:27
+To: dal at ivoa.net <dal at ivoa.net>
+Subject: Re: SCS2: POS plus RA/DEC/SR
+
+The main argument for POS (vs 3 separate params) in SIAv2 is that it
+is easier to support a list of values just by submitting multiple
+POS={value} pairs in the query. Yes, there is the OR semantics but
+that's still a lot simpler than specifying and implementing table
+upload for multi-position queries in an S-protocol. (It was easier to
+specify in TAP because we just had to be clear on how table would be
+named for use in ADQL and the rest was up to the user writing the
+correct ADQL)
+
+So my 2c is that POS is superior to RA+DEC+SR. And this is version 2.0 ...
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Thu, 3 Sept 2026 at 03:02, Markus Demleitner via dal <dal at ivoa.net> wrote:
+>
+> Dear DAL,
+>
+> In the next installment of me bringing some of Stelios' points from
+> his (finally migrated) SCS2 bug
+> <https://github.com/ivoa-std/SCS2/issues/7>[1] is this:
+>
+> > Supporting both POS and RA/DEC/SR as alternatives adds meaningful
+> > complexity on both the service and client side, and I'm wondering
+> > if the benefit justifies it.
+>
+> > Clients can discover whether POS is supported by fetching
+> > /capabilities and inspecting the declared parameters, but the
+> > spec's own appendix says simple clients don't need to fetch
+> > capabilities at all.
+> >
+> > Those clients will probably always use RA/DEC/SR right, and then
+> > sophisticated clients would probably just be using TAP anyways?
+>
+> Possibly, yes, provided the table is available via TAP.
+>
+> > On the service side, supporting both creates an awkward
+> > discriminated-union input that static schema validation cannot
+> > express.
+> > RA/DEC/SR must be typed as optional to allow POS as an alternative,
+> > and the mutual-exclusivity check requires runtime logic outside the
+> > framework's validation pipeline:
+>
+> I'd count that as a minor annoyance, but yes, that is evidence
+> against supporting POS.
+>
+> > Either drop POS and keep RA/DEC/SR (simple, familiar), or make POS
+> > the canonical interface?
+> > I think either is preferable to requiring implementations to handle
+> > both indefinitely. Or perhaps worth clarifying the tradeoff in the
+> > spec?
+>
+> I've always been rather uncertain about POS; on the one hand, it is
+> nice to have the same parameter as SIAv2, on the other hand, the
+> polygon thing (and perhaps MOC later) is a pain to implement without
+> something like pgsphere in the backend.
+>
+> I remain neutral and would simply throw out POS given any amount of
+> opposition if it weren't for voices in Strasbourg that said they have
+> huge catalogues that they may not want to open up to all the
+> complexities of TAP (and perhaps don't even keep in an RDB) but for
+> which they'd like to have more expressive geometry types than just
+> the cone.
+>
+> So... opinions?
+>
+> Thanks,
+>
+>           Markus
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260903/b7555b46/attachment-0001.htm>
+
+From m.b.taylor at bristol.ac.uk  Fri Sep  4 10:12:00 2026
+From: m.b.taylor at bristol.ac.uk (Mark Taylor)
+Date: Fri, 4 Sep 2026 09:12:00 +0100 (BST)
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+Message-ID: <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+
+The current SCS2 draft says (sec 4.1.6):
+
+   "SCS2 services may support a POS parameter as defined by SIAP2
+    (Dowler and Bonnarel et al., 2015), except that for SCS2, this is a
+    non-repeatable parameter."
+
+so the multi-position benefit does not apply here, as the text
+is currently written.
+
+On Thu, 3 Sep 2026, Patrick Dowler via dal wrote:
+
+> The main argument for POS (vs 3 separate params) in SIAv2 is that it
+> is easier to support a list of values just by submitting multiple
+> POS={value} pairs in the query. Yes, there is the OR semantics but
+> that's still a lot simpler than specifying and implementing table
+> upload for multi-position queries in an S-protocol. (It was easier to
+> specify in TAP because we just had to be clear on how table would be
+> named for use in ADQL and the rest was up to the user writing the
+> correct ADQL)
+> 
+> So my 2c is that POS is superior to RA+DEC+SR. And this is version 2.0 ...
+> --
+> Patrick Dowler
+> Canadian Astronomy Data Centre
+> Victoria, BC, Canada
+> 
+> On Thu, 3 Sept 2026 at 03:02, Markus Demleitner via dal <dal at ivoa.net> wrote:
+> >
+> > Dear DAL,
+> >
+> > In the next installment of me bringing some of Stelios' points from
+> > his (finally migrated) SCS2 bug
+> > <https://github.com/ivoa-std/SCS2/issues/7>[1] is this:
+> >
+> > > Supporting both POS and RA/DEC/SR as alternatives adds meaningful
+> > > complexity on both the service and client side, and I'm wondering
+> > > if the benefit justifies it.
+> >
+> > > Clients can discover whether POS is supported by fetching
+> > > /capabilities and inspecting the declared parameters, but the
+> > > spec's own appendix says simple clients don't need to fetch
+> > > capabilities at all.
+> > >
+> > > Those clients will probably always use RA/DEC/SR right, and then
+> > > sophisticated clients would probably just be using TAP anyways?
+> >
+> > Possibly, yes, provided the table is available via TAP.
+> >
+> > > On the service side, supporting both creates an awkward
+> > > discriminated-union input that static schema validation cannot
+> > > express.
+> > > RA/DEC/SR must be typed as optional to allow POS as an alternative,
+> > > and the mutual-exclusivity check requires runtime logic outside the
+> > > framework's validation pipeline:
+> >
+> > I'd count that as a minor annoyance, but yes, that is evidence
+> > against supporting POS.
+> >
+> > > Either drop POS and keep RA/DEC/SR (simple, familiar), or make POS
+> > > the canonical interface?
+> > > I think either is preferable to requiring implementations to handle
+> > > both indefinitely. Or perhaps worth clarifying the tradeoff in the
+> > > spec?
+> >
+> > I've always been rather uncertain about POS; on the one hand, it is
+> > nice to have the same parameter as SIAv2, on the other hand, the
+> > polygon thing (and perhaps MOC later) is a pain to implement without
+> > something like pgsphere in the backend.
+> >
+> > I remain neutral and would simply throw out POS given any amount of
+> > opposition if it weren't for voices in Strasbourg that said they have
+> > huge catalogues that they may not want to open up to all the
+> > complexities of TAP (and perhaps don't even keep in an RDB) but for
+> > which they'd like to have more expressive geometry types than just
+> > the cone.
+> >
+> > So... opinions?
+> >
+> > Thanks,
+> >
+> >           Markus
+> >
+> 
+
+--
+Mark Taylor  Astronomical Programmer  Physics, Bristol University, UK
+m.b.taylor at bristol.ac.uk          https://www.star.bristol.ac.uk/mbt/
+
+From msdemlei at ari.uni-heidelberg.de  Fri Sep  4 11:05:45 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Fri, 4 Sep 2026 11:05:45 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+Message-ID: <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+
+Dear DAL,
+
+On Fri, Sep 04, 2026 at 09:12:00AM +0100, Mark Taylor via dal wrote:
+> The current SCS2 draft says (sec 4.1.6):
+>
+>    "SCS2 services may support a POS parameter as defined by SIAP2
+>     (Dowler and Bonnarel et al., 2015), except that for SCS2, this is a
+>     non-repeatable parameter."
+>
+> so the multi-position benefit does not apply here, as the text
+> is currently written.
+
+...which is of course open to debate.  UPLOAD was a surprising pain
+in implementation, and multi-POS would be a relatively cheap
+replacement to the current UPLOAD model for a simple multicone.
+
+Of course, UPLOAD would scale to multi-parameter queries (e.g, mag
+limit 23 in cone A and 19 in cone B), which POS can never do.  But we
+don't have that in the current draft and likely never will.
+
+So, perhaps we should turn things around, make (multi-) POS
+mandatory and scrap UPLOAD entirely?
+
+This would still leave the problem of POLYGON.  Perhaps if we just
+required support for CIRCLE and added an element in the capability
+that lets clients discover other geometry types (<ohhhh!> MOC?) on a
+per-service basis?
+
+I'm starting to like this, actually.  Does anyone else feel halfway
+strongly about it?
+
+        -- Markus
+
+
+From gilles.landais at astro.unistra.fr  Mon Sep 14 19:27:03 2026
+From: gilles.landais at astro.unistra.fr (gilles.landais at astro.unistra.fr)
+Date: Mon, 14 Sep 2026 19:27:03 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+Message-ID: <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+
+Hello all!
+
+
+Upload is heavy to implement and to execute. Upload is a part of TAP, so 
+if you implement a SCS as an interface of an existing TAPservice?; it?s 
+ok, else it becomes more difficult.
+In VizieR, the SCS doesn?t use TAP at all. The VizieR SCS is dedicated 
+for cone and uses a technology more efficient than database (see AT2S 
+poster from FX.Pineau).? I would like to keep this in SCS2.
+
+Multi-cone?: why not?? But what does it means?? Do we expect a 
+??union??? Or a ??union ALL?? (so accept repetition or not).
+
+The main problem I think with POS is the complexity of the geometries 
+which may be more difficult to implement, especially if ADQL regions and 
+STCS syntax are included. If POS is added, they must remain options? 
+(polygon is not conesearch).
+Can we imagine customization (for example, my service accepts CIRCLE AND 
+MOC only)? without it becoming tedious to use? I doubt...
+
+At the same time having a Simple MOC search is interesting :)?and SCS2 
+is a good opportunity?!
+
+Regards
+
+Gilles Landais (CDS)
+
+On 9/4/26 11:05, Markus Demleitner via dal wrote:
+> Dear DAL,
+>
+> On Fri, Sep 04, 2026 at 09:12:00AM +0100, Mark Taylor via dal wrote:
+>> The current SCS2 draft says (sec 4.1.6):
+>>
+>>     "SCS2 services may support a POS parameter as defined by SIAP2
+>>      (Dowler and Bonnarel et al., 2015), except that for SCS2, this is a
+>>      non-repeatable parameter."
+>>
+>> so the multi-position benefit does not apply here, as the text
+>> is currently written.
+> ...which is of course open to debate.  UPLOAD was a surprising pain
+> in implementation, and multi-POS would be a relatively cheap
+> replacement to the current UPLOAD model for a simple multicone.
+>
+> Of course, UPLOAD would scale to multi-parameter queries (e.g, mag
+> limit 23 in cone A and 19 in cone B), which POS can never do.  But we
+> don't have that in the current draft and likely never will.
+>
+> So, perhaps we should turn things around, make (multi-) POS
+> mandatory and scrap UPLOAD entirely?
+>
+> This would still leave the problem of POLYGON.  Perhaps if we just
+> required support for CIRCLE and added an element in the capability
+> that lets clients discover other geometry types (<ohhhh!> MOC?) on a
+> per-service basis?
+>
+> I'm starting to like this, actually.  Does anyone else feel halfway
+> strongly about it?
+>
+>          -- Markus
+>
+>
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260914/6239762f/attachment.htm>
+
+From pdowler.cadc at gmail.com  Tue Sep 15 01:09:37 2026
+From: pdowler.cadc at gmail.com (Patrick Dowler)
+Date: Mon, 14 Sep 2026 16:09:37 -0700
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+Message-ID: <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+
+SODA-1.0 has both POS and type-specific params, eg CIRCLE. We designed
+that after SIAv2 and we kept POS as a compromise. It was simpler to
+advertise which parameters a SODA service supported (in a datalink
+service descriptor).
+
+A circle parameter would have a defined (DALI) xtype and value
+serialisation and be required for SCSv2; other such params (POLYGON,
+MOC, etc) could be defined now or later and be optional. Then it comes
+down to declaring which parameter names are supported (capabilities or
+service descriptors) rather than which variants of POS are supported.
+
+it's an option...
+
+--
+Patrick Dowler
+Canadian Astronomy Data Centre
+Victoria, BC, Canada
+
+On Mon, 14 Sept 2026 at 10:27, Landais via dal <dal at ivoa.net> wrote:
+>
+> Hello all!
+>
+>
+> Upload is heavy to implement and to execute. Upload is a part of TAP, so if you implement a SCS as an interface of an existing TAPservice ; it?s ok, else it becomes more difficult.
+> In VizieR, the SCS doesn?t use TAP at all. The VizieR SCS is dedicated for cone and uses a technology more efficient than database (see AT2S poster from FX.Pineau).  I would like to keep this in SCS2.
+>
+> Multi-cone : why not ? But what does it means ? Do we expect a ? union ?  Or a ? union ALL ? (so accept repetition or not).
+>
+> The main problem I think with POS is the complexity of the geometries which may be more difficult to implement, especially if ADQL regions and STCS syntax are included. If POS is added, they must remain options  (polygon is not conesearch).
+> Can we imagine customization (for example, my service accepts CIRCLE AND MOC only)  without it becoming tedious to use? I doubt...
+>
+> At the same time having a Simple MOC search is interesting :) and SCS2 is a good opportunity !
+>
+> Regards
+>
+> Gilles Landais (CDS)
+>
+> On 9/4/26 11:05, Markus Demleitner via dal wrote:
+>
+> Dear DAL,
+>
+> On Fri, Sep 04, 2026 at 09:12:00AM +0100, Mark Taylor via dal wrote:
+>
+> The current SCS2 draft says (sec 4.1.6):
+>
+>    "SCS2 services may support a POS parameter as defined by SIAP2
+>     (Dowler and Bonnarel et al., 2015), except that for SCS2, this is a
+>     non-repeatable parameter."
+>
+> so the multi-position benefit does not apply here, as the text
+> is currently written.
+>
+> ...which is of course open to debate.  UPLOAD was a surprising pain
+> in implementation, and multi-POS would be a relatively cheap
+> replacement to the current UPLOAD model for a simple multicone.
+>
+> Of course, UPLOAD would scale to multi-parameter queries (e.g, mag
+> limit 23 in cone A and 19 in cone B), which POS can never do.  But we
+> don't have that in the current draft and likely never will.
+>
+> So, perhaps we should turn things around, make (multi-) POS
+> mandatory and scrap UPLOAD entirely?
+>
+> This would still leave the problem of POLYGON.  Perhaps if we just
+> required support for CIRCLE and added an element in the capability
+> that lets clients discover other geometry types (<ohhhh!> MOC?) on a
+> per-service basis?
+>
+> I'm starting to like this, actually.  Does anyone else feel halfway
+> strongly about it?
+>
+>         -- Markus
+>
+>
+>
+>
+>
+
+From Pierre.Fernique at astro.unistra.fr  Tue Sep 15 09:32:02 2026
+From: Pierre.Fernique at astro.unistra.fr (Pierre Fernique)
+Date: Tue, 15 Sep 2026 09:32:02 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+Message-ID: <53ce0dbc-17cc-4d54-b10b-3d119ea359b1@astro.unistra.fr>
+
+
+Le 14/09/2026 ? 19:27, Landais via dal a ?crit?:
+>
+> Hello all!
+>
+>
+(...)
+>
+> At the same time having a Simple MOC search is interesting :)?and SCS2 
+> is a good opportunity?!
+>
++1
+Pierre
+>
+> Regards
+>
+> Gilles Landais (CDS)
+>
+> On 9/4/26 11:05, Markus Demleitner via dal wrote:
+>> Dear DAL,
+>>
+>> On Fri, Sep 04, 2026 at 09:12:00AM +0100, Mark Taylor via dal wrote:
+>>> The current SCS2 draft says (sec 4.1.6):
+>>>
+>>>     "SCS2 services may support a POS parameter as defined by SIAP2
+>>>      (Dowler and Bonnarel et al., 2015), except that for SCS2, this is a
+>>>      non-repeatable parameter."
+>>>
+>>> so the multi-position benefit does not apply here, as the text
+>>> is currently written.
+>> ...which is of course open to debate.  UPLOAD was a surprising pain
+>> in implementation, and multi-POS would be a relatively cheap
+>> replacement to the current UPLOAD model for a simple multicone.
+>>
+>> Of course, UPLOAD would scale to multi-parameter queries (e.g, mag
+>> limit 23 in cone A and 19 in cone B), which POS can never do.  But we
+>> don't have that in the current draft and likely never will.
+>>
+>> So, perhaps we should turn things around, make (multi-) POS
+>> mandatory and scrap UPLOAD entirely?
+>>
+>> This would still leave the problem of POLYGON.  Perhaps if we just
+>> required support for CIRCLE and added an element in the capability
+>> that lets clients discover other geometry types (<ohhhh!> MOC?) on a
+>> per-service basis?
+>>
+>> I'm starting to like this, actually.  Does anyone else feel halfway
+>> strongly about it?
+>>
+>>          -- Markus
+>>
+>>
+>>
+>>
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260915/ea8e9bc1/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Tue Sep 15 08:44:03 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 15 Sep 2026 08:44:03 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+ <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+Message-ID: <53gvtgp4bwo6jkt5wjcgz2amiltdzvmuw475qff4bwmgz54euz@3segnizw7nvj>
+
+Dear DAL folks,
+
+On Mon, Sep 14, 2026 at 04:09:37PM -0700, Patrick Dowler via dal wrote:
+> A circle parameter would have a defined (DALI) xtype and value
+> serialisation and be required for SCSv2; other such params (POLYGON,
+> MOC, etc) could be defined now or later and be optional. Then it comes
+> down to declaring which parameter names are supported (capabilities or
+> service descriptors) rather than which variants of POS are supported.
+
+Ok, so we'll replace POS with CIRCLE... and keep RA/DEC/SR as some
+sort of legacy wrapper?  And require CIRCLE, including its repeated
+use?
+
+I think I'll put that into the spec unless there's loud protest just
+about now.
+
+As to Gilles' question:
+
+> multi-cone?: why not?? But what does it means?? Do we expect a
+> ??union??? Or a ??union ALL?? (so accept repetition or not).
+
+I'm pretty sure the rules should remain as they are for the current
+UPLOAD: It's a normal UNION.
+
+To me, that's obvious because of the benefits a proper primary key
+(meta.id;meta.main) gives to any sort of data; but the alternative
+"multiple, possibly overlapping cones" would also only work properly
+if each row said which cone matched it, and we don't have a mechanism
+that does that either.
+
+I give you at on the implementation side, the non-dupe requirement
+was a bit tedious with the join-based strategy I had with UPLOAD.
+Multi-CICLE I'll probably do by OR-ing together the individual
+constraints, and then plain UNION is even more natural.
+
+Thanks,
+
+        Markus
+
+
+From gregory.mantelet at astro.unistra.fr  Tue Sep 15 14:15:40 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Tue, 15 Sep 2026 14:15:40 +0200
+Subject: SLAP2 and the data-source vocabulary
+In-Reply-To: <4fgmfdl4tag3jqgys45exryfmvku5jehqyxhefcygnui37vw6z@xgwd6wmu7u6g>
+References: <4fgmfdl4tag3jqgys45exryfmvku5jehqyxhefcygnui37vw6z@xgwd6wmu7u6g>
+Message-ID: <c78cc6c0-c230-44ef-b76b-e285c94a1d57@astro.unistra.fr>
+
+Dear Markus, Semantics and DAL members,
+
+I do not feel competent regarding this question, but I completely understand
+the need for such vocabulary, especially in the context of SLAP(2).
+
+As Markus said, there is currently no existing SLAP1 service, hence the 
+amazing
+possibility to change the vocabulary introduced in v1 into a much better 
+one in
+v2. Even not being an astronomer, I agree that the distinction between
+"observational/astrophysical" and "observational/laboratory" is not clear.
+
+Has anybody in the Semantics WG or anyone having observational or 
+theoretical
+data (whatever kind they are) an opinion?
+
+SLAP2 will be very soon a Proposed Recommendation. It would be really 
+great to
+have its vocabulary ready before it becomes a REC.
+
+Thank you for your help,
+Gr?gory M.
+
+
+Le 27/08/2026 ? 15:34, Markus Demleitner via dal a ?crit?:
+> Dear Semantics, dear DAL,
+>
+> You may remember the data-source vocabulary that we're currently
+> trying to introduce with VODataService 1.3:
+> <https://www.ivoa.net/rdf/data-source/>.
+>
+> When last discussed in Strasbourg (rather lively), it was about
+> telling #abstract-model from #concrete-model.  Now, my hopes that
+> #observation is less tricky (for now) turn out to be unjustified.
+> This is because on the way to SLAP2, I would like to replace the
+> dataSource element in its registry extension with something using
+> with the vocabulary (and then probably drop it in favour of the
+> VODataService 1.3 dataSource, but that's a minor matter).
+>
+> The SimpleDALRegExt 1.2 ("SLAP1") content model is
+>
+> "observational/astrophysical", "observational/laboratory", "theoretical"
+>
+> -- and I really think we can't tell the line community to disregard
+> the difference between the first two concepts.  Since there are
+> (essentially) no live SLAP1 services left, we are free to rename
+> them, but I think we have to keep the concepts.
+>
+> In a first stab, I've created #in-situ and #laboratory concepts,
+> What do people think?  In particular look at the definitions.  I'm
+> aware that you can construct things that violate the principle that
+> something should be within one leaf concept only (think of robolabs
+> onboard of spacecraft ), but at least I can't make the definitions
+> such that these aren't ambiguous (for the record, I think the
+> definitions should be written such that robolabs count as in-situ).
+>
+> Comments welcome, more welcome actually if they come early.
+>
+> I'd suggest followups should go to semantics.
+>
+> Thanks,
+>
+>             Markus
+
+
+From stephane.erard at obspm.fr  Tue Sep 15 15:15:51 2026
+From: stephane.erard at obspm.fr (=?utf-8?Q?St=C3=A9phane_Erard?=)
+Date: Tue, 15 Sep 2026 15:15:51 +0200
+Subject: SLAP2 and the data-source vocabulary
+In-Reply-To: <c78cc6c0-c230-44ef-b76b-e285c94a1d57@astro.unistra.fr>
+References: <4fgmfdl4tag3jqgys45exryfmvku5jehqyxhefcygnui37vw6z@xgwd6wmu7u6g>
+ <c78cc6c0-c230-44ef-b76b-e285c94a1d57@astro.unistra.fr>
+Message-ID: <681D5736-1381-459A-B49E-06DA5CCAFB8C@obspm.fr>
+
+Hello
+
+My two cents: 
+
+A usual split, as far as data is concerned, is between:
+
+1) observational 
+	either ground based or space borne (plus possibly field observations on Earth)
+	with space borne being either in-situ or remote sensing (field obs also)
+	in-situ covering e.g., either rovers/landers or plasma instruments. The instrument is literally in contact with the target; this hardly applies to stars and galaxies ;)
+
+2) experimental (lab)
+	this is very different from observations, e.g. in terms of data volume, instrumentation, capacities, etc, and can be described as "measurements" rather than observations. It often applies to isolated samples and provides ground truth, in contrast with usual observations. And this is the usual source of computational models.
+
+3) modelling
+I could live with the distinction between abstract/concrete simulations, but I'm not sure about the examples provided:
+"Examples would include common cosmological simulations or model spectra of atmospheres."
+? atmospheric modeling is not an abstract thing: you tweak the parameters to reproduce the observations, so as to explain them (unless you think of ab-initio computations).
+Same thing with surface spectra or global circulation models.
+"An example would be images generated from catalogues for exercising pipelines or reduction software."
+? to me that would fall under abstract. You're just producing reasonably credible data to train a software, no need to be exact.
+
+So, as discussed in Strasbourg, my feeling is that the distinction between abstract / concrete modeling / simulations is jesuitic and can only result in misclassifications, for very little added value - this may be different in some fields of course, but I can find no counterexample.
+The same distinction could in fact apply to experimental data (reference measurements vs exploratory ones), with similarly little benefit.
+
+St?phane
+
+
+
+> Le 15 sept. 2026 ? 14:15, Gregory MANTELET via semantics <semantics at ivoa.net> a ?crit :
+> 
+> Dear Markus, Semantics and DAL members,
+> 
+> I do not feel competent regarding this question, but I completely understand
+> the need for such vocabulary, especially in the context of SLAP(2).
+> 
+> As Markus said, there is currently no existing SLAP1 service, hence the amazing
+> possibility to change the vocabulary introduced in v1 into a much better one in
+> v2. Even not being an astronomer, I agree that the distinction between
+> "observational/astrophysical" and "observational/laboratory" is not clear.
+> 
+> Has anybody in the Semantics WG or anyone having observational or theoretical
+> data (whatever kind they are) an opinion?
+> 
+> SLAP2 will be very soon a Proposed Recommendation. It would be really great to
+> have its vocabulary ready before it becomes a REC.
+> 
+> Thank you for your help,
+> Gr?gory M.
+> 
+> 
+> Le 27/08/2026 ? 15:34, Markus Demleitner via dal a ?crit :
+>> Dear Semantics, dear DAL,
+>> 
+>> You may remember the data-source vocabulary that we're currently
+>> trying to introduce with VODataService 1.3:
+>> <https://www.ivoa.net/rdf/data-source/>.
+>> 
+>> When last discussed in Strasbourg (rather lively), it was about
+>> telling #abstract-model from #concrete-model.  Now, my hopes that
+>> #observation is less tricky (for now) turn out to be unjustified.
+>> This is because on the way to SLAP2, I would like to replace the
+>> dataSource element in its registry extension with something using
+>> with the vocabulary (and then probably drop it in favour of the
+>> VODataService 1.3 dataSource, but that's a minor matter).
+>> 
+>> The SimpleDALRegExt 1.2 ("SLAP1") content model is
+>> 
+>> "observational/astrophysical", "observational/laboratory", "theoretical"
+>> 
+>> -- and I really think we can't tell the line community to disregard
+>> the difference between the first two concepts.  Since there are
+>> (essentially) no live SLAP1 services left, we are free to rename
+>> them, but I think we have to keep the concepts.
+>> 
+>> In a first stab, I've created #in-situ and #laboratory concepts,
+>> What do people think?  In particular look at the definitions.  I'm
+>> aware that you can construct things that violate the principle that
+>> something should be within one leaf concept only (think of robolabs
+>> onboard of spacecraft ), but at least I can't make the definitions
+>> such that these aren't ambiguous (for the record, I think the
+>> definitions should be written such that robolabs count as in-situ).
+>> 
+>> Comments welcome, more welcome actually if they come early.
+>> 
+>> I'd suggest followups should go to semantics.
+>> 
+>> Thanks,
+>> 
+>>            Markus
+> 
+> 
+> 
+> 
+> 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260915/22ad213a/attachment.htm>
+
+From francois-xavier.pineau at astro.unistra.fr  Wed Sep 16 14:50:58 2026
+From: francois-xavier.pineau at astro.unistra.fr (Francois-Xavier PINEAU)
+Date: Wed, 16 Sep 2026 14:50:58 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <53gvtgp4bwo6jkt5wjcgz2amiltdzvmuw475qff4bwmgz54euz@3segnizw7nvj>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+ <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+ <53gvtgp4bwo6jkt5wjcgz2amiltdzvmuw475qff4bwmgz54euz@3segnizw7nvj>
+Message-ID: <de5f5ffe-d948-4509-92ff-598e22d7a9e7@astro.unistra.fr>
+
+Dear Markus and DAL,
+
+Here a few (biased) comments on SCS2.
+
+1. Zone/range/interval, boxes, MOCs, and interoperability
+
+Many years ago, before he retired, I asked Fran?ois Ochsenbein why the 
+simple
+table access protocols in the IVOA were limited to Cone Search.
+Why not also support zones/ranges/intervals (i.e. RAMin, DecMin, RAMax, 
+DecMax),
+boxes (RA, Dec, Maj, Min, PosAngle) -- today, we could add MOCs --, etc.?
+His answer was -- if I remember correctly -- that a cone has the nice 
+property
+of being simple to convert from one reference system to another one.
+
+Depending on the (table, data centre) couple, the primary position of a 
+table
+may be expressed in FK4, ICRS, Galactic coordinates, etc.
+And indeed:
+* a zone/range/interval (delimited by 2 small circles and 2 meridians) 
+in one
+ ? coordinate system cannot in general be converted into a corresponding
+ ? zone/range/interval in another system (not even into a polygon).
+* a box:
+ ? ? + without a position angle (as in ADQL 1.0) cannot in general be 
+converted
+ ? ? ? into a box without a position angle in another coordinate system;
+ ? ? + with a position angle can be transformed, but the transformation 
+is not
+ ? ? ? straightforward. The position angle is defined with respect to the
+ ? ? ? North Celestial Pole and therefore remains invariant, whereas the
+ ? ? ? angle with respect to the system's (0,0,1) axis changes.
+* a MOC cannot be converted into a coordinate system different from ICRS
+ ? (its cells boundaries are not great circle arcs).
+
+In the main VizieR database, the??reference system of the primary 
+(indexed) position
+depends on the table. Likewise, I assume that not all tables at all data
+centres are indexed in ICRS.
+For a given ICRS cone and a given table, the centre of the cone can simply
+be transformed into the coordinate system used by that table before 
+performing
+the query (and ICRS positions added to the result, with no impact
+on the search/retrieve mechanism).
+This approach is not possible, or at least is not straightforward,
+for zones/ranges/intervals, MOCs, etc.
+
+ From an interoperability point of view, I therefor have concerns in making
+zones/ranges and MOCs part of the SCS2 (even optionally), **unless** all
+data centres agree to use ICRS as the coordinate system of their indexed 
+positions.
+
+
+2. Scope of a "simple" protocol
+
+I am not against performing queries on zones/ranges, MOCs, polygons, etc.
+Quite the contrary. I think these are all useful capabilities.
+However, I would prefer them not to be part of the simplest and most
+interoperable standard (even if optional).
+In particular, I would be reluctant to add them to a protocol whose purpose
+is explicitly to provide a "simple cone search" interface.
+(If one has to know the exact capabilities of a service, capabilities 
+that may vary from
+one table to another in a same service,? to determine whether,
+e.g., it supports queries by MOCs (and for which tables), I would not 
+consider that "simple".).
+
+Why not, e.g., a PAXT for "Position Access eXtension for Tables" that 
+would be
+more flexible that enforcing ICRS input regions (but necessarily less 
+simple/interoperable
+than SCS)?
+
+
+3. Multi-cone
+
+One of the advantages of SCS, from my perspective, is that it provides a
+low entry barrier to the VO: it is easy to implement, and it remains
+relatively easy to support even with a (reasonably) large number of
+simultaneous queries.
+ From a performance point of view, provided that the data are positionally
+indexed (and clustered!), the cost of a single cone-search query can be 
+quite
+low -- essentially a few disk accesses.
+This is no longer necessarily true for multi-cone queries, particularly if
+multi-cone is intended to support cross-matching.
+For example, consider 100,000 small cones uniformly distributed over the
+full sky, each returning a single row from a large table such as Gaia.
+On a regular HDD array with a seek time of about 5 ms, and assuming a single
+user with a cold disk cache, this could already amount to roughly 8 minutes
+of disk-seek time (it is a rough estimate: disk array buffer cache may help,
+but the single user assumption is optimistic).
+Modern web-browsers timeout is 5min.
+Supporting several such queries simultaneously is therefore quite different
+from supporting several independent single-cone searches.
+And the xmatch usage of the multi-cone is different from retrieving data in
+a? few large cones (e.g. give me al source in a list of XMM FOVs).
+
+Again, I am not against multi-cone queries (i.e., as you describe,? the 
+union
+of possibly overlapping cones). I just question whether they belong in a 
+"simple",
+low-entry-barrier protocol.
+
+3.1. Table Upload
+
+The format of the uploaded table is very constrained: it consists of only
+three columns (RA, Dec, SR), in this order, and we could even impose the
+format (decimal) and units (deg, deg, deg), if its not already the case.
+Thus, we do not need any metadata on the input.
+
+Given these constraints, why not use a simple CSV input instead of a 
+VOTable?
+(Reading a VOTable is, in general, more challenging than writing a VOTable).
+
+4. A basic cross-match protocol?
+
+Finally, since we are considering multi-cone queries, and since these 
+queries
+will undoubtedly be used to perform cross-matches, perhaps we may also
+consider a "basic XMatch" protocol.
+Rather than making SCS increasingly complex to accommodate this use case,
+perhaps a dedicated, basic cross-match protocol could provide the 
+functionality
+needed for the common cases while keeping SCS genuinely simple.
+
+
+5. Against a uniq String IDs in the result
+
+Uniq String ID in the result is mandatory in SCS 1.1:
+https://www.ivoa.net/documents/ConeSearch/20200828/WD-ConeSearch-1.1-20200828.html
+According to SCS2:
+https://ivoa.net/documents/ConeSearch/20260529/WD-SCS2-2.0-20260529.html
+it comes from DALI sec. 5.
+
+I have a few concerns about making this a MUST:
+* why require an integer/long primary key to be converted to a string,
+ ? when the original datatype is already well defined?
+ ? The BINARY representation is different (its not just about the metadata),
+ ? and we lose potentially useful datatype information.
+* what about tables with no simple primary key (e.g.? PK = 2 FKs),
+ ? or with an internal record number that the data provider would prefer 
+not to expose)?
+ ? One such example is the identifier of the Tycho2 catalog:
+https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=I/259&-to=3
+ ? which is the combination of the TYC1, TYC2 and TYC3 columns.
+
+For these reasons, I would prefer a SHOULD rather than a MUST here.
+This would still recommend providing a unique identifier when appropriate.
+
+
+In conclusion, I tend to think that SCS should remain a low-barrier 
+protocol in the VO.
+Even when functionalities are optional, they inevitably make the 
+standard more complex,
+and there is a certain frustration in having functionality defined in 
+the standard but not
+implementing it.
+I understand that updating an existing standard is generally simpler 
+than defining new ones.
+However, I do think there is room between SCS and TAP for additional, 
+more focused standards:
+for example, one for single-table positional access, an extension of SCS 
+(possibly including
+multi-cone searches, provided we limit their use to a "small" number of 
+potentially large cones),
+and perhaps one for simple cross-matches.
+
+
+Best Regards.
+
+
+Le 15/09/2026 ? 08:44, Markus Demleitner via dal a ?crit?:
+> Dear DAL folks,
+>
+> On Mon, Sep 14, 2026 at 04:09:37PM -0700, Patrick Dowler via dal wrote:
+>> A circle parameter would have a defined (DALI) xtype and value
+>> serialisation and be required for SCSv2; other such params (POLYGON,
+>> MOC, etc) could be defined now or later and be optional. Then it comes
+>> down to declaring which parameter names are supported (capabilities or
+>> service descriptors) rather than which variants of POS are supported.
+> Ok, so we'll replace POS with CIRCLE... and keep RA/DEC/SR as some
+> sort of legacy wrapper?  And require CIRCLE, including its repeated
+> use?
+>
+> I think I'll put that into the spec unless there's loud protest just
+> about now.
+>
+> As to Gilles' question:
+>
+>> multi-cone?: why not?? But what does it means?? Do we expect a
+>> ??union??? Or a ??union ALL?? (so accept repetition or not).
+> I'm pretty sure the rules should remain as they are for the current
+> UPLOAD: It's a normal UNION.
+>
+> To me, that's obvious because of the benefits a proper primary key
+> (meta.id;meta.main) gives to any sort of data; but the alternative
+> "multiple, possibly overlapping cones" would also only work properly
+> if each row said which cone matched it, and we don't have a mechanism
+> that does that either.
+>
+> I give you at on the implementation side, the non-dupe requirement
+> was a bit tedious with the join-based strategy I had with UPLOAD.
+> Multi-CICLE I'll probably do by OR-ing together the individual
+> constraints, and then plain UNION is even more natural.
+>
+> Thanks,
+>
+>          Markus
+-- 
+
+Francois-Xavier Pineau
+Ing?nieur de Recherche
+T?l : +33 (0)3 68 85 24 14,
+francois-xavier.pineau at astro.unistra.fr
+
+Centre de Donn?es astronomiques de Strasbourg (CDS)
+11, rue de l'Universit? - E03
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260916/b4703d85/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Fri Sep 18 15:56:26 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Fri, 18 Sep 2026 15:56:26 +0200
+Subject: SCS2: POS plus RA/DEC/SR
+In-Reply-To: <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+ <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+Message-ID: <rt5rrapgu44y4my3lxch572mhyraf6uaj2opn52ba6mqv5p5al@7qab4qq5jcw3>
+
+Dear DAL folks,
+
+On Mon, Sep 14, 2026 at 04:09:37PM -0700, Patrick Dowler via dal wrote:
+> A circle parameter would have a defined (DALI) xtype and value
+> serialisation and be required for SCSv2; other such params (POLYGON,
+> MOC, etc) could be defined now or later and be optional. Then it comes
+> down to declaring which parameter names are supported (capabilities or
+> service descriptors) rather than which variants of POS are supported.
+
+As I had said, I like Pat's idea, and thus I've made
+<https://github.com/ivoa-std/SCS2/pull/9>.  This
+
+* Drops POS and introduces CIRCLE
+* Makes CIRCLE support mandatory (less optional=more happiness)
+* Allows the repetition of CIRCLE
+* But allows clients to reject more than n CIRCLEs
+* And let them declare how many CIRCLEs they are prepared to accept
+  in the capability extension (thus pushing the schema version to
+  1.2)
+* And since we can do multicone in this way, I drop UPLOAD support.
+
+What does everyone think?  Please review (and please review the
+remaining PRs, too)...
+
+Thanks,
+
+      Markus
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Sep 22 10:48:48 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 22 Sep 2026 10:48:48 +0200
+Subject: SCS2: CIRCLE [was: POS] plus RA/DEC/SR
+In-Reply-To: <rt5rrapgu44y4my3lxch572mhyraf6uaj2opn52ba6mqv5p5al@7qab4qq5jcw3>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+ <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+ <rt5rrapgu44y4my3lxch572mhyraf6uaj2opn52ba6mqv5p5al@7qab4qq5jcw3>
+Message-ID: <tkhzl62byezxtku46fyrstsjxrnp5rmxazksdb2xnaskyeaa6n@dunzuyrjygkc>
+
+Dear DAL folks, again,
+
+Sorry for replying to my own mail, but I'd like to point you to
+Mark's github comment in the present matter:
+
+On Fri, Sep 18, 2026 at 03:56:26PM +0200, Markus Demleitner wrote:
+> As I had said, I like Pat's idea, and thus I've made
+> <https://github.com/ivoa-std/SCS2/pull/9>.  This
+>
+> * Drops POS and introduces CIRCLE
+> * Makes CIRCLE support mandatory (less optional=more happiness)
+
+In <https://github.com/ivoa-std/SCS2/pull/9#issuecomment-5763502172>,
+Mark now observes:
+
+  However it's not clear from this PR as currently written how CONE
+  is supposed to interact with the old-style parameters RA,DEC,SR.
+  Section 4.3 suggests that *either* CONE(s) *or* RA,DEC,SR must be
+  present in a query?
+
+  ... which sounds like an unnecessary complication.  Why not get rid
+  of RA,DEC,SR altogether and just require one or more CONE
+  specifications?  It's more of a break with the familiar
+  ConeSearch-1 syntax, but if SCS2 is avowedly
+  non-backward-compatible that doesn't sound like a problem.
+
+Which of course is true.  Without any historical baggage I'm sure
+we'd just have CIRCLE and no RA, DEC, and SR.
+
+For now, it (the baggage and the paramater set) is there.  If nobody
+jumps in to its rescue, however, I feel an increasing urge to drop
+the split position specification for simplicity.
+
+How chagrined would by be by the demise of RA, DEC, and SR?
+
+       -- Markus
+
+[who will say that the split parameters have the advantage that you
+can attach metadata to the parameter declarations: ranges, a median,
+etc, or a maximal and perhaps minimal search radius (minimal search
+radius as a measure of positional uncertainty even?).  But at least
+for coverage we don't need that with-column metadata: that
+information is already in the global resource metadata]
+
+
+From gregory.mantelet at astro.unistra.fr  Wed Sep 23 14:51:57 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 23 Sep 2026 14:51:57 +0200
+Subject: Call for contributions to DAL WG session at November 2026 Interop
+Message-ID: <5f348021-5839-47c0-91c8-41e860f5c2c3@astro.unistra.fr>
+
+Dear DAL and IVOA?members,
+
+The November IVOA Interoperability Meeting 
+<https://adass2026.icrar.org/ivoa-2026>?will take place in Perth 
+(Australia) from the 6th to the 8th of November 2026. Remote attendance 
+is supported.
+
+As a reminder, if you want to participate to this meeting, do not forget 
+to register on the meeting website 
+<https://events.humanitix.com/perth-ivoa-interoperability-meeting> (even 
+you plan to attend remotely).
+
+With this email, Joshua and I invite you to contribute to DAL sessions 
+with a DAL related topic.
+
+    /DAL stands for Data Access Layer. This Working Group aims to define
+    standards and protocols to access data in an interoperable way. Here
+    are few examples of well-known DAL standards: (Simple) Cone Search,
+    SIA (image access), SSA (spectra access), TAP (Table Access
+    Protocol) and ADQL (SQL-like language to query a database). The full
+    list of DAL standards is available on the IVOA Documents page
+    <https://www.ivoa.net/documents/>./
+
+During this interop., you can contribute, remotely or in-person, with a 
+talk presenting implementations, sharing your experience as user, 
+presenting and discussing progress on a DAL standards, or presenting 
+use-cases.
+
+If you are interested, please send your contribution to 
+gregory.mantelet at astro.unistra.fr 
+<mailto:gregory.mantelet at astro.unistra.fr> and jfraustro at stsci.edu 
+<mailto:jfraustro at stsci.edu> with:
+
+  * a speaker name,
+  * a title,
+  * ideally an abstract.
+
+If you are unsure about the suitability of a talk, or are a first time 
+contributor, please get in contact with us.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260923/8b630ba8/attachment.htm>
+
+From msdemlei at ari.uni-heidelberg.de  Wed Sep 30 10:28:25 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 30 Sep 2026 10:28:25 +0200
+Subject: SCS2: CIRCLE minus RA/DEC/SR
+In-Reply-To: <tkhzl62byezxtku46fyrstsjxrnp5rmxazksdb2xnaskyeaa6n@dunzuyrjygkc>
+References: <prnlgaugctkerpvfqxmtai5brsggcsncwe7atlaayhqa6ilopx@tttpsjks3g2u>
+ <CAFK8nroVba4=X1XHen1PCfnYUswb3JuYuNwooA83b-JD=Qt6RA@mail.gmail.com>
+ <699e05a-8ada-7ab1-bcf-3191afcca4e8@andromeda.star.bris.ac.uk>
+ <mthzd4etyfsbthhmnrt54fwvh5lcnvnfsppdbc5fktfhy5gytu@wm5loxjgauvs>
+ <3548bbd5-4de1-4624-932d-cc4d74fa22b6@astro.unistra.fr>
+ <CAFK8nrpe6TNKD47205-XxKsjz_W7ZW_t8trMN7a+Y41+vheLnQ@mail.gmail.com>
+ <rt5rrapgu44y4my3lxch572mhyraf6uaj2opn52ba6mqv5p5al@7qab4qq5jcw3>
+ <tkhzl62byezxtku46fyrstsjxrnp5rmxazksdb2xnaskyeaa6n@dunzuyrjygkc>
+Message-ID: <n6xpumwke66pj56yu2sjjkwsgv2kmdhmkp5hymgids2pgfl73w@gtlecl7ymgbl>
+
+Soooo, again replying to myself,
+
+On Tue, Sep 22, 2026 at 10:48:48AM +0200, Markus Demleitner wrote:
+> Which of course is true.  Without any historical baggage I'm sure
+> we'd just have CIRCLE and no RA, DEC, and SR.
+>
+> For now, it (the baggage and the paramater set) is there.  If nobody
+> jumps in to its rescue, however, I feel an increasing urge to drop
+> the split position specification for simplicity.
+>
+> How chagrined would by be by the demise of RA, DEC, and SR? [s/by/you/]
+
+Since nobody replied, I went ahead and wrote PR #10,
+<https://github.com/ivoa-std/SCS2/pull/10>, which drops the classic
+three parameters.
+
+I'll happily give you that it's harder now to directly drive SCS2
+services from web forms, but that's probably a remote use case
+anyway.  If you have an javascript layer, that'd be easy to
+circumvent (which is an odd argument to hear myself bring forward,
+but there you go).
+
+Other than that and nostalgia, I don't see a downside to dropping
+split-position parameters.
+
+So... reviews solicited!
+
+Thanks,
+
+           Markus
+
+
+
+From msdemlei at ari.uni-heidelberg.de  Wed Sep 30 14:37:21 2026
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Wed, 30 Sep 2026 14:37:21 +0200
+Subject: Text error messages
+In-Reply-To: <615545a-5d36-4de6-31ef-8b49c2e94499@andromeda.star.bris.ac.uk>
+References: <lvmd52to3yq7yxq5zq4zzfpr73hk5tevhuh52tvy5iumxjdhxp@amcjxnz7xgfz>
+ <CAPx=0xOWrkbwr_Fd8shknxKkwrr1R3Oyt7QAe1Y0Z4fyLzzRyA@mail.gmail.com>
+ <2wbwmmbdhm4brbgfwjoylvdeih4m5wcq4m4orermiwjhn6c42q@ijwolh764xtn>
+ <MEYPR01MB677695EB54EBB49D083E94EEC0E02@MEYPR01MB6776.ausprd01.prod.outlook.com>
+ <xk2c6br7q34fyfrcw25qx74wwwq35jr3peruzb5kfbui3ipu5e@wrpf6jxva3zm>
+ <956d6a584206b252fe4b0e294c5e597c@metagrid.co.uk>
+ <jusafb4c5irmdgjkiz2bucxbkeszkbzkejjc4qbxlcxiyksi6k@7lkvy2guzvsg>
+ <615545a-5d36-4de6-31ef-8b49c2e94499@andromeda.star.bris.ac.uk>
+Message-ID: <ertxjvatbqn3vmk2o36ayf4qa3yvasuvofsre65popkhdrhuni@qzamffkomv7m>
+
+Dear DAL,
+
+For the benefit of those that follow mail threads, here's a late
+reply to:
+
+On Thu, Jul 09, 2026 at 01:12:59PM +0100, Mark Taylor via dal wrote:
+> On Thu, 18 Jun 2026, Patrick Dowler via dal wrote:
+>
+> > In my opinion, the "errors in VOTable" were a simple but bad idea and
+> > we should figure out how to stop requiring it.
+>
+> I agree with this; requiring services to format errors as VOTables
+> is unneccessarily burdensome and a bit pointless too, since
+> clients are going to have to make sense of error messages that
+> get generated by non-VO-aware communication layers as well as
+> whatever VO standards dictate.  So I would support moving away
+> from requiring VOTable formatting in error messages.
+
+So, I've made a draft of this in commit 8e366ae, which is part of
+PR#11 <https://github.com/ivoa-std/SCS2/pull/11/commits>.  I'm sorry
+that the PR has these two extra commits; I can't seem to find out how
+to change the base branch for a pull request once it's open, and I
+can't be bothered to close and make a new one.
+
+So, perhaps more directly: Does someone have comments on
+<https://github.com/ivoa-std/SCS2/pull/11/changes/8e366aef59bc078f30e78085af4463dd72979d64>?
+
+PR reviews (all of https://github.com/ivoa-std/SCS2/pulls, where the
+commits from #9 and #10 are actually in #11 right now) would be
+*hightly* appreciated.
+
+
+
+From gregory.mantelet at astro.unistra.fr  Wed Sep 30 16:04:21 2026
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Wed, 30 Sep 2026 16:04:21 +0200
+Subject: URGENT: DAL Running Meeting #23 - SCS v2.0 Evolution Discussion
+Message-ID: <c9b031dc-a772-41fa-ada0-95a7dd2cb193@astro.unistra.fr>
+
+Dear DAL members,
+
+We are organizing a last minute DAL Running Meeting to discuss the 
+proposed evolutions for SCS in its new version 2.0. We may also speak 
+about SCS-1.1 if there are questions or comments about it directly or on 
+the transition between both versions.
+
+Markus, as editor of SCS-2.0, will not be attending the Interop meeting. 
+So this running meeting is the opportunity to discuss the latest changes 
+with him directly in person.
+
+If you feel concerned or interested by such discussion, please vote for 
+your preferred date and time in the poll below *by Friday at 1:00 PM**?UTC*:
+
+https://strawpoll.com/polls/BDyNzv9EqyR
+
+I will confirm the meeting date on Friday afternoon based on the 
+majority vote.
+
+If you can not attend this Running Meeting, don't worry, a recap talk 
+should be given at the Interop meeting. I will also open an Etherpad (or 
+alternative) so that anyone (even if absent) can contribute by sharing 
+comments or questions.
+
+Thank you for your flexibility and prompt response and sorry for 
+organizing this at the last minute.
+
+Cheers,
+Gr?gory M.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20260930/4c8bd31e/attachment.htm>
+

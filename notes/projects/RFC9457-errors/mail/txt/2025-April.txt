@@ -1,0 +1,414 @@
+From gregory.mantelet at astro.unistra.fr  Thu Apr 10 11:42:45 2025
+From: gregory.mantelet at astro.unistra.fr (=?UTF-8?Q?Gr=C3=A9gory_Mantelet?=)
+Date: Thu, 10 Apr 2025 11:42:45 +0200
+Subject: Call for contributions to DAL WG session at June 2025 Interop
+Message-ID: <99262849-0827-4bf9-b73a-b6d84e37851a@astro.unistra.fr>
+
+Dear DAL members and IVOA,
+
+The June IVOA Interoperability Meeting 
+<https://indico.ict.inaf.it/event/3121/overview> will take place in the 
+University of Maryland from the 2nd to the 6th of June 2025. Remote 
+attendance is supported.
+As a reminder, if you want to participate to this meeting, do not forget 
+to register on the meeting website 
+<https://indico.ict.inaf.it/event/3121/registrations/1444/> (even you 
+plan to attend remotely).
+
+With this email, Joshua and I invite you to contribute to DAL sessions 
+with a DAL related topic.
+
+    /DAL stands for Data Access Layer. This Working Group aims to define
+    standards and protocols to access data in an interoperable way. Here
+    are few examples of well-known DAL standards: (Simple) Cone Search,
+    SIA (image access), SSA (spectra access), TAP (Table Access
+    Protocol) and ADQL (SQL-like language to query a database). The full
+    list of DAL standards is available on the IVOA Documents page
+    <https://www.ivoa.net/documents/>./
+
+
+During this interop., you can contribute, remotely or in-person, with a 
+talk presenting implementations, sharing your experience as user, 
+presenting and discussing progress on a DAL standards, or presenting 
+use-cases.
+
+If you are interested, please send your contribution to 
+gregory.mantelet at astro.unistra.fr and jfraustro at stsci.edu with:
+
+  * a speaker name,
+  * a title,
+  * ideally an abstract.
+
+If you are unsure about the suitability of a talk, or are a first time 
+contributor, please get in contact with us.
+
+Cheers,
+Gr?gory Mantelet and Joshua Fraustro
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250410/f92d5020/attachment.htm>
+
+From mathieu.servillat at obspm.fr  Mon Apr 14 18:28:27 2025
+From: mathieu.servillat at obspm.fr (Mathieu Servillat)
+Date: Mon, 14 Apr 2025 18:28:27 +0200
+Subject: Fwd: [Heig] Workshop on ObsCore extensions and HEIG in Paris - 29-30
+ April 2025
+In-Reply-To: <c01b384c-d8d2-415f-b00d-f69fc71f2a27@obspm.fr>
+References: <c01b384c-d8d2-415f-b00d-f69fc71f2a27@obspm.fr>
+Message-ID: <c4702b8d-55c3-4714-a7a1-73549ec71086@obspm.fr>
+
+Dear all,
+
+I transfer this message as the workshop we will host in Paris, 29-30 
+April 2025, may be of interest to other IVOA WG or IG, as we will 
+enlarge the discussion to ObsCore extensions in general.
+
+Don't hesitate to register and come to the workshop !
+
+Best regards,
+
+Mathieu for the organization committee (Ada, Mireille, Catherine, Bruno, 
+Laurent, Pierre C.)
+
+
+-------- Message transf?r? --------
+
+Dear HEIG,
+
+Here is the workshop page with the general program (to be further detailed):
+
+https://indico.obspm.fr/event/2674/
+
+Please register if you can attend (remote or in person), and propose 
+discussion topics.
+
+We propose to have a HEIG session Tuesday 29 April from 1pm to 4pm UTC 
+(9am-12pm EDT, 3pm-6pm CEST), and a 1h HEIG meeting Wednesday 30 April 
+at 1pm UTC (9am EDT, 3pm CEST). An extra slot after the HEIG meeting is 
+possible to further discuss next plans.
+
+On Tuesday, we plan to have overviews of ObsCore and the proposed 
+extensions, then a discussion on the proposed attributes for the HEIG 
+extension (see online table via the link above), and the content of a 
+HEIG note on this topic.
+
+On Wednesday, we plan to prepare the proposed discussion at the Interop, 
+involving working groups: DM, DAL, Registry and others Interest Groups.
+
+Best regards,
+
+Mathieu for the organization committee (Ada, Mireille, Catherine, Bruno, 
+Laurent, Pierre C.)
+
+-- 
+Dr. Mathieu Servillat
+LUX - Laboratoire d'?tude de l'Univers et des ph?nom?nes eXtr?mes
+B?t 18, Bur. 222
+Observatoire de Paris, Site de Meudon
+5 place Jules Janssen
+92195 Meudon, France
+T?l. +33 1 45 07 78 62
+--
+
+-- 
+heig mailing list
+heig at ivoa.net
+http://mail.ivoa.net/mailman/listinfo/heig
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Apr 22 15:17:01 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 22 Apr 2025 15:17:01 +0200
+Subject: Call for contributions: Major version transition
+Message-ID: <20250422131701.ieytl6c7ija2z3vc@victor>
+
+Dear Colleagues,
+
+[apologies for the wide cross-post; followups to registry only, I'd
+suggest]
+
+As the VO matures, we will at some point have to introduce changes in
+our standards that break previous, widely-deployed standards.  For
+instance, some of the proposals put forward by the Protocol Transition
+Tiger Team would, if adopted, render existing clients broken; much more
+mundane, Simple Cone Search, as one of the first standards defined by
+the IVOA, now really shows its age.  Bringing it up to date will again
+be a breaking change and hence, in our language, a major version
+transition.
+
+Our first real attempt at a major version transition, SIAP, so far
+has not been a resounding success; almost 10 years after SIAv2 has
+been released (on 23 December 2015), there are still many SIAv1
+services coming online[1], and there is no telling how much data you
+would miss if you did a SIAv2-only query.
+
+We have therefore started a document on how to do major version
+transitions in the future:
+<https://github.com/ivoa/major-version-transition>: this may eventually
+become an IVOA Note, but for now we would like to have the community's
+opinions on what we have written -- and also gather experiences with
+successful, failed or so-so major version transitions *in federated
+systems*, quite possibly from beyond astronomy.
+
+To that end, we plan to hold a session at the upcoming College Park
+Interop.  The rough plan is to have some short-ish talks introducing the
+matter (and the troubles) and then at least 45 minutes of discussion
+time.
+
+If you have
+
+* comments about or suggestions for the major version transition
+  document, or
+* stories of non-trivial (i.e., >=3 implementors, >=20 independent
+	deployments) major version transitions and their outcomes,
+
+we would like to invite you to give a short talk at this session
+(remote talks are of course ok).  For instance, if you remember the
+UCD1 -> UCD1+ process, or want to moan about the adoption of ADQL2.1
+(admittedly, that's a minor version transition, but still), we'd like
+to hear from you.  Or if you have hard data on how much we would lose
+if we officially declared SIAv1 as deprecated and told people to
+ignore the respective services, or have non-VO experiences where
+someone got a whole community to cooperate on sunsetting an outdated
+standard: Please send a mail to me with a title and a short (a few
+sentences max) abstract.
+
+Thanks,
+
+          Markus (for an anonymous ad-hoc working group that you'd be
+            welcome to join)
+
+[1] Don't take my word for it.  For a list of SIAv1 resources that were
+registered in the past 12 months, run
+
+select ivoid, created
+from rr.capability
+  natural join rr.resource
+where
+  standard_id='ivo://ivoa.net/std/sia'
+  and created>'2024-05-01'
+
+on the RegTAP service of your choice [shameless plug: if you don't have
+one, try https://dc.g-vo.org/tap]
+
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Apr 22 15:17:01 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 22 Apr 2025 15:17:01 +0200
+Subject: Call for contributions: Major version transition
+Message-ID: <20250422131701.ieytl6c7ija2z3vc@victor>
+
+Dear Colleagues,
+
+[apologies for the wide cross-post; followups to registry only, I'd
+suggest]
+
+As the VO matures, we will at some point have to introduce changes in
+our standards that break previous, widely-deployed standards.  For
+instance, some of the proposals put forward by the Protocol Transition
+Tiger Team would, if adopted, render existing clients broken; much more
+mundane, Simple Cone Search, as one of the first standards defined by
+the IVOA, now really shows its age.  Bringing it up to date will again
+be a breaking change and hence, in our language, a major version
+transition.
+
+Our first real attempt at a major version transition, SIAP, so far
+has not been a resounding success; almost 10 years after SIAv2 has
+been released (on 23 December 2015), there are still many SIAv1
+services coming online[1], and there is no telling how much data you
+would miss if you did a SIAv2-only query.
+
+We have therefore started a document on how to do major version
+transitions in the future:
+<https://github.com/ivoa/major-version-transition>: this may eventually
+become an IVOA Note, but for now we would like to have the community's
+opinions on what we have written -- and also gather experiences with
+successful, failed or so-so major version transitions *in federated
+systems*, quite possibly from beyond astronomy.
+
+To that end, we plan to hold a session at the upcoming College Park
+Interop.  The rough plan is to have some short-ish talks introducing the
+matter (and the troubles) and then at least 45 minutes of discussion
+time.
+
+If you have
+
+* comments about or suggestions for the major version transition
+  document, or
+* stories of non-trivial (i.e., >=3 implementors, >=20 independent
+	deployments) major version transitions and their outcomes,
+
+we would like to invite you to give a short talk at this session
+(remote talks are of course ok).  For instance, if you remember the
+UCD1 -> UCD1+ process, or want to moan about the adoption of ADQL2.1
+(admittedly, that's a minor version transition, but still), we'd like
+to hear from you.  Or if you have hard data on how much we would lose
+if we officially declared SIAv1 as deprecated and told people to
+ignore the respective services, or have non-VO experiences where
+someone got a whole community to cooperate on sunsetting an outdated
+standard: Please send a mail to me with a title and a short (a few
+sentences max) abstract.
+
+Thanks,
+
+          Markus (for an anonymous ad-hoc working group that you'd be
+            welcome to join)
+
+[1] Don't take my word for it.  For a list of SIAv1 resources that were
+registered in the past 12 months, run
+
+select ivoid, created
+from rr.capability
+  natural join rr.resource
+where
+  standard_id='ivo://ivoa.net/std/sia'
+  and created>'2024-05-01'
+
+on the RegTAP service of your choice [shameless plug: if you don't have
+one, try https://dc.g-vo.org/tap]
+
+
+
+From msdemlei at ari.uni-heidelberg.de  Tue Apr 22 15:17:01 2025
+From: msdemlei at ari.uni-heidelberg.de (Markus Demleitner)
+Date: Tue, 22 Apr 2025 15:17:01 +0200
+Subject: Call for contributions: Major version transition
+Message-ID: <20250422131701.ieytl6c7ija2z3vc@victor>
+
+Dear Colleagues,
+
+[apologies for the wide cross-post; followups to registry only, I'd
+suggest]
+
+As the VO matures, we will at some point have to introduce changes in
+our standards that break previous, widely-deployed standards.  For
+instance, some of the proposals put forward by the Protocol Transition
+Tiger Team would, if adopted, render existing clients broken; much more
+mundane, Simple Cone Search, as one of the first standards defined by
+the IVOA, now really shows its age.  Bringing it up to date will again
+be a breaking change and hence, in our language, a major version
+transition.
+
+Our first real attempt at a major version transition, SIAP, so far
+has not been a resounding success; almost 10 years after SIAv2 has
+been released (on 23 December 2015), there are still many SIAv1
+services coming online[1], and there is no telling how much data you
+would miss if you did a SIAv2-only query.
+
+We have therefore started a document on how to do major version
+transitions in the future:
+<https://github.com/ivoa/major-version-transition>: this may eventually
+become an IVOA Note, but for now we would like to have the community's
+opinions on what we have written -- and also gather experiences with
+successful, failed or so-so major version transitions *in federated
+systems*, quite possibly from beyond astronomy.
+
+To that end, we plan to hold a session at the upcoming College Park
+Interop.  The rough plan is to have some short-ish talks introducing the
+matter (and the troubles) and then at least 45 minutes of discussion
+time.
+
+If you have
+
+* comments about or suggestions for the major version transition
+  document, or
+* stories of non-trivial (i.e., >=3 implementors, >=20 independent
+	deployments) major version transitions and their outcomes,
+
+we would like to invite you to give a short talk at this session
+(remote talks are of course ok).  For instance, if you remember the
+UCD1 -> UCD1+ process, or want to moan about the adoption of ADQL2.1
+(admittedly, that's a minor version transition, but still), we'd like
+to hear from you.  Or if you have hard data on how much we would lose
+if we officially declared SIAv1 as deprecated and told people to
+ignore the respective services, or have non-VO experiences where
+someone got a whole community to cooperate on sunsetting an outdated
+standard: Please send a mail to me with a title and a short (a few
+sentences max) abstract.
+
+Thanks,
+
+          Markus (for an anonymous ad-hoc working group that you'd be
+            welcome to join)
+
+[1] Don't take my word for it.  For a list of SIAv1 resources that were
+registered in the past 12 months, run
+
+select ivoid, created
+from rr.capability
+  natural join rr.resource
+where
+  standard_id='ivo://ivoa.net/std/sia'
+  and created>'2024-05-01'
+
+on the RegTAP service of your choice [shameless plug: if you don't have
+one, try https://dc.g-vo.org/tap]
+
+
+
+From gregory.mantelet at astro.unistra.fr  Fri Apr 25 16:16:39 2025
+From: gregory.mantelet at astro.unistra.fr (Gregory MANTELET)
+Date: Fri, 25 Apr 2025 16:16:39 +0200
+Subject: DAL Running Meeting #20 - Spectral lines
+Message-ID: <1b149a19-7f9c-4dc2-a115-6bb290ed2d28@astro.unistra.fr>
+
+Dear DAL members and DM chairs,
+
+In the IVOA and more specifically in DAL, we do not have yet a stable 
+solution
+to give access to spectral lines.
+
+For the record, REC-SLAP-1.0 
+<https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vof7nqpG$> 
+(Simple Line Access Protocol) was published in
+2010. Very few SLAP-1.0 services are available in the IVOA Registry. It 
+seems
+that the data model proposed by this protocol is not complete enough: 
+SSLDM-1.0 
+<https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20101209/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vtjRWL8f$>.
+With the help of VAMDC, a second version has been proposed: SLAP-2.0 
+<https://urldefense.com/v3/__https:/www.ivoa.net/documents/SLAP/20190409/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vnbPwp32$>. 
+It is a
+Working Draft since 2019. In parallel SSLDM-2.0 
+<https://urldefense.com/v3/__https:/www.ivoa.net/documents/SSLDM/20190909/__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vi9pVVfw$> 
+(also in 2019) is a Proposed
+Recommendation and reaches the RFC stage. Both have been frozen in order to
+explore an alternative solution: LineTAP 
+<https://urldefense.com/v3/__https:/www.ivoa.net/documents/LineTAP/20241121/index.html__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vm3C8Fl8$>. 
+It is based on TAP and defines a
+different and independent data model.
+
+It is now time to decide which protocol is the most helpful from the 
+point of
+view of data providers and users. This is the goal of the DAL Running 
+Meeting
+that Joshua and I are now proposing. Note that, as the main actors for 
+spectral
+lines, I had recently a meeting with VAMDC and CASSIS developer in order 
+to have
+their point of view and see what would be their preferred solution and 
+why. I
+will start the running meeting by giving conclusions of this side meeting.
+
+@Mark, Mathieu: I invited both of you because providing spectral lines 
+implies
+data models and more specifically SSLDM. It would nice to have one of you
+during this meeting.
+
+Anyway, in order to find the best possible date, please, answer to the 
+following poll
+before the 2nd of May:
+
+https://strawpoll.com/xVg716X0Qyr 
+<https://urldefense.com/v3/__https:/strawpoll.com/xVg716X0Qyr__;!!CrWY41Z8OgsX0i-WU-0LuAcUu2o!xXw1mHo0wm3raE559ej1IyKbxHBjoMMlryx6v15g6O7w1x8ZR81QKXwP1I5nlR7-UcBQXZvoXmRCCYatsYOGwMbd83I_vhVvE-8W$>
+
+As usual, this meeting will be one hour long and will be remote (using 
+Zoom).
+
+Best regards,
+Gr?gory and Joshua
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://mail.ivoa.net/pipermail/dal/attachments/20250425/89d83f66/attachment.htm>
+
