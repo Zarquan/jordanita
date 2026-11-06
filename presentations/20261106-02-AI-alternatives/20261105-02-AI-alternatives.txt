@@ -1,0 +1,328 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes for the AI alternatives talk at IVOA interop.
+
+    Result:
+
+        Work in progress ...
+
+# -----------------------------------------------------
+# Slide 1
+# Levels of adoption
+
+    Prompt Engineering
+        Crafting a single best instruction for an AI model
+
+    Context Engineering
+        Managing what information and data the model sees
+
+    Harness Engineering
+        Building the local environment or sandbox where an agent runs
+
+        <-- we are here -->
+
+    Loop Engineering
+        Designing dynamic, repeating workflows that drive the agent toward completion
+
+        <-- what happens next -->
+
+
+# -----------------------------------------------------
+# Slide 2
+# January - June 2026
+
+    January 2026, my WOW moment - when I realised what AI agents could do.
+
+    Cursor with Claude.
+    https://cursor.com/
+
+        Coding agent for building ambitious software.
+        [Cursor logo]
+
+
+    Harness Engineering, automated attribution.
+
+```
+AIMetrics: [
+    {
+    "timestamp": "2026-08-26T13:00:15",
+    "name": "Cursor CLI",
+    "version": "2026.02.13-41ac335",
+    "model": "Claude 4.6 Opus (Thinking)",
+    ....
+    },
+```
+
+    Monthly subscription + extras > $100/mth.
+    Worth the investment.
+    Not going back.
+
+
+# -----------------------------------------------------
+# Slide 3
+# June 2026
+
+Then this happend
+June 12, 2026
+
+    [Department of Commerce]
+    [Howard Lutnick]
+
+    The U.S. Department of Commerce imposed export controls on Anthropic's Fable 5 and Mythos 5 models restricting access to the models for any foreign national.
+    Citing national security concerns and potential risks regarding
+    software vulnerability identification.
+
+    any foreign national <-- that's me !!
+
+Then this happened
+June 16, 2026
+
+    [Elon Musk]
+    [xAI]
+
+    SpaceX aquired Cursor's parent company, Anysphere, on August 14, 2026
+
+
+# -----------------------------------------------------
+# Slide 4
+# Search for alternatives
+
+    Not going back.
+    Avoid vendor lock-in
+    Avoid dependency on a single supplier
+
+    Looking for alternatives was already on my todo list.
+    Events just pushed it to the top of the list.
+
+    1. Evaluate open weights models
+    2. Evaluate Claude and Claude code
+
+
+# -----------------------------------------------------
+# Slide 5
+# DeepSeek Harness in the news
+
+    August 13, 2026:
+    DeepSeek released the initial MIT-licensed open-source code on GitHub and entered public beta.
+    It broke viral developer records, gaining over 95,000 GitHub stars within its first 48 hours.
+
+    [DeepSeek logo]
+
+    August 17, 2026:
+    FOD#163: DeepSeek is having its second DeepSeek moment
+    https://www.turingpost.com/p/deepseek-harness-explained
+    [turingpost logo]
+
+    Open source code
+    https://github.com/deepseek-ai/deepseek-harness
+    [github logo]
+
+
+# -----------------------------------------------------
+# Slide 6
+# DeepSeek Harness evaluation
+
+    [DeepSeek logo]
+
+    Subjective comparison :
+
+        DeepSeek Harness with DeepSeek Flash equivalent to Cursor with Claude Opus
+
+```
+AIMetrics: [
+    {
+    "timestamp": "2026-08-27T11:22:00",
+    "name": "@deepseek-ai/dsh",
+    "version": "0.1.1-rc.2",
+    "model": "deepseek-v4-flash",
+    ....
+    },
+```
+
+
+# -----------------------------------------------------
+# Slide 7
+# Agent containerization
+
+    DeepSeek Harness is run inside a Docker container.
+    https://github.com/Zarquan/Lithosia-docker
+    [github logo]
+    [Docker-logo]
+
+    Using volume mounts to control access to the host file system.
+```
+podman run \
+    ....
+    --volume "${PROJECT_PATH}:/Workspace"
+    ....
+```
+
+    This isn't specific to DeepSeek, I ran Cursor in a container as well.
+
+    General rule - don't give an AI agent unrestricted access to your home directoty.
+
+    [DeepSeek logo] in a wire box
+    [Cursor logo] in a wire box
+
+
+# -----------------------------------------------------
+# Slide 8
+# DeepSeek token cost
+
+    [screenshot]
+
+    1,264,594,636 tokens
+    4,440 requests
+    $8.20 USD
+
+    Pay as you go API access.
+    Not going back.
+
+
+# -----------------------------------------------------
+# Slide 9
+# DeepSeek performance
+
+    https://livebench.ai/#/
+
+Leader board - overall score
+Model                  Overall score    Cost per task
+#1 Claude Fable 5.1             85.7           $7.406
+#2 GPT-6 Astra                  85.6           $4.828
+...
+#9 DeepSeek V4.1 Flash 1017     72.9           $0.185 <-- best open weight model
+
+https://livebench.ai/#/?cats=Coding
+
+Model                   Coding score    Cost per task
+#1 Claude Fable 5.1             97.7           $5.407
+#2 Claude Opus 5.5              96.3           $5.224
+#3 DeepSeek V4.1 Flash 1017     96.0           $0.204 <-- best open weight model
+...
+
+
+
+# -----------------------------------------------------
+# Slide 10
+# Environmental performance
+
+    GreenPT
+    https://www.greenpt.ai/
+
+    European infrastructure, renewable energy
+    Our servers run in Europe on renewable energy, with air cooling that uses a fraction of the water most data centers need. Lower footprint, by design, not by offset.
+
+    https://account.greenpt.ai/usage
+
+Month     Requests     Tokens in    Tokens out       Cost
+Sep 2026       655    71,750,502       526,170      €3.50
+Oct 2026       631    80,478,624       615,369      €4.70
+
+    https://account.greenpt.ai/impact
+
+
+# -----------------------------------------------------
+# Slide 11
+# June - October 2026
+
+    Where we are now
+
+        Harness Engineering
+        Developing re-usable AGENTS.md, rules and skills.
+        https://github.com/Zarquan/Acsala-agents
+
+        DeepSeek Harness with DeepSeek V4.1 Flash
+        https://github.com/deepseek-ai/deepseek-harness
+
+        Running the agent in a container.
+        https://github.com/Zarquan/Lithosia-docker
+
+        Open weights model, available on hugging face.
+        https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017
+
+        European infrastructure, renewable energy
+
+            Low environmental cost
+            Low economic cost
+
+
+[DeepSeek logo]
+[GreenPT logo]
+[EU flag]
+
+    Subjective comparison
+
+        The model is not the bottleneck - I am.
+        Solving problems in a days rather than weeks.
+        Solve a problem, immediatley move on to the next.
+        The agent doesn't need breaks - I do.
+
+
+# -----------------------------------------------------
+# Slide 12
+# Where next ?
+
+    Self hosted inference service
+
+        Colleage at UCL is deploying an inference platform woth a range of models
+        for use by staff and students at UCL.
+
+        Hope to learn from their experience and try the same at Jodrell.
+
+        Revolut slashes AI coding costs 10x by cutting out Claude and going self-hosted
+        https://www.theregister.com/ai-and-ml/2026/11/03/british-fintech-revolut-slashes-ai-coding-costs-10x-by-cutting-out-claude-and-going-self-hosted/5307345
+
+        British financial technology company Revolut says that in less than a year it's
+        managed to slash its AI coding inference costs by roughly 90 percent by making
+        self-hosted models its default instead of relying primarily
+        on commercial services like Claude.
+
+
+    Loop Engineering - moving to the next level
+
+        Loop engineering is the practice of designing agentic workflows, or loops,
+        that iteratively guide AI agents toward completing user-defined goals with
+        minimal human intervention.
+
+
+
+
+
+# -----------------------------------------------------
+# Extra 1
+# GreenPT on LeafCloud
+
+    GreenPT runs on LeafCloud, a European cloud provider that embeds servers in urban buildings, using the heat from AI computations to warm apartments,
+    care homes, and public pools.
+
+    https://medium.com/@wilco.burggraaf/is-greenpt-ai-the-only-eco-friendly-gpt-chat-lets-find-out-6b05e90a78d6
+    https://www.linkedin.com/posts/wilco-burggraaf-a6b15517_ai-greenai-greenit-activity-7303643182720831488-9MSz
+
+    LeafCloud
+    https://www.leaf.cloud/
+

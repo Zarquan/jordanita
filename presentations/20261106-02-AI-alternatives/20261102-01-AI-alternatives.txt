@@ -1,0 +1,396 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes for the AI alternatives talk at IVOA interop.
+
+    Result:
+
+        Work in progress ...
+
+
+
+# -----------------------------------------------------
+
+    https://en.wikipedia.org/wiki/Colossus_(data_center)
+
+        Because the local grid connection was initially limited (~8 MW, later upgraded toward 150 MW),
+        xAI deployed temporary natural-gas turbines and Tesla Megapack battery systems.
+        Local residents protested the turbines at public hearings over air quality, and the Shelby County
+        Health Department issued a permit for 15 of them on July 2, 2025.
+        The Southern Environmental Law Center, on behalf of the NAACP, notified xAI in June 2025 of its
+        intent to sue under the Clean Air Act, alleging the company had installed dozens of turbines
+        without permits.
+
+
+    Colossus 1 power station
+    https://www.gem.wiki/Colossus_1_power_station
+
+        Colossus 1 is the data-center campus operated by xAI (founded by Elon Musk) in South Memphis,
+        located at 3231 Paul Lowry Road in an industrial area (former Electrolux factory site).
+        The site began operations around July 2024 with reported IT capacity ~150 MW and an initial
+        grid connection of ~8 MW, which later increased to ~150 MW via the local utility
+        (Tennessee Valley Authority/MLGW).
+
+        To support that load (and ramp quickly while full grid connections were still in place),
+        xAI deployed a fleet of gas turbines on-site. These units acted as interim or supplemental generation.
+
+        Aerial imagery from April 2025 revealed approximately 35 gas-fueled turbines on site, many more
+        than publicly permitted at the time. The Shelby County Health Department eventually granted an air
+        permit in July 2025 for up to 15 turbines generating about 247.2 MW, valid through January 2027.
+        xAI announced it would remove or demobilize many of the turbines: a statement indicated that over
+        the upcoming months the “temporary” gas turbines would be removed, with remaining units relegated
+        to backup once the second substation is completed and connected.
+
+        The second substation connection is scheduled for fall 2025 — after which the gas turbines should
+        shift from primary generation to backup power. The permit requires installation of Best Available
+        Control Technology (BACT) by September 1, 2025 for the permitted units.
+        The permit expiry (January 2, 2027) indicates that further reviews/renewals/expansions may happen
+        if xAI upgrades or expands the site further.[11][15][12
+
+
+
+    Musk’s xAI wins permit for datacenter’s makeshift power plant despite backlash
+    https://www.theguardian.com/technology/2026/mar/10/elon-musk-xai-data-centers
+
+        Elon Musk’s artificial intelligence company xAI won approval on Tuesday to run
+        41 methane gas turbines at its “Colossus 2” datacenter in northern Mississippi.
+
+        The turbines will help power xAI’s massive datacenters, which house the company’s
+        “AI supercomputers”, or giant arrays of advanced chips, which in turn power the
+        controversial AI tool Grok, the company’s most recognizable product.
+
+
+    SpaceXAI’s Colossus data center is fueling a massive backlash
+    https://www.scientificamerican.com/article/spacexais-colossus-data-center-is-fueling-a-massive-backlash/
+
+        The turbines are there because SpaceXAI needs an enormous amount of electricity
+        for Colossus 2, one of the country’s densest concentrations of computing power,
+        where the company is training Grok, its chatbot.
+
+
+
+# -----------------------------------------------------
+
+    SpaceX and Anthropic 300MW Compute Partnership
+    https://chamath.substack.com/p/what-i-read-this-week-183
+
+        On May 6, Anthropic signed a multi-year deal with SpaceX to rent the entire
+        compute capacity of Colossus 1, SpaceX’s Memphis supercomputer.
+        The facility gives Anthropic access to more than 300 megawatts of capacity
+        and over 220,000 NVIDIA GPUs, including H100s, H200s, and GB200s.
+
+    Anthropic, SpaceX announce compute deal, includes space development
+    https://www.cnbc.com/2026/05/06/anthropic-spacex-data-center-capacity.html
+
+        Anthropic on Wednesday announced a deal with Elon Musk’s SpaceX to use all of the
+        compute capacity at his company’s Colossus 1 data center in Memphis, Tennessee.
+
+    Anthropic's Form S-1
+    https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm
+
+        Between May and October 2026, we entered into and amended several agreements with SpaceX.AI LLC
+        (formerly known as X.AI LLC) (“SpaceXAI”), a wholly owned subsidiary of Space Exploration Technologies
+        Corp. (collectively, the “SpaceXAI Arrangements”), to access compute powered by NVIDIA GPUs. Under the
+        SpaceXAI Arrangements, we agreed to spend an aggregate of up to $120.5 billion over terms extending into
+        2029, consisting of approximately $3.1 billion in the aggregate per month once all capacity has been delivered,
+
+# -----------------------------------------------------
+
+    US department of WAR
+
+    Chief Digital and Artificial Intelligence Office
+    CDAO Announces Partnerships with Frontier AI Companies to Address National Security Mission Areas
+    https://www.ai.mil/News/PR-View/Article/4242822/cdao-announces-partnerships-with-frontier-ai-companies-to-address-national-secu/
+
+        "The adoption of AI is transforming the Department’s ability to support our warfighters
+        and maintain strategic advantage over our adversaries,” said Chief Digital and AI Officer Dr. Doug Matty.
+
+        "Leveraging commercially available solutions into an integrated capabilities approach will accelerate the use
+        of advanced AI as part of our Joint mission essential tasks in our warfighting domain as well as intelligence,
+        business, and enterprise information systems.”
+
+
+    Anthropic to disable its most advanced AI models after US order limiting foreign access | AI (artificial intelligence) | The Guardian
+    https://www.theguardian.com/technology/2026/jun/13/anthropic-disable-advanced-ai-models-us-government-order
+
+        Anthropic said it will “abruptly disable” its most advanced AI models for all users after the US government
+        ordered it to suspend access to the models for foreign nationals, citing national security concerns.
+
+        The company received the export control directive to suspend access to Fable 5 and Mythos 5 for all foreign nationals,
+        without being given specific details of the national security concern, Anthropic said in a statement.
+
+    The Department of Commerce Restricted Access to Anthropic’s Latest Models. What Comes Next?
+    https://www.csis.org/analysis/department-commerce-restricted-access-anthropics-latest-models-what-comes-next
+
+        Late Friday, June 12, the Department of Commerce sent a letter to Anthropic informing the AI developer
+        that it was imposing export controls on its latest models, Fable 5 and Mythos 5.
+        An approved export license from the Bureau of Industry and Security (BIS), the Commerce component responsible
+        for implementing major aspects of the U.S. export control regime, is now required for any foreign persons,
+        whether inside or outside of the United States, to access the models.
+
+        The requirement includes Anthropic’s foreign national employees.
+        According to Anthropic, “The net effect of this order is that we must abruptly disable Fable 5 and Mythos 5
+        for all our customers to ensure compliance.”
+
+
+    DoW CIO Kirsten Davies
+    https://x.com/DoWCIODavies
+
+        The official account of Honorable Kirsten Davies, the U.S. Department of War Chief Information Officer.
+
+        13th June 2026
+        We fully support @POTUS and @SecWar in prioritizing national security and
+        the security of our warfighters, DIB partners, critical infrastructure,
+        international partners and allies. Some things are simply more important than
+        revenue cycles, click bait, and pre-IPO valuation.
+
+    The US government’s latest U-turn on Anthropic’s Mythos sends mixed signals on AI governance
+    https://www.chathamhouse.org/2026/07/us-governments-latest-u-turn-anthropics-mythos-sends-mixed-signals-ai-governance
+
+        The Trump administration’s approach to controlling US companies’ powerful AI capabilities is volatile.
+        It undercuts global safety and governance at a pivotal time.
+
+# -----------------------------------------------------
+
+    OpenAI - Our agreement with the Department of War
+    https://openai.com/index/our-agreement-with-the-department-of-war/
+
+
+# -----------------------------------------------------
+
+    https://azure.microsoft.com/en-gb/products/ai-foundry
+    Microsoft's unified enterprise platform for building,
+    deploying, grounding, and governing AI applications
+    and autonomous agents
+
+    It’s never been easier to build, optimise, and govern AI apps and agents
+    that understand your business context and deliver business impact.
+    Our unified, interoperable AI platform enables developers to build faster
+    and smarter, while organisations gain fleetwide security and governance
+    in a unified portal.
+
+
+    https://ai.azure.com/catalog/models
+
+        Search doesn't have an 'OpenWeights' criteria.
+
+    https://ai.azure.com/catalog/models/DeepSeek-V4-Flash
+
+    Complicated price structure
+    https://azure.microsoft.com/en-us/pricing/details/ai-foundry-models/deepseek/
+
+    Warning - vendor lock-in.
+
+
+
+# -----------------------------------------------------
+
+    https://www.leaf.cloud/resources/cloud-act/
+
+        The US CLOUD Act (Clarifying Lawful Overseas Use of Data Act, 2018) is a US federal law that
+        allows US law enforcement and intelligence agencies to compel US-based technology companies
+        to provide data stored anywhere in the world, regardless of physical server location.
+
+    https://en.wikipedia.org/wiki/CLOUD_Act
+
+        The CLOUD Act primarily amends the Stored Communications Act (SCA) of 1986 to allow
+        federal law enforcement to compel U.S.-based technology companies via warrant or
+        subpoena to provide requested data stored on servers regardless of whether the data
+        are stored in the U.S. or on foreign soil.
+
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    https://platform.deepseek.com/usage
+
+    Last 30 days
+
+        Cost $8.20
+        4,440 requests
+        1,264,594,636 tokens
+
+    https://account.greenpt.ai/usage?tab=api
+    1 Oct - 31 Oct
+
+        Cost €4.70
+        631 requests
+        81.1M tokens
+
+# -----------------------------------------------------
+
+    Hugging Face
+    https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017
+
+
+# -----------------------------------------------------
+
+    What kind of environmental impacts are AI companies disclosing? (And can we compare them?)
+    https://huggingface.co/blog/sasha/environmental-impact-disclosures
+
+# -----------------------------------------------------
+
+    https://livebench.ai/#/
+
+        Model                  Overall score    Cost per task
+        #1 Claude Fable 5.1             85.7           $7.406
+        #2 GPT-6 Astra                  85.6           $4.828
+        #3 Claude Opus 5.5              85.1           $4.820
+        #4 GPT-6.1 Sol                  84.1           $0.819
+        ...
+        #9 DeepSeek V4.1 Flash 1017     72.9           $0.185 <-- best open weight model
+
+    https://livebench.ai/#/?cats=Coding
+
+        Model                   Coding score    Cost per task
+        #1 Claude Fable 5.1             97.7           $5.407
+        #2 Claude Opus 5.5              96.3           $5.224
+        #3 DeepSeek V4.1 Flash 1017     96.0           $0.204 <-- best open weight model
+        ...
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    GreenPT
+
+        Is GreenPT.ai the only eco-friendly GPT chat?
+        https://medium.com/@wilco.burggraaf/is-greenpt-ai-the-only-eco-friendly-gpt-chat-lets-find-out-6b05e90a78d6
+        https://www.linkedin.com/posts/wilco-burggraaf-a6b15517_ai-greenai-greenit-activity-7303643182720831488-9MSz
+
+            Instead of centralized data centers that guzzle power and contribute to climate change,
+            GreenPT.ai runs on LeafCloud (https://www.leaf.cloud/), a European cloud provider that
+            embeds servers in urban buildings, using the heat from AI computations to warm apartments,
+            care homes, and even public pools.
+
+
+        My Experience Switching to GreenPT | by Nathan Bailey | Medium
+        https://nathanbaileyw.medium.com/my-experience-switching-to-greenpt-df8d3f8a070c
+
+            After using GreenPT for a week, I felt much more at ease with my LLM usage.
+            Beforehand, I valued the use of LLMs in my daily life, but it always felt like
+            I was turning a blind eye to the atrocities that OpenAI committed.
+            Now I am more aware of the environmental impact of each query and know that
+            the data centres behind them are fully renewable. Whilst I am not completely
+            free of OpenAI, as I am required to use ChatGPT for work, the greater awareness
+            from using GreenPT has enabled me to use LLMs with greater caution and environmental
+            awareness. If you are also wrestling with the hidden cost of AI, I would encourage
+            you to try out GreenPT, and track your own token usage to see how small changes add up.
+
+
+
+# -----------------------------------------------------
+
+    Leafcloud
+    https://www.leaf.cloud/
+
+    Sovereign European Cloud that Heats Homes
+    https://www.leaf.cloud/resources/cloud-act/
+
+    https://www.leaf.cloud/rtx6000#pricing
+
+
+# -----------------------------------------------------
+
+    Google AI summary
+    "GreenPT acknowledges that the initial training of the underlying foundational open-source models
+    was not performed on green-certified servers, meaning sustainability claims apply specifically
+    to its hosting and inference operations rather than the full lifecycle training of massive models."
+
+
+# -----------------------------------------------------
+
+    Manchester
+
+        Environmentally Responsible Use of AI Guidelines (The University of Manchester)
+        https://documents.manchester.ac.uk/DocuInfo.aspx?DocID=79403
+        /home/Zarquan/Downloads/Environmentally Responsible Use of AI Guidelines.docx
+
+        Environmentally Responsible Use of Artificial Intelligence (AI)
+
+            Guiding principles (Section 3):
+            Use AI only where it adds clear value (necessity), ensure environmental cost is
+            proportionate to benefits (proportionality), choose the most resource-efficient
+            approach (efficiency), document and validate use appropriately (transparency and
+            accountability), support sustainable infrastructure and practice (sustainability),
+            and consider impacts across the full system lifecycle (lifecycle responsibility
+
+
+
+# -----------------------------------------------------
+
+    UK Parliament
+
+        Risks and opportunities to the sustainability of data centres in the UK - Committees - UK Parliament
+        https://committees.parliament.uk/work/9651/risks-and-opportunities-to-the-sustainability-of-data-centres-in-the-uk/
+        https://committees.parliament.uk/writtenevidence/164726/pdf/
+
+
+        University of Manchester experts give evidence to MPs on the environmental impact of AI and data centres
+        https://www.manchester.ac.uk/about/news/university-of-manchester-experts-give-evidence-to-mps-on-the-environmental-impact-of-ai-and-data-centres/
+
+# -----------------------------------------------------
+
+    British fintech Revolut slashes AI coding costs 10x by cutting out Claude and going self-hosted
+    https://www.theregister.com/ai-and-ml/2026/11/03/british-fintech-revolut-slashes-ai-coding-costs-10x-by-cutting-out-claude-and-going-self-hosted/5307345
+
+        Revolut says that in less than a year it's managed to slash its AI coding inference costs
+        by roughly 90 percent by making self-hosted models its default instead of relying primarily
+        on commercial services like Claude.
+
+    British fintech Revolut slashes AI coding costs 10x by cutting out Claude and going self-hosted : r/technology
+    https://www.reddit.com/r/technology/comments/1xn6grp/british_fintech_revolut_slashes_ai_coding_costs/
+
+        I'm CTO for a small tech company (40 employees). We're literally doing this transition
+        right now. All of our employees have Claude accounts, many of them are Max accounts.
+        Despite that, we are running into usage limits and caps almost daily.
+        The true cost of AI is much higher than the sticker subscription prices.
+
+        A subset of users have been testing OpenRouter with open-weight, open-source models,
+        and zero retention providers for the past two months.
+        The models are nearly as good as Anthropic's and a fraction of the cost.
+        In fact, most models have become so good that tooling and the end user matter more
+        than the underlying model.
+
+        We'll be moving the entire userbase to OpenRouter and not looking back.
+
+
+
+# -----------------------------------------------------
+
+    https://github.com/Muvon/octomind
+    Open-source coding agent harness.
+
+
+        Most agents stop and ask a human before each risky step, which works at a
+        keyboard and blocks everything in CI. Octomind writes that policy down as
+        TOML guardrails and adds a supervising model that plans and checks the work,
+        so the same session can run with nobody watching.
+
+
+
