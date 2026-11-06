@@ -1,0 +1,368 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2026, University of Manchester (http://www.manchester.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the Attribution-ShareAlike 4.0 International License
+#     as published by the Creative Commons, either version 4.0 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#     You should have received a copy of the Attribution-ShareAlike 4.0
+#     International License along with this software.
+#     If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+#   </meta:licence>
+# </meta:header>
+#
+#zrq-notes-indent
+#
+# AIMetrics: []
+#
+
+    Target:
+
+        Notes for the AI attribution talk at IVOA interop.
+
+    Result:
+
+        Work in progress ...
+
+
+# -----------------------------------------------------
+# Slide 1
+# Levels of adoption
+
+    Prompt Engineering
+        Crafting a single best instruction for an AI model
+
+    Context Engineering
+        Managing what information and data the model sees to prevent overload
+
+    Harness Engineering
+        Building the local environment or sandbox where an agent runs
+
+        <-- we are here -->
+
+    Loop Engineering
+        Designing dynamic, repeating workflows that drive the agent toward completion
+
+        <-- what happens next -->
+
+
+# -----------------------------------------------------
+# Slide 2
+# Where we are now
+
+    Harness Engineering
+
+    Automated attribution
+    https://github.com/Zarquan/Acsala-agents
+
+    agents
+        rules
+            copyright
+            ai-metrics
+                code
+                documents
+                presentations
+                github
+                    issues
+                    commits
+                    pullrequests
+
+# -----------------------------------------------------
+# Slide 2
+# AIMetrics block
+
+```
+AIMetrics: [
+        {
+        "timestamp": "<ISO 8601 timestamp of the modification, e.g. 2026-02-14T15:30:00>",
+        "interval": "<ISO 8601 interval covering the current session, e.g. 2026-02-14T15:30:00/2026-03-14T05:00:00>",
+        "name": "<agent/tool name from the current session>",
+        "version": "<agent/tool version from the current session>",
+        "model": "<model identifier from the current session>",
+        "contribution": {
+            "value": <percentage>,
+            "units": "%"
+            }
+        }
+    ]
+```
+
+
+# -----------------------------------------------------
+# Slide 3
+# Email footer
+
+    http://mail.ivoa.net/pipermail/ai-interop/2026-October/000009.html
+
+    Empty AIMetrics because I don't let CoPilot write my emails for me.
+
+```
+--------
+Dave Morris
+Research Software Engineer
+UK SKA Regional Centre
+Department of Physics and Astronomy
+University of Manchester
+--------
+AIMetrics: []
+--------
+```
+
+    If/when I use AI I will update the footer.
+
+    If anyone wants to write some rules for GMail/CoPilot please share.
+
+
+
+# -----------------------------------------------------
+# Slide 3
+# Acsala agent identity
+
+    Git commit author based on user's own identity.
+
+        AGENT_GIT_NAME="DeepSeek Harness"
+        AGENT_GIT_EMAIL="zrq-github+dsh@metagrid.co.uk"
+
+
+    Screenshot
+    ```
+    Author: DeepSeek Harness <dave.morris+dsh@manchester.ac.uk>
+    ```
+
+    ** not a valid email address **
+    Next step is to create a separate GitHub account for "Dave's agent" with a separate email address.
+
+
+# -----------------------------------------------------
+# Slide 4
+# Claude agent identity
+
+    Claude Code Co-Author Commits
+    https://explainx.ai/blog/claude-code-commit-co-author-attribution-disable-guide-2026
+
+While you remain the primary author, Claude Code automatically appends AI attribution metadata to the bottom of the commit message body by default.
+
+        It injects a standard Git trailer that looks like this:
+
+            ```
+            Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+            ```
+
+        Claude Code exposes direct control over this behavior via `settings.json`.
+
+            ```
+            {
+              "attribution": {
+                "commit": "Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>",
+                "pr": "🤖 Generated with [Claude Code](https://claude.ai/claude-code)"
+              }
+            }
+            ```
+
+
+# -----------------------------------------------------
+# Slide 5
+# Claude agent identity
+
+    Claude Code Co-Author Commits
+    https://explainx.ai/blog/claude-code-commit-co-author-attribution-disable-guide-2026
+
+    Debate on X that reached nearly 500,000 views in June 2026.
+
+    Constantine K, a software engineer, put the objection plainly:
+        "I strongly disagree with crediting Claude as a commit co-author.
+        It is a tool I'm paying for, not a copyright holder, not an author.
+        We don't credit Visual Studio."
+
+    The other side of the argument, from the replies:
+
+        "Not crediting Claude on your stuff when it's the one writing all
+        the code is incredibly dishonest. You want to deceive people into
+        thinking you're the one that wrote it?"
+
+    ... but we do add attributions for auto generated code :
+
+```
+ * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).
+ * https://openapi-generator.tech
+```
+
+# -----------------------------------------------------
+# Slide 6
+# We are here : Harness Engineering
+
+    Harness Engineering
+        Building the local environment or sandbox where an agent runs
+
+        User asks the agent to make a plan.
+        Agent writes the plan ....
+        User reviews and agrees the plan.
+        Agent writes the code ....
+
+        Agent creates commit message with attribution.
+        Agent waits for the human to approve the commit.
+        User reviews and approves the commit.
+
+        Agent commits the changes and creates pull request.
+        User reviews and approves the pull request.
+
+        Agent merges the pull request, updates clones and forks.
+
+Human is still in the loop.
+Agent writes code, human reviews and approves it.
+
+# -----------------------------------------------------
+# Slide 7
+# What next : Loop engineering
+
+    Loop engineering
+
+        https://www.ibm.com/think/topics/loop-engineering
+
+        Loop engineering is the practice of designing agentic workflows, or loops,
+        that iteratively guide AI agents toward completing user-defined goals with
+        minimal human intervention.
+
+        Rather than require human prompting at every step, agent loops enable agents
+        to dynamically act, observe, make decisions and iterate until a task is complete.
+
+
+# -----------------------------------------------------
+# Slide 8
+# Copyright claims
+
+    Loop engineering
+    If we remove the human oversight, what happens to copyright ?
+
+United States (USCO Rules)
+https://pec.ac.uk/blog_entries/copyright-protection-in-ai-generated-works/
+
+No Human Authorship = No Copyright:
+The U.S. Copyright Office requires a human author for a work to qualify for copyright protection. Software generated entirely or predominantly by AI without substantial human creativity is placed into the public domain (meaning anyone can use, copy, or modify it).
+
+United Kingdom (CDPA 1988 Rules)
+    https://www.farrer.co.uk/news-and-insights/protecting-code-and-creativity-software-ip-rights-and-ai-generated-code/
+
+Computer-Generated Works (Section 9(3)): The UK Copyright, Designs and Patents Act 1988 explicitly recognizes computer-generated works (CGWs) that have no traditional human author.
+
+Authorship and ownership go to "the person by whom the arrangements necessary for the creation of the work are undertaken" (often the person or company that ran/directed the AI system).
+
+        gov.uk Copyright and AI: Consultation
+        https://www.gov.uk/government/consultations/copyright-and-artificial-intelligence/copyright-and-artificial-intelligence
+
+# -----------------------------------------------------
+# Slide 9
+# Théâtre D'opéra Spatial
+
+    Théâtre D'opéra Spatial was generated and edited by American artist Jason M. Allen using the generative
+    artificial intelligence (GenAI) model Midjourney.
+
+    On August 29 it won the 2022 Colorado State Fair's annual fine art competition in the "emerging artist"
+    category, becoming one of the first images made using GenAI to win such a prize.
+
+    Théâtre D’opéra Spatial
+    https://en.wikipedia.org/wiki/Th%C3%A9%C3%A2tre_D%27op%C3%A9ra_Spatial#/media/File:Th%C3%A9%C3%A2tre_D%E2%80%99op%C3%A9ra_Spatial.jpg
+
+    The USCO Review Board found that Théâtre D'Opéra Spatial was not eligible for copyright protection
+    as the human creative input was minimal.
+
+
+
+# -----------------------------------------------------
+# Slide 10
+# Open source licenses
+
+    TL;DR; AI generated code raises questions about copyright
+
+    The copyright problem with AI-generated code
+    https://allthingsopen.org/articles/copyright-problem-ai-generated-code-open-source-licenses
+
+The more you lean on AI to write code for you, the less likely you are to hold copyright on the result.
+In the extreme case of “vibe coding,” where you only describe the end product and the AI does all the work, you may not be able to claim any copyright at all.
+
+And because open source licenses rely on copyright, you may not be able to place
+a “vibe coded” project under an open source license, such as the GNU GPL.
+
+
+Important to me because I am a strong advocate of copyleft licenses.
+
+Everything I've produced in the last 20+ years has been published under the terms of the GPL.
+
+That might no longer be possible ..
+
+# -----------------------------------------------------
+# Slide 11
+# Summary
+
+Copyright issues not withstanding, I think it is important that we declare how much of what we produce is AI generated.
+
+    Good reasons for doing this:
+
+        Measuring AI adoption
+
+        Copyright and licensing
+
+Geo-political factors
+US bans code generated by Chinese models
+China reciprocates and bans code generated by US models
+
+Funding requirements
+EU requires the use of EU models to qualify for funding
+
+Security issues
+Security vulnerability found in a model.
+Malware injected by a specific harness.
+
+        As a courtesy to our susbcribers:
+            The people who receive our emails
+            The people who use our code
+            The people who attend our presentations
+
+Using agent rules makes it automatic.
+Minimal cost to the human, a few extra tokens.
+
+
+# -----------------------------------------------------
+# Slide 12
+# AIMetrics block
+
+    Automated attribution
+    https://github.com/Zarquan/Acsala-agents
+
+    Thank you
+    Join the conversation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------
+# Extra 1
+# AIMetrics block
+
+    Problem - hampered by its own success.
+
+    TODO concatenate entries
+    Calycopis-broker- AGENTS.md 26 entries 260 lines
+
+    Aggregate contributions over interval of several days
+    Aggregate contributions per agent/model.
+
+
